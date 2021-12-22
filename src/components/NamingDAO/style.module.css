@@ -46,6 +46,14 @@
   border-radius: 28px;
   color: #fff;
   padding: 0.5rem 1rem;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  /* identical to box height, or 150% */
+
+  color: #ffffff;
 }
 
 .bottomBar > div {
@@ -56,4 +64,14 @@
   line-height: 24px;
   text-decoration-line: underline;
   color: #000000;
+}
+
+.bottomBar > button {
+  display: flex;
+  justify-content: space-between;
+  width: 30%;
+}
+
+.greyedText {
+  opacity: 0.64;
 }

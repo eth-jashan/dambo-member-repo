@@ -20,7 +20,12 @@ export default function NamingDAO() {
         ref={inputRef}
       />
       <div className={styles.bottomBar}>
-        <button>Next Add Owners</button>
+        <button>
+          <span>
+            Next &bull; <span className={styles.greyedText}>Add Owners</span>
+          </span>
+          <span>&#8594;</span>
+        </button>
         <div>Already Have a MultiSig Safe</div>
       </div>
     </div>
