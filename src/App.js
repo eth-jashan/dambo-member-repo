@@ -1,16 +1,18 @@
 import { ethers } from "ethers";
 import { useState } from "react";
 import Web3Modal from "web3modal";
-import Portis from "@portis/web3";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import './App.css';
+// import Portis from "@portis/web3";
+// import WalletConnectProvider from "@walletconnect/web3-provider";
+import "./App.css";
 // import Web3 from 'web3';
+import { Routes, Route, Link } from "react-router-dom";
+import Onboarding from "./pages/Onboarding";
 
 const providerOptions = {
   // portis: {
   //   package: Portis,
   //   options: {
-  //     id: // TODO: add PORTIS id here 
+  //     id: // TODO: add PORTIS id here
   //   }
   // },
   // walletconnect: {
@@ -24,23 +26,34 @@ const providerOptions = {
 const web3Modal = new Web3Modal({
   network: "mainnet", // optional
   cacheProvider: false, // optional
-  providerOptions // required
+  providerOptions, // required
 });
-
 
 function App() {
   return (
     <div className="App">
       <div className="App-header">
-        <Web3Func />
+        {/* <Web3Func /> */}
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="onboarding" element={<Onboarding />} />
+        </Routes>
       </div>
     </div>
   );
 }
 
+function LandingPage() {
+  return (
+    <Link to="onboarding">
+      <button>Go to Onboarding</button>
+    </Link>
+  );
+}
+
 function Web3Func() {
   const [account, setAccount] = useState({ connected: false });
-  
+
   async function connect() {
     const web3ModalProvider = await web3Modal.connect();
 
@@ -56,7 +69,7 @@ function Web3Func() {
         provider,
         address,
         signer,
-        balance: ethers.utils.formatEther(balance)
+        balance: ethers.utils.formatEther(balance),
       });
     }
 
@@ -68,30 +81,28 @@ function Web3Func() {
   }
 
   async function signMessage() {
-    const signedMessage = await account.signer.signMessage("Please Login to our website!");
+    const signedMessage = await account.signer.signMessage(
+      "Please Login to our website!"
+    );
     console.log(signedMessage);
   }
 
-  if(!account.connected) {
+  if (!account.connected) {
     return (
       <div className="button" onClick={connect}>
         Connect to Web3!
       </div>
-    )
-  }
-  else {
+    );
+  } else {
     return (
       <div className="account">
-        { account.address } - { account.balance }
-
+        {account.address} - {account.balance}
         <div className="button" onClick={signMessage}>
           Sign Message
         </div>
       </div>
-    )
+    );
   }
-
 }
-
 
 export default App;
