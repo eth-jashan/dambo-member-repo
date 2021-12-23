@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./style.module.css";
 
-export default function NamingDAO() {
+export default function NamingDAO({ setHasMultiSignWallet }) {
   const [DAOName, setDAOName] = useState("");
   const inputRef = useRef(null);
   useEffect(() => {
@@ -26,7 +26,9 @@ export default function NamingDAO() {
           </span>
           <span>&#8594;</span>
         </button>
-        <div>Already Have a MultiSig Safe</div>
+        <div onClick={() => setHasMultiSignWallet(true)}>
+          Already Have a MultiSig Safe
+        </div>
       </div>
     </div>
   );
