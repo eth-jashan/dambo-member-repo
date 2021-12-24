@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./style.module.css";
+import NextButton from "../NextButton";
 
-export default function NamingDAO({ setHasMultiSignWallet }) {
+export default function NamingDAO({ setHasMultiSignWallet, increaseStep }) {
   const [DAOName, setDAOName] = useState("");
   const inputRef = useRef(null);
   useEffect(() => {
@@ -20,12 +21,11 @@ export default function NamingDAO({ setHasMultiSignWallet }) {
         ref={inputRef}
       />
       <div className={styles.bottomBar}>
-        <button>
-          <span>
-            Next &bull; <span className={styles.greyedText}>Add Owners</span>
-          </span>
-          <span>&#8594;</span>
-        </button>
+        <NextButton
+          text="Add Owners"
+          increaseStep={increaseStep}
+          isDisabled={false}
+        />
         <div onClick={() => setHasMultiSignWallet(true)}>
           Already Have a MultiSig Safe
         </div>

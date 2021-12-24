@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./style.module.css";
-import forwardSvg from "../../assets/forward.svg";
-import plusSvg from "../../assets/plus.svg";
+import forwardSvg from "../../assets/Icons/forward.svg";
+import plusSvg from "../../assets/Icons/plus.svg";
 
 export default function SelectWallet({ setHasMultiSignWallet }) {
   const wallets = [
@@ -15,9 +15,9 @@ export default function SelectWallet({ setHasMultiSignWallet }) {
         <h1>Select multisig wallet you</h1>
         <h1>want to continue with</h1>
       </div>
-      <div>
+      <div className={styles.wallets}>
         {wallets.map((wallet) => (
-          <div className={styles.walletRow}>
+          <div className={styles.walletRow} key={wallet}>
             <p>{wallet}</p>
             <div>
               <img src={forwardSvg} alt="forward arrow" />

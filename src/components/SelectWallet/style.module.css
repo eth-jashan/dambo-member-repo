@@ -16,6 +16,12 @@
   margin: 0;
 }
 
+.wallets {
+  scroll-behavior: auto;
+  overflow: scroll;
+  margin-top: 9rem;
+}
+
 .walletRow {
   display: flex;
   justify-content: space-between;
