@@ -3,6 +3,8 @@ import Layout from "../views/Layout";
 import NamingDAO from "../components/NamingDAO";
 import SelectWallet from "../components/SelectWallet";
 import AddOwners from "../components/AddOwners";
+import ApproveTransaction from "../components/ApproveTransaction";
+import ReviewDAO from "../components/ReviewDAO";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -32,6 +34,10 @@ export default function Onboarding() {
       }
       case 1:
         return <AddOwners increaseStep={increaseStep} />;
+      case 2:
+        return <ApproveTransaction increaseStep={increaseStep} />;
+      case 3:
+        return <ReviewDAO increaseStep={increaseStep} />;
       default: {
         return (
           <NamingDAO

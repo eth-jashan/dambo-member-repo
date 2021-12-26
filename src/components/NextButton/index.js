@@ -4,7 +4,7 @@ import styles from "./style.module.css";
 export default function NextButton({ increaseStep, text, isDisabled }) {
   return (
     <button
-      onClick={increaseStep}
+      onClick={!isDisabled ? increaseStep : () => {}}
       className={isDisabled ? styles.disabled : ""}
     >
       <span>
