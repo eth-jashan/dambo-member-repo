@@ -1,34 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./style.module.css";
 import CrossSvg from "../../assets/Icons/cross.svg";
 import PlusSvg from "../../assets/Icons/plus.svg";
 import { v4 as uuidv4 } from "uuid";
 import NextButton from "../NextButton";
 
-export default function AddOwners({ increaseStep }) {
-  const [owners, setOwners] = useState([
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra1",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra2",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-  ]);
-
+export default function AddOwners({ increaseStep, owners, setOwners }) {
   const updateOwner = (e, id, key) => {
     const updatedOwners = owners.map((owner) => {
       if (owner.id === id) {

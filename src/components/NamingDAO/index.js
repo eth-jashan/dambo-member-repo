@@ -1,9 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import styles from "./style.module.css";
 import NextButton from "../NextButton";
 
-export default function NamingDAO({ setHasMultiSignWallet, increaseStep }) {
-  const [DAOName, setDAOName] = useState("");
+export default function NamingDAO({
+  setHasMultiSignWallet,
+  increaseStep,
+  DAOName,
+  setDAOName,
+}) {
   const inputRef = useRef(null);
   useEffect(() => {
     inputRef.current.focus();

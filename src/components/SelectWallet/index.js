@@ -3,12 +3,11 @@ import styles from "./style.module.css";
 import forwardSvg from "../../assets/Icons/forward.svg";
 import plusSvg from "../../assets/Icons/plus.svg";
 
-export default function SelectWallet({ setHasMultiSignWallet }) {
-  const wallets = [
-    "Multisign wallet One",
-    "Multisign wallet Two",
-    "Multisign wallet Three",
-  ];
+export default function SelectWallet({
+  setHasMultiSignWallet,
+  wallets,
+  setWallets,
+}) {
   return (
     <div className={styles.wrapper}>
       <div>

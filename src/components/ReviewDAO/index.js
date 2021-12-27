@@ -1,31 +1,8 @@
 import React from "react";
 import styles from "./style.module.css";
-import { v4 as uuidv4 } from "uuid";
 import NextButton from "../NextButton";
 
-export default function ReviewDAO({ increaseStep }) {
-  const owners = [
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra1",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra2",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-  ];
+export default function ReviewDAO({ increaseStep, owners, selectedIndex }) {
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heading}>Double check to see if</h1>
@@ -41,7 +18,8 @@ export default function ReviewDAO({ increaseStep }) {
         ))}
         <div className={styles.editOwnerShip}>Edit Ownership details</div>
         <div className={styles.permissionDetails}>
-          2 Account permission required to approve transactions
+          {selectedIndex + 1} Account permission required to approve
+          transactions
         </div>
         <div className={styles.editPermission}>Edit Permission details</div>
       </div>

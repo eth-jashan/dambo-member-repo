@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import NextButton from "../NextButton";
 import styles from "./style.module.css";
 
-export default function ApproveTransaction({ increaseStep }) {
-  const numberOfOwners = 3;
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+export default function ApproveTransaction({
+  increaseStep,
+  numberOfOwners,
+  selectedIndex,
+  setSelectedIndex,
+}) {
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heading}>
