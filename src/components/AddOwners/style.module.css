@@ -1,0 +1,109 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.heading {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 50px;
+  line-height: 62px;
+  color: #000;
+  margin: 0;
+}
+
+.greyedHeading {
+  color: rgba(0, 0, 0, 0.5);
+  width: 90%;
+}
+
+.ownerContainer {
+  max-height: calc(100% - 3 * 62px - 8rem);
+  overflow-y: scroll;
+}
+
+.ownerRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+  margin: 1rem 0;
+}
+
+.ownerRow > div {
+  border: 1px solid #eeeef0;
+  width: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nameInput {
+  width: 30%;
+  padding: 0.75rem 1rem;
+  background: rgba(247, 210, 247, 0.4);
+  border: none;
+  outline: none;
+}
+
+.addressInput {
+  width: 60%;
+  padding: 0.75rem 1rem;
+  background: rgba(247, 210, 247, 0.4);
+  border: none;
+  outline: none;
+}
+
+.nameInput:focus,
+.addressInput:focus {
+  border: 1px solid rgba(247, 210, 247, 0.4);
+  background: transparent;
+}
+
+.ownerRow:nth-of-type(3n + 2) > .nameInput,
+.ownerRow:nth-of-type(3n + 2) > .addressInput {
+  background: rgba(255, 109, 27, 0.2);
+}
+.ownerRow:nth-of-type(3n + 2) > .nameInput:focus,
+.ownerRow:nth-of-type(3n + 2) > .addressInput:focus {
+  border: 1px solid rgba(255, 109, 27, 0.2);
+  background: transparent;
+}
+.ownerRow:nth-of-type(3n + 3) > .nameInput,
+.ownerRow:nth-of-type(3n + 3) > .addressInput {
+  background: rgba(79, 88, 223, 0.2);
+}
+.ownerRow:nth-of-type(3n + 3) > .nameInput:focus,
+.ownerRow:nth-of-type(3n + 3) > .addressInput:focus {
+  border: 1px solid rgba(79, 88, 223, 0.2);
+  background: transparent;
+}
+
+.addOwner {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  width: 100%;
+  border-top: 1px solid #eeeef0;
+  padding: 0.75rem 1rem;
+}
+
+.addOwner > img {
+  width: 16px;
+}
+
+.bottomBar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
