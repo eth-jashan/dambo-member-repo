@@ -1,0 +1,40 @@
+.input{
+    background:transparent;
+    border:0; 
+    font-family: monospace;
+    width: 70%;
+    margin-left: 6px;
+}
+
+::placeholder {
+    color: #6852FF;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.logoEdit{
+    color: 'white';
+    font-size: 20px;
+    align-self: center;
+}
+
+.timeText{
+    font-size:14px;
+    font-family:monospace; 
+    opacity:0.56; 
+    color:white
+}
+
+.cardTitle{
+    font-size:18px;
+    font-family:monospace;
+    color:white
+}
+
+.textLink{
+    color:#FFB22E; 
+    font-family:monospace; 
+    text-decoration:underline; 
+    font-size:14px; 
+}
+

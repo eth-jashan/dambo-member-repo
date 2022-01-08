@@ -1,0 +1,41 @@
+.logoContainer{
+    display:flex; 
+    flex-direction:row; 
+    width:100%
+}
+
+.img{
+    height:16px; 
+    width:24px; 
+    align-self:center
+}
+
+.logoHeading{
+    font-family: monospace; 
+    margin-left:12px;
+    color: white; 
+    align-self: center; 
+    font-size : 14px
+}
+
+.menuText{
+    color:white; 
+    font-family:monospace; 
+    font-size:14px
+}
+
+.menuTextMiddle{
+    color:white; 
+    font-family:monospace; 
+    font-size:14px;
+    margin-left: 40px;
+}
+
+.walletContainer{
+    align-self: center;
+    padding-right: 8px; 
+    padding-left: 8px;
+    display: flex;
+    justify-content: center; 
+    background: #121219
+}
