@@ -6,7 +6,6 @@ import AddOwners from "../components/AddOwners";
 import ApproveTransaction from "../components/ApproveTransaction";
 import ReviewDAO from "../components/ReviewDAO";
 import { v4 as uuidv4 } from "uuid";
-import DashboardLayout from "../views/DashboardLayout";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -106,8 +105,10 @@ export default function Onboarding() {
   };
 
   return (
-    <Layout decreaseStep={decreaseStep}>
-      {getComponentFromStep(currentStep, hasMultiSignWallet)}
-    </Layout>
+    <div>
+      <Layout decreaseStep={decreaseStep}>
+        {getComponentFromStep(currentStep, hasMultiSignWallet)}
+      </Layout>
+    </div>
   );
 }
