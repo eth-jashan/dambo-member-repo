@@ -45,18 +45,24 @@
 
 .nameInput {
   width: 30%;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   background: rgba(247, 210, 247, 0.4);
   border: none;
   outline: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .addressInput {
   width: 60%;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   background: rgba(247, 210, 247, 0.4);
   border: none;
   outline: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .nameInput:focus,
@@ -84,6 +90,10 @@
   background: transparent;
 }
 
+.ownerRow > div > img {
+  width: 20px;
+}
+
 .addOwner {
   display: flex;
   align-items: center;
@@ -99,7 +109,7 @@
 }
 
 .addOwner > img {
-  width: 16px;
+  width: 20px;
 }
 
 .bottomBar {
