@@ -17,3 +17,57 @@
     font-size: 20px;
     align-self: center;
 }
+
+.timeText{
+    font-size:14px;
+    font-family:monospace; 
+    opacity:0.56; 
+    color:white
+}
+
+.cardTitle{
+    font-size:18px;
+    font-family:monospace;
+    color:white
+}
+
+.projectTitle{
+    color:#FFFFFF;
+    font-family:monospace; 
+    text-decoration: underline; 
+    font-size :14px
+}
+
+.projectContributor{
+    color:#FFFFFF; 
+    font-family:monospace;
+    font-size:14px
+}
+
+.inputContainer{
+    width:100%; 
+    display:flex; 
+    flex-direction:row;
+    padding: 6px 12px 6px 12px; 
+    justify-content:space-between; 
+    border-radius:12px
+}
+
+.flexContainer{
+    display:flex; 
+    flex-direction:row
+}
+
+.inputDiv{
+    flex-direction: row; 
+    display:flex;
+    align-items:center
+}
+
+.streamText{
+    color:'#FFFFFF'; 
+    font-family:'monospace'; 
+    text-decoration:'underline';
+    font-size:'14px'; 
+    margin-left:'20px'
+}

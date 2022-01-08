@@ -13,18 +13,18 @@ export default function ContributionCard() {
 
     const renderTitleInfo = () => (
         <Row align='middle' justify='space-between'>
-            <Typography.Text style={{fontSize:'20px', fontFamily:'monospace', color:'white'}}>Design for landing page</Typography.Text>
+            <div className={styles.cardTitle}>Design for landing page</div>
             <>
-                <Typography.Text style={{fontSize:'14px', fontFamily:'monospace', opacity:0.56, color:'white'}} >9:30 PM, 22 Dec</Typography.Text>
+                <div className={styles.timeText} >9:30 PM, 22 Dec</div>
             </>
         </Row>
     )
 
     const renderContriInfo = () => (
         <div style={{display:'flex', flexDirection:'column', alignItems:'flex-start'}}>
-            <Typography.Link style={{color:'#FFFFFF', fontFamily:'monospace', textDecoration:'underline', fontSize:'14px'}}>Project Link</Typography.Link>
-            <Typography.Text style={{color:'#FFFFFF', fontFamily:'monospace', fontSize:'14px'}}>Aviral</Typography.Text>
-            <Typography.Text style={{color:'#FFFFFF', fontFamily:'monospace', fontSize:'14px'}}>40 hrs</Typography.Text>
+            <div className={styles.projectTitle}>Project Link</div>
+            <div className={styles.projectContributor}>Aviral</div>
+            <div className={styles.projectContributor}>40 hrs</div>
         </div>
     )
 
@@ -60,8 +60,8 @@ export default function ContributionCard() {
 
     const renderAmountInput = () => (
         <Col span={6}>
-            <div style={{width:'100%', display:'flex', flexDirection:'row',padding:'6px 12px 6px 12px', justifyContent:'space-between', borderRadius:'12px', background:getInputContainerBackground()}}>
-                <div style={{display:'flex', flexDirection:'row'}}>
+            <div className={styles.inputContainer} style={{background:getInputContainerBackground()}}>
+                <div className={styles.flexContainer}>
                     <Typography.Text style={{fontFamily:'monospace',color:!isFocus && parseFloat(amount)>0?'white':'#6852FF', fontSize:'16px'}}>Ξ</Typography.Text>   
                     <input value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder="Enter Amount"  onFocus={()=>setIsFocus(true)} onBlur={()=>setIsFocus(false)} style={{color:!isFocus && parseFloat(amount)>0?'white':'#6852FF'}} className={styles.input} />
                 </div>
@@ -90,9 +90,9 @@ export default function ContributionCard() {
                 {renderContriParagraph()}
             </Col>
         </Row>
-        <div style={{flexDirection:'row', display:'flex',alignItems:'center'}}>
+        <div className={styles.inputDiv}>
             {renderAmountInput()}
-            <Typography.Link style={{color:'#FFFFFF', fontFamily:'monospace', textDecoration:'underline', fontSize:'14px', marginLeft:'20px'}}>Design Stream</Typography.Link>
+            <a className={styles.streamText}>Design Stream</a>
         </div>
         </Card>
         )

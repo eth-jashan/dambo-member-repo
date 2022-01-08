@@ -1,0 +1,14 @@
+.treasureContainer{
+    background: black;
+    padding:16px; 
+    border:1px solid #21212B; 
+    color:white; 
+    font-family:monospace; 
+    font-size :12px
+}
+.dashboardContainer{
+    display:'flex'; 
+    flex-direction:'column'; 
+    justify-content:'space-between'; 
+    height:'100%'
+}

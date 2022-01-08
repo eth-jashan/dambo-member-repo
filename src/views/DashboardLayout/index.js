@@ -1,8 +1,7 @@
 import React from "react";
 import { Layout, Typography,  Row, Col, Card } from "antd";
-import {FaDiscord} from 'react-icons/fa'
-import {CgWebsite} from 'react-icons/cg'
 import 'antd/dist/antd.css'
+import styles from "./style.module.css";
 import HeaderComponent from "../../components/Header";
 import DashboardStats from "../../components/DashboradStats";
 const { Content } = Layout;
@@ -11,22 +10,24 @@ const { Content } = Layout;
 export default function DashboardLayout({ children }) {
     
   return (
-      <Layout style={{width:'100%'}}>
+      <Layout style={{}}>
           <HeaderComponent />
 
         <Content>
-          <Row style={{width:'100%'}}>
+          <Row style={{}}>
             <Col span={16} style={{ width:'100%',  background:'black'}}>
 
-              <div style={{background:'black', padding:'16px', border:'1px solid #21212B', color:'white', fontFamily:'monospace', fontSize:'12px'}}>
+              <div className={styles.treasureContainer}>
                 Treasure is empty
               </div>
 
               {children}
 
             </Col>
-            <Col span={8} style={{background:'black', width:'100%', border:'1px solid #21212B', display:'flex', flexDirection:'column', justifyContent:'space-between', height:'100%'}}>
+            <Col span={8} style={{background:'black',  border:'1px solid #21212B'}}>
+            <div className={styles.dashboardContainer}>
               <DashboardStats />
+            </div>
             </Col>
           </Row>
         </Content>
