@@ -1,0 +1,44 @@
+.tabContainer{
+    border:1px solid #21212B; 
+    width:100%; 
+    padding-left:32px; 
+    padding-top:20px; 
+    border-top-right-radius :12px; 
+    border-top-left-radius :12px
+}
+.tabHeadingFocus{
+    font-size :22px; 
+    color:white; 
+    font-family:monospace;
+    opacity:1 
+}
+.tabHeading{
+    font-size :22px; 
+    color:white; 
+    font-family:monospace;
+    opacity:0.6
+}
+.tabSceneContainer{ 
+    width:100%;
+    border:1px solid #21212B;
+    padding-left:32px;
+    display:flex; 
+    flex-direction:column;
+    height:100%
+}
+.requestText{
+    color:#FFFFFF;
+    font-size:12px; 
+    opacity: 0.5; 
+    font-family:monospace;
+    align-self:flex-start;
+    margin-top:16px;
+    margin-bottom:24px
+}
+.tabCol{
+    padding-bottom:20px;
+}
+.dashView{
+    padding: 16px; 
+    width: 100%
+}
