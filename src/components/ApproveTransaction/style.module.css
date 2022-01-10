@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "Supply";
+  src: url("../../assets/fonts/Supply-Regular.otf");
+}
+
 .wrapper {
   position: relative;
   width: 100%;
@@ -22,6 +27,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: 2rem;
+  font-family: "Supply";
 }
 
 .highlighted {
@@ -42,7 +48,7 @@
 
 .peopleDiv > p {
   margin: 0;
-  font-family: Inter;
+  font-family: "Supply";
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
