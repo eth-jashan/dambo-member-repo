@@ -8,6 +8,7 @@ import {
   LinkOutlined,
   TwitterOutlined
 } from '@ant-design/icons';
+import styles from "./style.module.css";
 
 
 export default function DashboardStats() {
@@ -15,30 +16,30 @@ export default function DashboardStats() {
   return (
             <>
                 <>
-                  <div style={{width:'100%', padding:'20px', justifyContent:'space-between', display:'flex'}}>
-                    <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Analytics</Typography.Text>
-                    <Typography.Link style={{fontFamily:'monospace', marginLeft:'12px', color:'#FFFFFF', alignSelf:'center', fontSize:'12px',opacity:0.64, textDecorationLine:'underline'}}>Edit</Typography.Link>
+                  <div className={styles.analyticContainer}>
+                    <span className={styles.heading}>Analytics</span>
+                    <span className={styles.helperText}>Edit</span>
                   </div>
     
                   <Row>
                     <Col span={12} style={{background:'black'}}>
                       <Card  hoverable style={{ background:'black', border:'1px solid #21212B', height:'100%'}}>
-                        <div style={{display:'flex', flexDirection:'column'}}>
-                          <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Twitter</Typography.Text>
+                        <div className={styles.CardCompContainer}>
+                          <span className={styles.heading}>Twitter</span>
                           <Meta 
-                            title={<Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'28px', textAlign:'center' }}>12,940</Typography.Text>} 
-                            description={<Typography.Text style={{ color: '#9FFFBA', fontFamily:'monospace', fontSize:'12px' }}>129 new this week</Typography.Text>}
+                            title={<span className={styles.cardTitle}>12,940</span>} 
+                            description={<span className={styles.cardDesc}>129 new this week</span>}
                           />
                           </div>
                       </Card>
                     </Col>
                     <Col span={12} style={{background:'black'}}>
                       <Card  hoverable style={{ background:'black', border:'1px solid #21212B', height:'100%'}}>
-                          <div style={{display:'flex', flexDirection:'column'}}>
-                            <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Discord</Typography.Text>
+                          <div className={styles.CardCompContainer}>
+                            <span className={styles.heading}>Discord</span>
                             <Meta 
-                              title={<Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'28px', textAlign:'center' }}>2,8470</Typography.Text>} 
-                              description={<Typography.Text style={{ color: '#9FFFBA', fontFamily:'monospace', fontSize:'12px' }}>28 new this week</Typography.Text>}
+                              title={<span className={styles.cardTitle}>2,8470</span>} 
+                              description={<span className={styles.cardDesc}>28 new this week</span>}
                             />
                             </div>
                         </Card>
@@ -48,11 +49,11 @@ export default function DashboardStats() {
                   <Row>
                     <Col span={12} style={{background:'black'}}>
                     <Card  hoverable style={{ background:'black', border:'1px solid #21212B', height:'100%'}}>
-                      <div style={{display:'flex', flexDirection:'column'}}>
-                        <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>TVL</Typography.Text>
+                      <div className={styles.CardCompContainer}>
+                        <span className={styles.heading}>TVL</span>
                         <Meta 
-                          title={<Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'28px', textAlign:'center' }}>-</Typography.Text>} 
-                          description={<Typography.Text style={{ color: '#9FFFBA', fontFamily:'monospace', fontSize:'12px' }}>129 new this week</Typography.Text>}
+                          title={<span className={styles.cardTitle}>-</span>} 
+                          description={<span className={styles.cardDesc}>129 new this week</span>}
                         />
                         </div>
                     </Card>
@@ -60,11 +61,11 @@ export default function DashboardStats() {
 
                     <Col span={12} style={{background:'black'}}>
                     <Card  hoverable style={{ background:'black', border:'1px solid #21212B', height:'100%'}}>
-                      <div style={{display:'flex', flexDirection:'column'}}>
-                        <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Active Contributor</Typography.Text>
+                      <div className={styles.CardCompContainer}>
+                        <span className={styles.heading}>Active Contributor</span>
                         <Meta 
-                          title={<Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'28px', textAlign:'center' }}>-</Typography.Text>} 
-                          description={<Typography.Text style={{ color: '#9FFFBA', fontFamily:'monospace', fontSize:'12px' }}>People</Typography.Text>}
+                          title={<span className={styles.cardTitle}>-</span>} 
+                          description={<span className={styles.cardDesc}>People</span>}
                         />
                         </div>
                     </Card>
@@ -74,11 +75,11 @@ export default function DashboardStats() {
                   <Row>
                     <Col span={12} style={{background:'black'}}>
                     <Card  hoverable style={{ background:'black', border:'1px solid #21212B', height:'100%'}}>
-                      <div style={{display:'flex', flexDirection:'column'}}>
-                        <Typography.Text style={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Payout last month</Typography.Text>
+                      <div className={styles.CardCompContainer}>
+                        <span className={{fontFamily:'monospace', color:'white', alignSelf:'center', fontSize:'14px'}}>Payout last month</span>
                         <Meta 
-                          title={<Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'28px', textAlign:'center' }}>-</Typography.Text>} 
-                          description={<Typography.Text style={{ color: '#FF9C9C', fontFamily:'monospace', fontSize:'12px' }}>129% more </Typography.Text>}
+                          title={<span className={styles.cardTitle}>-</span>} 
+                          description={<span className={{ color: '#FF9C9C', fontFamily:'monospace', fontSize:'12px' }}>129% more </span>}
                         />
                         </div>
                     </Card>
@@ -87,24 +88,24 @@ export default function DashboardStats() {
                 </>
                 <>
                 <br/>
-                  <div style={{padding:'10px', display:'flex', justifyContent:'flex-start', border:'1px solid #21212B'}}>
+                  <div className={styles.socialContainer}>
                     <TwitterOutlined  style={{color:'white', fontSize:'14px'}} />
-                    <Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'12px', marginLeft:'12px', alignSelf:'center' }}>add twitter link</Typography.Text>
+                    <span className={styles.socialText}>add twitter link</span>
                   </div>
 
-                  <div style={{padding:'10px', display:'flex', justifyContent:'flex-start', border:'1px solid #21212B'}}>
+                  <div className={styles.socialContainer}>
                     <FaDiscord  style={{color:'white', fontSize:'14px'}} />
-                    <Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'12px', marginLeft:'12px', alignSelf:'center' }}>add discord link</Typography.Text>
+                    <span className={styles.socialText}>add discord link</span>
                   </div>
 
-                  <div style={{padding:'10px', display:'flex', justifyContent:'flex-start', border:'1px solid #21212B'}}>
+                  <div className={styles.socialContainer}>
                     <CgWebsite  style={{color:'white', fontSize:'14px'}} />
-                    <Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'12px', marginLeft:'12px', alignSelf:'center' }}>add website link</Typography.Text>
+                    <span className={styles.socialText}>add website link</span>
                   </div>
 
-                  <div style={{padding:'10px', display:'flex', justifyContent:'flex-start', border:'1px solid #21212B'}}>
+                  <div  className={styles.socialContainer}>
                     <LinkOutlined style={{color:'white', fontSize:'14px'}} />
-                    <Typography.Text style={{ color: 'white', fontFamily:'monospace',fontSize:'12px', marginLeft:'12px', alignSelf:'center' }}>copy invite link</Typography.Text>
+                    <span className={styles.socialText}>copy invite link</span>
                   </div>
                 </>
             </>
