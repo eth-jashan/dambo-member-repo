@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@gnosis.pm/safe-apps-sdk": "^6.1.1",
+    "@gnosis.pm/safe-core-sdk": "^1.2.0",
     "@portis/web3": "^4.0.6",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",

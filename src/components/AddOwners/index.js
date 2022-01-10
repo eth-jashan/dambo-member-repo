@@ -32,6 +32,24 @@ export default function AddOwners({ increaseStep, owners, setOwners }) {
     };
     setOwners([...owners, newOwner]);
   };
+
+  const areValidOwners = () => {
+    let isValid = true;
+    if (!owners.length) {
+      return false;
+    }
+    owners.forEach((owner) => {
+      if (!owner.name) {
+        isValid = false;
+        return;
+      }
+      if (!owner.address) {
+        isValid = false;
+        return;
+      }
+    });
+    return isValid;
+  };
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heading}>Add vault owners</h1>
@@ -62,7 +80,7 @@ export default function AddOwners({ increaseStep, owners, setOwners }) {
           <NextButton
             text="Add Permissions"
             increaseStep={increaseStep}
-            isDisabled={owners.length >= 2 ? false : true}
+            isDisabled={!areValidOwners()}
           />
         </div>
       </div>

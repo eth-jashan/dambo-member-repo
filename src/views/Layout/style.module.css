@@ -52,6 +52,10 @@
 .backArrow {
   position: absolute;
   top: 5%;
-  left: 5%;
+  left: 10%;
   font-size: 40px;
+}
+
+.backArrow > img {
+  width: 2rem;
 }

@@ -5,8 +5,6 @@ import SelectWallet from "../components/SelectWallet";
 import AddOwners from "../components/AddOwners";
 import ApproveTransaction from "../components/ApproveTransaction";
 import ReviewDAO from "../components/ReviewDAO";
-import { v4 as uuidv4 } from "uuid";
-import DashboardLayout from "../views/DashboardLayout";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -19,23 +17,7 @@ export default function Onboarding() {
   ]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const [owners, setOwners] = useState([
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra1",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-    {
-      id: uuidv4(),
-      name: "Aviral Bohra2",
-      address: "0x48D2F14fCE53d43FcAB4Ab148d739bbcD4c0fb5B",
-    },
-  ]);
+  const [owners, setOwners] = useState([]);
 
   const increaseStep = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -106,8 +88,11 @@ export default function Onboarding() {
   };
 
   return (
-    <Layout decreaseStep={decreaseStep}>
-      {getComponentFromStep(currentStep, hasMultiSignWallet)}
-    </Layout>
+    <div>
+      <Layout decreaseStep={decreaseStep}>
+        {getComponentFromStep(currentStep, hasMultiSignWallet)}
+      </Layout>
+    </div>
   );
 }
+

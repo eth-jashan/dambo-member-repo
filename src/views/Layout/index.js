@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./style.module.css";
 import Bg from "../../assets/bg.png";
+import BackSvg from "../../assets/Icons/back.svg";
 
 export default function Layout({ children, decreaseStep }) {
   return (
@@ -12,7 +13,7 @@ export default function Layout({ children, decreaseStep }) {
         </div>
         <div className={styles.modal}>
           <div className={styles.backArrow} onClick={decreaseStep}>
-            &#8592;
+            <img src={BackSvg} alt="back" />
           </div>
           {children}
         </div>
