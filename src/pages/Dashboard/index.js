@@ -12,11 +12,11 @@ export default function Dashboard() {
     const renderTab = () => (
         <div className={styles.tabContainer}>
             <Row>
-                <Col onClick={()=>setTab('contributions')} style={{paddingBottom:'20px', borderBottom:tab ==='contributions'?'4px solid #21212A':null}}>
+                <Col onClick={()=>setTab('contributions')} className={styles.tabCol} style={{borderBottom:tab ==='contributions'?'4px solid #21212A':null}}>
                     <span className={tab==='contributions'?styles.tabHeadingFocus:styles.tabHeading}>Contributions</span>
                 </Col>
 
-                <Col onClick={()=>setTab('payments')} style={{paddingBottom:'20px', borderBottom:tab ==='payments'?'4px solid #21212A':null, marginLeft:'32px'}}>
+                <Col onClick={()=>setTab('payments')} className={styles.tabCol} style={{borderBottom:tab ==='payments'?'4px solid #21212A':null, marginLeft:'32px'}}>
                     <span className={tab==='payments'?styles.tabHeadingFocus:styles.tabHeading}>Payments</span>
                 </Col>
             </Row>
@@ -50,7 +50,7 @@ export default function Dashboard() {
     return (
         <DashboardLayout>
             <>
-            <div style={{padding:'16px', width:'100%'}}>
+            <div className={styles.dashView}>
                 {renderTab()}
                 {renderScene()}
             </div>

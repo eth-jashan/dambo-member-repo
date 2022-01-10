@@ -62,7 +62,7 @@ export default function ContributionCard() {
         <Col span={6}>
             <div className={styles.inputContainer} style={{background:getInputContainerBackground()}}>
                 <div className={styles.flexContainer}>
-                    <Typography.Text style={{fontFamily:'monospace',color:!isFocus && parseFloat(amount)>0?'white':'#6852FF', fontSize:'16px'}}>Ξ</Typography.Text>   
+                    <span className={styles.amountText} style={{color:!isFocus && parseFloat(amount)>0?'white':'#6852FF'}}>Ξ</span>   
                     <input value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder="Enter Amount"  onFocus={()=>setIsFocus(true)} onBlur={()=>setIsFocus(false)} style={{color:!isFocus && parseFloat(amount)>0?'white':'#6852FF'}} className={styles.input} />
                 </div>
                 {isFocus && <img onClick={()=>setIsFocus(false)} src={TickSvg} alt='tick' />}
@@ -84,7 +84,7 @@ export default function ContributionCard() {
             }}
         >
         {renderTitleInfo()}
-        <Row style={{marginTop:'12px'}} justify='space-between'>
+        <Row className={styles.contriInfoRow} justify='space-between'>
             {renderContriInfo()}
             <Col span={18}>
                 {renderContriParagraph()}
@@ -92,7 +92,7 @@ export default function ContributionCard() {
         </Row>
         <div className={styles.inputDiv}>
             {renderAmountInput()}
-            <a className={styles.streamText}>Design Stream</a>
+            <span className={styles.streamText}>Design Stream</span>
         </div>
         </Card>
         )

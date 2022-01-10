@@ -63,14 +63,14 @@ export default function HeaderComponent() {
     )
     
   return (
-    <Row style={{width:'100%' ,border:'1px solid #21212B', padding:'16px',background:'black', justifyContent:'space-between', alignItems:'center'}}>
+    <Row className={styles.rowContainer}>
       <Col>
         {renderLogo()}
       </Col>
       <Col style={{ alignSelf:'center'}}>
         {renderMenu()}
       </Col>
-      <Col style={{width:'20%', alignSelf:'center'}}>
+      <Col className={styles.walletCol}>
         {renderWalletPicker()}
       </Col>
     </Row>
