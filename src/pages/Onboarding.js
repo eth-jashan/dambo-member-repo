@@ -5,8 +5,12 @@ import SelectWallet from "../components/SelectWallet";
 import AddOwners from "../components/AddOwners";
 import ApproveTransaction from "../components/ApproveTransaction";
 import ReviewDAO from "../components/ReviewDAO";
+import ConnectWallet from "../components/ConnectWallet"
+import { v4 as uuidv4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 export default function Onboarding() {
+  let navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false);
   const [DAOName, setDAOName] = useState("");
@@ -20,8 +24,11 @@ export default function Onboarding() {
   const [owners, setOwners] = useState([]);
 
   const increaseStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
-    else setCurrentStep(3);
+    console.log(currentStep)
+    if (currentStep === 4){
+      navigate('/dashboard')
+    }
+    else setCurrentStep(currentStep + 1);
   };
 
   const decreaseStep = () => {
@@ -32,6 +39,36 @@ export default function Onboarding() {
   const getComponentFromStep = (step, hasMultiSignWallet = false) => {
     switch (step) {
       case 0: {
+        
+        if (hasMultiSignWallet)
+          return (
+            <ConnectWallet
+            increaseStep={increaseStep}
+            owners={owners}
+            setOwners={setOwners}
+          />
+            // <SelectWallet
+            //   setHasMultiSignWallet={setHasMultiSignWallet}
+            //   wallets={wallets}
+            //   setWallets={setWallets}
+            // />
+          );
+        return (
+          <ConnectWallet
+            increaseStep={increaseStep}
+            owners={owners}
+            setOwners={setOwners}
+          />
+          // <NamingDAO
+          //   setHasMultiSignWallet={setHasMultiSignWallet}
+          //   increaseStep={increaseStep}
+          //   DAOName={DAOName}
+          //   setDAOName={setDAOName}
+          // />
+        );
+      }
+      case 1: {
+        
         if (hasMultiSignWallet)
           return (
             <SelectWallet
@@ -49,7 +86,7 @@ export default function Onboarding() {
           />
         );
       }
-      case 1:
+      case 2:
         return (
           <AddOwners
             increaseStep={increaseStep}
@@ -57,7 +94,7 @@ export default function Onboarding() {
             setOwners={setOwners}
           />
         );
-      case 2:
+      case 3:
         return (
           <ApproveTransaction
             increaseStep={increaseStep}
@@ -66,7 +103,7 @@ export default function Onboarding() {
             numberOfOwners={owners.length}
           />
         );
-      case 3:
+      case 4:
         return (
           <ReviewDAO
             increaseStep={increaseStep}
@@ -89,7 +126,7 @@ export default function Onboarding() {
 
   return (
     <div>
-      <Layout decreaseStep={decreaseStep}>
+      <Layout decreaseStep={decreaseStep} currentStep={currentStep}>
         {getComponentFromStep(currentStep, hasMultiSignWallet)}
       </Layout>
     </div>

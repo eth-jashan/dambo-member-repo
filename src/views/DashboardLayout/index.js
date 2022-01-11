@@ -10,10 +10,10 @@ const { Content } = Layout;
 export default function DashboardLayout({ children }) {
     
   return (
-      <Layout style={{}}>
+      <Layout style={{background:'black', height:'100%'}}>
           <HeaderComponent />
 
-        <Content>
+        <Content style={{height:'100%'}}>
           <Row style={{}}>
             <Col span={16} style={{ width:'100%',  background:'black'}}>
 
