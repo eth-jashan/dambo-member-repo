@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Menu, Typography,  Row, Col,  message, Dropdown } from "antd";
-import logoTest from '../../assets/logo-test.png'
-import 'antd/dist/antd.css'
 import styles from "./style.module.css";
+import { Menu, Typography, Row, Col, message, Dropdown } from "antd";
+import logoTest from "../../assets/logo-test.png";
+import "antd/dist/antd.css";
+import WalletPicker from "../../components/WalletPicker";
 
 export default function HeaderComponent() {
 
@@ -40,27 +41,33 @@ export default function HeaderComponent() {
      </div>   
     )
 
-    const onClick = ({ key }) => {
-        message.info(`Click on item ${key}`);
-      };
+  // const onClick = ({ key }) => {
+  //     message.info(`Click on item ${key}`);
+  //   };
 
-   
+  // const walletMenu = (
+  //     <Menu onClick={onClick}>
+  //       <Menu.Item key="1">1st menu item</Menu.Item>
+  //       <Menu.Item key="2">2nd menu item</Menu.Item>
+  //       <Menu.Item key="3">3rd menu item</Menu.Item>
+  //     </Menu>
+  //   );
 
-    const walletMenu = (
-        <Menu onClick={onClick}>
-          <Menu.Item key="1">1st menu item</Menu.Item>
-          <Menu.Item key="2">2nd menu item</Menu.Item>
-          <Menu.Item key="3">3rd menu item</Menu.Item>
-        </Menu>
-      );
+  // const renderWalletPicker = () => (
+  //     <Dropdown onClick={e => e.preventDefault()} overlay={walletMenu}>
+  //         <div style={{alignSelf:'center',paddingRight:'8px', paddingLeft:'8px',display:'flex',justifyContent:'center', background:'#121219'}}>
+  //             <Typography.Text ellipsis={true} style={{fontFamily:'monospace', color:'white',  fontSize:'16px'}}>ETH . 0x9D7B838fF3F3A5E576da461920B633c80F040</Typography.Text>
+  //         </div>
+  //     </Dropdown>
+  // )
 
-    const renderWalletPicker = () => (
-        <Dropdown onClick={e => e.preventDefault()} overlay={walletMenu}>
-            <div className={styles.walletContainer}>
-                <Typography.Text ellipsis={true} style={{fontFamily:'monospace', color:'white',  fontSize:'16px'}}>ETH . 0x9D7B838fF3F3A5E576da461920B633c80F040</Typography.Text>
-            </div>
-        </Dropdown>
-    )
+    // const renderWalletPicker = () => (
+    //     <Dropdown onClick={e => e.preventDefault()} overlay={walletMenu}>
+    //         <div className={styles.walletContainer}>
+    //             <Typography.Text ellipsis={true} style={{fontFamily:'monospace', color:'white',  fontSize:'16px'}}>ETH . 0x9D7B838fF3F3A5E576da461920B633c80F040</Typography.Text>
+    //         </div>
+    //     </Dropdown>
+    // )
     
   return (
     <Row className={styles.rowContainer}>
@@ -71,8 +78,9 @@ export default function HeaderComponent() {
         {renderMenu()}
       </Col>
       <Col className={styles.walletCol}>
-        {renderWalletPicker()}
+        <WalletPicker />
       </Col>
     </Row>
   );
 }
+

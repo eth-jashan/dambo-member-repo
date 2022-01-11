@@ -8,9 +8,9 @@ export default function NextButton({ increaseStep, text, isDisabled }) {
       className={isDisabled ? styles.disabled : ""}
     >
       <span>
-        Next &bull; <span className={styles.greyedText}>{text}</span>
+        <span className={styles.whiteIcon}>Next</span> <span className={isDisabled?styles.greyedText:styles.whiteText}>&bull;{text}</span>
       </span>
-      <span>&#8594;</span>
+      <span className={styles.whiteIcon} >&#8594;</span>
     </button>
   );
 }

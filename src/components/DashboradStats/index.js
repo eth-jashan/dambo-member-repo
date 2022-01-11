@@ -11,11 +11,10 @@ import {
 import styles from "./style.module.css";
 
 
-export default function DashboardStats() {
-    
+export default function DashboardStats() {    
   return (
-            <>
-                <>
+            <div style={{ display:'flex', justifyContent:'space-between', flexDirection:'column', height:953}}>
+                <div>
                   <div className={styles.analyticContainer}>
                     <span className={styles.heading}>Analytics</span>
                     <span className={styles.helperText}>Edit</span>
@@ -85,9 +84,12 @@ export default function DashboardStats() {
                     </Card>
                     </Col>
                   </Row>
-                </>
+                </div>
                 <>
                 <br/>
+                {/* <br/>
+                <br/> */}
+                <div>
                   <div className={styles.socialContainer}>
                     <TwitterOutlined  style={{color:'white', fontSize:'14px'}} />
                     <span className={styles.socialText}>add twitter link</span>
@@ -107,7 +109,8 @@ export default function DashboardStats() {
                     <LinkOutlined style={{color:'white', fontSize:'14px'}} />
                     <span className={styles.socialText}>copy invite link</span>
                   </div>
+                </div>
                 </>
-            </>
+            </div>
   );
 }

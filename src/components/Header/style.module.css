@@ -53,3 +53,17 @@
     width:20%;
     align-self: center
 }
+.nav {
+  text-align: left;
+  margin-left: 15%;
+  padding-top: 1.5rem;
+  font-size: 16px;
+}
+.nav > span {
+  color: #fff;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}

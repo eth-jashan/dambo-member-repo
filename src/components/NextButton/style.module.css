@@ -27,3 +27,12 @@ button > span:first-child {
 .disabled {
   background: #808080;
 }
+
+.whiteText{
+  color: #FFFFFF;
+  opacity: 0.56;
+}
+
+.whiteIcon{
+  color: white;
+}
