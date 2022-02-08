@@ -13,7 +13,7 @@ import styles from "./style.module.css";
 
 export default function DashboardStats() {    
   return (
-            <div style={{ display:'flex', justifyContent:'space-between', flexDirection:'column', height:953}}>
+            <div className={styles.container}>
                 <div>
                   <div className={styles.analyticContainer}>
                     <span className={styles.heading}>Analytics</span>

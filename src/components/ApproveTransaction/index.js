@@ -11,10 +11,10 @@ export default function ApproveTransaction({
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heading}>
-        How many people should approve a transaction?
+      Add vault owners
       </h1>
       <h1 className={`${styles.heading} ${styles.greyedHeading}`}>
-        having multiple is safer
+      have more than one owner to maximize security
       </h1>
       <div className={styles.peopleContainer}>
         {Array(numberOfOwners)

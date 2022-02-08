@@ -6,11 +6,9 @@
 .heading {
   font-family: Inter;
   font-style: normal;
-  font-weight: 600;
-  font-size: 50px;
-  line-height: 62px;
-  color: #000;
-  margin: 0;
+  font-weight: 800;
+  font-size: 53px;
+  line-height: 56px;
 }
 
 .greyedHeading {
@@ -19,7 +17,7 @@
 }
 
 .ownerContainer {
-  max-height: calc(100% - 3 * 62px - 8rem);
+  max-height: 150px;
   overflow-y: scroll;
 }
 

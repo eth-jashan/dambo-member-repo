@@ -1,10 +1,9 @@
 import React from "react";
 import { Menu, Typography, message, Dropdown } from "antd";
-import { selectAddress } from '../../redux/authSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 export default function  WalletPicker() {
-  const address = useSelector(selectAddress);
+  const address = useSelector(x=>x.auth.address);
     const onClick = ({ key }) => {
         message.info(`Click on item ${key}`);
       };

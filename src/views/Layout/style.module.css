@@ -1,6 +1,6 @@
 .layout {
   height: 100vh;
-  position: relative;
+  /* position: relative; */
   width: 100vw;
   background-color: #000;
 }
@@ -33,8 +33,8 @@
 }
 
 .modal {
-  width: 70%;
-  height: 85%;
+  width: 70vw;
+  height: 80vh;
   background-color: #fff;
   position: relative;
   margin: 1rem auto;

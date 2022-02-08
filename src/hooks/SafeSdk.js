@@ -2,7 +2,6 @@ import Safe, { EthersAdapter, SafeFactory } from '@gnosis.pm/safe-core-sdk'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 
-
 const useSafeSdk = (userSigner, safeAddress) => {
   const [safeSdk, setSafeSdk] = useState()
   const [safeFactory, setSafeFactory] = useState()

@@ -52,10 +52,10 @@ export default function AddOwners({ increaseStep, owners, setOwners }) {
   };
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.heading}>Add vault owners</h1>
-      <h1 className={`${styles.heading} ${styles.greyedHeading}`}>
+      <div className={styles.heading}>Add vault owners</div>
+      <div className={`${styles.heading} ${styles.greyedHeading}`}>
         have more than one owner to maximize security
-      </h1>
+      </div>
       <div className={styles.ownerContainer}>
         {owners.map((owner) => (
           <div className={styles.ownerRow} key={owner.id}>

@@ -8,6 +8,8 @@ import ReviewDAO from "../components/ReviewDAO";
 import ConnectWallet from "../components/ConnectWallet"
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
+import GnosisSafeList from "../components/GnosisSafe/GnosisSafeList";
+import DaoInfo from "../components/DaoInfo";
 
 export default function Onboarding() {
   let navigate = useNavigate();
@@ -21,7 +23,17 @@ export default function Onboarding() {
   ]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const [owners, setOwners] = useState([]);
+  const [owners, setOwners] = useState(
+    [{
+      id: uuidv4(),
+      name: "Jashan",
+      address: "0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8",
+    },{
+      id: uuidv4(),
+      name: "Rohan",
+      address: "0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377",
+    }]
+  );
 
   const increaseStep = () => {
     console.log(currentStep)
@@ -39,62 +51,23 @@ export default function Onboarding() {
   const getComponentFromStep = (step, hasMultiSignWallet = false) => {
     switch (step) {
       case 0: {
-        
-        if (hasMultiSignWallet)
-          return (
-            <ConnectWallet
-            increaseStep={increaseStep}
-            owners={owners}
-            setOwners={setOwners}
-          />
-            // <SelectWallet
-            //   setHasMultiSignWallet={setHasMultiSignWallet}
-            //   wallets={wallets}
-            //   setWallets={setWallets}
-            // />
-          );
         return (
-          <ConnectWallet
-            increaseStep={increaseStep}
-            owners={owners}
-            setOwners={setOwners}
-          />
-          // <NamingDAO
-          //   setHasMultiSignWallet={setHasMultiSignWallet}
-          //   increaseStep={increaseStep}
-          //   DAOName={DAOName}
-          //   setDAOName={setDAOName}
-          // />
-        );
+        <GnosisSafeList
+          setStep={(x)=>setCurrentStep(x)}
+          increaseStep={increaseStep}
+        />
+        )
       }
       case 1: {
-        
-        if (hasMultiSignWallet)
-          return (
-            <SelectWallet
-              setHasMultiSignWallet={setHasMultiSignWallet}
-              wallets={wallets}
-              setWallets={setWallets}
-            />
-          );
-        return (
-          <NamingDAO
-            setHasMultiSignWallet={setHasMultiSignWallet}
-            increaseStep={increaseStep}
-            DAOName={DAOName}
-            setDAOName={setDAOName}
-          />
-        );
-      }
-      case 2:
         return (
           <AddOwners
             increaseStep={increaseStep}
             owners={owners}
             setOwners={setOwners}
           />
-        );
-      case 3:
+        )
+      }
+      case 2:
         return (
           <ApproveTransaction
             increaseStep={increaseStep}
@@ -102,15 +75,16 @@ export default function Onboarding() {
             setSelectedIndex={setSelectedIndex}
             numberOfOwners={owners.length}
           />
-        );
-      case 4:
+        )
+      case 3:
         return (
-          <ReviewDAO
+          <DaoInfo 
             increaseStep={increaseStep}
-            selectedIndex={selectedIndex}
-            owners={owners}
+            decreaseStep={decreaseStep} 
           />
-        );
+        )
+      case 4:
+        return <GnosisSafeList />
       default: {
         return (
           <NamingDAO
@@ -126,8 +100,14 @@ export default function Onboarding() {
 
   return (
     <div>
-      <Layout decreaseStep={decreaseStep} currentStep={currentStep}>
+      <Layout decreaseStep={decreaseStep} currentStep={1}>
         {getComponentFromStep(currentStep, hasMultiSignWallet)}
+          {/* <ConnectWallet
+            increaseStep={increaseStep}
+            owners={owners}
+            setOwners={setOwners}
+          /> */}
+          {/* */}
       </Layout>
     </div>
   );

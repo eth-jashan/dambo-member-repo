@@ -23,7 +23,7 @@ export default function Layout({ children, decreaseStep, currentStep }) {
         <OnboardingHeader />
         <div className={styles.modal}>
           <div className={styles.backArrow} onClick={decreaseStep}>
-            <img src={BackSvg} alt="back" />
+            {/* <img src={BackSvg} alt="back" /> */}
           </div>
           {children}
         </div>
