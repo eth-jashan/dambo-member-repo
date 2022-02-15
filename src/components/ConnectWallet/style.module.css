@@ -1,5 +1,5 @@
 .heading{
-  font-family: Inter;
+  font-family: 'TelegrafBold';
   font-style: normal;
   font-weight: 800;
   font-size: 53px;
@@ -7,18 +7,17 @@
 }
 
 .greyHeading{
-  font-family: Inter;
+  font-family: 'TelegrafBold';
   font-style: normal;
   font-weight: 800;
-  font-size: 53px;
+  font-size: 52px;
   line-height: 56px;
   color: #999999;
 }
 
 .walletName{
-  font-family: Inter;
+  font-family: 'TelegrafBolder';
   font-style: normal;
-  font-weight: bold;
   font-size: 20px;
   line-height: 32px;
   margin-left: 12px;
@@ -67,7 +66,7 @@
 }
 
 .address{
-  font-family: Inter;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
@@ -75,7 +74,7 @@
 }
 
 .disconnectLink{
-  font-family: Inter;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
@@ -87,7 +86,7 @@
   width: 100%;
 }
 .authHeading{
-  font-family: Inter;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
   font-size: 23px;
@@ -95,7 +94,7 @@
 }
 
 .authGreyHeading{
-  font-family: Inter;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
   font-size: 23px;
@@ -115,10 +114,124 @@
 }
 
 .btnTextAuth{
-  font-family: Inter;
+  font-family: 'TelegrafBolder';
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
   line-height: 24px;
   color: white;
+}
+
+.metaCard{
+  width: 80%;
+  padding: 40px;
+  background: white;
+  position: relative;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: row;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08), 0px 0px 20px rgba(0, 0, 0, 0.12);
+}
+
+.walletContri{
+  width: 100%; 
+  height: 90%; 
+  /* padding: 20px; */
+  position:relative; 
+  display:flex; 
+  align-items:center; 
+  justify-content:space-around;
+  flex-direction: column;
+}
+
+.walletHeading{
+  font-family: "TelegrafBolder";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 48px;
+  color: #000000;
+  text-align: start;
+}
+
+.walletsubHeading{
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 32px;
+  color: #000000;
+  opacity: 0.4;
+  text-align: start;
+}
+
+.connectBtn{
+  width: 30%;
+  background: #6852FF;
+  padding: 8px 20px 10px 20px;
+  border-radius: 100px;
+  margin-top: 44px;
+  cursor: pointer;
+}
+
+.btnTitle{
+  font-family: "TelegrafBold";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 24px;
+  color: white;
+}
+
+.rightContent{
+  padding-left: 36px;
+  width: 100%;
+}
+
+.rightContentDown{
+  padding-left: 36px;
+  width: 100%;
+  /* margin-top: 20px; */
+  /* position: relative; */
+}
+
+.connectedText{
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 36px;
+  line-height: 48px;
+  /* identical to box height, or 133% */
+  color: #1D7F60;
+  text-align: start;
+}
+
+.disconnectDiv{
+  margin-top: 72px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.disconnectTitle{
+  font-family: 'TelegrafMedium';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 23px;
+  line-height: 32px;
+  margin-top: 20px;
+  text-align: start;
+  text-decoration-line: underline;
+  color: #000000;
+  opacity: 0.4;
+}
+
+.divider{
+  height: 1px;
+  background: #000000;
+  opacity: 0.12;
+}
+
+.greyedText{
+  background: #B3B3B3;
 }

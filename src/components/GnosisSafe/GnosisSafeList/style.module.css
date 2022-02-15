@@ -1,24 +1,26 @@
 .layout{
     width: 100%;
-    height: 80%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     /* background: red; */
-    justify-content: space-between;
+    /* justify-content: space-between; */
     /* padding-bottom: 12px; */
 }
 .heading{
-    font-family: Inter;
+    font-family: 'TelegrafBold';
     font-style: normal;
     font-weight: 800;
     font-size: 50px;
     line-height: 56px;
+    /* margin-bottom: 94px; */
 }
 
 .content{
     max-height:  200px;
     min-height:  100px;
     justify-content: center;
+    margin-top: 90px;
     /* align-self: center;
     background: red; */
 }
@@ -45,7 +47,7 @@
 }
 
 .safeAdress{
-    font-family: Inter;
+    font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
     font-size: 18px;
@@ -62,11 +64,12 @@
 .multiSigCtn{
     display: flex;
     margin-top: 20px;
-    width: 35%;
+    width: 32%;
     justify-content: space-between;
+    cursor: pointer;
 }
 .multiSigBtn{
-    font-family: Inter;
+    font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: 800;
     font-size: 19px;

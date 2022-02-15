@@ -1,23 +1,24 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import NextButton from "../NextButton";
 import styles from "./style.module.css";
 
 export default function ApproveTransaction({
   increaseStep,
-  numberOfOwners,
   selectedIndex,
   setSelectedIndex,
 }) {
+  const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.heading}>
+      <div className={styles.heading}>
       Add vault owners
-      </h1>
-      <h1 className={`${styles.heading} ${styles.greyedHeading}`}>
+      </div>
+      <div className={`${styles.heading} ${styles.greyedHeading}`}>
       have more than one owner to maximize security
-      </h1>
+      </div>
       <div className={styles.peopleContainer}>
-        {Array(numberOfOwners)
+        {Array(owners.length)
           .fill()
           .map((owner, index) => (
             <div

@@ -1,38 +1,45 @@
 import styles from "./style.module.css";
 import WalletPicker from "../../components/WalletPicker";
 import { Row, Col, Typography } from "antd";
+import { useSelector } from "react-redux";
 
 export default function Header({ children, decreaseStep }) {
+  
+  const jwt = useSelector(x=>x.auth.jwt)
+
   return (
-    <Row
+    <div
+      align='middle'
+      justify='center'
       style={{
         width: "100%",
-        border: "1px solid #21212B",
-        padding: "16px",
-        justifyContent: "space-around",
-        alignItems: "center",
       }}
     >
-      <Col>
-        <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-          &#128526;{" "}
+      <div style={{
+          width: "74vw",
+          display:'flex',
+          flexDirection:'row',
+          padding: "16px",
+          justifyContent: "space-between",
+          alignItems: "center",
+      }}>
           <Typography.Text
             style={{
-              fontFamily: "monospace",
+              fontFamily: "TelegrafBold",
               marginLeft: "12px",
               color: "white",
               alignSelf: "center",
               fontSize: "16px",
-              fontWeight: '600'
             }}
           >
             Drepute
           </Typography.Text>
-        </div>
-      </Col>
-      <Col style={{ width: "20%", alignSelf: "center" }}>
+        
+      
+      {jwt&&<div style={{width:'24%'}}>
         <WalletPicker />
-      </Col>
-    </Row>
+      </div>}
+      </div>
+    </div>
   );
 }

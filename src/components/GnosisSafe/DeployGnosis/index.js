@@ -1,12 +1,11 @@
 import { Button, notification, Typography } from 'antd';
 import React, { useCallback, useState } from 'react';
-import useSafeSdk from '../../hooks/SafeSdk';
 import { ethers } from "ethers";
 import { useSelector } from 'react-redux';
-import { useBalance, usePoller, useUserSigner } from '../../hooks';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import { EthSignSignature } from './EthSignSignature';
-import AuthButton from '../AuthButton';
+import { useSafeSdk,useBalance, usePoller, useUserSigner } from '../../../hooks';
+// import AuthButton from '../AuthButton';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 

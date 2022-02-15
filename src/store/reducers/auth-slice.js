@@ -1,13 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const authSlice = createSlice({
-  name: "profile",
+  name: "auth",
   initialState: {
+    jwt: null,
     provider: null,
     web3Provider: null,
-    address: '0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8',
+    address:null,
     chainId: null,
-    chain:null
+    chain:null,
+    loggedIn:false,
+    role:null,
+    contributorName:'',
+    community_roles:[],
+    isAdmin:false
   },
   reducers: {
     set_web3(state, action) {
@@ -18,6 +24,21 @@ const authSlice = createSlice({
     },
     set_address(state, action){
       state.address = action.payload.address;
+    },
+    set_signing(state, action){
+      state.jwt = action.payload.jwt
+      state.loggedIn = true
+    },
+    set_loggedIn(state, action){
+      state.loggedIn = action.payload.status
+    },
+    set_contri_setup(state,action){
+      state.contributorName = action.payload.name;
+      state.role = action.payload.role
+    },
+    set_community_roles(state, action){
+      console.log('rolesss', action.payload.roles)
+      state.community_roles = action.payload.roles
     },
     reset_web3(state, action){
       state.provider = null;

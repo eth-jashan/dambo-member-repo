@@ -2,29 +2,34 @@ import { Divider, Typography,List, Button } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import styles from './style.module.css'
 import { MdOutlineAdd } from 'react-icons/md'
-import { BsChevronRight } from 'react-icons/bs'
+import { FaChevronRight } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux';
 import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/gnosis-action';
+import { useNavigate } from 'react-router';
 
 const GnosisSafeList = (props) => {
 
-    // const safeList = ['1','2','3','4','1','2','3','4']
     const setCurrentStep = () => {
         console.log('pressed====>')
-        props.setStep(3)
+        props.setStep(2)
     }
     const safeList = useSelector(x=>x.gnosis.allSafeList)
 
     const dispatch = useDispatch()
-
+    const navigate = useNavigate()
     const setGnosisWallet = (x) => {
-        dispatch(addSafeAddress(x))
-        setCurrentStep()
+        dispatch(addSafeAddress(x.addr))
+        if(x.name !== ''){
+            navigate('/dashboard')
+        }else{
+            props.setHasMultiSignWallet(true)
+            setCurrentStep()
+        }
     }
-
+    const address = useSelector(x=>x.auth.address)
     const fetchAllSafe = useCallback(async() => {
         try {
-            dispatch(getAllSafeFromAddress('0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'))
+            dispatch(getAllSafeFromAddress(address))
         } catch (error) {
             console.log('error on safe fetch.......', error)
         }
@@ -37,29 +42,27 @@ const GnosisSafeList = (props) => {
 
     const RenderSafe = ({item}) => (
         <div onClick={()=>setGnosisWallet(item)} className={styles.safeSingleItem}>
-            {/* <Divider /> */}
             <div>
-            {/* <Typography.Text className={styles.safeTitle}>
-            IAN DAO
-            </Typography.Text> */}
+            <Typography.Text className={styles.safeTitle}>
+            {item.name}
+            </Typography.Text>
             <Typography.Text className={styles.safeAdress}>
-            {item}
+            {item.addr}
             </Typography.Text>
             </div>
-            <BsChevronRight className={styles.chevronIcon} />
-            {/* <Divider /> */}
+            <FaChevronRight className={styles.chevronIcon} />
         </div>
     )
 
     return(
         <div className={styles.layout}>
-            <Typography.Text className={styles.heading}>
+            <div className={styles.heading}>
             Select the safe you<br/> want to continue with
-            </Typography.Text>
+            </div>
             <div className={styles.content}>
                 <div className={styles.listContent}>
                 {safeList.map((item,index)=>(
-                    <RenderSafe item={item} />
+                    <RenderSafe key={index} item={item} />
                 ))}
                 </div>
                 <div onClick={()=>props.increaseStep()} className={styles.multiSigCtn}>

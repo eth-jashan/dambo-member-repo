@@ -4,21 +4,22 @@ import 'antd/dist/antd.css'
 import styles from "./style.module.css";
 import HeaderComponent from "../../components/Header";
 import DashboardStats from "../../components/DashboradStats";
+import { useSelector } from "react-redux";
 const { Content } = Layout;
 
 
 export default function DashboardLayout({ children }) {
-    
+  const safeAddress = useSelector(x=>x.gnosis.safeAddress)
   return (
       <Layout style={{background:'black', height:'100%'}}>
-          <HeaderComponent />
+          {/* <HeaderComponent /> */}
 
         <Content style={{height:'100%'}}>
           <Row style={{}}>
             <Col span={16} style={{ width:'100%',  background:'black'}}>
 
               <div className={styles.treasureContainer}>
-                Treasure is empty
+                {safeAddress}
               </div>
 
               {children}

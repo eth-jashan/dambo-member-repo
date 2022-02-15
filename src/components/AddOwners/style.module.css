@@ -4,7 +4,7 @@
   height: 100%;
 }
 .heading {
-  font-family: Inter;
+  font-family: 'TelegrafBold';
   font-style: normal;
   font-weight: 800;
   font-size: 53px;
@@ -14,10 +14,11 @@
 .greyedHeading {
   color: rgba(0, 0, 0, 0.5);
   width: 90%;
+  margin-bottom: 40px;
 }
 
 .ownerContainer {
-  max-height: 150px;
+  max-height: 145px;
   overflow-y: scroll;
 }
 
@@ -39,37 +40,48 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 8px;
 }
 
 .nameInput {
   width: 30%;
   padding: 1rem;
-  background: rgba(247, 210, 247, 0.4);
+  background: #E1DCFF;
   border: none;
   outline: none;
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.5rem;
+  border: 1px solid #eeeef0;
 }
 
 .addressInput {
   width: 60%;
   padding: 1rem;
-  background: rgba(247, 210, 247, 0.4);
+  background: #E1DCFF;
   border: none;
   outline: none;
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.5rem;
+  font-family: 'TelegrafMedium';
+  border: 1px solid #eeeef0;
 }
 
 .nameInput:focus,
 .addressInput:focus {
-  border: 1px solid rgba(247, 210, 247, 0.4);
+  border: 1px solid #6852FF;
   background: transparent;
 }
 
-.ownerRow:nth-of-type(3n + 2) > .nameInput,
+.nameInput::placeholder,
+.addressInput::placeholder {
+  font-family: 'TelegrafMedium';
+  color: #000000;
+  font-size: 16px;
+}
+
+/* .ownerRow:nth-of-type(3n + 2) > .nameInput,
 .ownerRow:nth-of-type(3n + 2) > .addressInput {
   background: rgba(255, 109, 27, 0.2);
 }
@@ -86,7 +98,7 @@
 .ownerRow:nth-of-type(3n + 3) > .addressInput:focus {
   border: 1px solid rgba(79, 88, 223, 0.2);
   background: transparent;
-}
+} */
 
 .ownerRow > div > img {
   width: 20px;
@@ -96,7 +108,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  font-family: Inter;
+  font-family: 'TelegrafBold';
   font-style: normal;
   font-weight: 500;
   font-size: 16px;

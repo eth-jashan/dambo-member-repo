@@ -9,7 +9,7 @@
   height: 100%;
 }
 .heading {
-  font-family: Inter;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: 800;
   font-size: 53px;
@@ -25,12 +25,12 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: 2rem;
-  font-family: "Supply";
+  font-family: "TelegrafMedium";
 }
 
 .highlighted {
-  background: rgba(255, 226, 209, 1);
-  border: 1px solid #ffe2d1;
+  background: #E1DCFF;
+  border: 1px solid #6852FF;
 }
 
 .peopleDiv {
@@ -39,9 +39,11 @@
   border-radius: 8px;
   padding: 1rem 2.5rem 1rem 1rem;
   margin: 0.5rem 1rem 0.5rem 0;
-  font-weight: 600;
-  font-size: 50px;
-  line-height: 62px;
+  font-family: 'TelegrafMedium' ;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 23px;
+  line-height: 32px;
 }
 
 .peopleDiv > p {

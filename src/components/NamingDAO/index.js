@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./style.module.css";
 import NextButton from "../NextButton";
-import DeployGnosisButton from "../DeployGnosis";
+import DeployGnosisButton from "../GnosisSafe/DeployGnosis";
+
 
 export default function NamingDAO({
   setHasMultiSignWallet,
