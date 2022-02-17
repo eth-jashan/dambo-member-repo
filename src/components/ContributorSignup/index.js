@@ -5,11 +5,12 @@ import NextButton from '../NextButton';
 import styles from './styles.module.css'
 import Select from 'react-select';
 import { getCommunityRole, joinContributor, setContriInfo } from '../../store/actions/auth-action';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { getDao } from '../../store/actions/gnosis-action';
+
 
 const ContributorSignup = ({increaseStep, decreaseStep}) => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const id = queryParams.get('id');
+    const { id } = useParams();
     const [name, setName] = useState('')
     const dispatch = useDispatch()
     const colorOption = useSelector(x=>x.auth.community_roles)
@@ -18,6 +19,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const fetchRoles = useCallback( async() => {
         try {
             await dispatch(getCommunityRole())
+            await dispatch(getDao())
         } catch (error) {
             console.log('error in fetching role.....')
         }
@@ -30,9 +32,11 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const onSubmit = async() => {
         dispatch(setContriInfo(name, role))
         try {
-         const res = dispatch(joinContributor(id))
+        console.log('start........')
+         const res =  await dispatch(joinContributor(id))
+         console.log('resss', res)
          if(res){
-            navigate('/dashboard')
+            navigate(`/dashboard/${id}`)
          }
         } catch (error) {
             console.log('error on joining...', error)

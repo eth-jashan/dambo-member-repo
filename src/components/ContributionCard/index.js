@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import TickSvg from "../../assets/Icons/tick.svg";
 import styles from "./style.module.css";
 import { MdEdit } from 'react-icons/md'
+import { useNavigate } from 'react-router';
 
 export default function ContributionCard() {
 
@@ -71,6 +72,8 @@ export default function ContributionCard() {
         </Col>
     )
 
+    const navigate = useNavigate()
+
     return(
         <Card 
             hoverable 
@@ -92,7 +95,7 @@ export default function ContributionCard() {
         </Row>
         <div className={styles.inputDiv}>
             {renderAmountInput()}
-            <span className={styles.streamText}>Design Stream</span>
+            <span onClick={()=>navigate('/onboard/dao')} className={styles.streamText}>Design Stream</span>
         </div>
         </Card>
         )

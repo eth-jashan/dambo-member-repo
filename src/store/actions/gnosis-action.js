@@ -40,6 +40,25 @@ export const addDaoInfo = (name, email) => {
     }
 };
 
+export const getDao = () => {
+  return async (dispatch, getState) => {
+    const jwt = getState().auth.jwt
+    
+    try {
+      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDao}`,
+        {
+          headers:{
+            Authorization:`Bearer ${jwt}`
+          }
+        }
+      )
+      console.log('resss.....', res.data)
+  } catch (error) {
+    console.log('error in fetching dao.....', error)    
+  }
+  }
+}
+
 export const registerDao = () => {
   return async (dispatch, getState) => {
       
@@ -62,7 +81,7 @@ export const registerDao = () => {
       signs_required:threshold
     }
 
-    console.log('safe address.....data',JSON.stringify(data))
+    // console.log('safe address.....data',JSON.stringify(data))
     
     try {
         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
@@ -73,6 +92,11 @@ export const registerDao = () => {
           }
         )
         console.log('resss', res.data)
+        if(res.data.success){
+          return res.data.data.dao_uuid
+        }else{
+          return 0
+        }
     } catch (error) {
       console.log('error in registering.....', error)    
     }
@@ -103,3 +127,29 @@ export const getAllSafeFromAddress = (address) => {
     )
     }
 };
+
+export const getAddressMembership = (id) => {
+  return async (dispatch, getState) => {
+    const jwt = getState().auth.jwt
+    try {
+      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
+        headers:{
+          Authorization:`Bearer ${jwt}`
+        }
+      })
+      console.log('contributor joined....', res.data.data[0])
+      if(res.data.data.length>0){
+          dispatch(gnosisAction.set_membershipList({
+            list:res.data.data, 
+            safeAddress:res.data.data[0].dao_details.safe_public_address,
+            dao: res.data.data[0]
+          }))
+        return res.data.data[0]
+      }else{
+        return 0
+      }
+    } catch (error) {
+      return 0
+    }
+  }
+}

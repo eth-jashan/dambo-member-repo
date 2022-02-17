@@ -8,7 +8,9 @@ const routes = {
         getOurSafes:'/dao/our-safes',
         registerDao:'/dao/register',
         getCommunityRole:'/dao/community-roles',
-        joinContributor:'/dao/join'
+        joinContributor:'/dao/join',
+        getDaoMembership:'/dao/memberships',
+        getRole:'/dao/my-role'
     },
 }
 

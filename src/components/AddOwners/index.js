@@ -28,13 +28,9 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
   const safeAddress = useSelector(x=>x.gnosis.safeAddress)
   const userSigner = useUserSigner(provider, null);
   const [loading, setLoading] = useState(false)
-  const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
+  // const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
   
   const getSafeOwners = useCallback( async() =>{
-    console.log(safeSdk)
-    // if(safeSdk){
-      // setLoading(true)
-      // console.log('loadingggg......')
       let ownerObj = []
       const safeInfo = await serviceClient.getSafeInfo(safeAddress)
       if(safeInfo.owners){
@@ -50,8 +46,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       setOwners(ownerObj)
       setThreshold(safeInfo.threshold)
       }
-    // }
-  },[])
+  },[safeAddress])
 
   useEffect(()=>{
     if(hasMultiSignWallet){
@@ -140,7 +135,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
               onChange={(e) => updateOwner(e, owner.id, "address")}
               className={styles.addressInput}
             />
-            <div onClick={() => deleteOwner(owner.id)}>
+            <div onClick={() => !hasMultiSignWallet && deleteOwner(owner.id)}>
               <img src={CrossSvg} alt="delete" />
             </div>
           </div>
@@ -154,7 +149,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
           />
         </div>
       </div>
-      <div onClick={addOwner} className={styles.addOwner}>
+      <div onClick={!hasMultiSignWallet && addOwner} className={styles.addOwner}>
         Add Owner <img src={PlusSvg} alt="add" />
       </div>
     </div>

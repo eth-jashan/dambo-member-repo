@@ -13,7 +13,8 @@ const GnosisSafeList = (props) => {
         console.log('pressed====>')
         props.setStep(2)
     }
-    const safeList = useSelector(x=>x.gnosis.allSafeList)
+    let safeList = useSelector(x=>x.gnosis.allSafeList)
+    safeList = safeList?.filter(x=>x.name === '')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -27,13 +28,14 @@ const GnosisSafeList = (props) => {
         }
     }
     const address = useSelector(x=>x.auth.address)
+    console.log(address)
     const fetchAllSafe = useCallback(async() => {
         try {
             dispatch(getAllSafeFromAddress(address))
         } catch (error) {
             console.log('error on safe fetch.......', error)
         }
-    },[dispatch])
+    },[address, dispatch])
 
     useEffect(()=>{
         fetchAllSafe()
@@ -43,9 +45,9 @@ const GnosisSafeList = (props) => {
     const RenderSafe = ({item}) => (
         <div onClick={()=>setGnosisWallet(item)} className={styles.safeSingleItem}>
             <div>
-            <Typography.Text className={styles.safeTitle}>
+            {/* <Typography.Text className={styles.safeTitle}>
             {item.name}
-            </Typography.Text>
+            </Typography.Text> */}
             <Typography.Text className={styles.safeAdress}>
             {item.addr}
             </Typography.Text>

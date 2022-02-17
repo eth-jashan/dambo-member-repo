@@ -44,7 +44,7 @@ export const getJwt = (address) => {
       const hours = diffInMilliseconds/36e5
       console.log('calculated hours.........',hours);
       console.log('availabe !!!!', jwtInfo.jwt)
-      if(hours<= 23){
+      if(hours<= 0.1){
       dispatch(authActions.set_signing({jwt:jwtInfo.jwt}))
       return 1
     }
@@ -69,9 +69,25 @@ export const setProvider = (provider, web3Provider, chainId) => {
     }
 };
 
+export const retrieveAddress = () => {
+  
+  return (dispatch)=>{
+    const address = JSON.parse(localStorage.getItem('current_address'))
+    console.log('address RETRIEVED......', address)
+    if(address){
+      dispatch(
+        authActions.set_address({address})
+      )
+    }else{
+      return 0
+    }
+  }
+}
+
 export const setAddress = (address) => {
   return (dispatch) => {
       console.log('setting new address.....', address)
+      localStorage.setItem('current_address',address)
       dispatch(
         authActions.set_address({address})
       );
@@ -96,6 +112,23 @@ export const setContriInfo = (name, role) => {
     }
 };
 
+export const setAdminStatus = (status) => {
+  return (dispatch) => {
+      // console.log('changing status.....', name, role)
+      dispatch(
+        authActions.set_admin({status})
+      );
+    }
+};
+
+export const signout = () => {
+  return(dispatch)=>{
+    dispatch(
+      authActions.reset_auth()
+    )
+  }
+}
+
 export const getCommunityRole = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
@@ -119,6 +152,7 @@ export const getCommunityRole = () => {
   }
 }
 
+
 export const joinContributor = (id) => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
@@ -138,18 +172,14 @@ export const joinContributor = (id) => {
           Authorization:`Bearer ${jwt}`
         }
       })
+      console.log('contributor joined....', res.data)
       if(res.data.success){
-        let roles = []
-        res.data.data.map((item, index)=>{
-          roles.push({value: item, label: item})
-        })
-        console.log('community roles....', res.data)
         return 1
       }else{
         return 0
       }
     } catch (error) {
-      
+      return 0
     }
   }
 }

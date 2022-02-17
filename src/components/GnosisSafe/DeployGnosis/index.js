@@ -164,7 +164,7 @@ const DeployGnosisButton = () => {
         const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
         setSafeAddress(newSafeAddress)
       }, [safeFactory])
-      //0x1074BdD199c849F450df15D39396880D81bea7f9
+
       usePoller(async () => {
         if(safeAddress){
           setSafeAddress(ethers.utils.getAddress(safeAddress))

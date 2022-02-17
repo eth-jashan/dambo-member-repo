@@ -10,10 +10,15 @@ const gnosisSlice = createSlice({
       dao_name:'',
       dao_email:''
     },
-    safeAddress: '0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8',
+    safeAddress: null,
+    owners:[],
+    threshold:0,
+    selectedDao:null,
+    allMembership:[]
   },
   reducers: {
     set_safeAdress(state, action) {
+      // console.log('set address', action.payload.safeAddress)
       state.safeAddress = action.payload.safeAddress;
     },
     set_allSafe(state, action) {
@@ -24,6 +29,12 @@ const gnosisSlice = createSlice({
     },
     set_newSafeThreshold(state, action){
       state.newSafeSetup.threshold = action.payload.threshold
+    },
+    set_membershipList(state, action){
+      state.selectedDao = action.payload.dao
+      state.allMembership = action.payload.list
+      state.safeAddress = action.payload.safeAddress
+      console.log('selected', state.selectedDao)
     },
     set_dainInfo(state, action){
       console.log('name set', action.payload.name)

@@ -11,9 +11,9 @@ const authSlice = createSlice({
     chain:null,
     loggedIn:false,
     role:null,
-    contributorName:'',
     community_roles:[],
-    isAdmin:false
+    contributorName:'',
+    isAdmin:true
   },
   reducers: {
     set_web3(state, action) {
@@ -40,12 +40,28 @@ const authSlice = createSlice({
       console.log('rolesss', action.payload.roles)
       state.community_roles = action.payload.roles
     },
+    set_admin(state, action){
+      state.isAdmin = action.payload.status
+    },
     reset_web3(state, action){
       state.provider = null;
       state.web3Provider = null;
       state.address = null;
       state.chainId = null;
     },
+    reset_auth(state, action){
+      state.jwt= null;
+      state.provider= null;
+      state.web3Provider= null;
+      state.address=null;
+      state.chainId=null;
+      state.chain= null;
+      state.loggedIn= false;
+      state.role= null;
+      state.community_roles= [];
+      state.contributorName ='';
+      state.isAdmin=true
+    }
 }});
 
 export const authActions = authSlice.actions;

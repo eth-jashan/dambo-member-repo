@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
 import { useSafeSdk, useUserSigner } from "../hooks";
 import { ethers } from "ethers";
+import { useNavigate } from "react-router";
 
 export default function Onboarding() {
   
@@ -27,6 +28,7 @@ export default function Onboarding() {
   const threshold = useSelector(x=>x.gnosis.newSafeSetup.threshold)
   
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const deploySafe = useCallback(async (owners) => {
     console.log('deployingggg', threshold)
@@ -45,7 +47,14 @@ export default function Onboarding() {
     const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
     setSafeAddress(newSafeAddress)
     dispatch(addSafeAddress(newSafeAddress))
-    dispatch(registerDao())
+    try {
+      const res = await dispatch(registerDao())
+      if(res){
+        navigate(`/dashboard/${res}`)
+      }
+    } catch (error) {
+      console.log('error on registering dao.....')
+    }
   }, [safeFactory])
 
   const increaseStep = async() => {
@@ -57,7 +66,11 @@ export default function Onboarding() {
       setCurrentStep(currentStep + 1)
     }else if(currentStep === 4){
       if(hasMultiSignWallet){
-        dispatch(registerDao('Jashan Dao'))
+       const res = await dispatch(registerDao('Jashan Dao'))
+       console.log('ress', res)
+       if(res){
+        navigate(`/dashboard/${res}`)
+       }
       }else{
       try {
         try {
@@ -85,14 +98,6 @@ export default function Onboarding() {
 
   const getComponentFromStep = (step, hasMultiSignWallet = false) => {
     switch (step) {
-      case 0:
-        return (
-          <ConnectWallet
-            increaseStep={increaseStep}
-            isDao={true}
-          />
-        )
-      
       case 1: {
         return (
         <GnosisSafeList
@@ -144,7 +149,7 @@ export default function Onboarding() {
   return (
     <div>
       <Layout decreaseStep={decreaseStep} currentStep={1}>
-        {loggedIn?getComponentFromStep(currentStep, hasMultiSignWallet):<ConnectWallet isDao={true} increaseStep={increaseStep} />}
+        {getComponentFromStep(currentStep, hasMultiSignWallet)}
       </Layout>
     </div>
   );
