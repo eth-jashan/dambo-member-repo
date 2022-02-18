@@ -5,7 +5,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
-import { authWithSign, getJwt, setAddress, setLoggedIn, signout } from "../../store/actions/auth-action";
+import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout } from "../../store/actions/auth-action";
 import { BsChevronRight } from 'react-icons/bs'
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
@@ -310,6 +310,11 @@ const ConnectWallet = ({ isAdmin }) =>{
 
     </div>
   )
+  
+  const disconnectContributor = () => {
+    dispatch(signout())
+    dispatch(setAdminStatus(false))
+  }
 
   const daoWallet = () => (
     <div>
@@ -353,7 +358,7 @@ const ConnectWallet = ({ isAdmin }) =>{
             </span>
           </div>}
           {(address)&&
-          <div  onClick={()=>loadWeb3Modal()} className={styles.disconnectDiv}>
+          <div  onClick={()=>disconnectContributor()} className={styles.disconnectDiv}>
             <div className={styles.divider}/>
             <span className={styles.disconnectTitle}>
               Disconnect Wallet

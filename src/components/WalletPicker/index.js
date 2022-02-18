@@ -2,11 +2,12 @@ import React from "react";
 import { Menu, Typography, message, Dropdown, Divider } from "antd";
 import { useSelector, useDispatch } from 'react-redux'
 import Paragraph from "antd/lib/skeleton/Paragraph";
-import { signout } from "../../store/actions/auth-action";
+import { setAdminStatus, signout } from "../../store/actions/auth-action";
 import { useNavigate } from "react-router";
 
 export default function  WalletPicker() {
   const address = useSelector(x=>x.auth.address);
+  const isAdmin = useSelector(x=>x.auth.isAdmin);
   const dispatch = useDispatch()
   const navigate = useNavigate()
   async function copyTextToClipboard() {
@@ -22,8 +23,15 @@ export default function  WalletPicker() {
           message.info(`address copied on clicpboard`);
           copyTextToClipboard()
         }else if(key === '2'){
-          dispatch(signout())
-          navigate('/')
+          if(isAdmin){
+            dispatch(signout())
+            navigate('/')
+          }else{
+            dispatch(signout())
+            dispatch(setAdminStatus(false))
+            navigate('/')
+          }
+          
         }
     };
 
