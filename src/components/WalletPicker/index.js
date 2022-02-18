@@ -2,9 +2,13 @@ import React from "react";
 import { Menu, Typography, message, Dropdown, Divider } from "antd";
 import { useSelector, useDispatch } from 'react-redux'
 import Paragraph from "antd/lib/skeleton/Paragraph";
+import { signout } from "../../store/actions/auth-action";
+import { useNavigate } from "react-router";
 
 export default function  WalletPicker() {
   const address = useSelector(x=>x.auth.address);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       return await navigator.clipboard.writeText(address);
@@ -17,6 +21,9 @@ export default function  WalletPicker() {
         if(key === '1'){
           message.info(`address copied on clicpboard`);
           copyTextToClipboard()
+        }else if(key === '2'){
+          dispatch(signout())
+          navigate('/')
         }
     };
 
@@ -35,8 +42,8 @@ export default function  WalletPicker() {
 
     return (
         <Dropdown onClick={e => e.preventDefault()} overlay={walletMenu}>
-            <div style={{alignSelf:'center',paddingRight:'8px', paddingLeft:'8px',display:'flex',justifyContent:'center', background:'#121219'}}>
-              <Typography.Text ellipsis={true} style={{fontFamily:'monospace', color:'white',  fontSize:'16px'}}>ETH . {address?.slice(0,5)+'.....'+ address?.slice(-3)}</Typography.Text>
+            <div style={{alignSelf:'center',paddingRight:'8px', paddingLeft:'8px',display:'flex',justifyContent:'center'}}>
+              <Typography.Text ellipsis={true} style={{fontFamily:'Inter', color:'white',  fontSize:'12px'}}>ETH . {address?.slice(0,5)+'.....'+ address?.slice(-3)}</Typography.Text>
             </div>
         </Dropdown>
     )

@@ -15,12 +15,7 @@ export default function HeaderComponent() {
             <div className={styles.logoHeading}>PolygonDAO</div>
         </div>
     )
-
-    // const handleClick = e => {
-    //     console.log('click ', e);
-    //     setCurrent(e.key)
-    //   };
-
+    
     const renderMenu = () => (
      <div style={{display:'flex', flexDirection:'row'}}>
          <div className={styles.menuText}>

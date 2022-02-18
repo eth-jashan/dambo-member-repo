@@ -57,18 +57,6 @@ export const getJwt = (address) => {
   }
 }
 
-export const setProvider = (provider, web3Provider, chainId) => {
-  return (dispatch) => {
-      dispatch(
-        authActions.set_web3({
-          provider,
-          web3Provider,
-          chainId,
-        })
-      );
-    }
-};
-
 export const retrieveAddress = () => {
   
   return (dispatch)=>{

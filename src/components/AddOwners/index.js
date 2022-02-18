@@ -28,7 +28,6 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
   const safeAddress = useSelector(x=>x.gnosis.safeAddress)
   const userSigner = useUserSigner(provider, null);
   const [loading, setLoading] = useState(false)
-  // const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
   
   const getSafeOwners = useCallback( async() =>{
       let ownerObj = []
@@ -115,7 +114,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
         have more than one owner to maximize security
       </div>
       <div className={styles.ownerContainer}>
-        {!loading && owners.length>0&& owners.map((owner) => (
+        {!loading && owners.length>0&& owners.map((owner,index) => (
           <div className={styles.ownerRow} key={owner.id}>
             <input
               type="text"
@@ -127,7 +126,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
             />
             {/* <InputField /> */}
             <input
-              disabled={hasMultiSignWallet}
+              disabled={hasMultiSignWallet || index === 0}
               type="text"
               placeholder={'Owner Address'}
               value={owner?.address}
@@ -135,7 +134,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
               onChange={(e) => updateOwner(e, owner.id, "address")}
               className={styles.addressInput}
             />
-            <div onClick={() => !hasMultiSignWallet && deleteOwner(owner.id)}>
+            <div onClick={() => (!hasMultiSignWallet && index !== 0) && deleteOwner(owner.id)}>
               <img src={CrossSvg} alt="delete" />
             </div>
           </div>

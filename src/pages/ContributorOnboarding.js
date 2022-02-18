@@ -8,18 +8,37 @@ import Layout from '../views/Layout'
 
 const ContributorOnbording = () => {
 
-    const loggedIn = useSelector(x=>x.auth.loggedIn)
+    // const loggedIn = useSelector(x=>x.auth.loggedIn)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { id } = useParams();
+    const isAdmin = useSelector(x=>x.auth.isAdmin)
+
+    const address = useSelector(x=>x.auth.address)
+    const jwt = useSelector(x=>x.auth.jwt)
+
+    const preventGoingBack = useCallback(() => {
+        window.history.pushState(null, document.title, window.location.href);
+        window.addEventListener("popstate", () => {
+            // navigate.to(1);
+            if(address && jwt){
+                console.log('on back!!!')
+                window.history.pushState(null, document.title, window.location.href);
+            }
+        });
+    },[address, jwt])
+
+useEffect(()=>{
+  preventGoingBack()
+},[preventGoingBack])
 
     const checkAuth = useCallback(() => {
-        if(!loggedIn){
+        if(isAdmin){
             dispatch(set_invite_id(id))
             dispatch(setAdminStatus(false))
             navigate('/')
         }
-    },[loggedIn, dispatch, navigate, id])
+    },[isAdmin, dispatch, id, navigate])
 
     useEffect(()=>{
         checkAuth()

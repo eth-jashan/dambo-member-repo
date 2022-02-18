@@ -6,6 +6,7 @@ import { FaChevronRight } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux';
 import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/gnosis-action';
 import { useNavigate } from 'react-router';
+import chevron_right from '../../../assets/Icons/chevron_right.svg'
 
 const GnosisSafeList = (props) => {
 
@@ -45,14 +46,11 @@ const GnosisSafeList = (props) => {
     const RenderSafe = ({item}) => (
         <div onClick={()=>setGnosisWallet(item)} className={styles.safeSingleItem}>
             <div>
-            {/* <Typography.Text className={styles.safeTitle}>
-            {item.name}
-            </Typography.Text> */}
             <Typography.Text className={styles.safeAdress}>
             {item.addr}
             </Typography.Text>
             </div>
-            <FaChevronRight className={styles.chevronIcon} />
+            <img src={chevron_right} className={styles.chevronIcon} width='32px' height='32px' alt='cheveron-right'/>
         </div>
     )
 

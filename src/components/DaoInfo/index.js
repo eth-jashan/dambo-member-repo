@@ -2,18 +2,16 @@ import { Typography } from 'antd';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addDaoInfo } from '../../store/actions/gnosis-action';
-import InputField from '../InputField';
 import NextButton from '../NextButton';
 import styles from './styles.module.css'
 
-const DaoInfo = ({increaseStep, decreaseStep}) => {
+const DaoInfo = ({increaseStep, decreaseStep, deploying}) => {
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const dispatch = useDispatch()
 
     const onSubmit = () => {
-        console.log('namesss===>', name)
         dispatch(addDaoInfo(name, email))
         increaseStep()
     }
@@ -44,7 +42,7 @@ const DaoInfo = ({increaseStep, decreaseStep}) => {
                 <NextButton
                     text="Review"
                     increaseStep={onSubmit}
-                    isDisabled={name === ''}
+                    isDisabled={name === '' || deploying}
                 />
             </div>
         </div>

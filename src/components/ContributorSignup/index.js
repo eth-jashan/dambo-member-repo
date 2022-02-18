@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NextButton from '../NextButton';
 import styles from './styles.module.css'
 import Select from 'react-select';
-import { getCommunityRole, joinContributor, setContriInfo } from '../../store/actions/auth-action';
+import { getCommunityRole, joinContributor, setAdminStatus, setContriInfo } from '../../store/actions/auth-action';
 import { useNavigate, useParams } from 'react-router';
 import { getDao } from '../../store/actions/gnosis-action';
 
@@ -37,6 +37,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
          console.log('resss', res)
          if(res){
             navigate(`/dashboard/${id}`)
+            dispatch(setAdminStatus(true))
          }
         } catch (error) {
             console.log('error on joining...', error)

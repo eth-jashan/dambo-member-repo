@@ -64,7 +64,7 @@
 .multiSigCtn{
     display: flex;
     margin-top: 20px;
-    width: 32%;
+    width: 28%;
     justify-content: space-between;
     cursor: pointer;
 }

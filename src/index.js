@@ -12,9 +12,9 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-      {/* <PersistGate loading={(x)=>console.log(x)} persistor={persistor}> */}
+      <PersistGate loading={null}  persistor={persistor}>
         <App />
-      {/* </PersistGate> */}
+      </PersistGate>
       </Provider>
     </BrowserRouter>
   </React.StrictMode>,

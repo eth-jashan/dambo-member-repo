@@ -5,7 +5,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
-import { authWithSign, getJwt, setAddress, setLoggedIn, setProvider } from "../../store/actions/auth-action";
+import { authWithSign, getJwt, setAddress, setLoggedIn, signout } from "../../store/actions/auth-action";
 import { BsChevronRight } from 'react-icons/bs'
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
@@ -16,6 +16,7 @@ import tickIcon from '../../assets/Icons/tick.svg'
 import { FaDiscord } from 'react-icons/fa'
 import { getAddressMembership } from "../../store/actions/gnosis-action";
 import { setDiscordOAuth } from "../../store/actions/contibutor-action";
+import { setProvider, setSigner } from "../../store/actions/we3-action";
 const targetNetwork = NETWORKS.rinkeby;
 const localProviderUrl = targetNetwork.rpcUrl;
 const localProvider = new ethers.providers.StaticJsonRpcProvider(
@@ -54,7 +55,6 @@ const ConnectWallet = ({ isAdmin }) =>{
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  // const selected = useSelector(x=>x.gnosis.safeAddress)
 
   const authWithWallet = useCallback(async(address) => {
     
@@ -62,7 +62,8 @@ const ConnectWallet = ({ isAdmin }) =>{
     const web3Provider = new providers.Web3Provider(provider)
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
-    console.log('adresssss.....',chainId)
+    console.log('adresssss.....',signer)
+    dispatch(setSigner(signer));
     if(chainId === 4){
       try {
       const res =  await dispatch(authWithSign(address, signer))
@@ -97,11 +98,12 @@ const ConnectWallet = ({ isAdmin }) =>{
       typeof web3Provider.provider.disconnect == "function"
     ) {
       await web3Provider.provider.disconnect();
+      dispatch(signout())
     }
     setTimeout(() => {
       window.location.reload();
     }, 1);
-  },[web3Provider]);
+  },[dispatch, web3Provider]);
 
   const alertBanner = () => (
     <Alert
@@ -110,7 +112,7 @@ const ConnectWallet = ({ isAdmin }) =>{
       type="error"
     />
   )
-    console.log('admin..', isAdmin, address)
+    // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     console.log('token.....', address,uuid, jwt)
     dispatch(setDiscordOAuth(address,uuid, jwt))
@@ -118,10 +120,12 @@ const ConnectWallet = ({ isAdmin }) =>{
   }
 
   const loadWeb3Modal = useCallback(async () => {
+    console.log('start.....')
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
-    dispatch(setProvider(provider,web3Provider,4));
     const signer = web3Provider.getSigner()
+    dispatch(setSigner(signer));
+    // const signer = web3Provider.getSigner()
     const newAddress = await signer.getAddress()
     const chainid = await signer.getChainId()
     dispatch(setAddress(newAddress));
@@ -131,7 +135,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         dispatch(setLoggedIn(true))
         if(isAdmin){
           const res = await dispatch(getAddressMembership())
-          if(!res){
+          if(res){
             // console.log('callbacks.........', selected)
             navigate(`/dashboard/${res?.dao_details?.uuid}`)
           }else{
@@ -292,7 +296,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         <div className={styles.walletName}>Metamask</div>
         <div className={styles.addresCnt}>
           <div className={styles.address}>{address}</div>
-          <div onClick={()=>logoutOfWeb3Modal()} className={styles.disconnectLink}>Disconnect</div>
+          <div onClick={()=>dispatch(signout())} className={styles.disconnectLink}>Disconnect</div>
         </div>
 
         <Divider />
@@ -323,7 +327,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         <div style={{height:'100%'}}>
           <div style={{height:'64px', width:'64px', borderRadius:'64px', border:'1px solid #c2c2c2', display:'flex', alignItems:'center', justifyContent:'center'}}>
           <img 
-            src={(!jwt && !address)?walletIcon:tickIcon}
+            src={(!jwt)?walletIcon:tickIcon}
             alt='wallet' 
             height={32} 
             width={32} 
@@ -334,21 +338,21 @@ const ConnectWallet = ({ isAdmin }) =>{
         <div className={styles.rightContent}>
           <div>
             <div className={styles.walletHeading}>
-              {(!jwt && !address)?'Connect your Wallet':'Wallet Connected'}
+              {(!jwt)?'Connect your Wallet':'Wallet Connected'}
             </div>
-            {(!jwt && !address)?<div className={styles.walletsubHeading}>
+            {(!jwt)?<div className={styles.walletsubHeading}>
               Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.
             </div>:
             <div className={styles.connectedText}>
               {address.slice(0,5)}...{address.slice(-3)}
             </div>}
           </div>
-          {(!jwt && !address)&&<div  onClick={()=>loadWeb3Modal()} className={styles.connectBtn}>
+          {(!jwt)&&<div  onClick={()=>loadWeb3Modal()} className={styles.connectBtn}>
             <span className={styles.btnTitle}>
               Connect Wallet
             </span>
           </div>}
-          {(jwt && address)&&
+          {(address)&&
           <div  onClick={()=>loadWeb3Modal()} className={styles.disconnectDiv}>
             <div className={styles.divider}/>
             <span className={styles.disconnectTitle}>
@@ -375,10 +379,10 @@ const ConnectWallet = ({ isAdmin }) =>{
               We use Discord to check your name<br/>and servers you've joined
             </div>
           </div>
-          <div onClick={()=>onDiscordAuth()}  style={{background:!jwt && '#B3B3B3'}} className={styles.connectBtn}>
-            <div className={`${styles.btnTitle}`}>
+          <div onClick={()=>onDiscordAuth()}  className={!jwt?styles.connectBtnGrey:styles.connectBtn}>
+            <span className={styles.btnTitle}>
               Connect Discord
-            </div>
+            </span>
           </div>
         </div>
       </div>

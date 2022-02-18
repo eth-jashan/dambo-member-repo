@@ -17,21 +17,26 @@ export const setDiscordOAuth = (address,id, jwt) => {
     }
 }
 
-// export const getRole = (uuid) => {
-//     return async (dispatch, getState)=>{
-//         const jwt = getState().auth.jwt
-//         const address = getState().auth.address
-//         const data = {
-//             uuid,
-//             wallet_addr:
-//         }
-//         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.getRole}`,{
-//             data
-//         })
-//     }
-// }
+export const getRole = (uuid) => {
+    return async (dispatch, getState)=>{
+        const jwt = getState().auth.jwt
+        const address = getState().auth.address
+        const data = {
+            uuid,
+            wallet_addr:address
+        }
+        const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.getRole}`,data,{
+            headers:{
+                Authorization:`Bearer ${jwt}`
+            }
+        })
+        if(res.data.success){
+            console.log('data.....', res.data.data)
+        }
+    }
+}
 
-export const getDiscordOAuth = () => {
+export const getDiscordOAuth = (code) => {
     return (dispatch)=>{
     const data = JSON.parse(localStorage.getItem('discord'))
     console.log('dataaa', data)
@@ -41,7 +46,7 @@ export const getDiscordOAuth = () => {
         dispatch(contributorAction.set_invite_code({id:data.id}))
         dispatch(authActions.set_admin({status:false}))
         dispatch(authActions.set_loggedIn({status:true}))
-        dispatch(contributorAction.set_discord({status:true}))
+        dispatch(contributorAction.set_discord({status:code}))
         return 1
     }else{
         dispatch(authActions.set_admin({status:false}))

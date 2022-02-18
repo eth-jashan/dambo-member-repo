@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Layout from "../views/Layout";
 import AddOwners from "../components/AddOwners";
 import ApproveTransaction from "../components/ApproveTransaction";
@@ -8,8 +8,41 @@ import DaoInfo from "../components/DaoInfo";
 import { useDispatch, useSelector } from "react-redux";
 import { addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
 import { useSafeSdk, useUserSigner } from "../hooks";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
+import Web3Modal from "web3modal";
+import { INFURA_ID, NETWORKS } from "../constants";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import { message } from "antd";
+
+const targetNetwork = NETWORKS.rinkeby;
+const localProviderUrl = targetNetwork.rpcUrl;
+const localProvider = new ethers.providers.StaticJsonRpcProvider(
+  localProviderUrl
+);
+
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider, // required
+    options: {
+      bridge: "https://polygon.bridge.walletconnect.org",
+      infuraId: INFURA_ID,
+      rpc: {
+        1:`https://mainnet.infura.io/v3/${INFURA_ID}`, // mainnet // For more WalletConnect providers: https://docs.walletconnect.org/quick-start/dapps/web3-provider#required
+        100:"https://dai.poa.network", // xDai
+      },
+    },
+  },
+};
+
+const web3Modal = new Web3Modal({
+  network: "mainnet", // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
+  cacheProvider: true, // optional
+  theme:"light", // optional. Change to "dark" for a dark theme.
+  providerOptions: {
+    providerOptions
+  },
+});
 
 export default function Onboarding() {
   
@@ -18,10 +51,13 @@ export default function Onboarding() {
   
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false)
-  const provider = useSelector(x=>x.auth.web3Provider);
-  const userSigner = useUserSigner(provider, null);
+  const [signer, setSigner] = useState()
+  // const provider = useSelector(x=>x.web3.provider);
+  const userSigner = useSelector(x=>x.web3.signer);
+  // const web3Provider = new providers.Web3Provider(provider)
+  // const userSigner = useUserSigner(null, null);
   const [safeAddress, setSafeAddress] = useState()
-  const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
+  const { safeSdk, safeFactory } = useSafeSdk(signer, safeAddress)
   
   
   const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
@@ -30,8 +66,26 @@ export default function Onboarding() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const address = useSelector(x=>x.auth.address)
+  const jwt = useSelector(x=>x.auth.jwt)
+
+  const preventGoingBack = useCallback(() => {
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener("popstate", () => {
+        // navigate.to(1);
+        if(address && jwt){
+            console.log('on back!!!')
+            window.history.pushState(null, document.title, window.location.href);
+        }
+      });
+  },[address, jwt])
+
+  useEffect(()=>{
+    preventGoingBack()
+  },[preventGoingBack])
+
   const deploySafe = useCallback(async (owners) => {
-    console.log('deployingggg', threshold)
+    console.log('deployingggg', threshold, safeFactory,userSigner)
     if (!safeFactory) return
     setDeploying(true)
     const safeAccountConfig = { owners, threshold:1 }
@@ -40,7 +94,8 @@ export default function Onboarding() {
     try {
       safe = await safeFactory.deploySafe(safeAccountConfig)
     } catch (error) {
-      console.error(error)
+      // console.error(error)
+      message.error(error.message)
       setDeploying(false)
       return
     }
@@ -54,8 +109,17 @@ export default function Onboarding() {
       }
     } catch (error) {
       console.log('error on registering dao.....')
+      message.error(error)
     }
   }, [safeFactory])
+
+  const setProvider = async() => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    // Prompt user for account connections
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    setSigner(signer)
+  }
 
   const increaseStep = async() => {
   
@@ -64,6 +128,9 @@ export default function Onboarding() {
     }else if(currentStep === 3){
       dispatch(addThreshold(selectedIndex + 1))
       setCurrentStep(currentStep + 1)
+      if(!hasMultiSignWallet){
+        setProvider()
+      }
     }else if(currentStep === 4){
       if(hasMultiSignWallet){
        const res = await dispatch(registerDao('Jashan Dao'))

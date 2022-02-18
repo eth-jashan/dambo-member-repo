@@ -45,9 +45,10 @@ const web3Modal = new Web3Modal({
 function App() {
   const loggedIn = useSelector(x=>x.auth.loggedIn)
   const isAdmin = useSelector(x=>x.auth.isAdmin)
+  const address = useSelector(x=>x.auth.address)
   const discord = useSelector(x=>x.contributor.discord_auth)
   const navigate = useNavigate()
-  const pathname = window.location.pathname
+  // const pathname = window.location.pathname
   const dispatch = useDispatch()
 
   const loadWeb3Modal = useCallback(async () => {
@@ -83,21 +84,11 @@ function App() {
 
     // Subscribe to session disconnection
     // provider.on("disconnect", (code, reason) => {
-    //   console.log(code, reason);
     //   logoutOfWeb3Modal();
     // });
-  }, [dispatch, navigate]);
+  }, [dispatch, isAdmin, navigate]);
 
-  const checkAuth = useCallback( () => {
-    const pathCheck = pathname.split('/')
-    // console.log(pathCheck)
-    if(!loggedIn){
-      if(pathCheck[2] === "contributor"){
-        dispatch(setAdminStatus(false))
-        dispatch(set_invite_id(pathCheck[3]))
-      }
-    }
-  },[dispatch, loggedIn, navigate, pathname])
+  console.log(isAdmin, address, loggedIn);
 
   useEffect(()=>{
     loadWeb3Modal()
@@ -106,17 +97,17 @@ function App() {
   const adminRoutes = () => (
         <Routes>
           {/* {!loggedIn &&  */}
-          {/* <> */}
+           <>
           <Route path='/' element={<AuthWallet />} />
           <Route path='/discord/fallback' element={<DiscordFallback />} />
-          {/* </> */}
-          {/* } */}
-          {/* {loggedIn && */}
-          {/* <> */}
+          </>
+          {/* }
+          {loggedIn && */}
+          <>
           <Route path="/onboard/dao" element={<Onboarding />} />
           <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
           <Route path="dashboard/:id" element={<Dashboard />} />
-          {/* </> */}
+          </>
           {/* } */}
         </Routes>
   )
@@ -143,7 +134,6 @@ function App() {
     <div className="App">
       <div className="App-header">
         {adminRoutes()}
-        {/* {isAdmin?adminRoutes():contributorRoute()} */}
       </div>
     </div>
   );
