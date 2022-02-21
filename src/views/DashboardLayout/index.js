@@ -7,7 +7,8 @@ import { MdLink } from 'react-icons/md'
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { set_dao } from "../../store/actions/dao-action";
-
+import { links } from "../../constant/links";
+import logo from '../../assets/drepute_logo.svg'
 
 export default function DashboardLayout({ children }) {
 
@@ -27,9 +28,9 @@ export default function DashboardLayout({ children }) {
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${id}`);
     } else {
-      return document.execCommand('copy', true, `https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.local}${id}`);
     }
   }
 
@@ -56,7 +57,7 @@ export default function DashboardLayout({ children }) {
         <div className={styles.accountsLayout}>
         
         <div className={styles.logoContainer}>
-          <div style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'black'}}/>
+          <img src={logo} alt='logo' style={{height:'2.25rem',width:'2.25rem'}}/>
         </div>
 
         {accounts.map((item, index)=>(

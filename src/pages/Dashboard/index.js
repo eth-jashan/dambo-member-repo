@@ -10,6 +10,7 @@ import { getRole } from '../../store/actions/contibutor-action';
 import { getAllDaowithAddress } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
+import { links } from '../../constant/links';
 
 export default function Dashboard() {
 
@@ -17,17 +18,18 @@ export default function Dashboard() {
     
     const address = useSelector(x=>x.auth.address)
     const jwt = useSelector(x=>x.auth.jwt)
-    const {id}  = useParams()
+    // const {id}  = useParams()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const role = useSelector(x=>x.dao.role)
+    const curreentDao = useSelector(x=>x.dao.currentDao)
 
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
             message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+          return await navigator.clipboard.writeText(`${links.contributor_invite.local}${curreentDao?.uuid}`);
         } else {
-          return document.execCommand('copy', true, `https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+          return document.execCommand('copy', true, `${links.contributor_invite.local}${curreentDao?.uuid}`);
         }
     }
     
@@ -46,7 +48,6 @@ export default function Dashboard() {
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
                 if(jwtIfo){
-                    await dispatch(getRole(id))
                    await dispatch(getAllDaowithAddress())
                 }else{
                     message.info('Token expired')
@@ -54,7 +55,7 @@ export default function Dashboard() {
                 }
                 
         }
-    },[address, dispatch, id, navigate])
+    },[address, dispatch, navigate])
 
     useEffect(()=>{
         console.log('start.....')

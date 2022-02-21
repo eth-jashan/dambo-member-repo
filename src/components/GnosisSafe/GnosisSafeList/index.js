@@ -80,7 +80,7 @@ const GnosisSafeList = (props) => {
                 Select the safe you<br/> want to continue with
             </div>:
             <div className={styles.headingSecondary}>
-                Coudn’t find multisig
+                Couldn’t find multisig
             </div>}
             {!safeList.length>0&&
             <div className={`${styles.headingSecondary} ${styles.greyHeading}`}>

@@ -1,16 +1,16 @@
-.input{
+/* .input{
     background:transparent;
     border:0; 
     font-family: monospace;
     width: 70%;
     margin-left: 6px;
-}
+} */
 
-::placeholder {
+/* ::placeholder {
     color: #6852FF;
     font-family: monospace;
     font-size: 12px;
-}
+} */
 
 .logoEdit{
     color: 'white';

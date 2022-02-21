@@ -6,7 +6,9 @@ const daoSlice = createSlice({
     dao_list:[],
     currentDao:null,
     role:null,
-    community_role:null
+    community_role:null,
+    gnosis_details:null,
+    balance:null
   },
   reducers: {
     set_dao_list(state, action){

@@ -1,0 +1,28 @@
+.textInput{
+    padding: 1rem;
+    border: 1px solid #EEEEF0;
+    border-radius: 0.5rem;
+    color: black;
+    padding: 1rem;
+    /* background-color: #E1DCFF; */
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    outline: none;
+}
+
+.textInput:focus{
+    border: 1px solid #6852FF;
+}
+
+.textInput::placeholder{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #999999;
+    outline: none;
+}

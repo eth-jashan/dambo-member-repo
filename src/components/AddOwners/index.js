@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addOwners, addThreshold } from "../../store/actions/gnosis-action";
 import { useSafeSdk, useUserSigner } from "../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import InputText from "../Input";
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -126,16 +127,18 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (
           <div className={styles.ownerRow} key={owner.id}>
-            <input
+            <InputText
               type="text"
               placeholder={'Owner Name'}
-              style={{background:owner?.name === ''?'white':'#E1DCFF'}}
+              width={'32%'}
+              // style={{background:owner?.name === ''?'white':'#E1DCFF'}}
               value={owner?.name}
               onChange={(e) => updateOwner(e, owner.id, "name")}
-              className={styles.nameInput}
+              // className={styles.nameInput}
             />
             {/* <InputField /> */}
-            <input
+            <InputText
+              width={'60%'}
               disabled={hasMultiSignWallet || index === 0}
               type="text"
               placeholder={'Owner Address'}

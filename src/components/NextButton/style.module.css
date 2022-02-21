@@ -30,6 +30,7 @@ button {
   line-height: 1.5rem;
   color: #A3A3A3;
   align-self: center;
+  margin-left: 0.25rem;
 }
 
 .disabled {
@@ -61,7 +62,7 @@ button {
 
 .titleContainer{
   align-self:center; 
-  /* max-width: 69%; */
+  min-width: 72%;
   display: flex;
   justify-content: space-between;
 }

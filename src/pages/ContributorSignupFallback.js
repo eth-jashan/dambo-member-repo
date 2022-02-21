@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router'
-import { setAdminStatus } from '../store/actions/auth-action'
+import { setAdminStatus, signout } from '../store/actions/auth-action'
 import { set_invite_id } from '../store/actions/contibutor-action'
 
 const ContributorSignupFallback = () => {
@@ -12,6 +12,7 @@ const ContributorSignupFallback = () => {
 
     const linkCheck = useCallback(() => {
         dispatch(set_invite_id(id))
+        dispatch(signout())
         dispatch(setAdminStatus(false))
         navigate('/')
     },[dispatch, id, navigate])

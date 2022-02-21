@@ -1,7 +1,0 @@
-.inputContainer{
-  width: 480px;
-}
-.inputContainer:focus {
-  border: 1px solid #6852FF;
-  background: transparent;
-}

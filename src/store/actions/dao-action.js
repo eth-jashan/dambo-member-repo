@@ -40,6 +40,12 @@ export const getAllDaowithAddress = () => {
     }
 }
 
+export const gnosisDetailsofDao = async() => {
+  return (dispatch, getState) => {
+    
+  }
+}
+
 export const set_dao = (dao) => {
   return (dispatch) => {
     dispatch(daoAction.set_current_dao({

@@ -18,6 +18,7 @@ import { getAddressMembership } from "../../store/actions/gnosis-action";
 import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action";
 import { setProvider, setSigner } from "../../store/actions/we3-action";
 import chevron_right from '../../assets/Icons/chevron_right.svg'
+import { links } from "../../constant/links";
 
 const targetNetwork = NETWORKS.rinkeby;
 const localProviderUrl = targetNetwork.rpcUrl;
@@ -75,7 +76,7 @@ const ConnectWallet = ({ isAdmin }) =>{
           const res = await dispatch(getAddressMembership())
           if(res){
             setAuth(false)
-            navigate(`/dashboard/${res?.dao_details?.uuid}`)
+            navigate(`/dashboard/${address}`)
           }else{
             setAuth(false)
             navigate('/onboard/dao')
@@ -89,7 +90,7 @@ const ConnectWallet = ({ isAdmin }) =>{
               if(res){
                 message.success('Already a member')
                 dispatch(setAdminStatus(true))
-                navigate(`/dashboard/${uuid}`)
+                navigate(`/dashboard/${address}`)
               }else{
 
               }
@@ -108,7 +109,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     }
     setAuth(false)
     // navigate('/dashboard')
-  },[dispatch, isAdmin, navigate])
+  },[dispatch, isAdmin, navigate, uuid])
 
   const logoutOfWeb3Modal = useCallback(async () => {
     await web3Modal.clearCachedProvider();
@@ -134,10 +135,8 @@ const ConnectWallet = ({ isAdmin }) =>{
   )
     // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
-    console.log('token.....', address,uuid, jwt)
     dispatch(setDiscordOAuth(address,uuid, jwt))
-    //window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=https%3A%2F%2Fdw5gga7up1t8p.cloudfront.net%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds%20connections')
-    window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds')
+    window.location.replace(links.discord_oauth.local)
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -160,7 +159,7 @@ const ConnectWallet = ({ isAdmin }) =>{
           if(res){
             // console.log('callbacks.........', selected)
             setAuth(false)
-            navigate(`/dashboard/${res?.dao_details?.uuid}`)
+            navigate(`/dashboard/${newAddress}`)
           }else{
             setAuth(false)
             navigate('/onboard/dao')
@@ -174,7 +173,7 @@ const ConnectWallet = ({ isAdmin }) =>{
               if(res){
                 message.success('Already a member')
                 dispatch(setAdminStatus(true))
-                navigate(`/dashboard/${uuid}`)
+                navigate(`/dashboard/${newAddress}`)
               }else{
 
               }

@@ -7,6 +7,7 @@ import GnosisSafeList from "../components/GnosisSafe/GnosisSafeList";
 import DaoInfo from "../components/DaoInfo";
 import { useDispatch, useSelector } from "react-redux";
 import { addOwners, addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
+// import { useHistory } from "react-router-dom";
 import { useSafeSdk } from "../hooks";
 import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
@@ -16,7 +17,7 @@ export default function Onboarding() {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false);
-  
+  // const history = useHistory();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false)
   const [signer, setSigner] = useState()
@@ -35,7 +36,9 @@ export default function Onboarding() {
   const jwt = useSelector(x=>x.auth.jwt)
 
   const preventGoingBack = useCallback(() => {
-    window.history.pushState(null, document.title, window.location.href);
+    // console.log(navigate.location.from)
+    // if(navigate.location.from === `/dashboard/${address}`)
+    // window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", () => {
         if(address && jwt){
             console.log('on back!!!')
@@ -70,11 +73,12 @@ export default function Onboarding() {
       const res = await dispatch(registerDao())
       if(res){
         message.success('Your Dao is created succesfully')
-        navigate(`/dashboard/${res}`)
+        navigate(`/dashboard/${address}`)
       }
     } catch (error) {
       console.log('error on registering dao.....')
       message.error('error on registering dao.....')
+      navigate('/onboard/dao')
     }
   }, [dispatch, navigate, safeFactory, threshold, userSigner])
 
@@ -98,10 +102,11 @@ export default function Onboarding() {
       }
     }else if(currentStep === 4){
       if(hasMultiSignWallet){
-       const res = await dispatch(registerDao('Jashan Dao'))
-       console.log('ress', res)
+       const res = await dispatch(registerDao())
        if(res){
-        navigate(`/dashboard/${res}`)
+        navigate(`/dashboard/${address}`)
+       }else{
+         navigate(`/onboard/dao`)
        }
       }else{
       try {
@@ -110,7 +115,6 @@ export default function Onboarding() {
           owners.map((item, index)=>{
             owner.push(item.address)
           })
-          console.log(owner, selectedIndex +1)
           await deploySafe(owner)
         } catch (error) {
           console.log('error.... on deploying', error)

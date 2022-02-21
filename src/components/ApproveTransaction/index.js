@@ -35,7 +35,7 @@ export default function ApproveTransaction({
       </div>
       <div className={styles.bottomBar}>
         <NextButton
-          text="Add Permissions"
+          text="Add DAO details"
           increaseStep={increaseStep}
           isDisabled={selectedIndex >= 0 ? false : true}
         />
