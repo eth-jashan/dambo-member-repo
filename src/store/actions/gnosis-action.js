@@ -63,6 +63,7 @@ export const registerDao = () => {
   return async (dispatch, getState) => {
       
     const jwt = getState().auth.jwt
+    const address = getState().auth.address
     const owners = getState().gnosis.newSafeSetup.owners
     const safeAddress = getState().gnosis.safeAddress
     const threshold = getState().gnosis.newSafeSetup.threshold
@@ -76,12 +77,12 @@ export const registerDao = () => {
     const data = {
       dao_name:name,
       safe_addr:safeAddress,
-      by:owners[0].address,
+      by:address,
       signers:owner,
       signs_required:threshold
     }
 
-    // console.log('safe address.....data',JSON.stringify(data))
+    console.log('safe address.....data',JSON.stringify(data))
     
     try {
         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
@@ -106,7 +107,8 @@ export const registerDao = () => {
 export const getAllSafeFromAddress = (address) => {
   return async (dispatch, getState) => {
     const list = await serviceClient.getSafesByOwner(address)
-    console.log('list', list.safes)
+    const token = await serviceClient.getBalances('0x1074BdD199c849F450df15D39396880D81bea7f9')
+    console.log('list.....', token)
     let daos = []
     for(let i = 0; i< list.safes.length; i++){
       daos.push(`safe=${list.safes[i]}`)

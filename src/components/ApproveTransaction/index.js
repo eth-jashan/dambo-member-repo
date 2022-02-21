@@ -15,7 +15,7 @@ export default function ApproveTransaction({
       Add vault owners
       </div>
       <div className={`${styles.heading} ${styles.greyedHeading}`}>
-      have more than one owner to maximize security
+      have more than one owner to<br/>maximize security
       </div>
       <div className={styles.peopleContainer}>
         {Array(owners.length)
@@ -35,7 +35,7 @@ export default function ApproveTransaction({
       </div>
       <div className={styles.bottomBar}>
         <NextButton
-          text="Review"
+          text="Add Permissions"
           increaseStep={increaseStep}
           isDisabled={selectedIndex >= 0 ? false : true}
         />

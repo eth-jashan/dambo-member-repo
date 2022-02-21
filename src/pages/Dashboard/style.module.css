@@ -1,44 +1,97 @@
 .tabContainer{
     border:1px solid #21212B; 
     width:100%; 
-    padding-left:32px; 
-    padding-top:20px; 
-    border-top-right-radius :12px; 
-    border-top-left-radius :12px
+    padding: 1rem 0 0 2.5rem ;
+    flex-direction: row;
+    display: flex;
 }
-.tabHeadingFocus{
-    font-size :22px; 
-    color:white; 
-    font-family:monospace;
-    opacity:1 
+.selectionTab{
+    font-family: "TelegrafBolder";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #A2A2A3;
+    text-align: start;
+    padding-bottom: 0.75rem;
+    cursor: pointer;
 }
-.tabHeading{
-    font-size :22px; 
-    color:white; 
-    font-family:monospace;
-    opacity:0.6
+.selected{
+    font-family: "TelegrafBolder";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #FFFFFF;
+    text-align: start;
+    padding-bottom: 0.75rem;
+    border-bottom:1px solid #FFFFFF; 
+    cursor: pointer;
 }
-.tabSceneContainer{ 
-    width:100%;
-    border:1px solid #21212B;
-    padding-left:32px;
-    display:flex; 
-    flex-direction:column;
-    height:100%
+.heading {
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 3.375rem;
+    line-height: 3.5rem;
+    color: #FFFFFF;
+    text-align: start;
 }
-.requestText{
-    color:#FFFFFF;
-    font-size:12px; 
-    opacity: 0.5; 
-    font-family:monospace;
-    align-self:flex-start;
-    margin-top:16px;
-    margin-bottom:24px
+ 
+.emptyDiv{
+    width: 100%;
+    height: 100%;
+    padding: 2.25rem;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
-.tabCol{
-    padding-bottom:20px;
+
+.greyedHeading {
+    color: #A2A2A3;
+    text-align: start;
 }
 .dashView{
-    padding: 16px; 
-    width: 100%
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+.button{
+    padding: 0.5rem 1.25rem ;
+    background-color: #6852FF;
+    margin-top: 6%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.button>div{
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #FFFFFF;
+}
+
+.paymentButton{
+    padding: 0.5rem 1.25rem ;
+    background-color: #FFFFFF;
+    min-width: 18rem;
+    /* margin-top: 6%; */
+    position: absolute;
+    bottom: 1.5rem;
+    display: flex;
+    align-self: center;
+    align-items: center;
+}
+.paymentButton>div{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: #6852FF;
+    text-align: start;
 }

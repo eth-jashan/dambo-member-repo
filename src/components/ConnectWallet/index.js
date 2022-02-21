@@ -9,14 +9,16 @@ import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout 
 import { BsChevronRight } from 'react-icons/bs'
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
-import { Divider, Alert } from "antd";
+import { Divider, Alert, message } from "antd";
 import { useNavigate } from "react-router";
 import walletIcon from '../../assets/Icons/wallet.svg'
 import tickIcon from '../../assets/Icons/tick.svg'
 import { FaDiscord } from 'react-icons/fa'
 import { getAddressMembership } from "../../store/actions/gnosis-action";
-import { setDiscordOAuth } from "../../store/actions/contibutor-action";
+import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action";
 import { setProvider, setSigner } from "../../store/actions/we3-action";
+import chevron_right from '../../assets/Icons/chevron_right.svg'
+
 const targetNetwork = NETWORKS.rinkeby;
 const localProviderUrl = targetNetwork.rpcUrl;
 const localProvider = new ethers.providers.StaticJsonRpcProvider(
@@ -52,17 +54,17 @@ const ConnectWallet = ({ isAdmin }) =>{
   const web3Provider = useSelector(x=>x.auth.web3Provider)
   const userSigner = useUserSigner(web3Provider, localProvider);
   const uuid = useSelector(x=>x.contributor.invite_code)
-
+  const [auth, setAuth] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const authWithWallet = useCallback(async(address) => {
-    
+    setAuth(true)
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
-    console.log('adresssss.....',signer)
+  
     dispatch(setSigner(signer));
     if(chainId === 4){
       try {
@@ -72,12 +74,29 @@ const ConnectWallet = ({ isAdmin }) =>{
         if(isAdmin){
           const res = await dispatch(getAddressMembership())
           if(res){
+            setAuth(false)
             navigate(`/dashboard/${res?.dao_details?.uuid}`)
           }else{
+            setAuth(false)
             navigate('/onboard/dao')
           }
         }else{
+          setAuth(false)
           // navigate(`/onboard/contributor/${uuid}`)
+          if(!isAdmin){
+            try {
+              const res = await dispatch(getRole(uuid))
+              if(res){
+                message.success('Already a member')
+                dispatch(setAdminStatus(true))
+                navigate(`/dashboard/${uuid}`)
+              }else{
+
+              }
+            } catch (error) {
+              message.error('Error on getting role')
+            }
+          }
         }
       }
       } catch (error) {
@@ -85,8 +104,9 @@ const ConnectWallet = ({ isAdmin }) =>{
       }
     }else{
       console.log('change chain id')
-      alert('change chain id.....')
+      message.error('change chain to rinkeby.....')
     }
+    setAuth(false)
     // navigate('/dashboard')
   },[dispatch, isAdmin, navigate])
 
@@ -116,10 +136,12 @@ const ConnectWallet = ({ isAdmin }) =>{
   const onDiscordAuth = () => {
     console.log('token.....', address,uuid, jwt)
     dispatch(setDiscordOAuth(address,uuid, jwt))
+    //window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=https%3A%2F%2Fdw5gga7up1t8p.cloudfront.net%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds%20connections')
     window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds')
   }
 
   const loadWeb3Modal = useCallback(async () => {
+    setAuth(true)
     console.log('start.....')
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
@@ -137,21 +159,41 @@ const ConnectWallet = ({ isAdmin }) =>{
           const res = await dispatch(getAddressMembership())
           if(res){
             // console.log('callbacks.........', selected)
+            setAuth(false)
             navigate(`/dashboard/${res?.dao_details?.uuid}`)
           }else{
+            setAuth(false)
             navigate('/onboard/dao')
           }
         }else{
+          setAuth(false)
+          console.log("admin..........", isAdmin)
+          if(!isAdmin){
+            try {
+              const res = await dispatch(getRole(uuid))
+              if(res){
+                message.success('Already a member')
+                dispatch(setAdminStatus(true))
+                navigate(`/dashboard/${uuid}`)
+              }else{
+
+              }
+            } catch (error) {
+              message.error('Error on getting role')
+            }
+          }
           // navigate(`/onboard/contributor/${uuid}`)
         }
       }else if(!res && chainid === 4 ){
         //doesnot token and chain is 4
+        setAuth(false)
         dispatch(setLoggedIn(false))
         console.log('no jwt....')
         authWithWallet(newAddress)
       }
       else{
         //chain is wrong
+        setAuth(false)
         dispatch(setLoggedIn(false))
         alert('change chain id......')
         alertBanner()
@@ -245,7 +287,8 @@ const ConnectWallet = ({ isAdmin }) =>{
       console.log(code, reason);
       logoutOfWeb3Modal();
     });
-  }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate, uuid]);
+    setAuth(false)
+  }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate]);
 
   useEffect(() => {
     async function getAddress() {
@@ -273,13 +316,12 @@ const ConnectWallet = ({ isAdmin }) =>{
         <div onClick={()=>loadWeb3Modal()} className={styles.walletLogo}>
         <img 
           src={metamaskIcon}
-          alt='metamask' 
-          height={32} 
-          width={32} 
+          alt='metamask'
+          className={styles.walletImg}
         />
         <div className={styles.walletName}>Metamask</div>
         </div>
-        <BsChevronRight />
+        <img src={chevron_right} className={styles.chevronIcon} width='32px' height='32px' alt='cheveron-right'/>
       </div>
   )
   
@@ -303,8 +345,8 @@ const ConnectWallet = ({ isAdmin }) =>{
         <div className={styles.authHeading}>Authenticate your wallet</div>
         <div className={styles.authGreyHeading}>This is required to login, create or<br/> import your safes</div>
 
-        <div onClick={async()=>await authWithWallet(address)} className={styles.authBtn}>
-          <div className={styles.btnTextAuth}>Authenticate wallet</div>
+        <div onClick={auth?()=>{}:async()=>await authWithWallet(address)} className={styles.authBtn}>
+          <div className={styles.btnTextAuth}>{auth?'Authenticating....':'Authenticate wallet'}</div>
         </div>
       </div>
 
@@ -317,10 +359,10 @@ const ConnectWallet = ({ isAdmin }) =>{
   }
 
   const daoWallet = () => (
-    <div>
+    <div style={{width:'100%'}}>
       <div className={styles.headingCnt}>
         <div className={styles.heading}>Connect wallet</div>
-        <div className={styles.greyHeading}>First step towards streamlining your DAO</div>
+        <div className={styles.greyHeading}>First step towards<br/> streamlining your DAO</div>
       </div>
       {address?authWallet():connectWallet()}
     </div>
@@ -354,10 +396,10 @@ const ConnectWallet = ({ isAdmin }) =>{
           </div>
           {(!jwt)&&<div  onClick={()=>loadWeb3Modal()} className={styles.connectBtn}>
             <span className={styles.btnTitle}>
-              Connect Wallet
+              {auth?'Conecting...':'Connect Wallet'}
             </span>
           </div>}
-          {(address)&&
+          {(address && jwt)&&
           <div  onClick={()=>disconnectContributor()} className={styles.disconnectDiv}>
             <div className={styles.divider}/>
             <span className={styles.disconnectTitle}>

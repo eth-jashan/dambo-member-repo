@@ -23,24 +23,24 @@ const DaoInfo = ({increaseStep, decreaseStep, deploying}) => {
                 Tell us a lil about<br/>your DAO
                 </Typography.Text>
 
-                <div>
-                <div style={{marginTop:'90px'}}>
-                    <Typography.Text className={styles.helperText}>What should we call your DAO</Typography.Text>
+                <div className={styles.form}>
                     <div>
-                        <input value={name} onChange={(e)=>setName(e.target.value)} placeholder='DAO Name' className={name ===''?styles.input:styles.inputText} />
+                        <Typography.Text className={styles.helperText}>What should we call your DAO</Typography.Text>
+                        <div>
+                            <input value={name} onChange={(e)=>setName(e.target.value)} placeholder='DAO Name' className={name ===''?styles.input:styles.inputText} />
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <Typography.Text className={styles.helperTextSec}>How we can reach you</Typography.Text>
                     <div>
-                        <input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder='Your email address (optional)' className={email ===''?styles.input:styles.inputText} />
+                        <Typography.Text className={styles.helperTextSec}>How we can reach you</Typography.Text>
+                        <div>
+                            <input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder='Your email address (optional)' className={email ===''?styles.input:styles.inputText} />
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
             <div className={styles.nextBtn}>
                 <NextButton
-                    text="Review"
+                    text="Add Owners"
                     increaseStep={onSubmit}
                     isDisabled={name === '' || deploying}
                 />

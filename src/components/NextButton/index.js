@@ -1,16 +1,17 @@
 import React from "react";
 import styles from "./style.module.css";
 import { BsArrowRightShort } from 'react-icons/bs';
+import rightArrow from "../../assets/Icons/right_arrow_white.svg";
 
-export default function NextButton({ increaseStep, text, isDisabled, isContributor }) {
-  // console.log('DISABLEDDDD', isDisabled)
+export default function NextButton({ increaseStep, text, isDisabled, isContributor, width }) {
+  
   return (
     <div onClick={!isDisabled ? increaseStep : () => {}} className={!isDisabled ? styles.btnCtn : styles.btnCtnGreyed}> 
-      <div style={{alignSelf:'center'}}>
+      <div className={styles.titleContainer}>
         <span className={styles.whiteIcon}>{!isContributor?'Next':'Open Dashboard'}</span> 
         {!isContributor&&<span className={styles.greyedText}> &bull; {text}</span>}
       </div>
-      <BsArrowRightShort style={{alignSelf:'center', marginTop:'8px'}} size={24} color={'white'} />
+      <img src={rightArrow} alt='right' className={styles.icon} />
     </div>
   );
 }

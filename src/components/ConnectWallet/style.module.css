@@ -1,39 +1,42 @@
 .heading{
-  font-family: 'TelegrafBold';
-  font-style: normal;
-  font-weight: 800;
-  font-size: 53px;
-  line-height: 56px;
+  font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 3.375rem;
+    line-height: 3.5rem;
 }
 
 .greyHeading{
-  font-family: 'TelegrafBold';
+  font-family: 'TelegrafBolder';
   font-style: normal;
   font-weight: 800;
-  font-size: 52px;
-  line-height: 56px;
+  font-size: 3.375rem;
+  line-height: 3.5rem;
   color: #999999;
+  margin-bottom: 5.50%;
 }
 
 .walletName{
-  font-family: 'TelegrafBolder';
+  font-family: 'TelegrafBold';
   font-style: normal;
-  font-size: 20px;
-  line-height: 32px;
-  margin-left: 12px;
+  font-weight: 800;
+  font-size: 1.188rem;
+  line-height: 2rem;
+  margin-left: 1.25rem;
 }
 
 .walletCnt{
-    display: flex;
-    width: 100%;
-    border: 1px solid #e0e0e0;
-    padding: 12px;
-    border-left-width: 0;
-    border-right-width: 0;
+  display: flex;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  padding: 1.25rem;
+  border-left-width: 0;
+  border-right-width: 0;
     /* border-bottom-width: 0; */
-    justify-content: space-between;
-    cursor: pointer;
-    margin-top: 40px;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+    /* margin-top: 40px; */
 }
 
 .walletCntAuth{
@@ -53,14 +56,18 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  align-items: center;
 }
-
+.walletImg{
+  height: 2rem;
+  width: 2rem;
+}
 .addresCnt{
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-left: 12px;
+  margin-left: 1.25rem;
   /* background: blue; */
   /* border: 1px solid #e0e0e0; */
 }
@@ -69,16 +76,16 @@
   font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .disconnectLink{
   font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   text-decoration-line: underline;
 }
 
@@ -89,16 +96,16 @@
   font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
-  font-size: 23px;
-  line-height: 32px;
+  font-size: 1.438rem;
+  line-height: 2rem;
 }
 
 .authGreyHeading{
   font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: normal;
-  font-size: 23px;
-  line-height: 32px;
+  font-size: 1.438rem;
+  line-height: 2rem;
   color: #999999;
 }
 
@@ -108,27 +115,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  margin-top: 20px;
-  border-radius: 30px;
+  padding: 0.75rem;
+  margin-top: 2rem;
+  border-radius: 2rem;
 }
 
 .btnTextAuth{
   font-family: 'TelegrafBolder';
   font-style: normal;
   font-weight: bold;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   color: white;
 }
 
 .metaCard{
   width: 80%;
-  height: 300px;
-  padding: 40px;
+  min-height: 18.75rem;
+  padding: 2.5rem;
   background: white;
   position: relative;
-  border-radius: 24px;
+  border-radius: 1.5rem;
   display: flex;
   flex-direction: row;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08), 0px 0px 20px rgba(0, 0, 0, 0.12);
@@ -149,8 +156,8 @@
   font-family: "TelegrafBolder";
   font-style: normal;
   font-weight: 800;
-  font-size: 36px;
-  line-height: 48px;
+  font-size: 2.25rem;
+  line-height: 2.75rem;
   color: #000000;
   text-align: start;
 }
@@ -159,8 +166,8 @@
   font-family: "TelegrafMedium";
   font-style: normal;
   font-weight: normal;
-  font-size: 24px;
-  line-height: 32px;
+  font-size: 1.5rem;
+  line-height: 2rem;
   color: #000000;
   opacity: 0.4;
   text-align: start;
@@ -169,7 +176,7 @@
 .connectBtn{
   width: 30%;
   background: #6852FF;
-  padding: 8px 20px 10px 20px;
+  padding: 0.75rem 1.25rem;
   border-radius: 100px;
   margin-top: 44px;
   cursor: pointer;
@@ -178,7 +185,7 @@
 .connectBtnGrey{
   width: 30%;
   background: #B3B3B3;
-  padding: 8px 20px 10px 20px;
+  padding: 0.75rem 1.25rem;
   border-radius: 100px;
   margin-top: 44px;
   cursor: pointer;
@@ -188,8 +195,8 @@
   font-family: "TelegrafBold";
   font-style: normal;
   font-weight: 800;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   color: white;
 }
 
@@ -209,8 +216,8 @@
   font-family: "TelegrafMedium";
   font-style: normal;
   font-weight: normal;
-  font-size: 36px;
-  line-height: 48px;
+  font-size: 2.25rem;
+  line-height: 3rem;
   /* identical to box height, or 133% */
   color: #1D7F60;
   text-align: start;

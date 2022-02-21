@@ -7,26 +7,28 @@
     /* background: red; */
 }
 .heading{
-    font-family: "TelegrafBold";
+    font-family:'TelegrafBolder';
     font-style: normal;
     font-weight: 800;
-    font-size: 53px;
-    line-height: 56px;
-    /* margin-bottom: 96px; */
+    font-size: 3.313rem;
+    line-height: 3.5rem;
+}
+.form{
+    margin-top: 13.12%;
 }
 .inputText{
     border: 1px solid #EEEEF0;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     width: 60%;
     color: black;
-    padding: 8px 0px 10px 8px;
+    padding: 1rem;
     background-color: #E1DCFF;
     font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
 }
 .inputText:focus{
     /* border: 1px solid #6852FF; */
@@ -40,21 +42,21 @@
     border-radius: 8px;
     width: 60%;
     color: black;
-    padding: 8px 0px 10px 8px;
+    padding: 1rem;
     color: #6852FF;
     font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
 }
 
 .input::placeholder{
     font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
     color: #000000;
     opacity: 0.4;
 }
@@ -65,7 +67,7 @@
 }
 
 .nextBtn{
-    width: 50%;
+    width: 100%;
     justify-content: flex-end;
 }
 
@@ -73,14 +75,16 @@
     font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 .helperTextSec{
     font-family: 'TelegrafMedium';
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
-    margin-top: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    margin-top: 3.305%;
+    margin-bottom: 0.5rem;
 }

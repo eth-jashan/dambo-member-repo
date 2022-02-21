@@ -1,14 +1,122 @@
-.treasureContainer{
-    background: black;
-    padding:16px; 
-    border:1px solid #21212B; 
-    color:white; 
-    font-family:monospace; 
-    font-size :12px
+.header{
+    width: '100%';
+    border: 1px solid #21212B;
+    padding: 1.2rem 1.125rem 1rem 2.5rem;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
 }
-.dashboardContainer{
-    display:'flex'; 
-    flex-direction:'column'; 
-    justify-content:'space-between'; 
-    height:'100%'
+.headerText{
+    font-family: "TelegrafBolder";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #FFFFFF;
+    text-align: start;
+}
+
+.layout{
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    display: flex;
+    flex-direction: row;
+}
+
+.accountsLayout{
+    width: 3.8%;
+    background: #333232;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    overflow-y:scroll;
+}
+.accountsLayout::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+.accountsLayout {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.children{
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.logoContainer{
+    padding: 0.625rem;
+    /* position: ; */
+    background: #333232;
+}
+
+.addContainer{
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    padding-bottom: 0.625rem;
+    /* position: fixed; */
+}
+
+.accountContainer{
+    padding: 0.625rem;
+}
+
+.selectedAccount{
+    border-left: 4px solid #FFFFFF;
+    align-items: center;
+    justify-content: center;
+    /* padding-left: 0.625rem; */
+    padding-right: 0.625rem;
+    padding-top: 0.625rem;
+}
+.addButton{
+    height:2.25rem;
+    border-radius:2.25rem; 
+    width: 2.25rem; 
+    background: #5D5C5D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.625rem;
+}
+.adminStats{
+    width: 25.5%;
+    border: 1px solid #21212B;
+    border-top: 0;
+    border-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    /* overflow: hidden; */
+    /* justify-content: space-around; */
+    height: 100%;
+    /* background: red; */
+}
+.copyLink{
+    width: 100%;
+    border: 1px solid #21212B;
+    padding: 1.5rem 0rem 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* position: absolute;
+    bottom: 0; */
+}
+.copyLinkdiv{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: #FFFFFF;
+    margin-left: 0.75rem;
+}
+.childrenLayout{
+    width:100%; 
+    height:100%;
+    overflow:hidden
 }

@@ -1,7 +1,8 @@
-import styles from "./style.module.css";
+import React from "react";
 import WalletPicker from "../../components/WalletPicker";
 import { Row, Col, Typography } from "antd";
 import { useSelector } from "react-redux";
+import styles from "./style.module.css";
 
 export default function Header({ children, decreaseStep }) {
   
@@ -15,28 +16,15 @@ export default function Header({ children, decreaseStep }) {
         width: "100%",
       }}
     >
-      <div style={{
-          width: "74vw",
-          display:'flex',
-          flexDirection:'row',
-          padding: "16px",
-          justifyContent: "space-between",
-          alignItems: "center",
-      }}>
-          <Typography.Text
-            style={{
-              fontFamily: "TelegrafBold",
-              marginLeft: "12px",
-              color: "white",
-              alignSelf: "center",
-              fontSize: "16px",
-            }}
+      <div className={styles.headerCnt}>
+          <div
+            className={styles.headerName}
           >
             Drepute
-          </Typography.Text>
+          </div>
         
       
-      {jwt&&<div style={{width:'24%'}}>
+      {jwt&&<div>
         <WalletPicker />
       </div>}
       </div>

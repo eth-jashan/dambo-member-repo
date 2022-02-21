@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Onboarding from "./pages/DaoOnboarding";
 import Dashboard from './pages/Dashboard/index'
 import ContributorOnbording from "./pages/ContributorOnboarding";
@@ -8,16 +8,11 @@ import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import DiscordFallback from "./pages/DiscordFallback";
 import { setAdminStatus, setLoggedIn, signout } from "./store/actions/auth-action";
-import { set_invite_id } from "./store/actions/contibutor-action";
-import { INFURA_ID, NETWORKS } from "./constants";
-import { ethers } from "ethers";
+import { INFURA_ID } from "./constants";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
-const targetNetwork = NETWORKS.rinkeby;
-const localProviderUrl = targetNetwork.rpcUrl;
-const localProvider = new ethers.providers.StaticJsonRpcProvider(
-  localProviderUrl
-);
+import ContributorSignupFallback from "./pages/ContributorSignupFallback";
+
 
 const providerOptions = {
   walletconnect: {
@@ -46,9 +41,7 @@ function App() {
   const loggedIn = useSelector(x=>x.auth.loggedIn)
   const isAdmin = useSelector(x=>x.auth.isAdmin)
   const address = useSelector(x=>x.auth.address)
-  const discord = useSelector(x=>x.contributor.discord_auth)
   const navigate = useNavigate()
-  // const pathname = window.location.pathname
   const dispatch = useDispatch()
 
   const loadWeb3Modal = useCallback(async () => {
@@ -69,7 +62,7 @@ function App() {
     });
 
     provider.on("accountsChanged",async () => {
-        console.log(`account changed!`);
+        console.log(`account changed!.....`);
         if(isAdmin){
           dispatch(setLoggedIn(false))
           dispatch(signout())
@@ -81,11 +74,6 @@ function App() {
           navigate('/')
         }
     });
-
-    // Subscribe to session disconnection
-    // provider.on("disconnect", (code, reason) => {
-    //   logoutOfWeb3Modal();
-    // });
   }, [dispatch, isAdmin, navigate]);
 
   console.log(isAdmin, address, loggedIn);
@@ -94,46 +82,17 @@ function App() {
     loadWeb3Modal()
   },[loadWeb3Modal])
 
-  const adminRoutes = () => (
-        <Routes>
-          {/* {!loggedIn &&  */}
-           <>
-          <Route path='/' element={<AuthWallet />} />
-          <Route path='/discord/fallback' element={<DiscordFallback />} />
-          </>
-          {/* }
-          {loggedIn && */}
-          <>
-          <Route path="/onboard/dao" element={<Onboarding />} />
-          <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
-          <Route path="dashboard/:id" element={<Dashboard />} />
-          </>
-          {/* } */}
-        </Routes>
-  )
-
-  const contributorRoute = () => (
-    <Routes>
-      {(!loggedIn && !discord) &&
-      <>
-      <Route path='/auth' element={<AuthWallet />} />
-      <Route path='/discord/fallback' element={<DiscordFallback />} />
-      </>
-      }
-      {(loggedIn && discord) &&
-      <>
-      <Route path="/onboard/dao" element={<Onboarding />} />
-      <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
-      <Route path="dashboard" element={<Dashboard />} />
-      </>
-      }
-    </Routes>
-)
-
   return (
     <div className="App">
       <div className="App-header">
-        {adminRoutes()}
+        <Routes>
+          <Route path='/' element={<AuthWallet />} />
+          <Route path='/discord/fallback' element={<DiscordFallback />} />
+          <Route path="/onboard/dao" element={<Onboarding />} />
+          <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
+          <Route path="dashboard/:id" element={<Dashboard />} />
+          <Route path="contributor/invite/:id" element={<ContributorSignupFallback />} />
+        </Routes>
       </div>
     </div>
   );

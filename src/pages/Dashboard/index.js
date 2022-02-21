@@ -1,10 +1,11 @@
-import { List, Col, Row, Typography, Button } from 'antd';
+import { List, Col, Row, Typography, Button, message } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import ContributionCard from '../../components/ContributionCard';
 import PaymentCard from '../../components/PaymentCard';
 import { getJwt } from '../../store/actions/auth-action';
+import { IoMdAdd } from 'react-icons/io'
 import { getRole } from '../../store/actions/contibutor-action';
 import { getAllDaowithAddress } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
@@ -19,12 +20,20 @@ export default function Dashboard() {
     const {id}  = useParams()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const role = useSelector(x=>x.dao.role)
+
+    async function copyTextToClipboard() {
+        if ('clipboard' in navigator) {
+            message.success('invite link copied succesfully!')
+          return await navigator.clipboard.writeText(`https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+        } else {
+          return document.execCommand('copy', true, `https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+        }
+    }
     
-    // const history = useHisto
     const preventGoingBack = useCallback(() => {
         window.history.pushState(null, document.title, window.location.href);
         window.addEventListener("popstate", () => {
-            // navigate.to(1);
             if(address && jwt){
                 console.log('on back!!!')
                 window.history.pushState(null, document.title, window.location.href);
@@ -34,20 +43,21 @@ export default function Dashboard() {
 
     const initialload = useCallback( async() => {
         if(address){
-            const res = await dispatch(getJwt(address))
-            if(res){
                 const jwtIfo = await dispatch(getJwt(address))
+                console.log('jwt expiry check....',jwtIfo)
                 if(jwtIfo){
-                    dispatch(getRole(id))
-                    dispatch(getAllDaowithAddress())
+                    await dispatch(getRole(id))
+                   await dispatch(getAllDaowithAddress())
                 }else{
+                    message.info('Token expired')
                     navigate('/')
                 }
                 
-            }
         }
     },[address, dispatch, id, navigate])
+
     useEffect(()=>{
+        console.log('start.....')
         initialload()
     },[initialload])
 
@@ -57,50 +67,51 @@ export default function Dashboard() {
 
     const renderTab = () => (
         <div className={styles.tabContainer}>
-            <Row>
-                <Col onClick={()=>setTab('contributions')} className={styles.tabCol} style={{borderBottom:tab ==='contributions'?'4px solid #21212A':null}}>
-                    <span className={tab==='contributions'?styles.tabHeadingFocus:styles.tabHeading}>Contributions</span>
-                </Col>
-
-                <Col onClick={()=>setTab('payments')} className={styles.tabCol} style={{borderBottom:tab ==='payments'?'4px solid #21212A':null, marginLeft:'32px'}}>
-                    <span className={tab==='payments'?styles.tabHeadingFocus:styles.tabHeading}>Payments</span>
-                </Col>
-            </Row>
+            <div onClick={()=>setTab('contributions')} className={tab==='contributions'?`${styles.selected}`:`${styles.selectionTab}`}>
+            Contributions
+            </div>
+            <div onClick={()=>setTab('payments')} style={{marginLeft:'1.66%'}} className={tab==='payments'?`${styles.selected}`:`${styles.selectionTab}`}>
+            Payments
+            </div>
         </div>
     )
 
-    const renderScene = () => (
-        <>
-        <div className={styles.tabSceneContainer}>
-        <span className={styles.requestText}>24 Contribution requests</span>
-            <List
-                grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 1,
-                    md: 1,
-                    lg: 1,
-                    xl: 1,
-                    xxl: 1,
-                }}
-                style={{alignSelf:'center', width:'100%'}}
-                dataSource={['1']}
-                renderItem={item => (
-                    tab ==='contributions'? <ContributionCard />:<PaymentCard />
-                )}
-            />
+    const renderEmptyScreen = () => (
+        <div className={styles.emptyDiv}>
+            <div className={styles.heading}>
+                No contribution requests
+            </div>
+            {role !== 'ADMIN'?<div className={`${styles.heading} ${styles.greyedHeading}`}>
+                Initiate a contributrion<br/> request to get paid
+            </div>:
+            <div className={`${styles.heading} ${styles.greyedHeading}`}>
+                Share link to onboard<br/> contributors
+            </div>}
+
+            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>{}} className={styles.button}>
+                <div>
+                    {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
+                </div>
+            </button>
+            {role === 'ADMIN' && paymetButton()}
         </div>
-        </>
+    )
+
+    const paymetButton = () => (
+        <button className={styles.paymentButton}>
+            <div>
+            Initiate new Payment
+            </div>
+            <IoMdAdd color='#6852FF' />
+        </button>
     )
     
     return (
         <DashboardLayout>
-            <>
             <div className={styles.dashView}>
                 {renderTab()}
-                {renderScene()}
+                {renderEmptyScreen()}
             </div>
-            </>
         </DashboardLayout>
     );
   }

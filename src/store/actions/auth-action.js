@@ -2,6 +2,7 @@ import axios from "axios";
 import api from "../../constant/api";
 import routes from "../../constant/routes";
 import { authActions } from "../reducers/auth-slice";
+import { contributorAction } from "../reducers/contributor-slice";
 
 export const authWithSign = (address, signer) => {
   return async (dispatch, getState) => {
@@ -147,7 +148,7 @@ export const joinContributor = (id) => {
     const address = getState().auth.address
     const role = getState().auth.role
     const contributorName = getState().auth.contributorName
-
+    
     const data = {
       addr : address,
       name : contributorName,
@@ -162,6 +163,7 @@ export const joinContributor = (id) => {
       })
       console.log('contributor joined....', res.data)
       if(res.data.success){
+        dispatch(contributorAction.set_discord({status:false}))
         return 1
       }else{
         return 0

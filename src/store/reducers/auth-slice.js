@@ -41,6 +41,7 @@ const authSlice = createSlice({
       state.community_roles = action.payload.roles
     },
     set_admin(state, action){
+      console.log('set adim......', action.payload.status)
       state.isAdmin = action.payload.status
     },
     reset_web3(state, action){

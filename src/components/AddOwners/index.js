@@ -15,6 +15,7 @@ const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gn
 export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep }) {
   
   const address = useSelector(x=>x.auth.address)
+  const owner = useSelector(x=>x.gnosis.owners)
   const [owners, setOwners] = useState([
     {
       id: uuidv4(),
@@ -24,12 +25,15 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
   ])
   const [threshold, setThreshold] = useState(0)
   const dispatch = useDispatch()
-  const provider = useSelector(x=>x.auth.web3Provider);
+  // const provider = useSelector(x=>x.auth.web3Provider);
   const safeAddress = useSelector(x=>x.gnosis.safeAddress)
-  const userSigner = useUserSigner(provider, null);
+  // const userSigner = useUserSigner(provider, null);
   const [loading, setLoading] = useState(false)
   
   const getSafeOwners = useCallback( async() =>{
+    if(owner.length>0){
+      setOwners(owner)
+    }else{
       let ownerObj = []
       const safeInfo = await serviceClient.getSafeInfo(safeAddress)
       if(safeInfo.owners){
@@ -45,7 +49,8 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       setOwners(ownerObj)
       setThreshold(safeInfo.threshold)
       }
-  },[safeAddress])
+    }
+  },[owner, safeAddress])
 
   useEffect(()=>{
     if(hasMultiSignWallet){
@@ -109,10 +114,15 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.heading}>Add vault owners</div>
-      <div className={`${styles.heading} ${styles.greyedHeading}`}>
-        have more than one owner to maximize security
-      </div>
+      {hasMultiSignWallet?
+      <div className={styles.heading}>Review your owners</div>:<div className={styles.heading}>Add vault owners</div>}
+        {hasMultiSignWallet?
+        <div className={`${styles.heading} ${styles.greyedHeading}`}>
+          Tell us what to call your team <br/> members.
+        </div>:
+        <div className={`${styles.heading} ${styles.greyedHeading}`}>
+        have more than one owner <br/> to maximize security
+        </div>}
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (
           <div className={styles.ownerRow} key={owner.id}>
@@ -148,7 +158,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
           />
         </div>
       </div>
-      <div onClick={!hasMultiSignWallet && addOwner} className={styles.addOwner}>
+      <div onClick={!hasMultiSignWallet ?()=>addOwner():()=>{}} className={styles.addOwner}>
         Add Owner <img src={PlusSvg} alt="add" />
       </div>
     </div>

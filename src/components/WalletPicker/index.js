@@ -4,6 +4,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import Paragraph from "antd/lib/skeleton/Paragraph";
 import { setAdminStatus, signout } from "../../store/actions/auth-action";
 import { useNavigate } from "react-router";
+import {BsChevronDown} from 'react-icons/bs'
+import chevronDown from '../../assets/Icons/chevron_down.svg'
+import styles from "./style.module.css";
 
 export default function  WalletPicker() {
   const address = useSelector(x=>x.auth.address);
@@ -38,7 +41,7 @@ export default function  WalletPicker() {
     const walletMenu = (
         <Menu style={{borderRadius:'8px'}} onClick={onClick}>
           <Menu.Item key="1">
-          <a copyable={{tooltips:false, icon:false, text:address}}  style={{color:'black', textDecorationLine:'underline', fontFamily:'TelegrafMedium', fontWeight:'500'}}>Copy wallet address</a>  
+          <a style={{color:'black', textDecorationLine:'underline', fontFamily:'TelegrafMedium', fontWeight:'500'}}>Copy wallet address</a>  
           </Menu.Item>
           <div style={{width:'100%', height:0, border: "0.5px solid #EEEEF0"}} />
           <Menu.Item key="2">
@@ -49,9 +52,10 @@ export default function  WalletPicker() {
       );
 
     return (
-        <Dropdown onClick={e => e.preventDefault()} overlay={walletMenu}>
-            <div style={{alignSelf:'center',paddingRight:'8px', paddingLeft:'8px',display:'flex',justifyContent:'center'}}>
-              <Typography.Text ellipsis={true} style={{fontFamily:'Inter', color:'white',  fontSize:'12px'}}>ETH . {address?.slice(0,5)+'.....'+ address?.slice(-3)}</Typography.Text>
+        <Dropdown  overlay={walletMenu}>
+            <div className={styles.walletCnt}>
+              <div className={styles.address}>ETH . {address?.slice(0,5)+'.....'+ address?.slice(-3)}</div>
+              <img alt='chevron_down' src={chevronDown} className={styles.icon} />
             </div>
         </Dropdown>
     )

@@ -6,43 +6,11 @@ import ConnectWallet from "../components/ConnectWallet"
 import GnosisSafeList from "../components/GnosisSafe/GnosisSafeList";
 import DaoInfo from "../components/DaoInfo";
 import { useDispatch, useSelector } from "react-redux";
-import { addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
-import { useSafeSdk, useUserSigner } from "../hooks";
+import { addOwners, addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
+import { useSafeSdk } from "../hooks";
 import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
-import Web3Modal from "web3modal";
-import { INFURA_ID, NETWORKS } from "../constants";
-import WalletConnectProvider from "@walletconnect/web3-provider";
 import { message } from "antd";
-
-const targetNetwork = NETWORKS.rinkeby;
-const localProviderUrl = targetNetwork.rpcUrl;
-const localProvider = new ethers.providers.StaticJsonRpcProvider(
-  localProviderUrl
-);
-
-const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider, // required
-    options: {
-      bridge: "https://polygon.bridge.walletconnect.org",
-      infuraId: INFURA_ID,
-      rpc: {
-        1:`https://mainnet.infura.io/v3/${INFURA_ID}`, // mainnet // For more WalletConnect providers: https://docs.walletconnect.org/quick-start/dapps/web3-provider#required
-        100:"https://dai.poa.network", // xDai
-      },
-    },
-  },
-};
-
-const web3Modal = new Web3Modal({
-  network: "mainnet", // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
-  cacheProvider: true, // optional
-  theme:"light", // optional. Change to "dark" for a dark theme.
-  providerOptions: {
-    providerOptions
-  },
-});
 
 export default function Onboarding() {
   
@@ -52,12 +20,9 @@ export default function Onboarding() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false)
   const [signer, setSigner] = useState()
-  // const provider = useSelector(x=>x.web3.provider);
   const userSigner = useSelector(x=>x.web3.signer);
-  // const web3Provider = new providers.Web3Provider(provider)
-  // const userSigner = useUserSigner(null, null);
   const [safeAddress, setSafeAddress] = useState()
-  const { safeSdk, safeFactory } = useSafeSdk(signer, safeAddress)
+  const { safeFactory } = useSafeSdk(signer, safeAddress)
   
   
   const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
@@ -72,7 +37,6 @@ export default function Onboarding() {
   const preventGoingBack = useCallback(() => {
     window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", () => {
-        // navigate.to(1);
         if(address && jwt){
             console.log('on back!!!')
             window.history.pushState(null, document.title, window.location.href);
@@ -88,13 +52,13 @@ export default function Onboarding() {
     console.log('deployingggg', threshold, safeFactory,userSigner)
     if (!safeFactory) return
     setDeploying(true)
-    const safeAccountConfig = { owners, threshold:1 }
+    const safeAccountConfig = { owners, threshold }
     let safe
     console.log('deployingggg')
     try {
       safe = await safeFactory.deploySafe(safeAccountConfig)
+      message.success('A safe is successfully created !')
     } catch (error) {
-      // console.error(error)
       message.error(error.message)
       setDeploying(false)
       return
@@ -105,13 +69,14 @@ export default function Onboarding() {
     try {
       const res = await dispatch(registerDao())
       if(res){
+        message.success('Your Dao is created succesfully')
         navigate(`/dashboard/${res}`)
       }
     } catch (error) {
       console.log('error on registering dao.....')
-      message.error(error)
+      message.error('error on registering dao.....')
     }
-  }, [safeFactory])
+  }, [dispatch, navigate, safeFactory, threshold, userSigner])
 
   const setProvider = async() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -160,7 +125,15 @@ export default function Onboarding() {
 
   const decreaseStep = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
-    else setCurrentStep(0);
+    if(currentStep === 4){
+      if(hasMultiSignWallet){
+        setCurrentStep(2)
+      }else{
+        setCurrentStep(3)
+      }
+    }else if (currentStep === 2){
+      setCurrentStep(currentStep - 1)
+    }
   };
 
   const getComponentFromStep = (step, hasMultiSignWallet = false) => {
@@ -198,6 +171,7 @@ export default function Onboarding() {
           <DaoInfo 
             hasMultiSignWallet={hasMultiSignWallet}
             increaseStep={increaseStep}
+            deploying={deploying}
             
           />
         )
@@ -206,16 +180,14 @@ export default function Onboarding() {
           <ConnectWallet
             increaseStep={increaseStep}
             owners={owners}
-            // setOwners={setOwners}
           />
         );
       }
     }
   };
-  const loggedIn = useSelector(x=>x.auth.loggedIn)
   return (
     <div>
-      <Layout decreaseStep={decreaseStep} currentStep={1}>
+      <Layout decreaseStep={decreaseStep} currentStep={currentStep}>
         {getComponentFromStep(currentStep, hasMultiSignWallet)}
       </Layout>
     </div>

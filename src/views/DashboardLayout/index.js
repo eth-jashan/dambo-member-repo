@@ -1,38 +1,92 @@
-import React from "react";
-import { Layout, Typography,  Row, Col, Card } from "antd";
+import React, { useState } from "react";
+import { Layout, Typography,  Row, Col, Card, Tooltip, message } from "antd";
 import 'antd/dist/antd.css'
 import styles from "./style.module.css";
-import HeaderComponent from "../../components/Header";
-import DashboardStats from "../../components/DashboradStats";
-import { useSelector } from "react-redux";
-const { Content } = Layout;
+import { IoMdAdd } from 'react-icons/io'
+import { MdLink } from 'react-icons/md'
+import { useNavigate, useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { set_dao } from "../../store/actions/dao-action";
 
 
 export default function DashboardLayout({ children }) {
-  const safeAddress = useSelector(x=>x.gnosis.safeAddress)
+
+  const accounts = useSelector(x=>x.dao.dao_list)
+  const currentDao = useSelector(x=>x.dao.currentDao) 
+  const role = useSelector(x=>x.dao.role)
+  const [selected, setSelected] = useState(0)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {id} = useParams()
+  console.log('current', role)
+
+  const changeAccount = (item) => {
+    dispatch(set_dao(item))
+  }
+
+  async function copyTextToClipboard() {
+    if ('clipboard' in navigator) {
+      message.success('invite link copied succesfully!')
+      return await navigator.clipboard.writeText(`https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+    } else {
+      return document.execCommand('copy', true, `https://dw5gga7up1t8p.cloudfront.net/contributor/invite/${id}`);
+    }
+  }
+
+  const headerComponet = () => (
+    <div className={styles.header}>
+      <div className={styles.headerText}>
+        {currentDao?.name}
+      </div>
+    </div>
+  )
+
+  const renderAdminStats = () => (
+    <div onClick={()=>copyTextToClipboard()} className={styles.copyLink}>
+      <MdLink size={16} color='white' />
+      <span className={styles.copyLinkdiv}>
+      copy invite link
+      </span>
+    </div>
+  )
+  const text = (item) => <span>{item}</span>;
   return (
-      <Layout style={{background:'black', height:'100%'}}>
-          {/* <HeaderComponent /> */}
+      <div className={styles.layout}>
 
-        <Content style={{height:'100%'}}>
-          <Row style={{}}>
-            <Col span={16} style={{ width:'100%',  background:'black'}}>
+        <div className={styles.accountsLayout}>
+        
+        <div className={styles.logoContainer}>
+          <div style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'black'}}/>
+        </div>
 
-              <div className={styles.treasureContainer}>
-                {safeAddress}
-              </div>
-
-              {children}
-
-            </Col>
-            <Col span={8} style={{background:'black',  border:'1px solid #21212B'}}>
-            <div className={styles.dashboardContainer}>
-              <DashboardStats />
+        {accounts.map((item, index)=>(
+          <div className={styles.accountContainer}>
+            <Tooltip placement="right" title={()=>text(item?.dao_details?.name)}>
+            <div onClick={()=>changeAccount(item)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186'}}/>
+            </Tooltip>
+          </div>
+        ))}
+        <div className={styles.addContainer}>
+          <div className={styles.addButton} onClick={()=>navigate('/onboard/dao')}>
+            <IoMdAdd color='white' />
+          </div>
+        </div>
+        </div>
+        
+        <div className={styles.childrenLayout}>
+        {headerComponet()}
+        <div style={{display:'flex', flexDirection:'row', width:'100%', height:'100%'}}>
+            <div className={styles.children}>
+            {children}
             </div>
-            </Col>
-          </Row>
-        </Content>
+            {role === 'ADMIN' &&
+            <div className={styles.adminStats}>
+              <div/>
+              {renderAdminStats()}
+            </div>}
+        </div>
+        </div>
 
-      </Layout>
+      </div>
   );
 }

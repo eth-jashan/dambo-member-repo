@@ -2,21 +2,20 @@ import { Divider, Typography,List, Button } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import styles from './style.module.css'
 import { MdOutlineAdd } from 'react-icons/md'
-import { FaChevronRight } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux';
 import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/gnosis-action';
 import { useNavigate } from 'react-router';
 import chevron_right from '../../../assets/Icons/chevron_right.svg'
+import plus from '../../../assets/Icons/plus_black.svg'
 
 const GnosisSafeList = (props) => {
 
     const setCurrentStep = () => {
-        console.log('pressed====>')
         props.setStep(2)
     }
     let safeList = useSelector(x=>x.gnosis.allSafeList)
     safeList = safeList?.filter(x=>x.name === '')
-
+    // safeList = []
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const setGnosisWallet = (x) => {
@@ -54,23 +53,55 @@ const GnosisSafeList = (props) => {
         </div>
     )
 
+    const createNewMulti = () => {
+        props.increaseStep()
+        props.setHasMultiSignWallet(false)
+    }
+    
+    const renderNoWallet = () => (
+        <div 
+            onClick={()=>createNewMulti()} 
+            className={styles.noWaletItem}
+        >
+            <div>
+            <img alt='plus' src={plus} className={styles.plus} />
+            <Typography.Text className={styles.noWalletText}>
+                Create New Multisig
+            </Typography.Text>
+            </div>
+            <img src={chevron_right} className={styles.chevronIcon} width='32px' height='32px' alt='cheveron-right'/>
+        </div>
+    )
+    
     return(
         <div className={styles.layout}>
+            {safeList.length>0? 
             <div className={styles.heading}>
-            Select the safe you<br/> want to continue with
-            </div>
+                Select the safe you<br/> want to continue with
+            </div>:
+            <div className={styles.headingSecondary}>
+                Coudn’t find multisig
+            </div>}
+            {!safeList.length>0&&
+            <div className={`${styles.headingSecondary} ${styles.greyHeading}`}>
+                Create a new one
+            </div>}
             <div className={styles.content}>
+                {safeList.length>0?
                 <div className={styles.listContent}>
                 {safeList.map((item,index)=>(
                     <RenderSafe key={index} item={item} />
                 ))}
-                </div>
-                <div onClick={()=>props.increaseStep()} className={styles.multiSigCtn}>
-                   <MdOutlineAdd color={'#6852FF'} style={{alignSelf:'center'}} /> 
-                   <div className={styles.multiSigBtn}>
+                </div>:
+                renderNoWallet()
+                }
+                {safeList.length>0&&
+                <div onClick={()=>createNewMulti()} className={styles.multiSigCtn}>
+                    <MdOutlineAdd color={'#6852FF'} style={{alignSelf:'center'}} /> 
+                    <div className={styles.multiSigBtn}>
                        Create New Multisig
                     </div>
-                </div>
+                </div>}
             </div>
             
         </div>

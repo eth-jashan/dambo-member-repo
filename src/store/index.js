@@ -9,12 +9,14 @@ import { combineReducers } from "redux";
 import thunk from 'redux-thunk'
 import JSOG from 'jsog'
 import web3Slice from "./reducers/web3-slice";
+import daoSlice from "./reducers/dao-actions";
 
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   gnosis: gnosisSlice.reducer,
   contributor:contributorSlice.reducer,
-  web3:web3Slice.reducer
+  web3:web3Slice.reducer,
+  dao:daoSlice.reducer
 })
 
 const persistConfig = {

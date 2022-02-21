@@ -1,31 +1,26 @@
-@font-face {
-  font-family: "Supply";
-  src: url("../../assets/fonts/Supply-Regular.otf");
-}
-
 .wrapper {
   position: relative;
   width: 100%;
   height: 100%;
 }
 .heading {
-  font-family: 'TelegrafMedium';
+  font-family: 'TelegrafBolder';
   font-style: normal;
   font-weight: 800;
-  font-size: 53px;
-  line-height: 56px;
+  font-size: 3.375rem;
+  line-height: 3.5rem;
 }
 
 .greyedHeading {
   color: rgba(0, 0, 0, 0.5);
   width: 90%;
+  margin-bottom: 5.50%;
 }
 
 .peopleContainer {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 2rem;
-  font-family: "TelegrafMedium";
+  /* margin-top: 2rem; */
 }
 
 .highlighted {
@@ -38,21 +33,21 @@
   box-sizing: border-box;
   border-radius: 8px;
   padding: 1rem 2.5rem 1rem 1rem;
-  margin: 0.5rem 1rem 0.5rem 0;
+  margin: 0rem 1rem 0.5rem 0;
   font-family: 'TelegrafMedium' ;
   font-style: normal;
   font-weight: normal;
-  font-size: 23px;
-  line-height: 32px;
+  font-size: 3.313rem;
+  line-height: 3.5rem;
 }
 
 .peopleDiv > p {
   margin: 0;
-  font-family: "Supply";
+  font-family: 'TelegrafMedium' ;
   font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
+  font-weight: normal;
+  font-size: 1.438rem;
+  line-height: 2rem;
 }
 
 .bottomBar {

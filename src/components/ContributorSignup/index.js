@@ -55,8 +55,8 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
             fontFamily:'TelegrafMedium',
             fontStyle:'normal',
             fontWeight:'normal',
-            fontSize:'16px',
-            lineHeight:'24px',
+            fontSize:'1rem',
+            lineHeight:'1.rem',
             width: '100%'
           }
         },
