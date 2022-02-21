@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./style.module.css";
 import NextButton from "../NextButton";
+import DeployGnosisButton from "../GnosisSafe/DeployGnosis";
+
 
 export default function NamingDAO({
   setHasMultiSignWallet,
@@ -25,15 +27,18 @@ export default function NamingDAO({
         ref={inputRef}
       />
       <div className={styles.bottomBar}>
+      <DeployGnosisButton />
+      </div>
+      {/* <div className={styles.bottomBar}>
         <NextButton
           text="Add Owners"
           increaseStep={increaseStep}
           isDisabled={false}
-        />
+        /> 
         <div onClick={() => setHasMultiSignWallet(true)}>
           Already Have a MultiSig Safe
-        </div>
-      </div>
+        </div> 
+      </div> */}
     </div>
   );
 }

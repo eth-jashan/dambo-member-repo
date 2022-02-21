@@ -1,0 +1,19 @@
+.address{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: white;
+    margin-right: 0.5rem;
+}
+.walletCnt{
+    align-items:center;
+    padding: 0rem 0.5rem 0rem 0.5rem;
+    display: flex;
+    justify-content:center;
+}
+.icon{
+    height: 0.5rem;
+    width: .75rem;
+}

@@ -7,6 +7,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+@font-face {
+  font-family: "TelegrafMedium";
+  src: local("TelegrafMedium"),
+  url("./assets/fonts/PPTelegraf-Medium.otf") format("opentype");
+  font-weight: normal;
+}
+@font-face {
+  font-family: "TelegrafBold";
+  src: local("TelegrafBold"),
+  url("./assets/fonts/Telegraf-Bold.otf") format("opentype");
+  font-weight: bold;
+}
+@font-face {
+  font-family: "TelegrafBolder";
+  src: local("TelegrafBolder"),
+  url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
+  font-weight: bolder;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

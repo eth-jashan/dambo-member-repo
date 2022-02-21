@@ -1,12 +1,13 @@
 button {
   background: #000000;
   border: 1px solid rgba(40, 44, 63, 0.2);
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
   box-shadow: 0px 3px 8px rgba(40, 44, 63, 0.08);
   border-radius: 28px;
   color: #fff;
-  padding: 0.5rem 1rem;
-  font-family: Inter;
+  padding: 6px 20px 8px 20px;
+  align-items: center;
+  font-family: 'TelegrafMedium';
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -14,14 +15,21 @@ button {
   color: #ffffff;
   display: flex;
   justify-content: space-between;
+  width: 275px;
 }
 
-button > span:first-child {
+/* button > span:first-child {
   margin-right: 1.25rem;
-}
+} */
 
 .greyedText {
-  opacity: 0.64;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #A3A3A3;
+  align-self: center;
 }
 
 .disabled {
@@ -31,8 +39,59 @@ button > span:first-child {
 .whiteText{
   color: #FFFFFF;
   opacity: 0.56;
+  font-size: 16px;
+  align-self: center;
 }
 
 .whiteIcon{
-  color: white;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #FFFFFF;
+}
+.icon{
+  align-self: center;
+  justify-content: center;
+  /* margin-top: 4px; */
+  height: 1rem;
+  width: 1rem;
+}
+
+.titleContainer{
+  align-self:center; 
+  /* max-width: 69%; */
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnCtn{
+  width:34%; 
+  padding:0.75rem 1.25rem; 
+  background: black;
+  align-items: center;
+  border-radius: 40px;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btnCtnGreyed{
+  width:34%; 
+  padding:0.75rem 1.25rem 0.75rem 1.25rem; 
+  background: #808080;
+  align-items: center;
+  border-radius: 40px;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.icon{
+  /* height: 1rem;
+  width: 1rem; */
+  top: 4px;
+  right: 4px;
 }

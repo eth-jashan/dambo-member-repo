@@ -1,23 +1,24 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import NextButton from "../NextButton";
 import styles from "./style.module.css";
 
 export default function ApproveTransaction({
   increaseStep,
-  numberOfOwners,
   selectedIndex,
   setSelectedIndex,
 }) {
+  const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.heading}>
-        How many people should approve a transaction?
-      </h1>
-      <h1 className={`${styles.heading} ${styles.greyedHeading}`}>
-        having multiple is safer
-      </h1>
+      <div className={styles.heading}>
+      Add vault owners
+      </div>
+      <div className={`${styles.heading} ${styles.greyedHeading}`}>
+      have more than one owner to<br/>maximize security
+      </div>
       <div className={styles.peopleContainer}>
-        {Array(numberOfOwners)
+        {Array(owners.length)
           .fill()
           .map((owner, index) => (
             <div
@@ -34,7 +35,7 @@ export default function ApproveTransaction({
       </div>
       <div className={styles.bottomBar}>
         <NextButton
-          text="Review"
+          text="Add Permissions"
           increaseStep={increaseStep}
           isDisabled={selectedIndex >= 0 ? false : true}
         />

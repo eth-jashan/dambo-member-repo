@@ -1,66 +1,285 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
-import { setAddress, selectAddress } from '../../redux/authSlice'
-
+import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout } from "../../store/actions/auth-action";
+import { BsChevronRight } from 'react-icons/bs'
+import styles from './style.module.css'
+import metamaskIcon from '../../assets/Icons/metamask.svg'
+import { Divider, Alert, message } from "antd";
+import { useNavigate } from "react-router";
+import walletIcon from '../../assets/Icons/wallet.svg'
+import tickIcon from '../../assets/Icons/tick.svg'
+import { FaDiscord } from 'react-icons/fa'
+import { getAddressMembership } from "../../store/actions/gnosis-action";
+import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action";
+import { setProvider, setSigner } from "../../store/actions/we3-action";
+import chevron_right from '../../assets/Icons/chevron_right.svg'
 
 const targetNetwork = NETWORKS.rinkeby;
-const mainnetInfura = navigator.onLine
-  ? new ethers.providers.StaticJsonRpcProvider(
-      "https://mainnet.infura.io/v3/" + INFURA_ID
-    )
-  : null;
 const localProviderUrl = targetNetwork.rpcUrl;
 const localProvider = new ethers.providers.StaticJsonRpcProvider(
   localProviderUrl
 );
-// const blockExplorer = targetNetwork.blockExplorer;
 
 const providerOptions = {
   walletconnect: {
-    package: WalletConnectProvider,
+    package: WalletConnectProvider, // required
     options: {
-      infuraId: "e651a77de4974d9bae11ed4a9fcf7e57",
+      bridge: "https://polygon.bridge.walletconnect.org",
+      infuraId: INFURA_ID,
+      rpc: {
+        1:`https://mainnet.infura.io/v3/${INFURA_ID}`, // mainnet // For more WalletConnect providers: https://docs.walletconnect.org/quick-start/dapps/web3-provider#required
+        100:"https://dai.poa.network", // xDai
+      },
     },
   },
 };
 
 const web3Modal = new Web3Modal({
-  network: "mainnet", // optional
-  cacheProvider: false, // optional
-  providerOptions, // required
+  network: "mainnet", // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
+  cacheProvider: true, // optional
+  theme:"light", // optional. Change to "dark" for a dark theme.
+  providerOptions: {
+    providerOptions
+  },
 });
 
-export default function ConnectWallet({ increaseStep, owners, setOwners }) {
-  const [injectedProvider, setInjectedProvider] = useState();
-  const userSigner = useUserSigner(injectedProvider, localProvider);
-  console.log("injected Provider", injectedProvider);
-  console.log("userSigner", userSigner);
-  console.log("localProvider", localProvider);
-  const address = useSelector(selectAddress);
-  console.log('address..............', address);
-
+const ConnectWallet = ({ isAdmin }) =>{
+  const address = useSelector(x=>x.auth.address)
+  const jwt = useSelector(x=>x.auth.jwt)
+  const web3Provider = useSelector(x=>x.auth.web3Provider)
+  const userSigner = useUserSigner(web3Provider, localProvider);
+  const uuid = useSelector(x=>x.contributor.invite_code)
+  const [auth, setAuth] = useState(false)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
+  const authWithWallet = useCallback(async(address) => {
+    setAuth(true)
+    const provider = await web3Modal.connect();
+    const web3Provider = new providers.Web3Provider(provider)
+    const signer = web3Provider.getSigner()
+    const chainId = await signer.getChainId()
+  
+    dispatch(setSigner(signer));
+    if(chainId === 4){
+      try {
+      const res =  await dispatch(authWithSign(address, signer))
+      if(res){
+        dispatch(setLoggedIn(true))
+        if(isAdmin){
+          const res = await dispatch(getAddressMembership())
+          if(res){
+            setAuth(false)
+            navigate(`/dashboard/${res?.dao_details?.uuid}`)
+          }else{
+            setAuth(false)
+            navigate('/onboard/dao')
+          }
+        }else{
+          setAuth(false)
+          // navigate(`/onboard/contributor/${uuid}`)
+          if(!isAdmin){
+            try {
+              const res = await dispatch(getRole(uuid))
+              if(res){
+                message.success('Already a member')
+                dispatch(setAdminStatus(true))
+                navigate(`/dashboard/${uuid}`)
+              }else{
+
+              }
+            } catch (error) {
+              message.error('Error on getting role')
+            }
+          }
+        }
+      }
+      } catch (error) {
+        console.log('error on signing....', error)
+      }
+    }else{
+      console.log('change chain id')
+      message.error('change chain to rinkeby.....')
+    }
+    setAuth(false)
+    // navigate('/dashboard')
+  },[dispatch, isAdmin, navigate])
+
+  const logoutOfWeb3Modal = useCallback(async () => {
+    await web3Modal.clearCachedProvider();
+    if (
+      web3Provider &&
+      web3Provider.provider &&
+      typeof web3Provider.provider.disconnect == "function"
+    ) {
+      await web3Provider.provider.disconnect();
+      dispatch(signout())
+    }
+    setTimeout(() => {
+      window.location.reload();
+    }, 1);
+  },[dispatch, web3Provider]);
+
+  const alertBanner = () => (
+    <Alert
+      message="Error Text"
+      description="Error Description Error Description Error Description Error Description"
+      type="error"
+    />
+  )
+    // console.log('admin..', isAdmin, address)
+  const onDiscordAuth = () => {
+    console.log('token.....', address,uuid, jwt)
+    dispatch(setDiscordOAuth(address,uuid, jwt))
+    //window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=https%3A%2F%2Fdw5gga7up1t8p.cloudfront.net%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds%20connections')
+    window.location.replace('https://discord.com/api/oauth2/authorize?client_id=943242563178086540&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20email%20guilds')
+  }
 
   const loadWeb3Modal = useCallback(async () => {
-    console.log('callbacks')
+    setAuth(true)
+    console.log('start.....')
     const provider = await web3Modal.connect();
-    console.log("loadWeb3Modal", provider);
-    setInjectedProvider(new ethers.providers.Web3Provider(provider));
+    const web3Provider = new providers.Web3Provider(provider)
+    const signer = web3Provider.getSigner()
+    dispatch(setSigner(signer));
+    // const signer = web3Provider.getSigner()
+    const newAddress = await signer.getAddress()
+    const chainid = await signer.getChainId()
+    dispatch(setAddress(newAddress));
+      const res = dispatch(getJwt(newAddress))
+      if(res && chainid === 4){
+        //has token and chain is 4
+        dispatch(setLoggedIn(true))
+        if(isAdmin){
+          const res = await dispatch(getAddressMembership())
+          if(res){
+            // console.log('callbacks.........', selected)
+            setAuth(false)
+            navigate(`/dashboard/${res?.dao_details?.uuid}`)
+          }else{
+            setAuth(false)
+            navigate('/onboard/dao')
+          }
+        }else{
+          setAuth(false)
+          console.log("admin..........", isAdmin)
+          if(!isAdmin){
+            try {
+              const res = await dispatch(getRole(uuid))
+              if(res){
+                message.success('Already a member')
+                dispatch(setAdminStatus(true))
+                navigate(`/dashboard/${uuid}`)
+              }else{
 
-    provider.on("chainChanged", (chainId) => {
-      console.log(`chain changed to ${chainId}! updating providers`);
-      setInjectedProvider(new ethers.providers.Web3Provider(provider));
+              }
+            } catch (error) {
+              message.error('Error on getting role')
+            }
+          }
+          // navigate(`/onboard/contributor/${uuid}`)
+        }
+      }else if(!res && chainid === 4 ){
+        //doesnot token and chain is 4
+        setAuth(false)
+        dispatch(setLoggedIn(false))
+        console.log('no jwt....')
+        authWithWallet(newAddress)
+      }
+      else{
+        //chain is wrong
+        setAuth(false)
+        dispatch(setLoggedIn(false))
+        alert('change chain id......')
+        alertBanner()
+      }
+    
+    
+    provider.on("chainChanged", async(chainId) => {
+      // const provider = await web3Modal.connect();
+      // const web3Provider = new providers.Web3Provider(provider)
+      // const signer = web3Provider.getSigner()
+      // const newAddress = await signer.getAddress()
+      // const chainid = await signer.getChainId()
+      // dispatch(setProvider(provider,web3Provider,4));
+      // dispatch(setAddress(newAddress));
+      // const res = dispatch(getJwt(newAddress))
+      // console.log(`chain changed to ${chainid}! updating providers`);
+      // console.log('jwt........ chain', res)
+      // if(res && chainid === 4){
+      //   //has token and chain is 4
+      //   dispatch(setProvider(provider,web3Provider,4));
+      //   dispatch(setLoggedIn(true))
+      //   if(isAdmin){
+      //     const res = await dispatch(getAddressMembership())
+      //     if(res){
+      //       navigate('/dashboard')
+      //     }else{
+      //       navigate('/onboard/dao')
+      //     }
+      //   }else{
+      //     navigate(`/onboard/contributor/${uuid}`)
+      //   }
+      // }else if(!res && chainid === 4 ){
+      //   //doesnot token and chain is 4
+      //   dispatch(setProvider(provider,web3Provider,4));
+      //   dispatch(setLoggedIn(false))
+      //   console.log('no jwt....')
+      //   authWithWallet(newAddress)
+      // }
+      // else{
+      //   //chain is wrong
+      //   dispatch(setLoggedIn(false))
+      //   alert('change chain id......')
+      //   alertBanner()
+      // }
+      dispatch(setLoggedIn(false))
+      navigate('/')
     });
 
-    provider.on("accountsChanged", () => {
-      console.log(`account changed!`);
-      setInjectedProvider(new ethers.providers.Web3Provider(provider));
+    provider.on("accountsChanged",async () => {
+      console.log(`account changed!.........`);
+      dispatch(setLoggedIn(false))
+      navigate('/')
+      // const provider = await web3Modal.connect();
+      // const web3Provider = new providers.Web3Provider(provider)
+      // const signer = web3Provider.getSigner()
+      // const newAddress = await signer.getAddress()
+      // dispatch(setProvider(provider,web3Provider,4));
+      // dispatch(setAddress(newAddress));
+      // const res = dispatch(getJwt(newAddress))
+      // if(res && chainid === 4){
+      //   // dispatch(setLoggedIn(false))
+      //   //has token and chain is 4
+      //   dispatch(setLoggedIn(true))
+      //   if(isAdmin){
+      //     const res = await dispatch(getAddressMembership())
+      //     if(res){
+      //       navigate('/dashboard')
+      //     }else{
+      //       navigate('/onboard/dao')
+      //     }
+      //   }else{
+      //     navigate(`/onboard/contributor/${uuid}`)
+      //   }
+      // }else if(!res && chainid === 4 ){
+      //   //doesnot token and chain is 4
+      //   dispatch(setLoggedIn(false))
+      //   console.log('no jwt....')
+      //   navigate('/onboard/dao')
+      //   // authWithWallet(newAddress)
+      // }
+      // else{
+      //   //chain is wrong
+      //   dispatch(setLoggedIn(false))
+      //   alert('change chain id......')
+      //   alertBanner()
+      // }
     });
 
     // Subscribe to session disconnection
@@ -68,44 +287,159 @@ export default function ConnectWallet({ increaseStep, owners, setOwners }) {
       console.log(code, reason);
       logoutOfWeb3Modal();
     });
-  }, [setInjectedProvider]);
-
-  const logoutOfWeb3Modal = async () => {
-    await web3Modal.clearCachedProvider();
-    if (
-      injectedProvider &&
-      injectedProvider.provider &&
-      typeof injectedProvider.provider.disconnect == "function"
-    ) {
-      await injectedProvider.provider.disconnect();
-    }
-    setTimeout(() => {
-      window.location.reload();
-    }, 1);
-  };
+    setAuth(false)
+  }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate]);
 
   useEffect(() => {
     async function getAddress() {
-      console.log(userSigner)
       if (userSigner) {
         const newAddress = await userSigner.getAddress();
         dispatch(setAddress(newAddress));
-        increaseStep()
-        console.log("...", newAddress);
-        console.log(newAddress);
+        // increaseStep()
       }
     }
     getAddress();
-  }, [userSigner]);
+  }, [dispatch, userSigner]);
 
-  useEffect(() => {
-    console.log(web3Modal.cachedProvider)
-    if (!web3Modal.cachedProvider) {
-      loadWeb3Modal();
+  const initialLoad = useCallback( async() => {
+    if (web3Modal.cachedProvider) {
+      await loadWeb3Modal();
     }
-  }, [loadWeb3Modal]);
+  },[loadWeb3Modal])
+
+  // useEffect(() => {
+  // initialLoad()
+  // },[initialLoad])
+
+  const connectWallet = () => (
+      <div className={styles.walletCnt}>
+        <div onClick={()=>loadWeb3Modal()} className={styles.walletLogo}>
+        <img 
+          src={metamaskIcon}
+          alt='metamask'
+          className={styles.walletImg}
+        />
+        <div className={styles.walletName}>Metamask</div>
+        </div>
+        <img src={chevron_right} className={styles.chevronIcon} width='32px' height='32px' alt='cheveron-right'/>
+      </div>
+  )
   
-  return (
-    <div />
+  const authWallet = () => (
+    <div className={styles.walletCntAuth}>
+      <img 
+        src={metamaskIcon}
+        alt='metamask' 
+        height={32} 
+        width={32} 
+      />
+
+      <div className={styles.rightContainer}>
+        <div className={styles.walletName}>Metamask</div>
+        <div className={styles.addresCnt}>
+          <div className={styles.address}>{address}</div>
+          <div onClick={()=>dispatch(signout())} className={styles.disconnectLink}>Disconnect</div>
+        </div>
+
+        <Divider />
+        <div className={styles.authHeading}>Authenticate your wallet</div>
+        <div className={styles.authGreyHeading}>This is required to login, create or<br/> import your safes</div>
+
+        <div onClick={auth?()=>{}:async()=>await authWithWallet(address)} className={styles.authBtn}>
+          <div className={styles.btnTextAuth}>{auth?'Authenticating....':'Authenticate wallet'}</div>
+        </div>
+      </div>
+
+    </div>
+  )
+  
+  const disconnectContributor = () => {
+    dispatch(signout())
+    dispatch(setAdminStatus(false))
+  }
+
+  const daoWallet = () => (
+    <div style={{width:'100%'}}>
+      <div className={styles.headingCnt}>
+        <div className={styles.heading}>Connect wallet</div>
+        <div className={styles.greyHeading}>First step towards<br/> streamlining your DAO</div>
+      </div>
+      {address?authWallet():connectWallet()}
+    </div>
+  )
+
+  const contributorWallet = () => (
+    <div className={styles.walletContri}>
+      <div className={styles.metaCard}>
+        <div style={{height:'100%'}}>
+          <div style={{height:'64px', width:'64px', borderRadius:'64px', border:'1px solid #c2c2c2', display:'flex', alignItems:'center', justifyContent:'center'}}>
+          <img 
+            src={(!jwt)?walletIcon:tickIcon}
+            alt='wallet' 
+            height={32} 
+            width={32} 
+          />
+          </div>
+        </div>
+
+        <div className={styles.rightContent}>
+          <div>
+            <div className={styles.walletHeading}>
+              {(!jwt)?'Connect your Wallet':'Wallet Connected'}
+            </div>
+            {(!jwt)?<div className={styles.walletsubHeading}>
+              Lorem ipsum dolor sit amet,<br/>consectetur adipiscing elit.
+            </div>:
+            <div className={styles.connectedText}>
+              {address.slice(0,5)}...{address.slice(-3)}
+            </div>}
+          </div>
+          {(!jwt)&&<div  onClick={()=>loadWeb3Modal()} className={styles.connectBtn}>
+            <span className={styles.btnTitle}>
+              {auth?'Conecting...':'Connect Wallet'}
+            </span>
+          </div>}
+          {(address && jwt)&&
+          <div  onClick={()=>disconnectContributor()} className={styles.disconnectDiv}>
+            <div className={styles.divider}/>
+            <span className={styles.disconnectTitle}>
+              Disconnect Wallet
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div className={styles.metaCard}>
+        <div style={{height:'100%'}}>
+        <div style={{height:'64px', width:'64px', borderRadius:'64px', border:'1px solid #c2c2c2', display:'flex', alignItems:'center', justifyContent:'center'}}>
+            <FaDiscord size={32} color={!jwt?'#B3B3B3':'#5865F2'} />
+          </div>
+        </div>
+
+        <div className={styles.rightContentDown}>
+          <div>
+            <div style={{color:!jwt && '#B3B3B3'}} className={styles.walletHeading}>
+              Connect Discord
+            </div>
+            <div className={styles.walletsubHeading}>
+              We use Discord to check your name<br/>and servers you've joined
+            </div>
+          </div>
+          <div onClick={()=>onDiscordAuth()}  className={!jwt?styles.connectBtnGrey:styles.connectBtn}>
+            <span className={styles.btnTitle}>
+              Connect Discord
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+
+  return ( 
+    isAdmin?daoWallet():contributorWallet()
   );
 }
+
+export default ConnectWallet
