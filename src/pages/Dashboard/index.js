@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import ContributionCard from '../../components/ContributionCard';
 import PaymentCard from '../../components/PaymentCard';
-import { getJwt } from '../../store/actions/auth-action';
+import { getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd } from 'react-icons/io'
 import { getRole } from '../../store/actions/contibutor-action';
 import { getAllDaowithAddress } from '../../store/actions/dao-action';
@@ -18,7 +18,7 @@ export default function Dashboard() {
     
     const address = useSelector(x=>x.auth.address)
     const jwt = useSelector(x=>x.auth.jwt)
-    // const {id}  = useParams()
+    const {id}  = useParams()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const role = useSelector(x=>x.dao.role)
@@ -27,9 +27,9 @@ export default function Dashboard() {
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
             message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.local}${curreentDao?.uuid}`);
+          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
         } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.local}${curreentDao?.uuid}`);
+          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
         }
     }
     
@@ -44,6 +44,10 @@ export default function Dashboard() {
     },[address, jwt])
 
     const initialload = useCallback( async() => {
+        if(id !== address){
+            signout()
+            navigate('/')
+        }else{
         if(address){
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
@@ -54,8 +58,8 @@ export default function Dashboard() {
                     navigate('/')
                 }
                 
-        }
-    },[address, dispatch, navigate])
+        }}
+    },[address, dispatch, id, navigate])
 
     useEffect(()=>{
         console.log('start.....')

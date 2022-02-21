@@ -5,6 +5,6 @@ export const links = {
     },
     contributor_invite:{
         local:'http://localhost:3000/contributor/invite/',
-        dev:'https://staging.app.drepute.xyz/contributor/invite'
+        dev:'https://staging.app.drepute.xyz/contributor/invite/'
     }
 }
