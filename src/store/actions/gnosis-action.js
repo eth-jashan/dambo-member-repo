@@ -52,7 +52,6 @@ export const getDao = () => {
           }
         }
       )
-      console.log('resss.....', res.data)
   } catch (error) {
     console.log('error in fetching dao.....', error)    
   }

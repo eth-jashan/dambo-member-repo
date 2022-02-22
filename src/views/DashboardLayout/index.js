@@ -6,7 +6,7 @@ import { IoMdAdd } from 'react-icons/io'
 import { MdLink } from 'react-icons/md'
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { set_dao } from "../../store/actions/dao-action";
+import { gnosisDetailsofDao, set_dao } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 
@@ -21,8 +21,9 @@ export default function DashboardLayout({ children }) {
   const {id} = useParams()
   console.log('current', role)
 
-  const changeAccount = (item) => {
+  const changeAccount = async(item) => {
     dispatch(set_dao(item))
+    await dispatch(gnosisDetailsofDao())
   }
 
   async function copyTextToClipboard() {

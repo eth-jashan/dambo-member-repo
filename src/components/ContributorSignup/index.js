@@ -6,7 +6,6 @@ import styles from './styles.module.css'
 import Select from 'react-select';
 import { getCommunityRole, joinContributor, setAdminStatus, setContriInfo } from '../../store/actions/auth-action';
 import { useNavigate, useParams } from 'react-router';
-import { getDao } from '../../store/actions/gnosis-action';
 import InputText from '../Input';
 
 
@@ -21,7 +20,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const fetchRoles = useCallback( async() => {
         try {
             await dispatch(getCommunityRole())
-            await dispatch(getDao())
+            // await dispatch(getDao())
         } catch (error) {
             console.log('error in fetching role.....')
         }

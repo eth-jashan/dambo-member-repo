@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styles from './styles.module.css'
 
-const InputText = ({value, onChange, placeholder, width, disabled=false}) => {
+const InputText = ({value, onChange, placeholder, width, disabled=false, multi}) => {
     const [onFocus, setOnFocus] = useState()
 
     const backGroundStatus = () => {
@@ -21,11 +21,12 @@ const InputText = ({value, onChange, placeholder, width, disabled=false}) => {
             value={value} 
             onChange={(e)=>onChange(e)} 
             placeholder={placeholder} 
+            //type={"textarea" }
             className={styles.textInput}
             onFocus={()=>setOnFocus(true)}
             onBlur={()=>setOnFocus(false)}
             disabled={disabled}
-            style={{width:width, background:backGroundStatus()}}
+            style={{width:width, height:multi?multi:null, background:backGroundStatus()}}
         />
     )
 

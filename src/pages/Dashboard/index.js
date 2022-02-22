@@ -1,16 +1,14 @@
-import { List, Col, Row, Typography, Button, message } from 'antd';
+import { message } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
-import ContributionCard from '../../components/ContributionCard';
-import PaymentCard from '../../components/PaymentCard';
 import { getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd } from 'react-icons/io'
-import { getRole } from '../../store/actions/contibutor-action';
-import { getAllDaowithAddress } from '../../store/actions/dao-action';
+import { getAllDaowithAddress, gnosisDetailsofDao } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import { links } from '../../constant/links';
+import ContributionRequestModal from '../../components/Modal/ContributionRequest';
 
 export default function Dashboard() {
 
@@ -23,13 +21,16 @@ export default function Dashboard() {
     const navigate = useNavigate()
     const role = useSelector(x=>x.dao.role)
     const curreentDao = useSelector(x=>x.dao.currentDao)
-
+    const [modalContri, setModalContri] = useState(false)
+    
+    console.log('current dao', curreentDao)
+    
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
             message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+          return await navigator.clipboard.writeText(`${links.contributor_invite.local}${curreentDao?.uuid}`);
         } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+          return document.execCommand('copy', true, `${links.contributor_invite.local}${curreentDao?.uuid}`);
         }
     }
     
@@ -43,22 +44,39 @@ export default function Dashboard() {
           });
     },[address, jwt])
 
+    async function onInit() {
+        await window.ethereum.enable();
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        console.log(account)
+         window.ethereum.on('accountsChanged', function (accounts) {
+            // Time to reload your interface with accounts[0]!
+            console.log(accounts[0])
+            return accounts[0]
+           });
+    }
+
     const initialload = useCallback( async() => {
         if(id !== address){
             signout()
             navigate('/')
         }else{
-        if(address){
+        const account = await onInit()
+        if(address === account ){
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
                 if(jwtIfo){
                    await dispatch(getAllDaowithAddress())
+                   await dispatch(gnosisDetailsofDao())
                 }else{
                     message.info('Token expired')
                     navigate('/')
                 }
                 
-        }}
+        }else{
+            signout()
+        }
+    }
     },[address, dispatch, id, navigate])
 
     useEffect(()=>{
@@ -93,7 +111,7 @@ export default function Dashboard() {
                 Share link to onboard<br/> contributors
             </div>}
 
-            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>{}} className={styles.button}>
+            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>{setModalContri(true)}} className={styles.button}>
                 <div>
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
@@ -116,6 +134,7 @@ export default function Dashboard() {
             <div className={styles.dashView}>
                 {renderTab()}
                 {renderEmptyScreen()}
+                {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
             </div>
         </DashboardLayout>
     );

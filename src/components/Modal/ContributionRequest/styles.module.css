@@ -1,0 +1,84 @@
+.container{
+    display: flex;
+    flex-direction: column;
+}
+
+.backdrop{
+    /* background: #000000;
+    opacity: 0.5; */
+    background-color: rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-left: 6%;
+    display: flex;
+    align-items: center;
+}
+.opacity{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000000;
+    opacity: 0.5;
+}
+
+.rowInput{
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.multiInput{
+    margin-top: 1rem;
+    /* margin-bottom: 6.623%; */
+}
+
+.modal{
+    width: 44vw;
+    background: white;
+    height: 86.33vh;
+    background: #FFFFFF;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06), 0px 0px 20px rgba(0, 0, 0, 0.12);
+    border-radius: 1.25rem;
+    padding: 5.532% 5% 0% 6.25% ;
+    /* position: absolute; */
+    display: flex;
+    flex-direction: column;
+    /* margin-bottom: 7.60%; */
+    /* justify-content: space-between; */
+
+}
+.cross{
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-bottom: 2.5rem;
+}
+.heading{
+    font-family:'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 3rem;
+    line-height: 3rem;
+    text-align: start;
+    margin-bottom: 3rem;
+}
+
+.buttonSubmit{
+    width: 40.11%;
+    padding: 0.625rem 1rem 0.625rem 1.5rem;
+    background: #6852FF;
+}
+
+.gereyedText{
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1.313rem;
+    line-height: 1.75rem;
+}

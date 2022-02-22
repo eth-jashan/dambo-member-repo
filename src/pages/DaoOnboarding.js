@@ -24,7 +24,7 @@ export default function Onboarding() {
   const userSigner = useSelector(x=>x.web3.signer);
   const [safeAddress, setSafeAddress] = useState()
   const { safeFactory } = useSafeSdk(signer, safeAddress)
-  
+  const [gnosisLoad, setGnosisLoad] = useState(false)
   
   const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
   const threshold = useSelector(x=>x.gnosis.newSafeSetup.threshold)
@@ -36,9 +36,7 @@ export default function Onboarding() {
   const jwt = useSelector(x=>x.auth.jwt)
 
   const preventGoingBack = useCallback(() => {
-    // console.log(navigate.location.from)
-    // if(navigate.location.from === `/dashboard/${address}`)
-    // window.history.pushState(null, document.title, window.location.href);
+    window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", () => {
         if(address && jwt){
             console.log('on back!!!')
@@ -52,7 +50,7 @@ export default function Onboarding() {
   },[preventGoingBack])
 
   const deploySafe = useCallback(async (owners) => {
-    console.log('deployingggg', threshold, safeFactory,userSigner)
+    console.log('deployingggg', threshold)
     if (!safeFactory) return
     setDeploying(true)
     const safeAccountConfig = { owners, threshold }
@@ -61,6 +59,7 @@ export default function Onboarding() {
     try {
       safe = await safeFactory.deploySafe(safeAccountConfig)
       message.success('A safe is successfully created !')
+      setDeploying(false)
     } catch (error) {
       message.error(error.message)
       setDeploying(false)
@@ -69,18 +68,21 @@ export default function Onboarding() {
     const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
     setSafeAddress(newSafeAddress)
     dispatch(addSafeAddress(newSafeAddress))
+    setDeploying(true)
     try {
       const res = await dispatch(registerDao())
       if(res){
         message.success('Your Dao is created succesfully')
         navigate(`/dashboard/${address}`)
+        setDeploying(false)
       }
     } catch (error) {
       console.log('error on registering dao.....')
       message.error('error on registering dao.....')
       navigate('/onboard/dao')
+      setDeploying(false)
     }
-  }, [dispatch, navigate, safeFactory, threshold, userSigner])
+  }, [address, dispatch, navigate, safeFactory, threshold])
 
   const setProvider = async() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -167,7 +169,6 @@ export default function Onboarding() {
             increaseStep={increaseStep}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
-            // numberOfOwners={owners.length}
           />
         )
       case 4:
@@ -176,7 +177,6 @@ export default function Onboarding() {
             hasMultiSignWallet={hasMultiSignWallet}
             increaseStep={increaseStep}
             deploying={deploying}
-            
           />
         )
       default: {

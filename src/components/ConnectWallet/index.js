@@ -136,7 +136,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     dispatch(setDiscordOAuth(address,uuid, jwt))
-    window.location.replace(links.discord_oauth.staging)
+    window.location.replace(links.discord_oauth.local)
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -200,43 +200,6 @@ const ConnectWallet = ({ isAdmin }) =>{
     
     
     provider.on("chainChanged", async(chainId) => {
-      // const provider = await web3Modal.connect();
-      // const web3Provider = new providers.Web3Provider(provider)
-      // const signer = web3Provider.getSigner()
-      // const newAddress = await signer.getAddress()
-      // const chainid = await signer.getChainId()
-      // dispatch(setProvider(provider,web3Provider,4));
-      // dispatch(setAddress(newAddress));
-      // const res = dispatch(getJwt(newAddress))
-      // console.log(`chain changed to ${chainid}! updating providers`);
-      // console.log('jwt........ chain', res)
-      // if(res && chainid === 4){
-      //   //has token and chain is 4
-      //   dispatch(setProvider(provider,web3Provider,4));
-      //   dispatch(setLoggedIn(true))
-      //   if(isAdmin){
-      //     const res = await dispatch(getAddressMembership())
-      //     if(res){
-      //       navigate('/dashboard')
-      //     }else{
-      //       navigate('/onboard/dao')
-      //     }
-      //   }else{
-      //     navigate(`/onboard/contributor/${uuid}`)
-      //   }
-      // }else if(!res && chainid === 4 ){
-      //   //doesnot token and chain is 4
-      //   dispatch(setProvider(provider,web3Provider,4));
-      //   dispatch(setLoggedIn(false))
-      //   console.log('no jwt....')
-      //   authWithWallet(newAddress)
-      // }
-      // else{
-      //   //chain is wrong
-      //   dispatch(setLoggedIn(false))
-      //   alert('change chain id......')
-      //   alertBanner()
-      // }
       dispatch(setLoggedIn(false))
       navigate('/')
     });
@@ -245,40 +208,6 @@ const ConnectWallet = ({ isAdmin }) =>{
       console.log(`account changed!.........`);
       dispatch(setLoggedIn(false))
       navigate('/')
-      // const provider = await web3Modal.connect();
-      // const web3Provider = new providers.Web3Provider(provider)
-      // const signer = web3Provider.getSigner()
-      // const newAddress = await signer.getAddress()
-      // dispatch(setProvider(provider,web3Provider,4));
-      // dispatch(setAddress(newAddress));
-      // const res = dispatch(getJwt(newAddress))
-      // if(res && chainid === 4){
-      //   // dispatch(setLoggedIn(false))
-      //   //has token and chain is 4
-      //   dispatch(setLoggedIn(true))
-      //   if(isAdmin){
-      //     const res = await dispatch(getAddressMembership())
-      //     if(res){
-      //       navigate('/dashboard')
-      //     }else{
-      //       navigate('/onboard/dao')
-      //     }
-      //   }else{
-      //     navigate(`/onboard/contributor/${uuid}`)
-      //   }
-      // }else if(!res && chainid === 4 ){
-      //   //doesnot token and chain is 4
-      //   dispatch(setLoggedIn(false))
-      //   console.log('no jwt....')
-      //   navigate('/onboard/dao')
-      //   // authWithWallet(newAddress)
-      // }
-      // else{
-      //   //chain is wrong
-      //   dispatch(setLoggedIn(false))
-      //   alert('change chain id......')
-      //   alertBanner()
-      // }
     });
 
     // Subscribe to session disconnection
@@ -287,7 +216,7 @@ const ConnectWallet = ({ isAdmin }) =>{
       logoutOfWeb3Modal();
     });
     setAuth(false)
-  }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate]);
+  }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate, uuid]);
 
   useEffect(() => {
     async function getAddress() {

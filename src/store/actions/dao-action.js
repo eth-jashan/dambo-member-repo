@@ -1,15 +1,17 @@
+import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import axios from "axios"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { daoAction } from "../reducers/dao-actions"
 import { gnosisAction } from "../reducers/gnosis-slice"
 
+const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+
 export const getAllDaowithAddress = () => {
   console.log('heree....')
     return async (dispatch, getState) => {
       const jwt = getState().auth.jwt
-      const address = getState().auth.address
-
+      
       try {
         const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
           headers:{
@@ -40,9 +42,18 @@ export const getAllDaowithAddress = () => {
     }
 }
 
-export const gnosisDetailsofDao = async() => {
-  return (dispatch, getState) => {
-    
+export const gnosisDetailsofDao = () => {
+  return async (dispatch, getState) => {
+    const currentDao = getState().dao.currentDao
+    try {
+      const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
+      const balance = await serviceClient.getBalances(currentDao?.safe_public_address)
+      const usdBalance = await serviceClient.getUsdBalances(currentDao?.safe_public_address)
+      console.log('safe info', balance, usdBalance) 
+      dispatch(daoAction.set_gnosis_details({details:safeInfo, balance, usdBalance}))
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 }
 
