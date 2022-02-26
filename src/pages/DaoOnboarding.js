@@ -21,7 +21,7 @@ export default function Onboarding() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false)
   const [signer, setSigner] = useState()
-  const userSigner = useSelector(x=>x.web3.signer);
+  // const userSigner = useSelector(x=>x.web3.signer);
   const [safeAddress, setSafeAddress] = useState()
   const { safeFactory } = useSafeSdk(signer, safeAddress)
   const [gnosisLoad, setGnosisLoad] = useState(false)

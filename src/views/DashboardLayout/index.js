@@ -6,32 +6,34 @@ import { IoMdAdd } from 'react-icons/io'
 import { MdLink } from 'react-icons/md'
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { gnosisDetailsofDao, set_dao } from "../../store/actions/dao-action";
+import { getContriRequest, gnosisDetailsofDao, set_dao } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
+import TransactionCard from "../../components/TransactionCard";
 
 export default function DashboardLayout({ children }) {
 
   const accounts = useSelector(x=>x.dao.dao_list)
   const currentDao = useSelector(x=>x.dao.currentDao) 
+  const currentTransaction = useSelector(x=>x.transaction.currentTransaction)
   const role = useSelector(x=>x.dao.role)
   const [selected, setSelected] = useState(0)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const {id} = useParams()
-  console.log('current', role)
+  // const {id} = useParams()
 
   const changeAccount = async(item) => {
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
+    await  dispatch(getContriRequest())
   }
 
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${id}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${currentDao?.uuid}`);
     } else {
-      return document.execCommand('copy', true, `${links.contributor_invite.local}${id}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.local}${currentDao?.uuid}`);
     }
   }
 
@@ -77,14 +79,14 @@ export default function DashboardLayout({ children }) {
         
         <div className={styles.childrenLayout}>
         {headerComponet()}
-        <div style={{display:'flex', flexDirection:'row', width:'100%', height:'100%'}}>
+        <div style={{display:'flex', flexDirection:'row', width:'100%', height:'100%',}}>
             <div className={styles.children}>
             {children}
             </div>
             {role === 'ADMIN' &&
             <div className={styles.adminStats}>
-              <div/>
-              {renderAdminStats()}
+              {/* <div/> */}
+              {! currentTransaction? renderAdminStats() : <TransactionCard />}
             </div>}
         </div>
         </div>

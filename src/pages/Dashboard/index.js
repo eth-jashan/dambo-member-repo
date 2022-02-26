@@ -3,12 +3,18 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getJwt, signout } from '../../store/actions/auth-action';
-import { IoMdAdd } from 'react-icons/io'
-import { getAllDaowithAddress, gnosisDetailsofDao } from '../../store/actions/dao-action';
+import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
+import { getAllDaowithAddress, getContriRequest, gnosisDetailsofDao } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
+import textStyles from '../../commonStyles/textType/styles.module.css';
 import { links } from '../../constant/links';
 import ContributionRequestModal from '../../components/Modal/ContributionRequest';
+import { ethers } from 'ethers';
+import DashboardSearchTab from '../../components/DashboardSearchTab';
+import ContributionCard from '../../components/ContributionCard';
+import DeployGnosisButton from '../../components/GnosisSafe/DeployGnosis';
+import Paybutton from '../../components/PayButton';
 
 export default function Dashboard() {
 
@@ -20,10 +26,9 @@ export default function Dashboard() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const role = useSelector(x=>x.dao.role)
+    const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
     const curreentDao = useSelector(x=>x.dao.currentDao)
     const [modalContri, setModalContri] = useState(false)
-    
-    console.log('current dao', curreentDao)
     
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
@@ -49,11 +54,7 @@ export default function Dashboard() {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
         console.log(account)
-         window.ethereum.on('accountsChanged', function (accounts) {
-            // Time to reload your interface with accounts[0]!
-            console.log(accounts[0])
-            return accounts[0]
-           });
+        return account
     }
 
     const initialload = useCallback( async() => {
@@ -62,12 +63,16 @@ export default function Dashboard() {
             navigate('/')
         }else{
         const account = await onInit()
-        if(address === account ){
+        console.log('address',address, ethers.utils.getAddress(account), typeof(account))
+        if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
                 if(jwtIfo){
                    await dispatch(getAllDaowithAddress())
-                   await dispatch(gnosisDetailsofDao())
+                   //await dispatch(gnosisDetailsofDao())
+                    if(role === 'ADMIN'){
+                      await  dispatch(getContriRequest())
+                    }
                 }else{
                     message.info('Token expired')
                     navigate('/')
@@ -77,7 +82,7 @@ export default function Dashboard() {
             signout()
         }
     }
-    },[address, dispatch, id, navigate])
+    },[address, dispatch, id, navigate, role])
 
     useEffect(()=>{
         console.log('start.....')
@@ -90,10 +95,10 @@ export default function Dashboard() {
 
     const renderTab = () => (
         <div className={styles.tabContainer}>
-            <div onClick={()=>setTab('contributions')} className={tab==='contributions'?`${styles.selected}`:`${styles.selectionTab}`}>
+            <div onClick={()=>setTab('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Contributions
             </div>
-            <div onClick={()=>setTab('payments')} style={{marginLeft:'1.66%'}} className={tab==='payments'?`${styles.selected}`:`${styles.selectionTab}`}>
+            <div onClick={()=>setTab('payments')} style={{marginLeft:'2.15%'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Payments
             </div>
         </div>
@@ -128,13 +133,43 @@ export default function Dashboard() {
             <IoMdAdd color='#6852FF' />
         </button>
     )
-    
+
+    const checkoutButton = () => (
+        <div className={styles.payBtnCnt}>
+            <div className={styles.payBtnChild}>
+                <div className={`${styles.whiteText} ${textStyles.ub_16}`}>
+                    {approve_contri?.length} Request approved
+                </div>
+                <AiOutlineCaretDown size={18} color='white' />
+            </div>
+            <div className={`${styles.payBtnLeft} ${styles.border}`}>
+                <div className={`${styles.whiteText} ${textStyles.m_16}`}>
+                    2,500$
+                </div>
+
+                <div className={styles.payNow}>
+                    Pay Now
+                </div>
+            </div>
+        </div>
+    )
+
+    const contribution_request = useSelector(x=>x.dao.contribution_request)
+    console.log('approved request.....',approve_contri)
     return (
         <DashboardLayout>
             <div className={styles.dashView}>
                 {renderTab()}
-                {renderEmptyScreen()}
+                <DashboardSearchTab />
+                {/* {renderEmptyScreen()} */}
+                <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
+                {contribution_request.map((item, index)=>(
+                    <ContributionCard item={item} />
+                ))}
+                </div>
+                {approve_contri.length>0 && checkoutButton()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
+                {/* <DeployGnosisButton /> */}
             </div>
         </DashboardLayout>
     );

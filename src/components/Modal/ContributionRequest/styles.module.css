@@ -36,17 +36,25 @@
 
 .multiInput{
     margin-top: 1rem;
+    /* max-height: 7.25rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem; */
     /* margin-bottom: 6.623%; */
 }
 
 .modal{
     width: 44vw;
     background: white;
-    height: 86.33vh;
+    min-height: 80.33%;
     background: #FFFFFF;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06), 0px 0px 20px rgba(0, 0, 0, 0.12);
     border-radius: 1.25rem;
-    padding: 5.532% 5% 0% 6.25% ;
+    padding: 2.5rem 2rem 2rem 2.5rem ;
     /* position: absolute; */
     display: flex;
     flex-direction: column;
@@ -70,9 +78,15 @@
 }
 
 .buttonSubmit{
-    width: 40.11%;
+    width: 50.11%;
     padding: 0.625rem 1rem 0.625rem 1.5rem;
     background: #6852FF;
+    margin-top: 3.438rem;
+    flex-direction: row;
+    justify-content: space-between;
+    display: flex;
+    border-radius: 3rem;
+    /* border-radius: ; */
 }
 
 .gereyedText{
@@ -81,4 +95,13 @@
     font-weight: 800;
     font-size: 1.313rem;
     line-height: 1.75rem;
+    color: #B4A8FF;
+}
+.validText{
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1.313rem;
+    line-height: 1.75rem;
+    color: white;
 }

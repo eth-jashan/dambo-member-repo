@@ -2,8 +2,8 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import axios from "axios"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
-import { daoAction } from "../reducers/dao-actions"
-import { gnosisAction } from "../reducers/gnosis-slice"
+import { daoAction } from "../reducers/dao-slice"
+// import { gnosisAction } from "../reducers/gnosis-slice"
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -29,14 +29,25 @@ export const getAllDaowithAddress = () => {
               community_role: res.data.data[0].community_role
             }))
         }else{
+          dispatch(daoAction.set_dao_list({
+            list:[],
+          }))
           dispatch(daoAction.set_current_dao({
-            dao:[],
+            dao:null,
             role: null,
             community_role: null
           }))
           return 0
         }
       } catch (error) {
+        dispatch(daoAction.set_dao_list({
+          list:[],
+        }))
+        dispatch(daoAction.set_current_dao({
+          dao:null,
+          role: null,
+          community_role: null
+        }))
         return 0
       }
     }
@@ -64,5 +75,37 @@ export const set_dao = (dao) => {
       role:dao.access_role,
       community_role:dao.community_role
     }))
+  }
+}
+
+export const getContriRequest = () => {
+  return async (dispatch, getState) => {
+    const jwt = getState().auth.jwt
+    const uuid = getState().dao.currentDao?.uuid
+    try {
+      const res = await axios.get(`${api.drepute.dev.BASE_URL}/${routes.contribution.createContri}?dao_uuid=${uuid}`,{
+        headers:{
+          Authorization:`Bearer ${jwt}`
+        }
+      })
+      if(res.data.success){
+        console.log('Pending request.....', res.data)
+        dispatch(daoAction.set_contri_list({
+          list:res.data?.data?.contributions
+        }))
+        return 1
+      }else{
+        dispatch(daoAction.set_contri_list({
+          list:[]
+        }))
+        return 0
+      }
+    } catch (error) {
+      console.log('error...', error)
+      dispatch(daoAction.set_contri_list({
+        list:[]
+      }))
+      return 0
+    }
   }
 }

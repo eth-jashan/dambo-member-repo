@@ -66,7 +66,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
   
-    dispatch(setSigner(signer));
+    // dispatch(setSigner(signer));
     if(chainId === 4){
       try {
       const res =  await dispatch(authWithSign(address, signer))
@@ -136,7 +136,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     dispatch(setDiscordOAuth(address,uuid, jwt))
-    window.location.replace(links.discord_oauth.local)
+    window.location.replace(links.discord_oauth.staging)
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -145,7 +145,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
     const signer = web3Provider.getSigner()
-    dispatch(setSigner(signer));
+    // dispatch(setSigner(signer));
     // const signer = web3Provider.getSigner()
     const newAddress = await signer.getAddress()
     const chainid = await signer.getChainId()

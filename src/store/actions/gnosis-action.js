@@ -129,7 +129,7 @@ export const getAllSafeFromAddress = (address) => {
     }
 };
 
-export const getAddressMembership = (id) => {
+export const getAddressMembership = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     try {
@@ -138,7 +138,7 @@ export const getAddressMembership = (id) => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('contributor joined....', res.data.data[0])
+      console.log('contributor joined....', res.data)
       if(res.data.data.length>0){
           dispatch(gnosisAction.set_membershipList({
             list:res.data.data, 

@@ -4,6 +4,7 @@ const daoSlice = createSlice({
   name: "dao",
   initialState: {
     dao_list:[],
+    contribution_request:[],
     currentDao:null,
     role:null,
     community_role:null,
@@ -19,6 +20,9 @@ const daoSlice = createSlice({
       state.currentDao = action.payload.dao;
       state.role = action.payload.role;
       state.community_role = action.payload.community_role
+    },
+    set_contri_list(state, action){
+      state.contribution_request = action.payload.list
     },
     set_gnosis_details(state, action){
       state.gnosis_details = action.payload.details

@@ -12,6 +12,9 @@ const routes = {
         getDaoMembership:'/dao/memberships',
         getRole:'/dao/my-role'
     },
+    contribution:{
+        createContri:'/contrib'
+    }
 }
 
 export default routes

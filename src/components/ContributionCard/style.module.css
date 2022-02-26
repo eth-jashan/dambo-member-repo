@@ -1,104 +1,34 @@
-/* .input{
-    background:transparent;
-    border:0; 
-    font-family: monospace;
-    width: 70%;
-    margin-left: 6px;
-} */
-
-/* ::placeholder {
-    color: #6852FF;
-    font-family: monospace;
-    font-size: 12px;
-} */
-
-.logoEdit{
-    color: 'white';
-    font-size: 20px;
-    align-self: center;
+.container{
+    border: 1px solid #292929;
+    padding: 1rem 1rem 1rem 2.75rem;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.container:hover{
+    background-color: #333333;
+}
+.title{
+    color: white;
+    width: 25%;
+    text-align: start;
+}
+.title:hover{
+    font-family: 'TelegrafBolder';
+    color: white;
+    text-align: start;
 }
 
-.timeText{
-    font-size:14px;
-    font-family:monospace; 
-    opacity:0.56; 
-    color:white
+.description{
+    color: #C2C2C2;
+    /* width: 30%; */
+    text-align: center;
+    margin-right: 1.25rem;
 }
-
-.cardTitle{
-    font-size:18px;
-    font-family:monospace;
-    color:white
-}
-
-.projectTitle{
-    color:#FFFFFF;
-    font-family:monospace; 
-    text-decoration: underline; 
-    font-size :14px
-}
-
-.projectContributor{
-    color:#FFFFFF; 
-    font-family:monospace;
-    font-size:14px
-}
-
-.inputContainer{
-    width:100%; 
-    display:flex; 
-    flex-direction:row;
-    padding: 6px 12px 6px 12px; 
-    justify-content:space-between; 
-    border-radius:12px
-}
-
-.flexContainer{
-    display:flex; 
-    flex-direction:row
-}
-
-.inputDiv{
-    flex-direction: row; 
-    display:flex;
-    align-items:center
-}
-
-.streamText{
-    color:#FFFFFF; 
-    font-family:monospace; 
-    text-decoration:underline;
-    font-size:14px; 
-    margin-left:20px
-}
-
-.cardLayout > ant-card{
-    /* .ant-card{
-    width:90%;
-    background: #121219;
-    border:0;
-    border-radius:12px;  
-    align-self:center;
-    padding:24px 24px 24px 24px;
-    text-align:left
-} */
-    /* .ant-card{
-
-    } */
-    width:90%;
-    background: #121219;
-    border:0;
-    border-radius:12px;  
-    align-self:center;
-    padding:24px 24px 24px 24px;
-    text-align:left
-}
-
-.amountText{
-    font-family: monospace;
-    font-size:16px
-}
-
-.contriInfoRow{
-    margin-top: 12px
+.description:hover{
+    color: white;
 }

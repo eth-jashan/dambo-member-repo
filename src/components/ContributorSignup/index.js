@@ -104,7 +104,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
             lineHeight:'24px',
             width:'60%'
         }),
-      };
+    };
     
     return(
         <div className={styles.layout}>

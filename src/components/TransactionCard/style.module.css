@@ -1,0 +1,149 @@
+.container{
+    width: 100%;
+    padding: 2rem 1.5rem 0rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow: hidden;
+}
+
+.cross{
+    height: 1rem;
+    width: 1rem;
+    margin-bottom: 3.313rem;
+}
+
+.title{
+    color: white;
+    text-align: start;
+    width: 12.5rem;
+}
+
+.ownerInfo{
+    color: white;
+    text-align: start;
+    margin-top: 1.5rem;
+}
+
+.timeInfo{
+    text-align: start;
+    margin-bottom: 1rem;
+    color: #737373;
+}
+
+.description{
+    color: #737373;
+    text-align: start;
+    margin-bottom: 1rem;
+}
+
+/* .feedBackContainer{
+    width: 100%;
+    border: 1px solid #292929;
+    /* border-top: 0; */
+    /* border-left: 0;
+    border-right: 0;
+    padding: 1rem 0rem 1rem 0rem;
+    display: flex;
+    align-items: center;
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+} */
+/* .feedBackContainer>div{
+    text-align: start;
+    color: #737373;
+} */ 
+.addToken{
+    width: 100%;
+    /* background-color: #333333; */
+    padding: 1rem ;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px #292929 solid;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    align-items: center;
+}
+.addToken>div{
+    color: #808080;
+}
+
+.feedBackContainer{
+    width: 100%;
+    /* background-color: #333333; */
+    padding: 1rem ;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* border: 1px #292929 solid; */
+    /* border-top: 0px;
+    border-right: 0px;
+    border-left: 0px; */
+    align-items: center;
+}
+.feedBackContainer>div{
+    color: #808080;
+}
+
+.add{
+    color: #808080;
+    height: 0.875rem;
+    width: 0.875rem;
+}
+
+.payNow{
+    padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+    background: white;
+    border-radius: 1.5rem;
+    background: #FFFFFF;
+    position: absolute;
+    bottom: 1.25rem;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
+    display: flex;
+    align-self: center;
+}
+.payNow>div{
+    color: #6852FF;
+}
+
+.amountScroll{
+    width: 100%;
+    max-height: 6.25rem;
+    overflow-y: scroll;
+    margin-bottom: '2px';
+
+}
+
+.buttonTile{
+    color: #808080;
+}
+
+.textArea{
+    width: 100%;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
+    border-radius: 0.5rem;
+    background-color: #7A7A7A;
+    font-family:'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: white;
+    outline: none;
+    padding: 1rem;
+    min-height: 4.5rem;
+}
+.textArea::placeholder{
+    font-family:'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #808080;
+}
+.textArea:focus{
+    outline: none;
+    border: 0px;
+}

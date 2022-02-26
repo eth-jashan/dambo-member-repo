@@ -6,7 +6,6 @@ import { contributorAction } from "../reducers/contributor-slice"
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
-        console.log('idddddddd', id)
         dispatch(contributorAction.set_invite_code({id}))
     }
 }
@@ -46,7 +45,6 @@ export const getRole = (uuid) => {
 export const getDiscordOAuth = (code) => {
     return (dispatch)=>{
     const data = JSON.parse(localStorage.getItem('discord'))
-    console.log('dataaa', data)
     if(data){
         dispatch(authActions.set_address({address:data.address}))
         dispatch(authActions.set_signing({jwt:data.jwt}))
@@ -63,9 +61,32 @@ export const getDiscordOAuth = (code) => {
 }
 
 export const createContributionrequest = (title, type, link, time, comments) => {
-    return (dispatch) => {
+    return  async (dispatch, getState) => {
+        
+        const uuid = getState().dao.currentDao?.uuid
+        const jwt = getState().auth.jwt
+
+        const data = {
+            dao_uuid : uuid,
+            stream : type,
+            title,
+            description:comments,
+            link,
+            time_spent:time
+        }
         try {
-            
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}`,data,{
+                headers:{
+                    Authorization:`Bearer ${jwt}`
+                }
+            })
+            console.log('resss', res)
+            if(res.data.success){
+                console.log('suucessfully created !')
+                return 1
+            }else{
+                return 0
+            }
         } catch (error) {
             console.log('error....', error)
         }
