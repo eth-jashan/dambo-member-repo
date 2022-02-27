@@ -34,19 +34,19 @@ export const approveContriRequest = (payout) => {
         }
         console.log('current....', data)
         try {
-            // const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
-            //     headers:{
-            //         Authorization:`Bearer ${jwt}`
-            //     }
-            // })
-            // // console.log('resss', res)
-            // if(res.data.success){
-            //     console.log('suucessfully created !')
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+                headers:{
+                    Authorization:`Bearer ${jwt}`
+                }
+            })
+            // console.log('resss', res)
+            if(res.data.success){
+                console.log('suucessfully created !')
                 dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
                 return 1
-            // }else{
-            //     return 0
-            // }
+            }else{
+                return 0
+            }
         } catch (error) {
             console.log('error....', error)
         }

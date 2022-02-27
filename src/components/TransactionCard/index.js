@@ -9,6 +9,7 @@ import styles from "./style.module.css";
 import textStyle  from "../../commonStyles/textType/styles.module.css";
 import AmountInput from '../AmountInput';
 import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
+import { getAllDaowithAddress } from '../../store/actions/dao-action';
 
 const TransactionCard = () => {
 
@@ -53,6 +54,7 @@ const TransactionCard = () => {
     }
     const onApproveTransaction = () => {
         dispatch(approveContriRequest(payDetail))
+        dispatch(getAllDaowithAddress())
         dispatch(setTransaction(null))
     }
 

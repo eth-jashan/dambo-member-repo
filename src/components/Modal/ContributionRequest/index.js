@@ -29,6 +29,7 @@ const ContributionRequestModal = ({setVisibility}) => {
         console.log('ress....', res)
         if(res){
             message.success('Request Submitted Successfully')
+            setVisibility(false)
         }else{
             message.error('Try creating again')
         }
