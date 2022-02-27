@@ -8,26 +8,13 @@
     display: flex;
 }
 .selectionTab{
-    /* font-family: "TelegrafBolder";
-    font-style: normal;
-    font-weight: 800;
-    font-size: 1rem;
-    line-height: 1.5rem; */
     color: #A2A2A3;
     text-align: start;
-    /* padding-bottom: 0.75rem; */
     cursor: pointer;
 }
 .selected{
-    /* font-family: "TelegrafBolder";
-    font-style: normal;
-    font-weight: 800;
-    font-size: 1rem;
-    line-height: 1.5rem; */
     color: #FFFFFF;
     text-align: start;
-    /* padding-bottom: 0.75rem;
-    border-bottom:1px solid #FFFFFF;  */
     cursor: pointer;
 }
 .heading {

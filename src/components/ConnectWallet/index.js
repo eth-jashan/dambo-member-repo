@@ -136,7 +136,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     dispatch(setDiscordOAuth(address,uuid, jwt))
-    window.location.replace(links.discord_oauth.staging)
+    window.location.replace(links.discord_oauth.local)
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -149,7 +149,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     // const signer = web3Provider.getSigner()
     const newAddress = await signer.getAddress()
     const chainid = await signer.getChainId()
-    dispatch(setAddress(newAddress));
+    dispatch(setAddress(newAddress, signer));
       const res = dispatch(getJwt(newAddress))
       if(res && chainid === 4){
         //has token and chain is 4
@@ -197,8 +197,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         alert('change chain id......')
         alertBanner()
       }
-    
-    
+
     provider.on("chainChanged", async(chainId) => {
       dispatch(setLoggedIn(false))
       navigate('/')
@@ -222,7 +221,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     async function getAddress() {
       if (userSigner) {
         const newAddress = await userSigner.getAddress();
-        dispatch(setAddress(newAddress));
+        dispatch(setAddress(newAddress, userSigner));
         // increaseStep()
       }
     }

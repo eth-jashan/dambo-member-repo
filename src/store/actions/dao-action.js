@@ -60,8 +60,20 @@ export const gnosisDetailsofDao = () => {
       const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
       const balance = await serviceClient.getBalances(currentDao?.safe_public_address)
       const usdBalance = await serviceClient.getUsdBalances(currentDao?.safe_public_address)
-      console.log('safe info', balance, usdBalance) 
-      dispatch(daoAction.set_gnosis_details({details:safeInfo, balance, usdBalance}))
+      console.log('safe info........', balance) 
+      const tokenType = []
+      balance.map((item, index)=>{
+        if(item.tokenAddress === null){
+          tokenType.push({
+            label:'ETH', value:item
+          })
+        }else{
+          tokenType.push({
+            label:item.token.symbol, value:item
+          })
+        }
+      })
+      dispatch(daoAction.set_gnosis_details({details:safeInfo, balance:tokenType, usdBalance}))
     } catch (error) {
       console.log('error', error)
     }
@@ -75,6 +87,7 @@ export const set_dao = (dao) => {
       role:dao.access_role,
       community_role:dao.community_role
     }))
+    gnosisDetailsofDao()
   }
 }
 
@@ -105,6 +118,48 @@ export const getContriRequest = () => {
       dispatch(daoAction.set_contri_list({
         list:[]
       }))
+      return 0
+    }
+  }
+}
+
+export const createPayout = (tranxid) => {
+  return async (dispatch, getState) => {
+    const jwt = getState().auth.jwt
+    const uuid = getState().dao.currentDao?.uuid
+    const transaction = getState().transaction.approvedContriRequest
+    const address = getState().auth.address
+
+    let contri_array = []
+
+    transaction.map((item, index) => {
+      contri_array.push(item?.contri_detail?.id)
+    })
+    console.log('number of approval',contri_array)
+    const data = {
+      initiated_by:address,
+      contributions:contri_array,
+      gnosis_reference_id:tranxid,
+      dao_uuid:uuid
+    }
+    console.log('data....', data)
+    try {
+      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,data,{
+        headers:{
+          Authorization:`Bearer ${jwt}`
+        }
+      })
+      if(res.data.success){
+        console.log('created payout.....', res.data)
+        // dispatch(daoAction.set_contri_list({
+        //   list:res.data?.data?.contributions
+        // }))
+        return 1
+      }else{
+        return 0
+      }
+    } catch (error) {
+      console.log('error...', error)
       return 0
     }
   }

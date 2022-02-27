@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import styles from './styles.module.css'
-// import textStyles from '../../../commonStyles/text.modules.css'
 import { MdChevronRight } from 'react-icons/all'
 import cross from '../../../assets/Icons/cross.svg'
 import InputText from '../../Input'

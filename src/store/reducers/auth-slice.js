@@ -7,6 +7,7 @@ const authSlice = createSlice({
     provider: null,
     web3Provider: null,
     address:null,
+    signer:null,
     chainId: null,
     chain:null,
     loggedIn:false,
@@ -23,7 +24,9 @@ const authSlice = createSlice({
       state.chainId = action.payload.chainId;
     },
     set_address(state, action){
+      //console.log('signer sett', action.payload.signer)
       state.address = action.payload.address;
+      //state.signer = action.payload.signer;
     },
     set_signing(state, action){
       state.jwt = action.payload.jwt

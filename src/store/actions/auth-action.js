@@ -73,10 +73,10 @@ export const retrieveAddress = () => {
   }
 }
 
-export const setAddress = (address) => {
+export const setAddress = (address, signer) => {
   return (dispatch) => {
-      console.log('setting new address.....', address)
-      localStorage.setItem('current_address',address)
+      // console.log('setting new address.....', address)
+      localStorage.setItem('current_signer',signer)
       dispatch(
         authActions.set_address({address})
       );

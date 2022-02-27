@@ -11,7 +11,7 @@ const DashboardSearchTab = () => {
     return(
         <div className={styles.container}>
             <div className={`${textStyles.m_16} ${styles.text}`}>
-                {contribution_request?.length} Contribution requests
+                {contribution_request.filter(x=>x.status === "APPROVED")?.length} Contribution requests
             </div>
             <div>
                 <BiSearchAlt2 color='#808080' size='1rem'  />

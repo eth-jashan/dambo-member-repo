@@ -25,26 +25,26 @@ const TransactionCard = () => {
 
     const [payDetail, setPayDetail] = useState([{
         amount:'',
-        token_type:null
+        token_type:null,
+        address:currentTransaction?.requested_by?.public_address
     }])
 
     const addToken = () => {
         const newDetail = {
             amount:'',
-            token_type:null
+            token_type:null,
+            address:currentTransaction?.requested_by?.public_address
         }
         setPayDetail([...payDetail, newDetail]);
     }
 
     const updatedPayDetail = (e, index) => {
         payDetail[index].amount = e.target.value
-        console.log('pay detail', payDetail)
         setPayDetail(payDetail);
     };
 
     const updateTokenType = (value, index) => {
         payDetail[index].token_type = value.value
-        console.log('pay detail', payDetail)
         setPayDetail(payDetail);
     };
 
@@ -112,7 +112,7 @@ const TransactionCard = () => {
                 <div className={`${textStyle.m_16}`}>Add Feedback</div>
             </div> */}
             
-            <div className={styles.amountScroll}>
+            {/* <div className={styles.amountScroll}> */}
             {payDetail?.map((item, index)=>(
                 <AmountInput 
                     updateTokenType={(x)=>updateTokenType(x, index)} 
@@ -120,7 +120,7 @@ const TransactionCard = () => {
                     onChange={e=>updatedPayDetail(e,index)} 
                 />
             ))}
-            </div>
+            {/* </div> */}
 
             <div onClick={()=>addToken()} className={styles.addToken}>
                 <div className={`${textStyle.m_16}`}>Add another token</div>

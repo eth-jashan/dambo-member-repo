@@ -10,6 +10,9 @@ const transactionSlice = createSlice({
     set_current_transaction(state, action){
         state.currentTransaction = action.payload.data
     },
+    reset_approved_request(state, action){
+      state.approvedContriRequest = []
+    },
     set_approved_request(state, action){
       // state.currentTransaction = action.payload.data
       const newRequestList = state.approvedContriRequest.concat(action.payload.item)

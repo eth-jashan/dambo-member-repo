@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Select from 'react-select';
 import styles from './style.module.css'
 import textStyles from '../../commonStyles/textType/styles.module.css'
+import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
@@ -67,7 +68,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
         }),
     };
 
-    const colorOption = [{label:'ETH', value:'ETH'}, {label:'SOL', value:'SOL'}, {label:'BTC', value:'BTC'}, {label:'USD', value:'USD'}]
+    const token_available = useSelector(x=>x.dao.balance)
     const [role, setRole] = useState()
     const [onFocus, setOnFocus] = useState(false)
 
@@ -81,12 +82,12 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 styles={colourStyles}
                 isSearchable={false}
                 name="color"
-                options={colorOption}
+                options={token_available}
                 defaultValue={{label:'ETH', value:'ETH'}}
                 menuPosition='fixed'
             />
             {/* <div style={{width:'50%', background:'red', padding:12}}/> */}
-            <div style={{height:'3rem', width:'64%', background:onFocus?'#D3E5A6':'#ECFFB8', display:'flex', flexDirection:'row', alignItems:'center', borderBottomRightRadius:'0.5rem', borderTopRightRadius:'0.5rem'}}>
+            <div style={{height:'3rem', width:'70%', background:onFocus?'#D3E5A6':'#ECFFB8', display:'flex', flexDirection:'row', alignItems:'center', borderBottomRightRadius:'0.5rem', borderTopRightRadius:'0.5rem'}}>
             <input 
                 onFocus={()=>setOnFocus(true)} 
                 onBlur={()=>setOnFocus(false)} 
