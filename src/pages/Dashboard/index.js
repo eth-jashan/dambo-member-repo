@@ -21,6 +21,7 @@ import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
 import { getPendingTransaction } from '../../store/actions/transaction-action';
 
+
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export default function Dashboard() {
@@ -55,9 +56,9 @@ export default function Dashboard() {
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
             message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.local}${curreentDao?.uuid}`);
+          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
         } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.local}${curreentDao?.uuid}`);
+          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
         }
     }
     
@@ -123,7 +124,7 @@ export default function Dashboard() {
             <div onClick={()=>setTab('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Contributions
             </div>
-            <div onClick={()=>setTab('payments')} style={{marginLeft:'2.15%'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
+            <div onClick={()=>setTab('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Payments
             </div>
         </div>
@@ -214,7 +215,7 @@ export default function Dashboard() {
         tab === 'contributions'?renderContribution():renderPayment()
     )
 
-    const contribution_request = useSelector(x=>x.dao.contribution_request)?.filter(x=>x.status !== 'APPROVED')
+    const contribution_request = useSelector(x=>x.dao.contribution_request)
     console.log('approved request.....',contribution_request)
     return (
         <DashboardLayout>

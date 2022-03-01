@@ -23,7 +23,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  blacklist:['transaction','web3']
+  blacklist:['transaction','web3','dao']
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -56,7 +56,7 @@ export default function PaymentCard({item}) {
     // console.log(checkApproval())
     const dispatch = useDispatch()
     const onPaymentPress = () => {
-        dispatch(setPayment(item))
+        // dispatch(setPayment(item))
     }
 
     return(

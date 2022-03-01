@@ -53,6 +53,78 @@ export const getAllDaowithAddress = () => {
     }
 }
 
+export const set_contri_filter = (filter_key) => {
+  return async (dispatch, getState) => {
+    console.log('filterrr', filter_key === 'ALL')
+    const jwt = getState().auth.jwt
+    const uuid = getState().dao.currentDao?.uuid
+    try {
+      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`,{
+        headers:{
+          Authorization:`Bearer ${jwt}`
+        }
+      })
+      console.log('res data', res.data.success)
+      if(res.data.success){
+        if(filter_key === 'APPROVED'){
+          // dispatch(daoAction.set_contribution_filter({
+          //   list:res.data?.data?.contributions
+          // }))
+
+          dispatch(daoAction.set_contribution_filter({
+            key:filter_key,
+            list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED")
+          }))
+        } else if( filter_key === 'ACTIVE'){
+          // dispatch(daoAction.set_contribution_filter({
+          //   list:res.data?.data?.contributions
+          // }))
+
+          dispatch(daoAction.set_contribution_filter({
+            key:filter_key,
+            list:res.data?.data?.contributions?.filter(x=>x.status !== "APPROVED")
+          })) 
+        }else if( filter_key === 'ALL'){
+          // dispatch(daoAction.set_contribution_filter({
+          //   list:res.data?.data?.contributions
+          // }))
+          console.log('all request', res.data?.data?.contributions)
+          dispatch(daoAction.set_contribution_filter({
+            key:filter_key,
+            list:res.data?.data?.contributions
+          })) 
+        }
+         else {
+          // dispatch(daoAction.set_contribution_filter({
+          //   list:[]
+          // }))
+
+          dispatch(daoAction.set_contribution_filter({
+            key:filter_key,
+            list:[]
+          })) 
+        }
+        // return 1
+      }else{
+        // dispatch(daoAction.set_contri_list({
+        //   list:[]
+        // }))
+        dispatch(daoAction.set_contribution_filter({
+          key:filter_key,
+          list:[]
+        }))
+        // return 0
+      }
+    } catch (error) {
+      console.log('error...', error)
+      dispatch(daoAction.set_contri_list({
+        list:[]
+      }))
+      return 0
+    }
+  }
+}
+
 export const gnosisDetailsofDao = () => {
   return async (dispatch, getState) => {
     const currentDao = getState().dao.currentDao
@@ -106,7 +178,7 @@ export const getContriRequest = () => {
       if(res.data.success){
         console.log('Pending request.....', res.data)
         dispatch(daoAction.set_contri_list({
-          list:res.data?.data?.contributions
+          list:res.data?.data?.contributions.filter(x=>x.status !== 'APPROVED')
         }))
         return 1
       }else{
@@ -144,7 +216,7 @@ export const createPayout = (tranxid) => {
       gnosis_reference_id:tranxid,
       dao_uuid:uuid
     }
-    console.log('data....', data)
+    console.log('data....', JSON.stringify(data))
     // try {
       const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,data,{
         headers:{

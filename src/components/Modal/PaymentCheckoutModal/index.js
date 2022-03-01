@@ -12,7 +12,10 @@ import { resetApprovedRequest } from '../../../store/actions/transaction-action'
 import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
 import { createPayout } from '../../../store/actions/dao-action'
+import cross from '../../../assets/Icons/cross.svg'
+
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+
 
 const PaymentCheckoutModal = ({onClose, signer}) => {
 
@@ -120,18 +123,23 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         </div>
     )
 
+    const [onCancelHover, setCancelHover] = useState(false)
+
     const requestItem = (item) => (
         <div className={styles.requestItem}>
         <div style={{width:'100%', display:'flex', flexDirection:'row'}}>
-            <div className={styles.cancel}>
-
+            <div style={{width:'5.2%'}}>
+                <div onMouseLeave={()=>setCancelHover(false)} onMouseEnter={()=>setCancelHover(true)} className={styles.cancel}>
+                    <img src={cross} alt='cancel' className={styles.cross}/>
+                    {onCancelHover&&<div className={textStyles.m_14}>Cancel Approval</div>}
+                </div>
             </div>
             <Typography.Paragraph style={{marginLeft:'0.75rem'}} ellipsis={{rows:1}} className={`${textStyles.ub_19} ${styles.alignText}`}>
                 {item?.contri_detail?.title}
             </Typography.Paragraph>
         </div>
             <div className={styles.infoContainer}>
-                <div>
+                <div style={{width:'60%'}}>
                     <div className={`${textStyles.m_16} ${styles.alignText}`}>
                         {item?.contri_detail?.stream?.toLowerCase()}  •  {item?.contri_detail?.time_spent} hrs
                     </div>
@@ -159,13 +167,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         <div className={styles.backdrop}>
             <div className={styles.modal}>
                 {modalHeader()}
-                {/* {requestItem()} */}
-                {/* {requestItem()} */}
-                {/* {requestItem()}
-                {requestItem()}
-                {requestItem()}
-                {requestItem()}
-                {requestItem()} */}
                 <div style={{marginBottom:'5rem'}}>
                 {approved_request.map((item, index)=>(
                     requestItem(item)

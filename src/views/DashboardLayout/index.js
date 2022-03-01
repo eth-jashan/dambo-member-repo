@@ -33,9 +33,9 @@ export default function DashboardLayout({ children }) {
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${currentDao?.uuid}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${currentDao?.uuid}`);
     } else {
-      return document.execCommand('copy', true, `${links.contributor_invite.local}${currentDao?.uuid}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.dev}${currentDao?.uuid}`);
     }
   }
 

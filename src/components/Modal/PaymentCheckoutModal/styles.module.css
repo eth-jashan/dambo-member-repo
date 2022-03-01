@@ -42,7 +42,7 @@
 .greyedText{
     color: #808080;
     text-align: start;
-    width: 50%;
+    /* width: 50%; */
 }
 .usdText{
     color: #808080;
@@ -62,14 +62,20 @@
 }
 
 .cancel{
-    height: 1.5rem;
     width: 1.5rem;
+    height: 1.5rem;
     border-radius: 1rem;
     background-color: #EFEFEF;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .cancel:hover{
     width: 9rem;
-    position:absolute
+    position:absolute;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem 0.25rem 0.375rem;
 }
 .infoContainer{
     /* position: static; */
@@ -106,4 +112,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.cross{
+    height: 0.75rem;
+    width: 0.75rem;
 }

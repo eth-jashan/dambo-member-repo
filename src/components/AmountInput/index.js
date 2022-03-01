@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import Select from 'react-select';
 import styles from './style.module.css'
+import { AiFillCaretDown } from 'react-icons/all'
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { useSelector } from 'react-redux';
 
@@ -16,11 +17,15 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
             width: '100%',
             height:'3rem',
             margin:0,
-            border:0,
+            borderTop:0,
+            borderBottom:0,
+            borderLeft:0,
             borderTopLeftRadius:'0.5rem', 
             borderBottomLeftRadius:'0.5rem',
             borderTopRightRadius:0,
-            borderBottomRightRadius:0
+            borderBottomRightRadius:0,
+            borderRight:'1px solid #A1AE7E',
+            paddingRight:'1.25rem'
         }
         },
         option: (styles, { data, isDisabled, isFocused, isSelected }) => {
@@ -45,8 +50,8 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 fontFamily:'TelegrafMedium',
                 fontStyle:'normal',
                 fontWeight:'normal',
-                fontSize:'16px',
-                lineHeight:'24px',
+                fontSize:'1rem',
+                lineHeight:'1.5rem',
                 height:'100%',
             }
         },
@@ -55,15 +60,15 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
             fontFamily:'TelegrafMedium',
             fontStyle:'normal',
             fontWeight:'normal',
-            fontSize:'16px',
-            lineHeight:'24px', }),
+            fontSize:'1rem',
+            lineHeight:'1.5rem', }),
         singleValue: (styles, { data }) => 
         ({ ...styles, 
             fontFamily:'TelegrafMedium',
             fontStyle:'normal',
             fontWeight:'normal',
-            fontSize:'16px',
-            lineHeight:'24px',
+            fontSize:'1rem',
+            lineHeight:'1.5rem',
             width:'100%',
         }),
     };
@@ -72,12 +77,17 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
     const [role, setRole] = useState()
     const [onFocus, setOnFocus] = useState(false)
 
+    const CustomDropDownIndicatior = () => (
+        <AiFillCaretDown style={{alignSelf:'center'}} color='black' size={'1rem'}  />
+    )
+
     return(
         <div className={styles.container}>
             <Select
                 className="basic-single"
                 classNamePrefix="select"
                 closeMenuOnSelect
+                components={{DropdownIndicator:CustomDropDownIndicatior}}
                 onChange={(x)=>updateTokenType(x)}
                 styles={colourStyles}
                 isSearchable={false}
