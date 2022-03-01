@@ -158,9 +158,9 @@
     bottom: 1.25rem;
 }
 .deleteButton{
-    height: 2.8rem;
+    height: 2.5rem;
     border-radius: 2.25rem;
-    width: 2.8rem;
+    width: 2.5rem;
     background: #737373;
     display: flex;
     align-items: center;
