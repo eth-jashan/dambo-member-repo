@@ -60,7 +60,8 @@ export const gnosisDetailsofDao = () => {
       const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
       const balance = await serviceClient.getBalances(currentDao?.safe_public_address)
       const usdBalance = await serviceClient.getUsdBalances(currentDao?.safe_public_address)
-      console.log('safe info........', balance) 
+      const delegates = await serviceClient.getSafeDelegates(currentDao?.safe_public_address)
+      console.log('safe owner........', safeInfo) 
       const tokenType = []
       balance.map((item, index)=>{
         if(item.tokenAddress === null){
@@ -73,9 +74,10 @@ export const gnosisDetailsofDao = () => {
           })
         }
       })
-      dispatch(daoAction.set_gnosis_details({details:safeInfo, balance:tokenType, usdBalance}))
+      dispatch(daoAction.set_gnosis_details({details:safeInfo, balance:tokenType, usdBalance, delegates:safeInfo.owners}))
     } catch (error) {
       console.log('error', error)
+      dispatch(daoAction.set_gnosis_details({details:null, balance:null, usdBalance:null, delegates:[]}))
     }
   }
 }
@@ -143,7 +145,7 @@ export const createPayout = (tranxid) => {
       dao_uuid:uuid
     }
     console.log('data....', data)
-    try {
+    // try {
       const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,data,{
         headers:{
           Authorization:`Bearer ${jwt}`
@@ -158,9 +160,9 @@ export const createPayout = (tranxid) => {
       }else{
         return 0
       }
-    } catch (error) {
-      console.log('error...', error)
-      return 0
-    }
+    // } catch (error) {
+    //   console.log('error...', error)
+    //   return 0
+    // }
   }
 }

@@ -68,7 +68,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
-                nonce:16
+                nonce:nextNonce
             }
             )
             console.log('transaction created......', safeTransaction)

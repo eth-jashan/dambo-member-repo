@@ -4,36 +4,27 @@ import TickSvg from "../../assets/Icons/tick.svg";
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { BiDotsVerticalRounded } from 'react-icons/all'
+import { useDispatch, useSelector } from 'react-redux';
+import { ethers } from 'ethers';
+import { setPayment } from '../../store/actions/transaction-action';
 
 export default function PaymentCard({item}) {
 
-    const demoArticle = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo'
-
-    const renderTitleInfo = () => (
-        <>  
-            <div className={styles.timeText} >9:30 PM, 22 Dec </div>
-            <div className={styles.cardTitle}>Payout for Something -(0x48D2F1...)</div>
-        </>
-    )
-
-    const renderContriParagraph = () => (
-        <>
-            <Typography.Paragraph
-                style={{color:'#FFFFFF', fontFamily:'monospace', fontSize:'14px', opacity:0.56}}
-                ellipsis={{
-                    rows:3,
-                    expandable: true,
-                    onEllipsis: ellipsis => {
-                        console.log('Ellipsis changed:', ellipsis);
-                    },
-                    symbol:<Typography.Link style={{color:'#FFFFFF', fontFamily:'monospace', fontSize:'14px', opacity:0.56, textDecoration:'underline'}}>read more</Typography.Link>
-                    
-                }}
-            >
-            {demoArticle}
-            </Typography.Paragraph>
-        </>
-    )
+    const address = useSelector(x=>x.auth.address)
+    const [onHover, setOnHover] = useState(false)
+    const delegates = useSelector(x=>x.dao.delegates)
+    const checkApproval = () => {
+        let status
+        item.confirmations.map((item, index)=>{
+            console.log('item...', address=== item.owner)
+            if(address === ethers.utils.getAddress(item.owner)){
+                status = true
+            }else{
+                status = false
+            }
+        })
+        return status
+    }
 
     const singlePayout = () => (
         <div className={styles.singleItem}>
@@ -62,17 +53,27 @@ export default function PaymentCard({item}) {
     )
 
     const payout = ['1', '2', '3', '4']
+    // console.log(checkApproval())
+    const dispatch = useDispatch()
+    const onPaymentPress = () => {
+        dispatch(setPayment(item))
+    }
 
     return(
-        <div className={styles.container}>
+        <div onClick={()=>onPaymentPress()} style={{background:onHover&&'#333333', border:onHover&&0, borderRadius:onHover&&'0.75rem'}} onMouseLeave={()=>setOnHover(false)} onMouseEnter={()=>setOnHover(true)} className={styles.container}>
             {payout.length>1 && bundleTitle()}
             {payout.slice(0,3).map((item,index)=>(
                 singlePayout()
             ))}
             {payout.length>3&&
             <div className={`${styles.link} ${textStyles.m_16}`}>{`${payout.length - 3} more`}</div>}
-            <div className={styles.btnContainer}>
-                <div className={textStyles.ub_14}>Approve Payment</div>
+            <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex'}}>
+                <div style={{background:onHover&&'white'}} className={styles.btnContainer}>
+                    <div style={{color:onHover&&'black'}} className={textStyles.ub_14}>{checkApproval()?'Approved':'Approve Payment'}</div>
+                </div>
+                {onHover&&<div className={`${styles.signerOverview} ${textStyles.m_16}`}>
+                {item.confirmations.length} of {delegates.length}
+                </div>}
             </div>
         </div>
     )

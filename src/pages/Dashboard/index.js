@@ -19,6 +19,7 @@ import { useSafeSdk } from '../../hooks';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
+import { getPendingTransaction } from '../../store/actions/transaction-action';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
     const navigate = useNavigate()
     const role = useSelector(x=>x.dao.role)
     const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
+    const pending_txs = useSelector(x=>x.transaction.pendingTransaction)
     const curreentDao = useSelector(x=>x.dao.currentDao)
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
@@ -41,7 +43,6 @@ export default function Dashboard() {
     const { safeSdk } = useSafeSdk(signer, curreentDao?.safe_public_address)
     const setProvider = async() => {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-        // Prompt user for account connections
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         setSigner(signer)
@@ -84,7 +85,7 @@ export default function Dashboard() {
             navigate('/')
         }else{
         const account = await onInit()
-        console.log('address',address, ethers.utils.getAddress(account), typeof(account))
+        //console.log('address',address, ethers.utils.getAddress(account), typeof(account))
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
@@ -93,6 +94,9 @@ export default function Dashboard() {
                    await dispatch(gnosisDetailsofDao())
                     if(role === 'ADMIN'){
                       await  dispatch(getContriRequest())
+                      await dispatch(getPendingTransaction())
+                    }else{
+                        console.log('fetch when contributor....')
                     }
                 }else{
                     message.info('Token expired')
@@ -195,10 +199,10 @@ export default function Dashboard() {
     )
 
     const renderPayment = () => (
-        contribution_request.length > 0 ?
+        pending_txs.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
             <div style={{width:'100%',  marginBottom:'100px'}}>
-                {contribution_request.map((item, index)=>(
+                {pending_txs.map((item, index)=>(
                     <PaymentCard item={item} />
                 ))}
             </div>

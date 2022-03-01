@@ -15,3 +15,44 @@
     color: #808080;
     text-align: start;
 }
+
+.whiterText{
+    color: white;
+    text-align: start;
+}
+.whiterText:hover{
+    font-family: 'TelegrafBolder';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}
+.menuContainer{
+    margin-bottom: 0.5rem;
+}
+.menuContainer:hover{
+    background-color: #4C4C4C;
+}
+.menu{
+    font-family: 'TelegrafMedium';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+    width: 100%;
+    height: 100%;
+}
+.menuContainer>div{
+    font-family: 'TelegrafMedium';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}
+.menu:hover{
+    font-family: 'TelegrafBolder';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}

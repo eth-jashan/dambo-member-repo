@@ -3,8 +3,8 @@
     padding: 2rem 1.5rem 0rem 1.5rem;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .cross{
