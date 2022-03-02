@@ -1,22 +1,28 @@
 import { Card, Col, Divider, Row, Typography } from 'antd'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import TickSvg from "../../assets/Icons/tick.svg";
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { BiDotsVerticalRounded } from 'react-icons/all'
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { setPayment } from '../../store/actions/transaction-action';
+import { setPayment, setTransaction } from '../../store/actions/transaction-action';
+import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import { useSafeSdk } from "../../hooks";
 
-export default function PaymentCard({item}) {
+const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+
+export default function PaymentCard({item, signer}) {
 
     const address = useSelector(x=>x.auth.address)
     const [onHover, setOnHover] = useState(false)
     const delegates = useSelector(x=>x.dao.delegates)
+    const currentDao = useSelector(x=>x.dao.currentDao)
+    const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const checkApproval = () => {
         let status
         item.confirmations.map((item, index)=>{
-            console.log('item...', address=== item.owner)
+            
             if(address === ethers.utils.getAddress(item.owner)){
                 status = true
             }else{
@@ -56,8 +62,23 @@ export default function PaymentCard({item}) {
     // console.log(checkApproval())
     const dispatch = useDispatch()
     const onPaymentPress = () => {
-        // dispatch(setPayment(item))
+        dispatch(setTransaction(null))
+        dispatch(setPayment(item))
     }
+
+    const confirmTransaction = useCallback(async (transaction) => {
+        console.log('transaction', transaction)
+        // if (!safeSdk || !serviceClient) return
+        // const hash = transaction.safeTxHash
+        // let signature
+        // try {
+        //   signature = await safeSdk.signTransactionHash(hash)
+        // } catch (error) {
+        //   console.error(error)
+        //   return
+        // }
+        // await serviceClient.confirmTransaction(hash, signature.data)
+      }, [safeSdk])
 
     return(
         <div onClick={()=>onPaymentPress()} style={{background:onHover&&'#333333', border:onHover&&0, borderRadius:onHover&&'0.75rem'}} onMouseLeave={()=>setOnHover(false)} onMouseEnter={()=>setOnHover(true)} className={styles.container}>
@@ -68,11 +89,11 @@ export default function PaymentCard({item}) {
             {payout.length>3&&
             <div className={`${styles.link} ${textStyles.m_16}`}>{`${payout.length - 3} more`}</div>}
             <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex'}}>
-                <div style={{background:onHover&&'white'}} className={styles.btnContainer}>
+                <div onClick={!checkApproval()?()=>{confirmTransaction(item)}:()=>{}} style={{background:onHover&&'white'}} className={styles.btnContainer}>
                     <div style={{color:onHover&&'black'}} className={textStyles.ub_14}>{checkApproval()?'Approved':'Approve Payment'}</div>
                 </div>
                 {onHover&&<div className={`${styles.signerOverview} ${textStyles.m_16}`}>
-                {item.confirmations.length} of {delegates.length}
+                {item?.confirmations.length} of {delegates.length}
                 </div>}
             </div>
         </div>

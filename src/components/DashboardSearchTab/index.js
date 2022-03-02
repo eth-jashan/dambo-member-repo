@@ -19,7 +19,6 @@ const DashboardSearchTab = ({route}) => {
     // const [num_request, setNumRequest] = useState(active_request?.length)
     const dispatch = useDispatch()
     const onClick = ({ key }) => {
-        console.log('keysss', key)
         if(key === '1'){
             setContriFilter(0)
             dispatch(set_contri_filter('ALL'))

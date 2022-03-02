@@ -80,8 +80,6 @@ function App() {
     });
   }, [dispatch, isAdmin, navigate]);
 
-  console.log(isAdmin, address, loggedIn);
-
   useEffect(()=>{
     loadWeb3Modal()
   },[loadWeb3Modal])

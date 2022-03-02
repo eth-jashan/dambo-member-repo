@@ -12,7 +12,7 @@ import logo from '../../assets/drepute_logo.svg'
 import TransactionCard from "../../components/TransactionCard";
 import PaymentSlideCard from "../../components/PaymentSideCard";
 
-export default function DashboardLayout({ children, route }) {
+export default function DashboardLayout({ children, route, signer }) {
 
   const accounts = useSelector(x=>x.dao.dao_list)
   const currentDao = useSelector(x=>x.dao.currentDao) 
@@ -54,6 +54,17 @@ export default function DashboardLayout({ children, route }) {
       </span>
     </div>
   )
+
+  const renderSideBarComp = () => {
+    if(route==='contributions' && currentTransaction){
+      return <TransactionCard signer={signer} />
+    }else if (route==='payments' && currentPayment){
+      return <PaymentSlideCard/>
+    }else{
+      return renderAdminStats()
+    }
+  }
+
   const text = (item) => <span>{item}</span>;
   return (
       <div className={styles.layout}>
@@ -86,8 +97,7 @@ export default function DashboardLayout({ children, route }) {
             </div>
             {role === 'ADMIN' &&
             <div className={styles.adminStats}>
-              {/* {(currentPayment && route==='contributions') ?<PaymentSlideCard/>:renderAdminStats()} */}
-              {(route==='contributions' && currentTransaction) ? <TransactionCard />:renderAdminStats()}
+              {renderSideBarComp()}
             </div>}
         </div>
         </div>

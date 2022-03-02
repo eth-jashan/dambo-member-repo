@@ -25,8 +25,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const dispatch  = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
-    console.log('signer...', approved_request)
-
     const proposeSafeTransaction = useCallback(async () => {
 
         let transaction_obj = []
@@ -34,7 +32,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         if(approved_request.length>0){
             approved_request.map((item, index)=>{
                 item?.payout?.map((item,index)=>{
-                    console.log('item...', item)
+        
                     if(item?.token_type === null || !item?.token_type ){
                         transaction_obj.push(
                             {
@@ -48,7 +46,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         var web3Client = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"));
                         const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress)
                         const amount = parseFloat(item?.amount) * 1e18
-                        console.log('ammount in wei', amount)
+                        
                         transaction_obj.push(
                             {
                                 to: item?.token_type?.tokenAddress,
@@ -60,29 +58,29 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                     }
                 })
             })
-            console.log('transaction obj......',transaction_obj)
+            
         }
         
         if (!safeSdk || !serviceClient) return
         let safeTransaction
           try {
             const nextNonce = await safeSdk.getNonce()
-            console.log("Transaction nonce.....",nextNonce)
+            
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
                 nonce:nextNonce
             }
             )
-            console.log('transaction created......', safeTransaction)
+            
           } catch (error) {
             console.error('errorrrr',error)
             return
           }
         
-        console.log('SAFE TX', safeTransaction.data)
+        
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-        console.log('HASH', safeTxHash)
+        
         const safeSignature = await safeSdk.signTransactionHash(
             safeTxHash
         )
@@ -139,7 +137,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             </Typography.Paragraph>
         </div>
             <div className={styles.infoContainer}>
-                <div style={{width:'60%'}}>
+                <div style={{width:'60%',marginLeft:'0.75rem'}}>
                     <div className={`${textStyles.m_16} ${styles.alignText}`}>
                         {item?.contri_detail?.stream?.toLowerCase()}  •  {item?.contri_detail?.time_spent} hrs
                     </div>
@@ -152,7 +150,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                 </div>
                 <div>
                     {item?.payout.map((item, index)=>{
-                        console.log('coin', item)
                         return tokenItem(item)
                     })}
                     <div style={{textAlign:'end'}} className={`${textStyles.m_16} ${styles.usdText}`}>

@@ -10,7 +10,6 @@ import background from '../../assets/lottie/onboarding_background.json'
 export default function Layout({ children, decreaseStep, currentStep, contributorWallet}) {
   const checkRoute = () => {
     if(currentStep >1 && currentStep <= 4){
-      console.log('current route....', currentStep)
       return true
     }
   }

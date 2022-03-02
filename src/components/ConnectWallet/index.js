@@ -138,7 +138,6 @@ const ConnectWallet = ({ isAdmin }) =>{
 
   const loadWeb3Modal = useCallback(async () => {
     setAuth(true)
-    console.log('start.....')
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
     const signer = web3Provider.getSigner()
@@ -163,7 +162,6 @@ const ConnectWallet = ({ isAdmin }) =>{
           }
         }else{
           setAuth(false)
-          console.log("admin..........", isAdmin)
           if(!isAdmin){
             try {
               const res = await dispatch(getRole(uuid))
@@ -208,7 +206,6 @@ const ConnectWallet = ({ isAdmin }) =>{
 
     // Subscribe to session disconnection
     provider.on("disconnect", (code, reason) => {
-      console.log(code, reason);
       logoutOfWeb3Modal();
     });
     setAuth(false)

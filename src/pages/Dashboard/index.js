@@ -204,7 +204,7 @@ export default function Dashboard() {
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
             <div style={{width:'100%',  marginBottom:'100px'}}>
                 {pending_txs.map((item, index)=>(
-                    <PaymentCard item={item} />
+                    <PaymentCard signer={signer} item={item} />
                 ))}
             </div>
         </div>:
@@ -218,7 +218,7 @@ export default function Dashboard() {
     const contribution_request = useSelector(x=>x.dao.contribution_request)
     console.log('approved request.....',contribution_request)
     return (
-        <DashboardLayout route={tab}>
+        <DashboardLayout signer={signer} route={tab}>
             <div className={styles.dashView}>
                 {renderTab()}
                 {contribution_request.length>0 && <DashboardSearchTab />}

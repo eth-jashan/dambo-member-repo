@@ -26,7 +26,6 @@ const ContributionRequestModal = ({setVisibility}) => {
 
     const onSubmit = async() => {
         const res = await dispatch(createContributionrequest(title, 'DESIGN', link, time, comments))
-        console.log('ress....', res)
         if(res){
             message.success('Request Submitted Successfully')
             setVisibility(false)
@@ -36,11 +35,9 @@ const ContributionRequestModal = ({setVisibility}) => {
     }
 
     return(
-        // <div className={styles.container}>
         <div className={styles.backdrop}>
             <div className={styles.modal}>
-                {/* <div style={{background:'red', width:'100%'}}> */}
-                {/* <div> */}
+                <div style={{display:'flex', alignItems:'start', flexDirection:'column', width:'100%'}}>
                     <img 
                         onClick={()=>setVisibility(false)}
                         alt='cross' 
@@ -74,7 +71,7 @@ const ContributionRequestModal = ({setVisibility}) => {
                     </div>
 
                     <InputText 
-                        placeholder='Contribution Title' 
+                        placeholder='Contribution Type' 
                         onChange={e=>setContributionType(e.target.value)} 
                         value={contributionType} 
                         width={'100%'} 
@@ -89,7 +86,7 @@ const ContributionRequestModal = ({setVisibility}) => {
                         multi={'7.25rem'}
                     />
                     </div>
-                {/* </div> */}
+                </div>
 
                 <div onClick={isValid()?()=>onSubmit():()=>{}} className={styles.buttonSubmit}>
                     <div className={isValid()?styles.validText:styles.gereyedText}>

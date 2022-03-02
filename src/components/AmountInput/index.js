@@ -24,8 +24,9 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
             borderBottomLeftRadius:'0.5rem',
             borderTopRightRadius:0,
             borderBottomRightRadius:0,
-            borderRight:'1px solid #A1AE7E',
-            paddingRight:'1.25rem'
+            borderRight:isFocused?0:'1px solid #A1AE7E',
+            paddingRight:'1.25rem',
+            outline:isFocused?'none':'none'
         }
         },
         option: (styles, { data, isDisabled, isFocused, isSelected }) => {
@@ -36,7 +37,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
             fontStyle:'normal',
             fontWeight:'normal',
             fontSize:'1rem',
-            lineHeight:'1.rem',
+            lineHeight:'1rem',
             // width: '100%',
             // padding:0
           }
@@ -53,6 +54,8 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 fontSize:'1rem',
                 lineHeight:'1.5rem',
                 height:'100%',
+                outline:isFocused?'none':'none',
+                border:0
             }
         },
         placeholder: (styles) => 

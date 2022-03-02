@@ -28,7 +28,6 @@ const GnosisSafeList = (props) => {
         }
     }
     const address = useSelector(x=>x.auth.address)
-    console.log(address)
     const fetchAllSafe = useCallback(async() => {
         try {
             dispatch(getAllSafeFromAddress(address))

@@ -12,7 +12,7 @@ const PaymentSlideCard = () =>{
 
     const token_coin = ['0.002 ETH', '4 SOL']
     const currentPayment = useSelector(x=>x.transaction.currentPayment)
-    console.log('current payment', moment(currentPayment?.submissionDate).format('h:mm a,Do MMM YY'))
+    
     const delegates = useSelector(x=>x.dao.delegates)
 
     const renderContribution = () => (
@@ -40,8 +40,7 @@ const PaymentSlideCard = () =>{
 
     const checkApproval = (address) => {
         let status
-        currentPayment.confirmations.map((item, index)=>{
-            console.log('item...', address=== item.owner)
+        currentPayment?.confirmations.map((item, index)=>{
             if(address === ethers.utils.getAddress(item.owner)){
                 status = true
             }else{
@@ -50,6 +49,8 @@ const PaymentSlideCard = () =>{
         })
         return status
     }
+
+    console.log(currentPayment?.confirmations[0].owner=== delegates[0], currentPayment?.confirmations[0].owner=== delegates[0])
 
     const renderSigners = () => (
         <div className={styles.signerContainer}>

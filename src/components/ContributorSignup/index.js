@@ -33,7 +33,6 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const onSubmit = async() => {
         dispatch(setContriInfo(name, role))
         try {
-        console.log('start........')
          const res =  await dispatch(joinContributor(id))
          if(res){
             navigate(`/dashboard/${address}`)
@@ -45,15 +44,6 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
             console.log('error on joining...', error)
         }
     }
-
-    // const CustomOption = ({innerProps, isDisabled}) => {
-    //     console.log('innderrrr', innerProps)
-    //     return(
-    //         <div {...innerProps}>
-    //             Designer
-    //         </div>
-    //     )
-    // }
     
     const colourStyles = {
         control: (styles, state) => {

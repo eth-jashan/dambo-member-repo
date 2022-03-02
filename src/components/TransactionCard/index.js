@@ -1,5 +1,5 @@
 import { style } from "dom-helpers";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input, Typography } from "antd";
 import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
@@ -11,20 +11,19 @@ import AmountInput from '../AmountInput';
 import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
 import { getAllDaowithAddress } from '../../store/actions/dao-action';
 
-const TransactionCard = () => {
+
+const TransactionCard = ({signer}) => {
   const currentTransaction = useSelector(
     (x) => x.transaction.currentTransaction
   );
-  const address = "0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8";
+  const address = currentTransaction?.requested_by?.public_address;
   const dispatch = useDispatch();
   const getEmoji = () => {
     if (currentTransaction?.stream === "DESIGN") {
       return "🎨";
     }
   };
-
     const [feedBackShow, setFeedBackSow] = useState(false)
-
     const [payDetail, setPayDetail] = useState([{
         amount:'',
         token_type:null,
@@ -59,8 +58,10 @@ const TransactionCard = () => {
         dispatch(setTransaction(null))
     }
 
+    
+
     const feedBackContainer = () => (
-        <div style={{width:'100%'}}>
+        <div style={{width:'100%', marginBottom:'5rem'}}>
             <div onClick={()=>setFeedBackSow(!feedBackShow)}  className={styles.feedBackContainer}>
                 <div className={`${textStyle.m_16}`}>Add Feedback</div>
                 {!feedBackShow?
@@ -82,56 +83,53 @@ const TransactionCard = () => {
             <span
                 className={`${textStyle.ub_23} ${styles.title}`}
             >{`${getEmoji()}`}</span>
-            <Typography.Paragraph 
-                className={`${textStyle.ub_23} ${styles.title}`}
+            <span ellipsis={{rows:2}} className={`${textStyle.ub_23} ${styles.title}`}>
+            {`${currentTransaction?.title}`}
+            </span>
+            <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${currentTransaction?.requested_by?.metadata?.name} . (${address.slice(0,5)}...${address.slice(-3)})`}</div>
+            <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${'Design  • '} ${currentTransaction?.time_spent} hrs`}</div>
+
+            <Typography.Paragraph
+                className={`${styles.description} ${textStyle.m_16}`}
                 ellipsis={
                     {
-                        rows: 3,
-                        expandable: false,
-                        //symbol:<Typography.Text className={`${styles.description} ${textStyle.m_16}`}>read more</Typography.Text>,
+                        rows: 2,
+                        expandable: true,
+                        symbol:<Typography.Text className={`${styles.description} ${textStyle.m_16}`}>read more</Typography.Text>,
                     }
                 }
             >
-              read more
-            </Typography.Text>
-          ),
-        }}
-      >
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum
-        dolor sit amet, consectetur adipiscing elit
-      </Typography.Paragraph>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            </Typography.Paragraph>
 
-      {/* <div className={styles.feedBackContainer}>
-                <div className={`${textStyle.m_16}`}>Add Feedback</div>
-            </div> */}
+          <div className={styles.amountScroll}>
+            {payDetail?.map((item, index) => (
+              <AmountInput
+                updateTokenType={(x) => updateTokenType(x, index)}
+                value={item.amount}
+                onChange={(e) => updatedPayDetail(e, index)}
+              />
+            ))}
+          </div>
 
-      <div className={styles.amountScroll}>
-        {payDetail?.map((item, index) => (
-          <AmountInput
-            updateTokenType={(x) => updateTokenType(x, index)}
-            value={item.amount}
-            onChange={(e) => updatedPayDetail(e, index)}
-          />
-        ))}
-      </div>
-
-      <div onClick={() => addToken()} className={styles.addToken}>
-        <div className={`${textStyle.m_16}`}>Add another token</div>
-        <IoAddOutline color="#808080" className={styles.add} />
-      </div>
+          <div onClick={() => addToken()} className={styles.addToken}>
+            <div className={`${textStyle.m_16}`}>Add another token</div>
+            <IoAddOutline color="#808080" className={styles.add} />
+          </div>
 
       {feedBackContainer()}
 
+      {/* <div className={styles.bottomContainer}> */}
+
+        {/* <div className={styles.bottomContainer}> */}
+          {/* <div className={styles.deleteButton}><RiDeleteBin7Fill color="white" /></div> */}
+          <div onClick={() => onApproveTransaction()} className={styles.payNow}>
+            <div className={`${textStyle.ub_16}`}>Approve Request</div>
+          </div>
+        {/* </div>       */}
+
       {/* </div> */}
-      <div
-        // onClick={() => onApproveTransaction()}
-        className={styles.deleteContainer}
-      >
-        <div className={styles.deleteButton}><RiDeleteBin7Fill color="white" /></div>
-      </div>
-      <div onClick={() => onApproveTransaction()} className={styles.payNow}>
-        <div className={`${textStyle.ub_16}`}>Approve Request</div>
-      </div>
     </div>
   );
 };

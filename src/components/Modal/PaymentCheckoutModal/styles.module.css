@@ -79,10 +79,11 @@
 }
 .infoContainer{
     /* position: static; */
-    padding-left: 2.5rem;
+    padding-left: 5.6%;
     flex-direction: row;
     display: flex;
     width: 100%;
+    justify-content: space-between;
 }
 .tokenDiv{
     min-width: 9.375rem;
