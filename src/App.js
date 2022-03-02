@@ -48,7 +48,10 @@ function App() {
     const provider = await web3Modal.connect();
     
     provider.on("chainChanged", (chainId) => {
-      console.log(`CHAIN changed!`);
+      console.log(`CHAIN changed!`, chainId);
+      if(chainId === '0x4'){
+
+      }else{
       if(isAdmin){
         dispatch(setLoggedIn(false))
         dispatch(signout())
@@ -59,6 +62,7 @@ function App() {
         dispatch(setAdminStatus(false))
         navigate('/')
       }
+    }
     });
 
     provider.on("accountsChanged",async () => {

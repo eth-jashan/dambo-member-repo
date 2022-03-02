@@ -10,7 +10,9 @@ const daoSlice = createSlice({
     community_role:null,
     gnosis_details:null,
     balance:null,
-    balanceUsd:null
+    balanceUsd:null,
+    delegates:[],
+    contri_filter:'ACTIVE'
   },
   reducers: {
     set_dao_list(state, action){
@@ -28,6 +30,11 @@ const daoSlice = createSlice({
       state.gnosis_details = action.payload.details
       state.balance = action.payload.balance;
       state.balanceUsd = action.payload.usdBalance;
+      state.delegates = action.payload.delegates;
+    },
+    set_contribution_filter(state, action){
+      state.contri_filter = action.payload.key;
+      state.contribution_request = action.payload.list
     }
 }});
 

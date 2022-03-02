@@ -10,14 +10,15 @@ import { getContriRequest, gnosisDetailsofDao, set_dao } from "../../store/actio
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 import TransactionCard from "../../components/TransactionCard";
+import PaymentSlideCard from "../../components/PaymentSideCard";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children, route }) {
 
   const accounts = useSelector(x=>x.dao.dao_list)
   const currentDao = useSelector(x=>x.dao.currentDao) 
   const currentTransaction = useSelector(x=>x.transaction.currentTransaction)
+  const currentPayment = useSelector(x=>x.transaction.currentPayment)
   const role = useSelector(x=>x.dao.role)
-  const [selected, setSelected] = useState(0)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   // const {id} = useParams()
@@ -31,9 +32,9 @@ export default function DashboardLayout({ children }) {
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${currentDao?.uuid}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${currentDao?.uuid}`);
     } else {
-      return document.execCommand('copy', true, `${links.contributor_invite.local}${currentDao?.uuid}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.dev}${currentDao?.uuid}`);
     }
   }
 
@@ -85,8 +86,8 @@ export default function DashboardLayout({ children }) {
             </div>
             {role === 'ADMIN' &&
             <div className={styles.adminStats}>
-              {/* <div/> */}
-              {! currentTransaction? renderAdminStats() : <TransactionCard />}
+              {/* {(currentPayment && route==='contributions') ?<PaymentSlideCard/>:renderAdminStats()} */}
+              {(route==='contributions' && currentTransaction) ? <TransactionCard />:renderAdminStats()}
             </div>}
         </div>
         </div>

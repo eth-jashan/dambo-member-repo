@@ -15,3 +15,114 @@
     color: #808080;
     text-align: start;
 }
+.text:hover{
+    color: white;
+    text-align: start;
+}
+
+.whiterText{
+    color: white;
+    text-align: start;
+}
+.whiterText:hover{
+    font-family: 'TelegrafBolder';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}
+.menuContainer{
+    margin-bottom: 0.5rem;
+}
+.menuContainer:hover{
+    background-color: #4C4C4C;
+}
+.menu{
+    font-family: 'TelegrafMedium';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+    width: 100%;
+    height: 100%;
+}
+.menuContainer>div{
+    font-family: 'TelegrafMedium';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}
+.menu:hover{
+    font-family: 'TelegrafBolder';
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    text-align: start;
+}
+/* .icon:hover{
+
+} */
+.icon{
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.25rem;
+}
+.icon:hover{
+    background: #333333;
+}
+
+.searchContainer{
+    min-width: 17.313rem;
+    border-radius: 1.25rem;
+    background-color:#4F4F4F;
+    justify-content: space-between;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    padding-right: 0.5rem;
+}
+.searchContainer>input{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    width: 70%;
+    color:white;
+    background-color:#4F4F4F;
+    border-top-left-radius: 1.25rem;
+    border-bottom-left-radius: 1.25rem;
+    outline: none;
+    border: 0;
+    padding-left: 1rem;
+}
+.searchContainer>input:focus{
+    outline: none;
+}
+.searchContainer>input::placeholder{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #999999;
+}
+
+.crossIcon{
+    height: 0.75rem;
+    width: 0.75rem;
+}
+
+.searchIcon{
+    height: 1rem;
+    width: 1rem;
+    color: white;
+}
+
+.iconContainer{
+
+}

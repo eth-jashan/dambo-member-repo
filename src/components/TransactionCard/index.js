@@ -6,12 +6,10 @@ import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
 import cross from "../../assets/Icons/cross_white.svg";
 
 import styles from "./style.module.css";
-import textStyle from "../../commonStyles/textType/styles.module.css";
-import AmountInput from "../AmountInput";
-import {
-  approveContriRequest,
-  setTransaction,
-} from "../../store/actions/transaction-action";
+import textStyle  from "../../commonStyles/textType/styles.module.css";
+import AmountInput from '../AmountInput';
+import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
+import { getAllDaowithAddress } from '../../store/actions/dao-action';
 
 const TransactionCard = () => {
   const currentTransaction = useSelector(
@@ -25,101 +23,74 @@ const TransactionCard = () => {
     }
   };
 
-  const [feedBackShow, setFeedBackSow] = useState(false);
+    const [feedBackShow, setFeedBackSow] = useState(false)
 
-  const [payDetail, setPayDetail] = useState([
-    {
-      amount: "",
-      token_type: null,
-    },
-  ]);
+    const [payDetail, setPayDetail] = useState([{
+        amount:'',
+        token_type:null,
+        address:currentTransaction?.requested_by?.public_address
+    }])
 
-  const addToken = () => {
-    const newDetail = {
-      amount: "",
-      token_type: null,
+    const addToken = () => {
+        const newDetail = {
+            amount:'',
+            token_type:null,
+            address:currentTransaction?.requested_by?.public_address
+        }
+        setPayDetail([...payDetail, newDetail]);
+    }
+
+    const updatedPayDetail = (e, index) => {
+        payDetail[index].amount = e.target.value
+        setPayDetail(payDetail);
     };
-    setPayDetail([...payDetail, newDetail]);
-  };
 
-  const updatedPayDetail = (e, index) => {
-    payDetail[index].amount = e.target.value;
-    console.log("pay detail", payDetail);
-    setPayDetail(payDetail);
-  };
+    const updateTokenType = (value, index) => {
+        payDetail[index].token_type = value.value
+        setPayDetail(payDetail);
+    };
 
-  const updateTokenType = (value, index) => {
-    payDetail[index].token_type = value.value;
-    console.log("pay detail", payDetail);
-    setPayDetail(payDetail);
-  };
+    const onContributionPress = () => {
+        dispatch(setTransaction(null))
+    }
+    const onApproveTransaction = () => {
+        dispatch(approveContriRequest(payDetail))
+        dispatch(getAllDaowithAddress())
+        dispatch(setTransaction(null))
+    }
 
-  const onContributionPress = () => {
-    dispatch(setTransaction(null));
-  };
-  const onApproveTransaction = () => {
-    dispatch(approveContriRequest(payDetail));
-    dispatch(setTransaction(null));
-  };
+    const feedBackContainer = () => (
+        <div style={{width:'100%'}}>
+            <div onClick={()=>setFeedBackSow(!feedBackShow)}  className={styles.feedBackContainer}>
+                <div className={`${textStyle.m_16}`}>Add Feedback</div>
+                {!feedBackShow?
+                <IoAddOutline color='#808080' className={styles.add}/>:
+                <GoChevronUp color='white' className={styles.add} />}
+            </div>
+            {feedBackShow && 
+            <Input.TextArea
+                placeholder='Write your feedback here'
+                className={styles.textArea}
+            />
+          }
+        </div>
+    )
 
-  const feedBackContainer = () => (
-    <div style={{ width: "100%" }}>
-      <div
-        onClick={() => setFeedBackSow(!feedBackShow)}
-        className={styles.feedBackContainer}
-      >
-        <div className={`${textStyle.m_16}`}>Add Feedback</div>
-        {!feedBackShow ? (
-          <IoAddOutline color="#808080" className={styles.add} />
-        ) : (
-          <GoChevronUp color="white" className={styles.add} />
-        )}
-      </div>
-      {feedBackShow && (
-        <Input.TextArea
-          placeholder="Write your feedback here"
-          className={styles.textArea}
-        />
-      )}
-    </div>
-  );
-
-  return (
-    <div className={styles.container}>
-      <img
-        onClick={() => onContributionPress()}
-        src={cross}
-        alt="cross"
-        className={styles.cross}
-      />
-      <span
-        className={`${textStyle.ub_23} ${styles.title}`}
-      >{`${getEmoji()}`}</span>
-      <Typography.Paragraph
-        className={`${textStyle.ub_23} ${styles.title}`}
-        ellipsis={{
-          rows: 3,
-          expandable: false,
-          //symbol:<Typography.Text className={`${styles.description} ${textStyle.m_16}`}>read more</Typography.Text>,
-        }}
-      >
-        {`${currentTransaction?.title}`}
-      </Typography.Paragraph>
-      <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${
-        currentTransaction?.requested_by?.metadata?.name
-      } . (${address.slice(0, 5)}...${address.slice(-3)})`}</div>
-      <div
-        className={`${textStyle.m_16} ${styles.timeInfo}`}
-      >{`${"Design  • "} ${currentTransaction?.time_spent} hrs`}</div>
-
-      <Typography.Paragraph
-        className={`${styles.description} ${textStyle.m_16}`}
-        ellipsis={{
-          rows: 2,
-          expandable: true,
-          symbol: (
-            <Typography.Text
-              className={`${styles.description} ${textStyle.m_16}`}
+    return(
+        <div className={styles.container}>
+            <img onClick={()=>onContributionPress()} src={cross} alt='cross' className={styles.cross} />
+            <span
+                className={`${textStyle.ub_23} ${styles.title}`}
+            >{`${getEmoji()}`}</span>
+            <Typography.Paragraph 
+                className={`${textStyle.ub_23} ${styles.title}`}
+                ellipsis={
+                    {
+                        rows: 3,
+                        expandable: false,
+                        //symbol:<Typography.Text className={`${styles.description} ${textStyle.m_16}`}>read more</Typography.Text>,
+                    }
+                }
             >
               read more
             </Typography.Text>

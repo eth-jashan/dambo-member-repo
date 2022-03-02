@@ -13,7 +13,8 @@ const routes = {
         getRole:'/dao/my-role'
     },
     contribution:{
-        createContri:'/contrib'
+        createContri:'/contrib',
+        payout:'/contrib/payout'
     }
 }
 

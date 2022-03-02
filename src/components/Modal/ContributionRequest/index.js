@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import styles from './styles.module.css'
-// import textStyles from '../../../commonStyles/text.modules.css'
 import { MdChevronRight } from 'react-icons/all'
 import cross from '../../../assets/Icons/cross.svg'
 import InputText from '../../Input'
@@ -30,6 +29,7 @@ const ContributionRequestModal = ({setVisibility}) => {
         console.log('ress....', res)
         if(res){
             message.success('Request Submitted Successfully')
+            setVisibility(false)
         }else{
             message.error('Try creating again')
         }
