@@ -218,7 +218,7 @@ export default function Dashboard() {
     const contribution_request = useSelector(x=>x.dao.contribution_request)
     console.log('approved request.....',contribution_request)
     return (
-        <DashboardLayout>
+        <DashboardLayout route={tab}>
             <div className={styles.dashView}>
                 {renderTab()}
                 {contribution_request.length>0 && <DashboardSearchTab />}

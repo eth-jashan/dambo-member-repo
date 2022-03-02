@@ -197,7 +197,7 @@ export const getContriRequest = () => {
   }
 }
 
-export const createPayout = (tranxid) => {
+export const createPayout = (tranxid, nonce) => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
@@ -214,7 +214,8 @@ export const createPayout = (tranxid) => {
       initiated_by:address,
       contributions:contri_array,
       gnosis_reference_id:tranxid,
-      dao_uuid:uuid
+      dao_uuid:uuid,
+      nonce:1
     }
     console.log('data....', JSON.stringify(data))
     // try {

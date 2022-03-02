@@ -37,7 +37,7 @@ const DashboardSearchTab = ({route}) => {
     };
 
     const walletMenu = (
-        <Menu  style={{borderRadius:'8px',width:'140%', background:'#1F1F1F', paddingTop:'1rem', paddingBottom:'1rem'}} onClick={onClick}>
+        <Menu  style={{borderRadius:'8px',width:'15.813rem', background:'#1F1F1F', paddingTop:'1rem', paddingBottom:'1rem'}} onClick={onClick}>
           <Menu.Item className={styles.menuContainer} key="1">
           <div className={styles.menu}>All requests</div>
           </Menu.Item>

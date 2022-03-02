@@ -6,7 +6,7 @@ import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
 import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout } from "../../store/actions/auth-action";
-import { BsChevronRight } from 'react-icons/bs'
+
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
 import { Divider, Alert, message } from "antd";
@@ -16,7 +16,6 @@ import tickIcon from '../../assets/Icons/tick.svg'
 import { FaDiscord } from 'react-icons/fa'
 import { getAddressMembership } from "../../store/actions/gnosis-action";
 import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action";
-import { setProvider, setSigner } from "../../store/actions/we3-action";
 import chevron_right from '../../assets/Icons/chevron_right.svg'
 import { links } from "../../constant/links";
 
@@ -66,7 +65,6 @@ const ConnectWallet = ({ isAdmin }) =>{
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
   
-    // dispatch(setSigner(signer));
     if(chainId === 4){
       try {
       const res =  await dispatch(authWithSign(address, signer))
@@ -83,7 +81,6 @@ const ConnectWallet = ({ isAdmin }) =>{
           }
         }else{
           setAuth(false)
-          // navigate(`/onboard/contributor/${uuid}`)
           if(!isAdmin){
             try {
               const res = await dispatch(getRole(uuid))
