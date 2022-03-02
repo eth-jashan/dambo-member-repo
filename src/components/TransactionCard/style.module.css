@@ -1,10 +1,12 @@
 .container{
     width: 100%;
+    height: 85%;
     padding: 2rem 1.5rem 0rem 1.5rem;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    /* overflow: hidden; */
 }
 
 .cross{
@@ -97,7 +99,8 @@
     bottom: 1.25rem;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     display: flex;
-    align-self: center;
+    /* align-self: center; */
+    right: 1.23rem;
 }
 .payNow>div{
     color: #6852FF;
@@ -105,8 +108,8 @@
 
 .amountScroll{
     width: 100%;
-    max-height: 6.25rem;
-    overflow-y: scroll;
+    /* max-height: 6.25rem; */
+    /* overflow-y: scroll; */
     margin-bottom: '2px';
 
 }
@@ -141,4 +144,22 @@
 .textArea:focus{
     outline: none;
     border: 0px;
+}
+.deleteContainer{
+    /* padding-left: 0.625rem; */
+    padding-right: 0.625rem;
+    /* padding-bottom: 0.625rem; */
+    position: absolute;
+    bottom: 1.25rem;
+}
+.deleteButton{
+    height: 2.5rem;
+    border-radius: 2.25rem;
+    width: 2.5rem;
+    background: #737373;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.625rem;
+
 }
