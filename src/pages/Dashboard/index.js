@@ -167,6 +167,25 @@ export default function Dashboard() {
         setModalPayment(true)
     }
 
+    const approvedContriRequest = useSelector(x=>x.transaction.approvedContriRequest)
+
+    console.log('APPROVED ', approvedContriRequest)
+
+    const getTotalAmount = () => {
+        const usd_amount_all = []
+
+        approvedContriRequest.map((item, index)=>{
+            item.payout.map((x, i) => {
+                usd_amount_all.push(((x?.usdAmount) * parseFloat(x?.amount)))
+            })
+        })
+
+        const amount_total = usd_amount_all.reduce((a,b)=>a+b)
+        console.log('total amount', amount_total)
+        return parseFloat(amount_total).toFixed(2)
+        
+    }
+
     const checkoutButton = () => (
         <div className={styles.payBtnCnt}>
             <div onClick={()=>onPaymentModal()} className={styles.payBtnChild}>
@@ -177,7 +196,7 @@ export default function Dashboard() {
             </div>
             <div className={`${styles.payBtnLeft} ${styles.border}`}>
                 <div className={`${styles.whiteText} ${textStyles.m_16}`}>
-                    2,500$
+                    {getTotalAmount()}$
                 </div>
 
                 <div onClick={()=>{}} className={styles.payNow}>
@@ -216,14 +235,14 @@ export default function Dashboard() {
     )
 
     const contribution_request = useSelector(x=>x.dao.contribution_request)
-    console.log('approved request.....',contribution_request)
+    
     return (
         <DashboardLayout signer={signer} route={tab}>
             <div className={styles.dashView}>
                 {renderTab()}
                 {contribution_request.length>0 && <DashboardSearchTab />}
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
-                {approve_contri.length>0 && checkoutButton()}
+                {approve_contri.length>0 && tab==='contributions' && checkoutButton()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
                 {modalPayment&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
             </div>

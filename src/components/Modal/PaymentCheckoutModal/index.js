@@ -112,20 +112,43 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     )
 
     const tokenItem =  (item) => {
-        const conversion =  convertTokentoUsd(`${item?.token_type?item?.token_type?.token?.symbol:'ETH'}`)
-        // console.log('conversion', conversion)
+        console.log('conversion', item)
         return(
         <div className={styles.tokenDiv}>
             <div className={`${textStyles.m_16} ${styles.usdText}`}>
-            {1000}$ •
+            {(item?.usdAmount * parseFloat(item?.amount)).toFixed(2)}$ •
             </div>
             <div style={{marginLeft:'0.75rem'}} className={textStyles.m_16}>
-            {item?.amount} {item?.token_type?item?.token_type?.token?.symbol:'ETH'}
+            {item?.amount} {item?.token_type?.token?item?.token_type?.token?.symbol:'ETH'}
             </div>
         </div>)
     }
 
     const [onCancelHover, setCancelHover] = useState(false)
+
+    const getPayoutTotal = (payout) => {
+        const usd_amount = []
+        payout?.map((item, index)=>{
+            usd_amount.push(((item?.usdAmount) * parseFloat(item?.amount)).toFixed(2))
+        })
+        const amount_total = usd_amount.reduce((a,b)=>a+b)
+        return amount_total
+    }
+
+    const getTotalAmount = () => {
+        const usd_amount_all = []
+
+        approved_request.map((item, index)=>{
+            item.payout.map((x, i) => {
+                usd_amount_all.push(((x?.usdAmount) * parseFloat(x?.amount)))
+            })
+        })
+
+        const amount_total = usd_amount_all.reduce((a,b)=>a+b)
+        console.log('total amount', amount_total)
+        return parseFloat(amount_total).toFixed(2)
+        
+    }
 
     const requestItem = (item) => (
         <div className={styles.requestItem}>
@@ -157,12 +180,14 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         return tokenItem(item)
                     })}
                     <div style={{textAlign:'end'}} className={`${textStyles.m_16} ${styles.usdText}`}>
-                        1,000$
+                        {getPayoutTotal(item?.payout)}$
                     </div>
                 </div>
             </div>
         </div>
     )
+
+    
     
     return(
         <div className={styles.backdrop}>
@@ -175,7 +200,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                 </div>
                 <div onClick={async()=>await startPayout()} className={styles.btnCnt}>
                     <div className={styles.payBtn}>
-                        2,900$  •  Pay Now
+                        {getTotalAmount()}$  •  Pay Now
                     </div>
                 </div>
             </div>

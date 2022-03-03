@@ -11,7 +11,7 @@
 .cross{
     height: 1rem;
     width: 1rem;
-    margin-bottom: 3.313rem;
+    margin-bottom: 7.5%;
 }
 
 .title{
@@ -24,19 +24,19 @@
 .ownerInfo{
     color: white;
     text-align: start;
-    margin-top: 1.5rem;
+    margin-top: 3.8%;
 }
 
 .timeInfo{
     text-align: start;
-    margin-bottom: 1rem;
+    margin-bottom: 2.15%;
     color: #737373;
 }
 
 .description{
     color: #737373;
     text-align: start;
-    margin-bottom: 1rem;
+    margin-bottom: 3.8%;
 }
 
 
@@ -97,7 +97,7 @@
     width: 100%;
     /* max-height: 6.25rem; */
     /* overflow-y: scroll; */
-    margin-bottom: '2px';
+    margin-bottom: 2px;
 
 }
 

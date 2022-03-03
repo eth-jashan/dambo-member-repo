@@ -67,27 +67,17 @@ export const set_contri_filter = (filter_key) => {
       console.log('res data', res.data.success)
       if(res.data.success){
         if(filter_key === 'APPROVED'){
-          // dispatch(daoAction.set_contribution_filter({
-          //   list:res.data?.data?.contributions
-          // }))
-
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED")
           }))
         } else if( filter_key === 'ACTIVE'){
-          // dispatch(daoAction.set_contribution_filter({
-          //   list:res.data?.data?.contributions
-          // }))
 
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             list:res.data?.data?.contributions?.filter(x=>x.status !== "APPROVED")
           })) 
         }else if( filter_key === 'ALL'){
-          // dispatch(daoAction.set_contribution_filter({
-          //   list:res.data?.data?.contributions
-          // }))
           console.log('all request', res.data?.data?.contributions)
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
@@ -95,9 +85,6 @@ export const set_contri_filter = (filter_key) => {
           })) 
         }
          else {
-          // dispatch(daoAction.set_contribution_filter({
-          //   list:[]
-          // }))
 
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
@@ -132,7 +119,7 @@ export const gnosisDetailsofDao = () => {
       const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
       const balance = await serviceClient.getBalances(currentDao?.safe_public_address)
       const usdBalance = await serviceClient.getUsdBalances(currentDao?.safe_public_address)
-      const delegates = await serviceClient.getSafeDelegates(currentDao?.safe_public_address)
+      
       console.log('safe owner........', safeInfo) 
       const tokenType = []
       balance.map((item, index)=>{
@@ -218,7 +205,7 @@ export const createPayout = (tranxid, nonce) => {
       nonce:1
     }
     console.log('data....', JSON.stringify(data))
-    // try {
+
       const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,data,{
         headers:{
           Authorization:`Bearer ${jwt}`
@@ -226,16 +213,9 @@ export const createPayout = (tranxid, nonce) => {
       })
       if(res.data.success){
         console.log('created payout.....', res.data)
-        // dispatch(daoAction.set_contri_list({
-        //   list:res.data?.data?.contributions
-        // }))
         return 1
       }else{
         return 0
       }
-    // } catch (error) {
-    //   console.log('error...', error)
-    //   return 0
-    // }
   }
 }

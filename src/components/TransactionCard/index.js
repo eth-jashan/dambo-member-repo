@@ -10,6 +10,7 @@ import textStyle  from "../../commonStyles/textType/styles.module.css";
 import AmountInput from '../AmountInput';
 import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
 import { getAllDaowithAddress } from '../../store/actions/dao-action';
+import { convertTokentoUsd } from "../../utils/conversion";
 
 
 const TransactionCard = ({signer}) => {
@@ -23,30 +24,43 @@ const TransactionCard = ({signer}) => {
       return "🎨";
     }
   };
-    const [feedBackShow, setFeedBackSow] = useState(false)
-    const [payDetail, setPayDetail] = useState([{
+
+  const ETHprice = useSelector(x=>x.transaction.initialETHPrice)
+  const [feedBackShow, setFeedBackSow] = useState(false)
+  const [payDetail, setPayDetail] = useState([{
         amount:'',
         token_type:null,
-        address:currentTransaction?.requested_by?.public_address
+        address:currentTransaction?.requested_by?.public_address,
+        usdAmount:ETHprice
     }])
 
-    const addToken = () => {
+  const addToken = async() => {
+    const usdCoversion = await convertTokentoUsd('ETH')
+      if(usdCoversion){
         const newDetail = {
-            amount:'',
-            token_type:null,
-            address:currentTransaction?.requested_by?.public_address
+          amount:'',
+          token_type:null,
+          usdAmount:usdCoversion,
+          address:currentTransaction?.requested_by?.public_address
         }
-        setPayDetail([...payDetail, newDetail]);
+      setPayDetail([...payDetail, newDetail]);
     }
+  }
 
-    const updatedPayDetail = (e, index) => {
+    const updatedPayDetail = async(e, index) => {
         payDetail[index].amount = e.target.value
         setPayDetail(payDetail);
     };
 
-    const updateTokenType = (value, index) => {
-        payDetail[index].token_type = value.value
-        setPayDetail(payDetail);
+    const updateTokenType = async(value, index) => {
+        const usdCoversion = await convertTokentoUsd(value.label)
+        console.log(usdCoversion)
+        if(usdCoversion){
+          payDetail[index].token_type = value.value
+          payDetail[index].usdAmount = usdCoversion
+          setPayDetail(payDetail);
+        }
+  
     };
 
     const onContributionPress = () => {
@@ -119,17 +133,9 @@ const TransactionCard = ({signer}) => {
           </div>
 
       {feedBackContainer()}
-
-      {/* <div className={styles.bottomContainer}> */}
-
-        {/* <div className={styles.bottomContainer}> */}
-          {/* <div className={styles.deleteButton}><RiDeleteBin7Fill color="white" /></div> */}
-          <div onClick={() => onApproveTransaction()} className={styles.payNow}>
-            <div className={`${textStyle.ub_16}`}>Approve Request</div>
-          </div>
-        {/* </div>       */}
-
-      {/* </div> */}
+        <div onClick={() => onApproveTransaction()} className={styles.payNow}>
+          <div className={`${textStyle.ub_16}`}>Approve Request</div>
+        </div>
     </div>
   );
 };

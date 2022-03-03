@@ -4,9 +4,10 @@ import api from "../constant/api"
 export const convertTokentoUsd = async(token) => {
     try {
         const res = await axios.get(`${api.coinbase.prices}${token}-USD/spot`)
-        console.log('res',res.data.data.amount)
-        return res.data.data.amount
+        let amount = res.data.data.amount
+        amount = parseFloat(amount).toFixed(2)
+        return amount
     } catch (error) {
-        return ''
+        return false
     }
 }

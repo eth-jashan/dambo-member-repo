@@ -4,13 +4,17 @@ import textStyles from '../../commonStyles/textType/styles.module.css'
 import { BiDotsVerticalRounded } from 'react-icons/all'
 import { useDispatch } from 'react-redux'
 import { setTransaction } from '../../store/actions/transaction-action'
+import { convertTokentoUsd } from '../../utils/conversion'
 
 export default function ContributionCard({item}) {
 
     const dispatch = useDispatch()
 
-    const onContributionPress = () => {
-        dispatch(setTransaction(item))
+    const onContributionPress = async() => {
+        const ethPrice = await convertTokentoUsd('ETH')
+        if(ethPrice){
+            dispatch(setTransaction(item, ethPrice))
+        }
     }
 
     const [onHover, setOnHover] = useState(false)

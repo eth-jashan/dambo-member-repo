@@ -6,11 +6,14 @@ const transactionSlice = createSlice({
     currentTransaction:null,
     approvedContriRequest:[],
     pendingTransaction:[],
-    currentPayment:null
+    currentPayment:null,
+    approved_token_total:[],
+    initialETHPrice:null
   },
   reducers: {
     set_current_transaction(state, action){
         state.currentTransaction = action.payload.data
+        state.initialETHPrice = action.payload.price
     },
     set_current_payment(state, action){
       state.currentPayment = action.payload.data
@@ -22,7 +25,7 @@ const transactionSlice = createSlice({
       state.pendingTransaction = action.payload.list
     },
     set_approved_request(state, action){
-      // state.currentTransaction = action.payload.data
+      const total_token_amount = []
       const newRequestList = state.approvedContriRequest.concat(action.payload.item)
       state.approvedContriRequest = newRequestList
     }
