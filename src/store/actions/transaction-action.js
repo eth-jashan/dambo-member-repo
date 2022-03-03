@@ -12,6 +12,7 @@ const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gn
 
 export const setTransaction = (item) => {
     return (dispatch) => {
+        //console.log('transaction .....card', item.amount)
         dispatch(tranactionAction.set_current_transaction({data:item}))
     }
 }
@@ -49,7 +50,7 @@ export const approveContriRequest = (payout) => {
         // const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
         const currentTransaction = getState().transaction.currentTransaction
-        console.log('transaction.....', currentTransaction.id)
+        console.log('transaction.....', payout.amount)
         const data = {
           status:"APPROVED"
         }

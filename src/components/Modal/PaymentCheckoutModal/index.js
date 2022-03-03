@@ -13,6 +13,7 @@ import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
 import { createPayout } from '../../../store/actions/dao-action'
 import cross from '../../../assets/Icons/cross.svg'
+import { convertTokentoUsd } from '../../../utils/conversion'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -110,16 +111,19 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         </div>
     )
 
-    const tokenItem = (item) => (
+    const tokenItem =  (item) => {
+        const conversion =  convertTokentoUsd(`${item?.token_type?item?.token_type?.token?.symbol:'ETH'}`)
+        // console.log('conversion', conversion)
+        return(
         <div className={styles.tokenDiv}>
             <div className={`${textStyles.m_16} ${styles.usdText}`}>
-            1,000$ •
+            {1000}$ •
             </div>
             <div style={{marginLeft:'0.75rem'}} className={textStyles.m_16}>
             {item?.amount} {item?.token_type?item?.token_type?.token?.symbol:'ETH'}
             </div>
-        </div>
-    )
+        </div>)
+    }
 
     const [onCancelHover, setCancelHover] = useState(false)
 
