@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-import { Layout, Typography,  Row, Col, Card, Tooltip, message } from "antd";
+import { Tooltip, message } from "antd";
 import 'antd/dist/antd.css'
 import styles from "./style.module.css";
 import { IoMdAdd } from 'react-icons/io'
 import { MdLink } from 'react-icons/md'
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { getContriRequest, gnosisDetailsofDao, set_dao } from "../../store/actions/dao-action";
+import { getContriRequest, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 import TransactionCard from "../../components/TransactionCard";
 import PaymentSlideCard from "../../components/PaymentSideCard";
+import { setPayment, setTransaction } from "../../store/actions/transaction-action";
+import { useSafeSdk } from "../../hooks";
+// import { getPendingTransaction } from "../../store/actions/transaction-action";
 
 export default function DashboardLayout({ children, route, signer }) {
 
@@ -21,12 +24,21 @@ export default function DashboardLayout({ children, route, signer }) {
   const role = useSelector(x=>x.dao.role)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // const {id} = useParams()
+  const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
   const changeAccount = async(item) => {
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
     await  dispatch(getContriRequest())
+    await dispatch(getPayoutRequest())
+    await dispatch(syncTxDataWithGnosis())
+    dispatch(setPayment(null))
+    dispatch(setTransaction(null))
+    if(safeSdk){
+      const nonce = await safeSdk.getNonce()
+      dispatch(set_active_nonce(nonce))
+  }
+    await dispatch(set_payout_filter('PENDING'))
   }
 
   async function copyTextToClipboard() {
@@ -59,7 +71,7 @@ export default function DashboardLayout({ children, route, signer }) {
     if(route==='contributions' && currentTransaction){
       return <TransactionCard signer={signer} />
     }else if (route==='payments' && currentPayment){
-      return <PaymentSlideCard/>
+      return <PaymentSlideCard signer={signer}/>
     }else{
       return renderAdminStats()
     }

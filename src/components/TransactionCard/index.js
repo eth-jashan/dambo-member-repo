@@ -9,7 +9,7 @@ import styles from "./style.module.css";
 import textStyle  from "../../commonStyles/textType/styles.module.css";
 import AmountInput from '../AmountInput';
 import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
-import { getAllDaowithAddress } from '../../store/actions/dao-action';
+import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
 import { convertTokentoUsd } from "../../utils/conversion";
 
 
@@ -17,6 +17,7 @@ const TransactionCard = ({signer}) => {
   const currentTransaction = useSelector(
     (x) => x.transaction.currentTransaction
   );
+  const token_available = useSelector(x=>x.dao.balance)
   const address = currentTransaction?.requested_by?.public_address;
   const dispatch = useDispatch();
   const getEmoji = () => {
@@ -66,9 +67,9 @@ const TransactionCard = ({signer}) => {
     const onContributionPress = () => {
         dispatch(setTransaction(null))
     }
-    const onApproveTransaction = () => {
+    const onApproveTransaction = async() => {
         dispatch(approveContriRequest(payDetail))
-        dispatch(getAllDaowithAddress())
+        // await dispatch(getContriRequest())
         dispatch(setTransaction(null))
     }
 
@@ -127,7 +128,7 @@ const TransactionCard = ({signer}) => {
             ))}
           </div>
 
-          <div onClick={() => addToken()} className={styles.addToken}>
+          <div onClick={token_available.length>1?() => addToken():()=>{}} className={styles.addToken}>
             <div className={`${textStyle.m_16}`}>Add another token</div>
             <IoAddOutline color="#808080" className={styles.add} />
           </div>

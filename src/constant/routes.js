@@ -14,7 +14,11 @@ const routes = {
     },
     contribution:{
         createContri:'/contrib',
-        payout:'/contrib/payout'
+        updatePayout:'/contrib/payout/update',
+        payout:'/contrib/payout',
+        signPayout:'/contrib/payout/sign',
+        execute:'/contrib/payout/execute',
+        reject:'/contrib/payout/reject'
     }
 }
 

@@ -73,7 +73,7 @@ export default function Onboarding() {
       const res = await dispatch(registerDao())
       if(res){
         message.success('Your Dao is created succesfully')
-        navigate(`/dashboard/${address}`)
+        navigate(`/dashboard`)
         setDeploying(false)
       }
     } catch (error) {
@@ -106,7 +106,7 @@ export default function Onboarding() {
       if(hasMultiSignWallet){
        const res = await dispatch(registerDao())
        if(res){
-        navigate(`/dashboard/${address}`)
+        navigate(`/dashboard`)
        }else{
          navigate(`/onboard/dao`)
        }

@@ -34,9 +34,7 @@ export const resetApprovedRequest = () => {
 export const getPendingTransaction = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-        console.log('current dao uuid ....', currentDao?.safe_public_address)
         const pendingTxs = await serviceClient.getPendingTransactions(currentDao?.safe_public_address)
-        console.log('pending tx...', pendingTxs)
         if(pendingTxs.count> 0){
             dispatch(tranactionAction.set_pendin_txs({list:pendingTxs.results}))
         }else{
@@ -57,20 +55,24 @@ export const approveContriRequest =  (payout) => {
         const data = {
           status:"APPROVED"
         }
-        // try {
-        //     const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
-        //         headers:{
-        //             Authorization:`Bearer ${jwt}`
-        //         }
-        //     })
-        //     // console.log('resss', res)
-        //     if(res.data.success){
-        //         return 1
-        //     }else{
-        //         return 0
-        //     }
-        // } catch (error) {
-        //     console.log('error....', error)
-        // }
+        try {
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+                headers:{
+                    Authorization:`Bearer ${jwt}`
+                }
+            })
+            // console.log('resss', res)
+            if(res.data.success){
+                let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
+                dispatch(daoAction.set_contri_list({
+                    list:contri_request
+                }))
+                return 1
+            }else{
+                return 0
+            }
+        } catch (error) {
+            console.log('error....', error)
+        }
     }
 }

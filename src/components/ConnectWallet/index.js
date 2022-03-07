@@ -74,7 +74,7 @@ const ConnectWallet = ({ isAdmin }) =>{
           const res = await dispatch(getAddressMembership())
           if(res){
             setAuth(false)
-            navigate(`/dashboard/${address}`)
+            navigate(`/dashboard`)
           }else{
             setAuth(false)
             navigate('/onboard/dao')
@@ -87,7 +87,7 @@ const ConnectWallet = ({ isAdmin }) =>{
               if(res){
                 message.success('Already a member')
                 dispatch(setAdminStatus(true))
-                navigate(`/dashboard/${address}`)
+                navigate(`/dashboard`)
               }else{
 
               }
@@ -155,7 +155,7 @@ const ConnectWallet = ({ isAdmin }) =>{
           if(res){
             // console.log('callbacks.........', selected)
             setAuth(false)
-            navigate(`/dashboard/${newAddress}`)
+            navigate(`/dashboard`)
           }else{
             setAuth(false)
             navigate('/onboard/dao')
@@ -168,7 +168,7 @@ const ConnectWallet = ({ isAdmin }) =>{
               if(res){
                 message.success('Already a member')
                 dispatch(setAdminStatus(true))
-                navigate(`/dashboard/${newAddress}`)
+                navigate(`/dashboard`)
               }else{
 
               }

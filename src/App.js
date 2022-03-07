@@ -92,7 +92,7 @@ function App() {
           <Route path='/discord/fallback' element={<DiscordFallback />} />
           <Route path="/onboard/dao" element={<Onboarding />} />
           <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
-          <Route path="dashboard/:id" element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="contributor/invite/:id" element={<ContributorSignupFallback />} />
         </Routes>
       </div>

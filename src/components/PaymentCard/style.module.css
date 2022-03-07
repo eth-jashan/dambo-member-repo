@@ -12,19 +12,44 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 1rem;
+    justify-content: space-between;
 }
 
-.itemLeft{
-    width: 50%;
+.priceContainer{
+    width: 16%;
     display: flex;
-    flex-direction: row;
+    align-items: flex-start;
+    margin-right:1rem ;
 }
 
-.itemRight{
-    width: 50%;
+.contriTitle{
+    width: 42%;
+    /* background: red; */
+    /* text-align: start; */
     display: flex;
+    align-items: flex-start;
+    margin-right:1rem ;
+}
+
+.tokenContainer{
+    width: 42%;
+    display: flex;
+    align-items: flex-start;
+}
+
+.addressContainer{
+    width: 30%;
+    display: flex;
+    align-items: flex-start;
+}
+
+.signerInfo{
     flex-direction: row;
-    justify-content: space-between;   
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem 0.25rem 0.656rem;
+    /* background-color: #5C5C5C; */
+    border-radius: 1.375rem;
 }
 
 .greyedText{
@@ -33,17 +58,6 @@
 
 .whiterText{
     color: #C2C2C2;
-}
-
-.titleContainer{
-    width: 100%;
-    display: flex;
-    flex-direction: row;  
-    justify-content: space-between; 
-}
-.titleRight{
-    display: flex;
-    flex-direction: row;
 }
 
 .btnContainer{
@@ -75,4 +89,25 @@
 
 .signerOverview{
     color: #ECFFB8;
+}
+
+.bundleInfo{
+  width: 100%;  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editIcon{
+    height: 0.938rem;
+    width: 0.938rem;
+    margin-right: 0.438rem;
+    /* background-color: #ECFFB8; */
+}
+
+.menuIcon{
+    height: 1rem;
+    width: 0.25rem;
+    margin-left: 2.5rem;
 }

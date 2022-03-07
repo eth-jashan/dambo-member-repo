@@ -77,7 +77,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
     };
 
     const token_available = useSelector(x=>x.dao.balance)
-    const [role, setRole] = useState()
+    
     const [onFocus, setOnFocus] = useState(false)
 
     const CustomDropDownIndicatior = () => (
@@ -90,6 +90,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 className="basic-single"
                 classNamePrefix="select"
                 closeMenuOnSelect
+                isDisabled={token_available.length===1}
                 components={{DropdownIndicator:CustomDropDownIndicatior}}
                 onChange={(x)=>updateTokenType(x)}
                 styles={colourStyles}
@@ -103,8 +104,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
             <div style={{height:'3rem', width:'70%', background:onFocus?'#D3E5A6':'#ECFFB8', display:'flex', flexDirection:'row', alignItems:'center', borderBottomRightRadius:'0.5rem', borderTopRightRadius:'0.5rem'}}>
             <input 
                 onFocus={()=>setOnFocus(true)} 
-                onBlur={()=>setOnFocus(false)} 
-                // value={value}
+                onBlur={()=>setOnFocus(false)}
                 onChange={onChange} 
                 placeholder='Enter Amount' 
                 className={styles.amountInput} 

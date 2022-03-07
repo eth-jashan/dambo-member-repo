@@ -91,7 +91,7 @@ export const registerDao = () => {
             }
           }
         )
-        console.log('resss', res.data)
+
         if(res.data.success){
           return res.data.data.dao_uuid
         }else{
@@ -106,8 +106,6 @@ export const registerDao = () => {
 export const getAllSafeFromAddress = (address) => {
   return async (dispatch, getState) => {
     const list = await serviceClient.getSafesByOwner(address)
-    const token = await serviceClient.getBalances('0x1074BdD199c849F450df15D39396880D81bea7f9')
-    console.log('list.....', token)
     let daos = []
     for(let i = 0; i< list.safes.length; i++){
       daos.push(`safe=${list.safes[i]}`)
@@ -122,7 +120,6 @@ export const getAllSafeFromAddress = (address) => {
       }
     }
     )
-    console.log('safes....', res.data)
     dispatch(
       gnosisAction.set_allSafe({list:res.data.data})
     )

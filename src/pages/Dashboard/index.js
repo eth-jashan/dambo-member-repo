@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
-import { getAllDaowithAddress, getContriRequest, gnosisDetailsofDao } from '../../store/actions/dao-action';
+import { getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
@@ -13,13 +13,11 @@ import ContributionRequestModal from '../../components/Modal/ContributionRequest
 import { ethers } from 'ethers';
 import DashboardSearchTab from '../../components/DashboardSearchTab';
 import ContributionCard from '../../components/ContributionCard';
-import DeployGnosisButton from '../../components/GnosisSafe/DeployGnosis';
-import Paybutton from '../../components/PayButton';
 import { useSafeSdk } from '../../hooks';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
-import { getPendingTransaction } from '../../store/actions/transaction-action';
+import { getPendingTransaction, setPayment, setTransaction } from '../../store/actions/transaction-action';
 
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -81,12 +79,11 @@ export default function Dashboard() {
     }
 
     const initialload = useCallback( async() => {
-        if(id !== address){
-            signout()
-            navigate('/')
-        }else{
+        // if(id !== address){
+        //     signout()
+        //     navigate('/')
+        // }else{
         const account = await onInit()
-        //console.log('address',address, ethers.utils.getAddress(account), typeof(account))
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 console.log('jwt expiry check....',jwtIfo)
@@ -95,7 +92,15 @@ export default function Dashboard() {
                    await dispatch(gnosisDetailsofDao())
                     if(role === 'ADMIN'){
                       await  dispatch(getContriRequest())
+                      await dispatch(getPayoutRequest())
                       await dispatch(getPendingTransaction())
+                        dispatch(setPayment(null))
+                        dispatch(setTransaction(null))
+                      await dispatch(syncTxDataWithGnosis())
+                        if(safeSdk){
+                            const nonce = await safeSdk.getNonce()
+                            dispatch(set_active_nonce(nonce))
+                        }
                     }else{
                         console.log('fetch when contributor....')
                     }
@@ -107,8 +112,8 @@ export default function Dashboard() {
         }else{
             signout()
         }
-    }
-    },[address, dispatch, id, navigate, role])
+    // }
+    },[address, dispatch, navigate, role])
 
     useEffect(()=>{
         console.log('start.....')
@@ -119,12 +124,28 @@ export default function Dashboard() {
         preventGoingBack()
     },[preventGoingBack])
 
+    const onRouteChange = async(route) =>{
+        setTab(route)
+        if(safeSdk){
+            const nonce = await safeSdk.getNonce()
+            dispatch(set_active_nonce(nonce))
+        }
+        await dispatch(getPayoutRequest())
+        if(route === 'payments'){
+            await dispatch(syncTxDataWithGnosis())
+        }
+        await dispatch(set_payout_filter('PENDING'))
+        await dispatch(getContriRequest())
+        dispatch(setPayment(null))
+        dispatch(setTransaction(null))
+    }
+
     const renderTab = () => (
         <div className={styles.tabContainer}>
-            <div onClick={()=>setTab('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
+            <div onClick={async()=>await onRouteChange('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Contributions
             </div>
-            <div onClick={()=>setTab('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
+            <div onClick={async()=>await onRouteChange('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
             Payments
             </div>
         </div>
@@ -147,7 +168,7 @@ export default function Dashboard() {
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
             </button>
-            {role === 'ADMIN' && paymetButton()}
+            {/* {role === 'ADMIN' && paymetButton()} */}
         </div>
     )
 
@@ -206,6 +227,9 @@ export default function Dashboard() {
         </div>
     )
 
+    const contribution_request = useSelector(x=>x.dao.contribution_request)
+    const payout_request = useSelector(x=>x.dao.payout_filter)
+
     const renderContribution = () => (
         contribution_request.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
@@ -219,11 +243,11 @@ export default function Dashboard() {
     )
 
     const renderPayment = () => (
-        pending_txs.length > 0 ?
+        payout_request.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
             <div style={{width:'100%',  marginBottom:'100px'}}>
-                {pending_txs.map((item, index)=>(
-                    <PaymentCard signer={signer} item={item} />
+                {payout_request.map((item, index)=>(
+                    <PaymentCard gnosis={pending_txs}  signer={signer} item={item} />
                 ))}
             </div>
         </div>:
@@ -234,13 +258,12 @@ export default function Dashboard() {
         tab === 'contributions'?renderContribution():renderPayment()
     )
 
-    const contribution_request = useSelector(x=>x.dao.contribution_request)
     
     return (
         <DashboardLayout signer={signer} route={tab}>
             <div className={styles.dashView}>
                 {renderTab()}
-                {contribution_request.length>0 && <DashboardSearchTab />}
+                {<DashboardSearchTab route={tab} />}
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
                 {approve_contri.length>0 && tab==='contributions' && checkoutButton()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}

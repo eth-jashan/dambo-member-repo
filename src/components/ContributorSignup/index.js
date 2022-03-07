@@ -35,7 +35,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
         try {
          const res =  await dispatch(joinContributor(id))
          if(res){
-            navigate(`/dashboard/${address}`)
+            navigate(`/dashboard`)
             message.success('You successfully joined as contributor')
             dispatch(setAdminStatus(true))
          }

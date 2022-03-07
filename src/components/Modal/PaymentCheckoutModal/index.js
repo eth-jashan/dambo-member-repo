@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import { GoChevronDown } from 'react-icons/all'
 import styles from './styles.module.css'
 import textStyles from '../../../commonStyles/textType/styles.module.css'
-import { Typography } from 'antd'
+import { message, Typography } from 'antd'
 import { useSafeSdk } from '../../../hooks'
 import { ethers } from 'ethers'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
@@ -11,9 +11,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { resetApprovedRequest } from '../../../store/actions/transaction-action'
 import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
-import { createPayout } from '../../../store/actions/dao-action'
+import { createPayout, getContriRequest, getNonceForCreation, set_contri_filter } from '../../../store/actions/dao-action'
 import cross from '../../../assets/Icons/cross.svg'
-import { convertTokentoUsd } from '../../../utils/conversion'
+// import { convertTokentoUsd } from '../../../utils/conversion'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -25,10 +25,13 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const approved_request = useSelector(x=>x.transaction.approvedContriRequest)
     const dispatch  = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
+    const [loading, setLoading] = useState(false)
 
-    const proposeSafeTransaction = useCallback(async () => {
+    const proposeSafeTransaction = async () => {
 
         let transaction_obj = []
+        
+        setLoading(true)
 
         if(approved_request.length>0){
             approved_request.map((item, index)=>{
@@ -64,27 +67,37 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         
         if (!safeSdk || !serviceClient) return
         let safeTransaction
+        let nonce
           try {
-            const nextNonce = await safeSdk.getNonce()
-            
+            const activeNounce = await safeSdk.getNonce()
+            const nextNonce = await getNonceForCreation(currentDao?.safe_public_address)
+            nonce = nextNonce?nextNonce:activeNounce
+            console.log('nexxxxt payment nonce',nextNonce?nextNonce:activeNounce, activeNounce, nextNonce)
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
-                nonce:nextNonce
+                nonce:nonce
             }
             )
             
           } catch (error) {
             console.error('errorrrr',error)
+            setLoading(false)
+            message.error('Error on creating Transaction')
             return
           }
         
         
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+        let safeSignature
+        try {
+            safeSignature = await safeSdk.signTransactionHash(
+                safeTxHash
+            )
+        } catch (error) {
+            setLoading(false)
+        }
         
-        const safeSignature = await safeSdk.signTransactionHash(
-            safeTxHash
-        )
         try {
         await serviceClient.proposeTransaction(
             currentDao?.safe_public_address,
@@ -92,15 +105,18 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             safeTxHash,
             safeSignature
         )
-        dispatch(createPayout(safeTxHash))
+        console.log(currentDao, safeTxHash)
+        dispatch(createPayout(safeTxHash, nonce))
+        // await dispatch(getContriRequest())
         dispatch(resetApprovedRequest())
+        setLoading(false)
         } catch (error) {
           console.log('error.........', error)
+          setLoading(false)
         }
-    }, [approved_request, currentDao?.safe_public_address, dispatch, safeSdk])
+    }
 
     const startPayout = async() => {
-        // setProvider()
         await proposeSafeTransaction()
     }
 
@@ -131,7 +147,8 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         payout?.map((item, index)=>{
             usd_amount.push(((item?.usdAmount) * parseFloat(item?.amount)).toFixed(2))
         })
-        const amount_total = usd_amount.reduce((a,b)=>a+b)
+        let amount_total
+        usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
         return amount_total
     }
 
@@ -144,11 +161,11 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             })
         })
 
-        const amount_total = usd_amount_all.reduce((a,b)=>a+b)
-        console.log('total amount', amount_total)
-        return parseFloat(amount_total).toFixed(2)
+        const amount_total = usd_amount_all?.reduce((a,b)=>a+b)
+        return parseFloat(amount_total)?.toFixed(2)
         
     }
+    
 
     const requestItem = (item) => (
         <div className={styles.requestItem}>
@@ -169,7 +186,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         {item?.contri_detail?.stream?.toLowerCase()}  •  {item?.contri_detail?.time_spent} hrs
                     </div>
                     <div className={`${textStyles.m_16} ${styles.alignText}`}>
-                        {item?.contri_detail?.requested_by?.metadata?.name}  •  aviralsb.eth
+                        {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  aviralsb.eth
                     </div>
                     <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
                         Jashan has been doing the phenominal boi, keep it up GG.
@@ -180,7 +197,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         return tokenItem(item)
                     })}
                     <div style={{textAlign:'end'}} className={`${textStyles.m_16} ${styles.usdText}`}>
-                        {getPayoutTotal(item?.payout)}$
+                        {approved_request.length===0?0:getPayoutTotal(item?.payout)}$
                     </div>
                 </div>
             </div>
@@ -198,11 +215,16 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                     requestItem(item)
                 ))}
                 </div>
-                <div onClick={async()=>await startPayout()} className={styles.btnCnt}>
+                {/* {!loading&&<div onClick={async()=>await startPayout()} className={styles.btnCnt}>
                     <div className={styles.payBtn}>
-                        {getTotalAmount()}$  •  Pay Now
+                        {getTotalAmount()}$  •  Sign and Pay
                     </div>
-                </div>
+                </div>} */}
+                {approved_request.length>0&&<div onClick={async()=>await proposeSafeTransaction()} className={styles.btnCnt}>
+                    <div className={styles.payBtn}>
+                        {getTotalAmount()}$  •  Sign and Pay
+                    </div>
+                </div>}
             </div>
         </div>
     )

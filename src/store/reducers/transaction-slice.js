@@ -25,7 +25,6 @@ const transactionSlice = createSlice({
       state.pendingTransaction = action.payload.list
     },
     set_approved_request(state, action){
-      const total_token_amount = []
       const newRequestList = state.approvedContriRequest.concat(action.payload.item)
       state.approvedContriRequest = newRequestList
     }

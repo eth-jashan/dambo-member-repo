@@ -65,7 +65,7 @@ export const createContributionrequest = (title, type, link, time, comments) => 
         
         const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
-
+        console.log('uuid create', uuid)
         const data = {
             dao_uuid : uuid,
             stream : type,
