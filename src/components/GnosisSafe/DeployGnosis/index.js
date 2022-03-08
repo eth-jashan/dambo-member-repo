@@ -7,7 +7,7 @@ import { EthSignSignature } from './EthSignSignature';
 import { useSafeSdk,useBalance, usePoller, useUserSigner } from '../../../hooks';
 // import AuthButton from '../AuthButton';
 
-const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io')
 
 const DeployGnosisButton = () => {
 

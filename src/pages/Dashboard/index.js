@@ -267,7 +267,7 @@ export default function Dashboard() {
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
                 {approve_contri.length>0 && tab==='contributions' && checkoutButton()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
-                {modalPayment&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
+                {(modalPayment&&approve_contri.length>0)&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
             </div>
         </DashboardLayout>
     );

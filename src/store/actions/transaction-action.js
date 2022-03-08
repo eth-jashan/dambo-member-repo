@@ -61,12 +61,39 @@ export const approveContriRequest =  (payout) => {
                     Authorization:`Bearer ${jwt}`
                 }
             })
-            // console.log('resss', res)
             if(res.data.success){
                 let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
                 dispatch(daoAction.set_contri_list({
                     list:contri_request
                 }))
+                return 1
+            }else{
+                return 0
+            }
+        } catch (error) {
+            console.log('error....', error)
+        }
+    }
+}
+
+export const rejectContriRequest =  (id) => {
+    return  async (dispatch, getState) => {
+        
+        const jwt = getState().auth.jwt
+        const currentTransaction = getState().transaction.currentTransaction
+        
+        const data = {
+          status:"REJECT"
+        }
+        try {
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${id}`,data,{
+                headers:{
+                    Authorization:`Bearer ${jwt}`
+                }
+            })
+            console.log('resss', res)
+            if(res.data.success){
+                dispatch(tranactionAction.set_reject_request({id}))
                 return 1
             }else{
                 return 0

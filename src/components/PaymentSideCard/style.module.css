@@ -173,7 +173,14 @@
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.5rem;
     background: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .rejectBtn:hover{
     background: #FF0000;
+}
+.crossIcon{
+    height: 0.75rem;
+    width: 0.75rem;
 }

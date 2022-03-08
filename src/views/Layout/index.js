@@ -26,8 +26,6 @@ export default function Layout({ children, decreaseStep, currentStep, contributo
   return (
     <div className={styles.layout}>
       <Lottie options={defaultOptions} style={{position:'absolute', top:0, bottom:0}} className={styles.layoutImage}/>
-      {/* <img src={Bg} alt="bg" className={styles.layoutImage} /> */}
-      {/* <IoArrowBackOutline /> */}
       <div className={styles.content}>
         <OnboardingHeader />
         {!contributorWallet&&<div className={styles.modal}>

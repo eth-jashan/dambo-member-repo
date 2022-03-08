@@ -11,7 +11,7 @@ import { useSafeSdk, useUserSigner } from "../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import InputText from "../Input";
 
-const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io')
 
 export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep }) {
   

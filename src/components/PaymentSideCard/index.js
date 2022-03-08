@@ -11,6 +11,7 @@ import { message } from 'antd';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import { useSafeSdk } from "../../hooks";
 import { setPayment } from '../../store/actions/transaction-action';
+import crossSvg from '../../assets/Icons/cross_white.svg'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -311,7 +312,7 @@ const PaymentSlideCard = ({signer}) =>{
             {renderSigners()}
             <div style={{width:'20%', height:'80px', position:'absolute', bottom:0, background:'black', display:'flex', alignSelf:'center', alignItems:'center', justifyContent:isReject?'center':'space-between'}}>
                 {!isReject&&<div onClick={async()=>await rejectTransaction(currentPayment?.gnosis?.safeTxHash)} className={styles.rejectBtn}>
-
+                <img  src={crossSvg} alt='cross' className={styles.crossIcon} />
                 </div>}
                 {isReject?
                 <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getRejectButton()?.background}} className={styles.actionBtnCnt}>

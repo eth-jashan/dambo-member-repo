@@ -8,7 +8,7 @@ import { useSafeSdk } from '../../../hooks'
 import { ethers } from 'ethers'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import { useDispatch, useSelector } from 'react-redux'
-import { resetApprovedRequest } from '../../../store/actions/transaction-action'
+import { rejectContriRequest, resetApprovedRequest } from '../../../store/actions/transaction-action'
 import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
 import { createPayout, getContriRequest, getNonceForCreation, set_contri_filter } from '../../../store/actions/dao-action'
@@ -107,7 +107,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         )
         console.log(currentDao, safeTxHash)
         dispatch(createPayout(safeTxHash, nonce))
-        // await dispatch(getContriRequest())
         dispatch(resetApprovedRequest())
         setLoading(false)
         } catch (error) {
@@ -171,7 +170,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         <div className={styles.requestItem}>
         <div style={{width:'100%', display:'flex', flexDirection:'row'}}>
             <div style={{width:'5.2%'}}>
-                <div onMouseLeave={()=>setCancelHover(false)} onMouseEnter={()=>setCancelHover(true)} className={styles.cancel}>
+                <div onClick={async()=>await dispatch(rejectContriRequest(item?.contri_detail?.id))} onMouseLeave={()=>setCancelHover(false)} onMouseEnter={()=>setCancelHover(true)} className={styles.cancel}>
                     <img src={cross} alt='cancel' className={styles.cross}/>
                     {onCancelHover&&<div className={textStyles.m_14}>Cancel Approval</div>}
                 </div>
