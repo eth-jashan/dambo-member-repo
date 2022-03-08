@@ -85,15 +85,16 @@
     margin-top: 0.625rem;
 }
 .adminStats{
-    width: 25.5%;
+    width: 34%;
     border: 1px solid #21212B;
     border-top: 0;
     border-bottom: 0;
-    display: flex;
-    flex-direction: column;
-    /* overflow: hidden; */
+    /* display: flex;
+    flex-direction: column; */
+    overflow-y: scroll;
+    overflow: hidden;
+    /* background: red; */
     /* justify-content: space-around; */
-    height: 100%;
     /* background: red; */
 }
 .copyLink{

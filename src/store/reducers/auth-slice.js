@@ -7,6 +7,7 @@ const authSlice = createSlice({
     provider: null,
     web3Provider: null,
     address:null,
+    signer:null,
     chainId: null,
     chain:null,
     loggedIn:false,
@@ -24,6 +25,7 @@ const authSlice = createSlice({
     },
     set_address(state, action){
       state.address = action.payload.address;
+      //state.signer = action.payload.signer;
     },
     set_signing(state, action){
       state.jwt = action.payload.jwt
@@ -37,11 +39,9 @@ const authSlice = createSlice({
       state.role = action.payload.role
     },
     set_community_roles(state, action){
-      console.log('rolesss', action.payload.roles)
       state.community_roles = action.payload.roles
     },
     set_admin(state, action){
-      console.log('set adim......', action.payload.status)
       state.isAdmin = action.payload.status
     },
     reset_web3(state, action){

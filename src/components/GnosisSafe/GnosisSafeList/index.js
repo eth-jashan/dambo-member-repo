@@ -28,7 +28,6 @@ const GnosisSafeList = (props) => {
         }
     }
     const address = useSelector(x=>x.auth.address)
-    console.log(address)
     const fetchAllSafe = useCallback(async() => {
         try {
             dispatch(getAllSafeFromAddress(address))
@@ -80,7 +79,7 @@ const GnosisSafeList = (props) => {
                 Select the safe you<br/> want to continue with
             </div>:
             <div className={styles.headingSecondary}>
-                Coudn’t find multisig
+                Couldn’t find multisig
             </div>}
             {!safeList.length>0&&
             <div className={`${styles.headingSecondary} ${styles.greyHeading}`}>

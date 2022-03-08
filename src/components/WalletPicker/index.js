@@ -21,7 +21,6 @@ export default function  WalletPicker() {
     }
   }
     const onClick = ({ key }) => {
-        console.log('keysss', key === '1')
         if(key === '1'){
           message.info(`address copied on clicpboard`);
           copyTextToClipboard()

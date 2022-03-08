@@ -9,7 +9,6 @@ export const authWithSign = (address, signer) => {
     console.log('signin start')
     try {
       const responseNonce = await axios.get(`${api.drepute.dev.BASE_URL}${routes.auth.getNonce}?addr=${address}`)
-      console.log('response nounce =====>',address, responseNonce.data.data.nonce)
       const signature = await signer.signMessage(`Signing in to drepute.xyz with nonce ${responseNonce.data.data.nonce}`)
       console.log('address signed', signature)
       try {
@@ -40,14 +39,12 @@ export const getJwt = (address) => {
     if(jwtInfo?.jwt){
       const currentTime = new Date()
       const createdTime = new Date(jwtInfo.time)
-      console.log('datessss.....', currentTime, createdTime)
       let diffInMilliseconds = Math.abs(currentTime - createdTime);
       const hours = diffInMilliseconds/36e5
-      console.log('calculated hours.........',hours);
-      console.log('availabe !!!!', jwtInfo.jwt)
       if(hours<= 0.1){
-      dispatch(authActions.set_signing({jwt:jwtInfo.jwt}))
-      return 1
+        console.log('availabe !!!!', jwtInfo.jwt)
+        dispatch(authActions.set_signing({jwt:jwtInfo.jwt}))
+        return 1
     }
     return 0
     }else{
@@ -62,7 +59,6 @@ export const retrieveAddress = () => {
   
   return (dispatch)=>{
     const address = JSON.parse(localStorage.getItem('current_address'))
-    console.log('address RETRIEVED......', address)
     if(address){
       dispatch(
         authActions.set_address({address})
@@ -73,10 +69,10 @@ export const retrieveAddress = () => {
   }
 }
 
-export const setAddress = (address) => {
+export const setAddress = (address, signer) => {
   return (dispatch) => {
-      console.log('setting new address.....', address)
-      localStorage.setItem('current_address',address)
+      // console.log('setting new address.....', address)
+      localStorage.setItem('current_signer',signer)
       dispatch(
         authActions.set_address({address})
       );
@@ -85,7 +81,7 @@ export const setAddress = (address) => {
 
 export const setLoggedIn = (status) => {
   return (dispatch) => {
-      console.log('changing status.....', status)
+      console.log('changing status.....')
       dispatch(
         authActions.set_loggedIn({status})
       );
@@ -94,7 +90,6 @@ export const setLoggedIn = (status) => {
 
 export const setContriInfo = (name, role) => {
   return (dispatch) => {
-      console.log('changing status.....', name, role)
       dispatch(
         authActions.set_contri_setup({name, role})
       );
@@ -132,7 +127,7 @@ export const getCommunityRole = () => {
         res.data.data.map((item, index)=>{
           roles.push({value: item, label: item})
         })
-        console.log('community roles....', roles)
+        
         dispatch(authActions.set_community_roles({roles}))
       }
     } catch (error) {
@@ -161,7 +156,6 @@ export const joinContributor = (id) => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('contributor joined....', res.data)
       if(res.data.success){
         dispatch(contributorAction.set_discord({status:false}))
         return 1

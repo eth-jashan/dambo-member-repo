@@ -1,5 +1,5 @@
 import { Button, notification, Typography } from 'antd';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ethers } from "ethers";
 import { useSelector } from 'react-redux';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
@@ -7,7 +7,7 @@ import { EthSignSignature } from './EthSignSignature';
 import { useSafeSdk,useBalance, usePoller, useUserSigner } from '../../../hooks';
 // import AuthButton from '../AuthButton';
 
-const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io')
 
 const DeployGnosisButton = () => {
 
@@ -17,9 +17,10 @@ const DeployGnosisButton = () => {
     const [owners, setOwners] = useState([])
     const [threshold, setThreshold] = useState(2)
     const [transaction, setTransactions] = useState([])
-    const provider = useSelector(x=>x.auth.web3Provider);
-    const userSigner = useUserSigner(provider, null);
-    const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
+    // const provider = useSelector(x=>x.auth.web3Provider);
+    // const userSigner = useUserSigner(provider, null);
+    const [signer, setSigner] = useState()
+    const { safeSdk, safeFactory } = useSafeSdk(signer, safeAddress)
     const address = useSelector(x=>x.auth.address);
     const [data, setData] = useState('0x00')
     // demo wallet 0xFA0fa7B48A120f52a6a92D35F8fC0095B1B6C096
@@ -37,17 +38,30 @@ const DeployGnosisButton = () => {
       ]
     const THRESHOLD = 2
 
+    const setProvider = async() => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+      // Prompt user for account connections
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+      setSigner(signer)
+    }
+
+    useEffect(()=>{
+      setProvider()
+    },[])
+
     const proposeSafeTransaction = useCallback(async (transaction) => {
       console.log('transaction proposinggg 2......')
       if (!safeSdk || !serviceClient) return
       let safeTransaction
-      try {
-        safeTransaction = await safeSdk.createTransaction(transaction)
-        console.log('transaction created......')
-      } catch (error) {
-        console.error(error)
-        return
-      }
+        try {
+          console.log("Transaction.....",transaction)
+          safeTransaction = await safeSdk.createTransaction(transaction)
+          console.log('transaction created......', safeTransaction)
+        } catch (error) {
+          console.error(error)
+          return
+        }
       console.log('SAFE TX', safeTransaction.data)
       const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
       console.log('HASH', safeTxHash)
@@ -64,7 +78,7 @@ const DeployGnosisButton = () => {
       } catch (error) {
         console.log('error', error)
       }
-    }, [safeSdk, serviceClient, safeAddress])
+    }, [safeSdk, safeAddress])
 
     console.log('transaction==========>',address, transaction)
 
@@ -106,19 +120,22 @@ const DeployGnosisButton = () => {
       // nonce:
       // 12
       // const nonce = await safeSdk.getNonce()
-      
       const checksumForm = ethers.utils.getAddress('0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377')
-      const partialTx = {
+      const partialTx = [{
         to: checksumForm,
         data:'0x',
-        value: ethers.utils.parseEther(value?value.toString():"1").toString(),
-        refundReceiver:'0x0000000000000000000000000000000000000000',
-        nonce:13
-      }
+        value: ethers.utils.parseEther(value?value.toString():"0.001").toString(),
+      },
+      {
+        to: ethers.utils.getAddress('0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'),
+        data:'0x',
+        value: ethers.utils.parseEther(value?value.toString():"0.001").toString(),
+      }]
+
       console.log('transaction proposinggg', partialTx)
       try{
         await proposeSafeTransaction(partialTx)
-        console.log('transaction created', 13)
+        // console.log('transaction created', 13)
       }catch(e){
         console.log("🛑 Error Proposing Transaction",e)
         notification.open({
@@ -144,7 +161,7 @@ const DeployGnosisButton = () => {
         return
       }
       await serviceClient.confirmTransaction(hash, signature.data)
-    }, [safeSdk, serviceClient])
+    }, [safeSdk])
 
     const deploySafe = useCallback(async (owners, threshold) => {
         console.log('deployingggg')
@@ -189,20 +206,22 @@ const DeployGnosisButton = () => {
       },3333);
 
       const executeSafeTransaction = useCallback(async (transaction) => {
-        console.log('started transaction.......', transaction)
+        console.log('started transaction.......', transaction, safeSdk)
+  
         if (!safeSdk) return
-        console.log(transaction)
+        console.log( transaction)
         const safeTransactionData = {
-          to: transaction.to,
+          to: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
+          safeTxHash: '0xe1190d731bf83d0ac22dd1dd47246b6df66e954eb85f18a324377476783025b8',
           value: transaction.value,
           data: transaction.data || '0x',
           operation: transaction.operation,
-          safeTxGas: transaction.safeTxGas,
-          baseGas: transaction.baseGas,
-          gasPrice: Number(transaction.gasPrice),
-          gasToken: transaction.gasToken,
-          refundReceiver: transaction.refundReceiver,
-          nonce: transaction.nonce
+          safeTxGas: '0',
+          baseGas: '0',
+          gasPrice: '0',
+          gasToken: '0x0000000000000000000000000000000000000000',
+          refundReceiver: '0x0000000000000000000000000000000000000000',
+          nonce: 18
         }
         console.log('started transaction.......')
         const safeTransaction = await safeSdk.createTransaction(safeTransactionData)

@@ -18,7 +18,6 @@ const gnosisSlice = createSlice({
   },
   reducers: {
     set_safeAdress(state, action) {
-      // console.log('set address', action.payload.safeAddress)
       state.safeAddress = action.payload.safeAddress;
     },
     set_allSafe(state, action) {
@@ -34,10 +33,8 @@ const gnosisSlice = createSlice({
       state.selectedDao = action.payload.dao
       state.allMembership = action.payload.list
       state.safeAddress = action.payload.safeAddress
-      console.log('selected', state.selectedDao)
     },
     set_dainInfo(state, action){
-      console.log('name set', action.payload.name)
       state.newSafeSetup.dao_email = action.payload.email
       state.newSafeSetup.dao_name = action.payload.name
     }

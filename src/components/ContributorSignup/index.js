@@ -1,4 +1,4 @@
-import { Typography } from 'antd';
+import { message, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NextButton from '../NextButton';
@@ -6,7 +6,7 @@ import styles from './styles.module.css'
 import Select from 'react-select';
 import { getCommunityRole, joinContributor, setAdminStatus, setContriInfo } from '../../store/actions/auth-action';
 import { useNavigate, useParams } from 'react-router';
-import { getDao } from '../../store/actions/gnosis-action';
+import InputText from '../Input';
 
 
 const ContributorSignup = ({increaseStep, decreaseStep}) => {
@@ -16,10 +16,11 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const colorOption = useSelector(x=>x.auth.community_roles)
     const [role, setRole] = useState()
     const navigate = useNavigate()
+    const address = useSelector(x=>x.auth.address)
     const fetchRoles = useCallback( async() => {
         try {
             await dispatch(getCommunityRole())
-            await dispatch(getDao())
+            // await dispatch(getDao())
         } catch (error) {
             console.log('error in fetching role.....')
         }
@@ -32,21 +33,27 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
     const onSubmit = async() => {
         dispatch(setContriInfo(name, role))
         try {
-        console.log('start........')
          const res =  await dispatch(joinContributor(id))
-         console.log('resss', res)
          if(res){
-            navigate(`/dashboard/${id}`)
+            navigate(`/dashboard`)
+            message.success('You successfully joined as contributor')
             dispatch(setAdminStatus(true))
          }
         } catch (error) {
+            message.error('Error on Joining')
             console.log('error on joining...', error)
         }
     }
     
     const colourStyles = {
         control: (styles, state) => {
-           return { ...styles, backgroundColor: 'white', width: '60%',border:(state.menuIsOpen|| state.isFocused) ?'1px solid #6852FF':null }
+           return { ...styles, 
+            backgroundColor: 'white', 
+            width: '60%',
+            borderRadius:'0.5rem',
+            padding:'0.5rem',
+            border:(state.menuIsOpen|| state.isFocused) ?'1px solid #6852FF':'1px solid #eeeef0' 
+        }
         },
         option: (styles, { data, isDisabled, isFocused, isSelected }) => {
         //   const color = chroma(data.color);
@@ -64,7 +71,11 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
         menu:(styles)=>({...styles, width:'60%'}),
         input: (styles,{data,isDisabled, isFocused, isSelected}) => {
             return { ...styles,   
-                // border:'1px solid #6852FF'
+                fontFamily:'TelegrafMedium',
+                fontStyle:'normal',
+                fontWeight:'normal',
+                fontSize:'16px',
+                lineHeight:'24px',
             }
         },
         placeholder: (styles) => 
@@ -83,24 +94,24 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
             lineHeight:'24px',
             width:'60%'
         }),
-      };
+    };
     
     return(
         <div className={styles.layout}>
                 <div style={{flexDirection:'column', display:'flex'}}>
                 
-                <Typography.Text className={styles.heading}>
+                <div className={styles.heading}>
                 Almost done
-                </Typography.Text>
-                <Typography.Text className={styles.greyHeading}>
+                </div>
+                <div className={styles.greyHeading}>
                 Please tell us a bit<br/>about yourself
-                </Typography.Text>
+                </div>
 
                 <div>
                 <div style={{marginTop:'40px'}}>
                     {/* <Typography.Text className={styles.helperText}>What should we call your DAO</Typography.Text> */}
                     <div>
-                        <input value={name} onChange={(e)=>setName(e.target.value)} placeholder='Your Name' className={name ===''?styles.input:styles.inputText} />
+                        <InputText width={'60%'} value={name} onChange={(e)=>setName(e.target.value)} placeholder='Your Name' className={name ===''?styles.input:styles.inputText} />
                     </div>
                 </div>
                 {/* <Select mode="tags" style={{ width: '100%' }} onChange={handleChange} tokenSeparators={[',']}> */}
@@ -108,6 +119,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
                     {/* <Typography.Text className={styles.helperTextSec}>How we can reach you</Typography.Text> */}
                     <div>
                     <Select
+                        // components={{Option: CustomOption}}
                         className="basic-single"
                         classNamePrefix="select"
                         closeMenuOnSelect
@@ -116,6 +128,7 @@ const ContributorSignup = ({increaseStep, decreaseStep}) => {
                         isSearchable={false}
                         name="color"
                         options={colorOption}
+                        placeholder='Role'
                     />
                     </div>
                 </div>

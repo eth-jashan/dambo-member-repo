@@ -48,7 +48,10 @@ function App() {
     const provider = await web3Modal.connect();
     
     provider.on("chainChanged", (chainId) => {
-      console.log(`CHAIN changed!`);
+      console.log(`CHAIN changed!`, chainId);
+      if(chainId === '0x4'){
+
+      }else{
       if(isAdmin){
         dispatch(setLoggedIn(false))
         dispatch(signout())
@@ -59,6 +62,7 @@ function App() {
         dispatch(setAdminStatus(false))
         navigate('/')
       }
+    }
     });
 
     provider.on("accountsChanged",async () => {
@@ -76,8 +80,6 @@ function App() {
     });
   }, [dispatch, isAdmin, navigate]);
 
-  console.log(isAdmin, address, loggedIn);
-
   useEffect(()=>{
     loadWeb3Modal()
   },[loadWeb3Modal])
@@ -90,7 +92,7 @@ function App() {
           <Route path='/discord/fallback' element={<DiscordFallback />} />
           <Route path="/onboard/dao" element={<Onboarding />} />
           <Route path="onboard/contributor/:id" element={<ContributorOnbording />} />
-          <Route path="dashboard/:id" element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="contributor/invite/:id" element={<ContributorSignupFallback />} />
         </Routes>
       </div>

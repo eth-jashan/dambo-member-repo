@@ -4,7 +4,8 @@ const contributorSlice = createSlice({
   name: "contributor",
   initialState: {
     invite_code:null,
-    discord_auth:false
+    discord_auth:false,
+    contributionRequests:[]
   },
   reducers: {
     set_invite_code(state, action){

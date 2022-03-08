@@ -7,6 +7,7 @@ import GnosisSafeList from "../components/GnosisSafe/GnosisSafeList";
 import DaoInfo from "../components/DaoInfo";
 import { useDispatch, useSelector } from "react-redux";
 import { addOwners, addSafeAddress, addThreshold, registerDao } from "../store/actions/gnosis-action";
+// import { useHistory } from "react-router-dom";
 import { useSafeSdk } from "../hooks";
 import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
@@ -16,14 +17,14 @@ export default function Onboarding() {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false);
-  
+  // const history = useHistory();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false)
   const [signer, setSigner] = useState()
-  const userSigner = useSelector(x=>x.web3.signer);
+  // const userSigner = useSelector(x=>x.web3.signer);
   const [safeAddress, setSafeAddress] = useState()
   const { safeFactory } = useSafeSdk(signer, safeAddress)
-  
+  const [gnosisLoad, setGnosisLoad] = useState(false)
   
   const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
   const threshold = useSelector(x=>x.gnosis.newSafeSetup.threshold)
@@ -49,7 +50,7 @@ export default function Onboarding() {
   },[preventGoingBack])
 
   const deploySafe = useCallback(async (owners) => {
-    console.log('deployingggg', threshold, safeFactory,userSigner)
+    console.log('deployingggg')
     if (!safeFactory) return
     setDeploying(true)
     const safeAccountConfig = { owners, threshold }
@@ -58,6 +59,7 @@ export default function Onboarding() {
     try {
       safe = await safeFactory.deploySafe(safeAccountConfig)
       message.success('A safe is successfully created !')
+      setDeploying(false)
     } catch (error) {
       message.error(error.message)
       setDeploying(false)
@@ -66,17 +68,21 @@ export default function Onboarding() {
     const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
     setSafeAddress(newSafeAddress)
     dispatch(addSafeAddress(newSafeAddress))
+    setDeploying(true)
     try {
       const res = await dispatch(registerDao())
       if(res){
         message.success('Your Dao is created succesfully')
-        navigate(`/dashboard/${res}`)
+        navigate(`/dashboard`)
+        setDeploying(false)
       }
     } catch (error) {
       console.log('error on registering dao.....')
       message.error('error on registering dao.....')
+      navigate('/onboard/dao')
+      setDeploying(false)
     }
-  }, [dispatch, navigate, safeFactory, threshold, userSigner])
+  }, [address, dispatch, navigate, safeFactory, threshold])
 
   const setProvider = async() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -98,10 +104,11 @@ export default function Onboarding() {
       }
     }else if(currentStep === 4){
       if(hasMultiSignWallet){
-       const res = await dispatch(registerDao('Jashan Dao'))
-       console.log('ress', res)
+       const res = await dispatch(registerDao())
        if(res){
-        navigate(`/dashboard/${res}`)
+        navigate(`/dashboard`)
+       }else{
+         navigate(`/onboard/dao`)
        }
       }else{
       try {
@@ -110,7 +117,6 @@ export default function Onboarding() {
           owners.map((item, index)=>{
             owner.push(item.address)
           })
-          console.log(owner, selectedIndex +1)
           await deploySafe(owner)
         } catch (error) {
           console.log('error.... on deploying', error)
@@ -163,7 +169,6 @@ export default function Onboarding() {
             increaseStep={increaseStep}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
-            // numberOfOwners={owners.length}
           />
         )
       case 4:
@@ -172,7 +177,6 @@ export default function Onboarding() {
             hasMultiSignWallet={hasMultiSignWallet}
             increaseStep={increaseStep}
             deploying={deploying}
-            
           />
         )
       default: {

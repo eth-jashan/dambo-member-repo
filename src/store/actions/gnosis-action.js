@@ -52,7 +52,6 @@ export const getDao = () => {
           }
         }
       )
-      console.log('resss.....', res.data)
   } catch (error) {
     console.log('error in fetching dao.....', error)    
   }
@@ -81,8 +80,6 @@ export const registerDao = () => {
       signers:owner,
       signs_required:threshold
     }
-
-    console.log('safe address.....data',JSON.stringify(data))
     
     try {
         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
@@ -92,7 +89,7 @@ export const registerDao = () => {
             }
           }
         )
-        console.log('resss', res.data)
+
         if(res.data.success){
           return res.data.data.dao_uuid
         }else{
@@ -107,8 +104,6 @@ export const registerDao = () => {
 export const getAllSafeFromAddress = (address) => {
   return async (dispatch, getState) => {
     const list = await serviceClient.getSafesByOwner(address)
-    const token = await serviceClient.getBalances('0x1074BdD199c849F450df15D39396880D81bea7f9')
-    console.log('list.....', token)
     let daos = []
     for(let i = 0; i< list.safes.length; i++){
       daos.push(`safe=${list.safes[i]}`)
@@ -123,14 +118,13 @@ export const getAllSafeFromAddress = (address) => {
       }
     }
     )
-    console.log('safes....', res.data)
     dispatch(
       gnosisAction.set_allSafe({list:res.data.data})
     )
     }
 };
 
-export const getAddressMembership = (id) => {
+export const getAddressMembership = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     try {
@@ -139,7 +133,6 @@ export const getAddressMembership = (id) => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('contributor joined....', res.data.data[0])
       if(res.data.data.length>0){
           dispatch(gnosisAction.set_membershipList({
             list:res.data.data, 
