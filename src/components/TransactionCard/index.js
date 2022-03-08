@@ -8,7 +8,7 @@ import cross from "../../assets/Icons/cross_white.svg";
 import styles from "./style.module.css";
 import textStyle  from "../../commonStyles/textType/styles.module.css";
 import AmountInput from '../AmountInput';
-import { approveContriRequest, setTransaction } from '../../store/actions/transaction-action';
+import { approveContriRequest, rejectContriRequest, setTransaction } from '../../store/actions/transaction-action';
 import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
 import { convertTokentoUsd } from "../../utils/conversion";
 
@@ -36,6 +36,7 @@ const TransactionCard = ({signer}) => {
     }])
 
   const addToken = async() => {
+    
     const usdCoversion = await convertTokentoUsd('ETH')
       if(usdCoversion){
         const newDetail = {
@@ -64,12 +65,11 @@ const TransactionCard = ({signer}) => {
     };
 
     const onContributionPress = () => {
-        dispatch(setTransaction(null))
+      dispatch(setTransaction(null))
     }
     const onApproveTransaction = async() => {
-        dispatch(approveContriRequest(payDetail))
-        // await dispatch(getContriRequest())
-        dispatch(setTransaction(null))
+      dispatch(approveContriRequest(payDetail))
+      dispatch(setTransaction(null))
     }
 
     
@@ -133,9 +133,16 @@ const TransactionCard = ({signer}) => {
           </div>
 
       {feedBackContainer()}
+      <div style={{width:'20%', height:'5rem', position:'absolute', bottom:0, background:'black', display:'flex', alignSelf:'center', alignItems:'center', justifyContent:'space-between'}}>
+        
+        <div onClick={async()=> await dispatch(rejectContriRequest(currentTransaction?.id))} className={styles.deletContainer}>
+        
+        </div>
+
         <div onClick={() => onApproveTransaction()} className={styles.payNow}>
           <div className={`${textStyle.ub_16}`}>Approve Request</div>
         </div>
+      </div>
     </div>
   );
 };

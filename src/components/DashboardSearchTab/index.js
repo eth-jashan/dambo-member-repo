@@ -3,6 +3,8 @@ import { MdOutlineFilterAlt, BiSearchAlt2 } from 'react-icons/all'
 import { Dropdown, Menu } from 'antd'
 import crossSvg from '../../assets/Icons/cross_white.svg'
 import searchSvg from '../../assets/Icons/white_search.svg'
+import search_inactive from "../../assets/Icons/search_inactive.svg";
+import filter from "../../assets/Icons/filter.svg";
 import styles from './styles.module.css'
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,6 +13,8 @@ import { set_contri_filter, set_payout_filter } from '../../store/actions/dao-ac
 const DashboardSearchTab = ({route}) => {
 
     const contribution_request = useSelector(x=>x.dao.contribution_request)
+    const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
+    const payout_filter_key = useSelector(x=>x.dao.payout_filter_key)
     const [contriFilter, setContriFilter] = useState(1)
     const [search, setSearch] = useState(false)
     
@@ -18,22 +22,19 @@ const DashboardSearchTab = ({route}) => {
     const payout_filter = ['All requests','Pending Payment Request', 'Approved requests','Paid requests','Rejected requests' ]
 
     const [payoutFilter, setPayoutFilter] = useState(1)
-
+    console.log('filter key', contri_filter_key)
     const dispatch = useDispatch()
     const onClick = ({ key }) => {
         if(key === '1'){
             setContriFilter(0)
-            dispatch(set_contri_filter('ALL'))
-            // setNumRequest(contribution_request.length)
+            dispatch(set_contri_filter('ALL', 0))
         }else if(key === '2'){
-            dispatch(set_contri_filter('ACTIVE'))
+            dispatch(set_contri_filter('ACTIVE', 1))
             setContriFilter(1)
         }else if(key === '3'){
-            dispatch(set_contri_filter('APPROVED'))
+            dispatch(set_contri_filter('APPROVED'), 2)
             setContriFilter(2)
         }else if(key === '4'){
-            // setNumRequest(contribution_request.length)
-            // setContriFilter(3)
         }
     };
 
@@ -41,18 +42,18 @@ const DashboardSearchTab = ({route}) => {
 
         if(key === '1'){
             setPayoutFilter(0)
-            dispatch(set_payout_filter('ALL'))
+            dispatch(set_payout_filter('ALL',0))
         }else if(key === '2'){
-            dispatch(set_payout_filter('PENDING'))
+            dispatch(set_payout_filter('PENDING',1))
             setPayoutFilter(1)
         }else if(key === '3'){
-            dispatch(set_payout_filter('APPROVED'))
+            dispatch(set_payout_filter('APPROVED',2))
             setPayoutFilter(2)
         }else if(key === '4'){
-            dispatch(set_payout_filter('PAID'))
+            dispatch(set_payout_filter('PAID',3))
             setPayoutFilter(3)
         }else if(key === '5'){
-            dispatch(set_payout_filter('REJECTED'))
+            dispatch(set_payout_filter('REJECTED',4))
             setPayoutFilter(4)
         }
     };
@@ -110,17 +111,17 @@ const DashboardSearchTab = ({route}) => {
         <div className={styles.container}>
             <Dropdown  overlay={route==='contributions'?contriMenu:payoutMenu}>
             <div className={`${textStyles.m_16} ${styles.text}`}>
-                {route==='contributions'?`${contribution_request?.length} ${contri_filter[contriFilter]}`:`${payout_filter[payoutFilter]}`}
+                {route==='contributions'?`${contribution_request?.length} ${contri_filter[contri_filter_key]}`:`${payout_filter[payout_filter_key]}`}
             </div>
             </Dropdown>
             <div style={{display:'flex', flexDirection:'row'}}>
                 {!search?
                 <div onClick={()=>setSearch(true)} className={styles.icon}>
-                    <BiSearchAlt2 color='#808080' size='1rem'  />
+                    <img src={search_inactive} alt='cross' className={styles.searchIcon} />
                 </div>:
                 renderSearchBar()}
                 <div className={styles.icon}>
-                    <MdOutlineFilterAlt color='#808080' size='1rem'  />
+                <img src={filter} alt='cross' className={styles.searchIcon} />
                 </div>
             </div>
         </div>

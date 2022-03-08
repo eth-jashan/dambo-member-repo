@@ -15,7 +15,9 @@ const daoSlice = createSlice({
     balanceUsd:null,
     delegates:[],
     contri_filter:'ACTIVE',
-    active_nonce:0
+    active_nonce:0,
+    contri_filter_key:1,
+    payout_filter_key:1,
   },
   reducers: {
     set_dao_list(state, action){
@@ -30,13 +32,16 @@ const daoSlice = createSlice({
       state.community_role = action.payload.community_role
     },
     set_contri_list(state, action){
+      console.log(action.payload.number)
       state.contribution_request = action.payload.list
+      state.contri_filter_key = action.payload.number
     },
     set_payout_list(state, action){
       state.payout_request = action.payload.list
     },
     set_filter_list(state, action){
       state.payout_filter = action.payload.list
+      state.payout_filter_key = action.payload.number
     },
     set_gnosis_details(state, action){
       state.gnosis_details = action.payload.details
@@ -45,7 +50,7 @@ const daoSlice = createSlice({
       state.delegates = action.payload.delegates;
     },
     set_contribution_filter(state, action){
-      state.contri_filter = action.payload.key;
+      state.contri_filter_key = action.payload.number;
       state.contribution_request = action.payload.list
     }
 }});

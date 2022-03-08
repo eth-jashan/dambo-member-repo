@@ -53,9 +53,9 @@ export const getAllDaowithAddress = () => {
     }
 }
 
-export const set_contri_filter = (filter_key) => {
+export const set_contri_filter = (filter_key, number) => {
   return async (dispatch, getState) => {
-    
+    console.log('number', number)
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
     try {
@@ -69,18 +69,21 @@ export const set_contri_filter = (filter_key) => {
         if(filter_key === 'APPROVED'){
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
+            number:2,
             list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED")
           }))
         } else if( filter_key === 'ACTIVE'){
 
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
-            list:res.data?.data?.contributions?.filter(x=>x.status !== "APPROVED")
+            number:1,
+            list:res.data?.data?.contributions?.filter(x=>x.payout_status === null)
           })) 
         }else if( filter_key === 'ALL'){
           
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
+            number:0,
             list:res.data?.data?.contributions
           })) 
         }
@@ -88,6 +91,7 @@ export const set_contri_filter = (filter_key) => {
 
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
+            number:number,
             list:[]
           })) 
         }
@@ -98,6 +102,7 @@ export const set_contri_filter = (filter_key) => {
         // }))
         dispatch(daoAction.set_contribution_filter({
           key:filter_key,
+          number:number,
           list:[]
         }))
         // return 0
@@ -105,7 +110,9 @@ export const set_contri_filter = (filter_key) => {
     } catch (error) {
       console.log('error...', error)
       dispatch(daoAction.set_contri_list({
-        list:[]
+        list:[],
+        key:filter_key,
+        number:number
       }))
       return 0
     }
@@ -174,19 +181,22 @@ export const getContriRequest = () => {
       console.log('Pending Contri request.....',res.data)
       if(res.data.success){
         dispatch(daoAction.set_contri_list({
-          list:res.data?.data?.contributions.filter(x=>x.payout_status === null)
+          list:res.data?.data?.contributions.filter(x=>x.payout_status === null),
+          number:1
         }))
         return 1
       }else{
         dispatch(daoAction.set_contri_list({
-          list:[]
+          list:[],
+          number:1
         }))
         return 0
       }
     } catch (error) {
       console.log('error...', error)
       dispatch(daoAction.set_contri_list({
-        list:[]
+        list:[],
+        number:1
       }))
       return 0
     }
@@ -281,22 +291,22 @@ export const getPayoutRequest = () => {
         }
       }
       else{
-        dispatch(daoAction.set_contri_list({
-          list:[]
-        }))
+        // dispatch(daoAction.set_contri_list({
+        //   list:[]
+        // }))
         return 0
       }
     } catch (error) {
       console.log('error...', error)
-      dispatch(daoAction.set_contri_list({
-        list:[]
-      }))
+      // dispatch(daoAction.set_contri_list({
+      //   list:[]
+      // }))
       return 0
     }
   }
 }
 
-export const set_payout_filter = (filter_key) => {
+export const set_payout_filter = (filter_key, number) => {
 
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
@@ -326,44 +336,58 @@ export const set_payout_filter = (filter_key) => {
         if(filter_key === 'PENDING'){
           
           dispatch(daoAction.set_filter_list({
+            key:filter_key,
+            number:number,
             list:pending_txs
           }))
         }else if(filter_key === 'ALL'){
           const all_payout = pending_txs.concat(list_of_tx)
           
           dispatch(daoAction.set_filter_list({
+            key:filter_key,
+            number:number,
             list:all_payout
           }))
         }else if(filter_key === 'APPROVED'){
           const pending = pending_txs.filter(x=>x.status === filter_key)
           
           dispatch(daoAction.set_filter_list({
+            key:filter_key,
+            number:number,
             list:pending
           }))
         }else if(filter_key === 'REJECTED'){
           const pending = pending_txs.filter(x=>x.status === filter_key)
           
           dispatch(daoAction.set_filter_list({
+            key:filter_key,
+            number:number,
             list:pending
           }))
         }else if(filter_key === 'PAID'){
           
           dispatch(daoAction.set_filter_list({
+            key:filter_key,
+            number:number,
             list:list_of_tx
           }))
         }
       }
       else{
-        // dispatch(daoAction.set_contri_list({
-        //   list:[]
-        // }))
+        dispatch(daoAction.set_filter_list({
+          list:[],
+          key:filter_key,
+          number:number,
+        }))
         return 0
       }
     } catch (error) {
       console.log('error...', error)
-      // dispatch(daoAction.set_contri_list({
-      //   list:[]
-      // }))
+      dispatch(daoAction.set_filter_list({
+        list:[],
+        key:filter_key,
+        number:number,
+      }))
       return 0
     }
   }
@@ -443,9 +467,9 @@ export const syncTxDataWithGnosis = () => {
       
     } catch (error) {
       console.log('error...', error)
-      dispatch(daoAction.set_contri_list({
-        list:[]
-      }))
+      // dispatch(daoAction.set_contri_list({
+      //   list:[]
+      // }))
       return 0
     }
   }
@@ -476,7 +500,6 @@ export const createPayout = (tranxid, nonce) => {
     })
     
     const data = {
-      //initiated_by:address,
       contributions:contri_array,
       gnosis_reference_id:tranxid,
       dao_uuid:uuid,

@@ -278,7 +278,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     dispatch(signout())
     dispatch(setAdminStatus(false))
   }
-  
+  {/* inline style required */}
   const daoWallet = () => (
     <div style={{width:'100%'}}>
       <div className={styles.headingCnt}>
@@ -288,7 +288,7 @@ const ConnectWallet = ({ isAdmin }) =>{
       {address?authWallet():connectWallet()}
     </div>
   )
-
+{/* inline style required */}
   const contributorWallet = () => (
     <div className={styles.walletContri}>
       <div className={styles.metaCard}>
@@ -330,7 +330,7 @@ const ConnectWallet = ({ isAdmin }) =>{
           }
         </div>
       </div>
-
+          {/* inline style required */}
       <div className={styles.metaCard}>
         <div style={{height:'100%'}}>
         <div style={{height:'64px', width:'64px', borderRadius:'64px', border:'1px solid #c2c2c2', display:'flex', alignItems:'center', justifyContent:'center'}}>

@@ -133,7 +133,7 @@ export default function Dashboard() {
         if(route === 'payments'){
             await dispatch(syncTxDataWithGnosis())
         }
-        await dispatch(set_payout_filter('PENDING'))
+        await dispatch(set_payout_filter('PENDING',1))
         await dispatch(getContriRequest())
         dispatch(setPayment(null))
         dispatch(setTransaction(null))

@@ -23,6 +23,7 @@ const PaymentSlideCard = ({signer}) =>{
     const address = useSelector(x=>x.auth.address)
     const delegates = useSelector(x=>x.dao.delegates)
     const isReject = currentPayment?.status === 'REJECTED'
+    const nonce = useSelector(x=>x.dao.active_nonce)
     
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -37,7 +38,7 @@ const PaymentSlideCard = ({signer}) =>{
             // await dispatch(signingPayout(currentPayment?.id))  
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING'))
+            await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
           } catch (error) {
             console.error(error)
@@ -71,7 +72,7 @@ const PaymentSlideCard = ({signer}) =>{
         )
         await dispatch(getPayoutRequest())
         await dispatch(syncTxDataWithGnosis())
-        await dispatch(set_payout_filter('PENDING'))
+        await dispatch(set_payout_filter('PENDING',1))
         dispatch(setPayment(null))
         // dispatch(rejectPayout(safeTxHash, currentPayment?.id))
         } catch (error) {
@@ -124,7 +125,7 @@ const PaymentSlideCard = ({signer}) =>{
             await dispatch(getPayoutRequest())
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING'))
+            await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
         // }
     }
@@ -160,6 +161,18 @@ const PaymentSlideCard = ({signer}) =>{
 
         return confirm.includes(address)
     }
+
+    const getExecutionMessage = () => {
+        if(((isReject && currentPayment.gnosis.confirmations.length !== delegates.length && checkApproval() )|| (isReject && checkApproval()) || (isReject && !checkApproval()) )&& !nonce !== currentPayment?.gnosis?.nonce ){
+            return 'Payment will be cancelled only after required signs are done  '
+        }else if((currentPayment.gnosis.confirmations.length !== delegates.length && checkApproval() ) || ( !checkApproval() || !nonce !== currentPayment?.gnosis?.nonce) ){
+            return 'Can be executed once the required signs are done '
+        }else if(nonce !== currentPayment?.gnosis?.nonce && currentPayment.gnosis.confirmations.length === delegates.length ){
+            return 'Can be executed only after previous payments are executed'
+        }
+    }
+
+    console.log('gnosis', currentPayment.gnosis.confirmations.length === delegates.length , nonce===currentPayment?.gnosis?.nonce)
 
     const approve = currentPayment?.gnosis.confirmations
     const renderSigners = () => (
@@ -241,15 +254,17 @@ const PaymentSlideCard = ({signer}) =>{
 
                 </div>
 
-                <div  className={styles.singleHeaderContainer_signer}>
-                    
-                    <div style={{border:0}} className={styles.childrenTimeline_signer}>
-                        <div style={{color:'gray', textAlign:'start'}} className={`${textStyle.m_16}`}>
-                            {getButtonTitle()?.title!=='Execute Payment'?'Can be executed once the required signs are done ':null}
+                {!(currentPayment.gnosis.confirmations.length === delegates.length && nonce===currentPayment?.gnosis?.nonce)&&
+                    <div  className={styles.singleHeaderContainer_signer}>
+                        
+                        <div style={{border:0}} className={styles.childrenTimeline_signer}>
+                            <div style={{color:'gray', textAlign:'start'}} className={`${textStyle.m_16}`}>
+                                {getExecutionMessage()}
+                            </div>
                         </div>
-                    </div>
 
-                </div>
+                    </div>
+                }
                 
             </div>
 
@@ -283,12 +298,14 @@ const PaymentSlideCard = ({signer}) =>{
     }
 
     const buttonFunction = async(hash) => {
-        if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length){
-            await executeSafeTransaction(hash)
-        }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
-            console.log("Payment Already Signed")
-        }else if(!checkApproval()){
-           await  confirmTransaction(hash)
+        if(nonce === currentPayment?.gnosis?.nonce){
+            if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length){
+                await executeSafeTransaction(hash)
+            }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
+                console.log("Payment Already Signed")
+            }else if(!checkApproval()){
+            await  confirmTransaction(hash)
+            }
         }
     }
     

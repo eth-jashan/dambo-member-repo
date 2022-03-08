@@ -38,7 +38,7 @@ export default function DashboardLayout({ children, route, signer }) {
       const nonce = await safeSdk.getNonce()
       dispatch(set_active_nonce(nonce))
   }
-    await dispatch(set_payout_filter('PENDING'))
+    await dispatch(set_payout_filter('PENDING',1))
   }
 
   async function copyTextToClipboard() {

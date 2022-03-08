@@ -77,8 +77,34 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
     };
 
     const token_available = useSelector(x=>x.dao.balance)
+    const payout_detail = useSelector(x=>x.transaction.approvedContriRequest)
+    const getRemainingToken = () => {
+        let selectedToken = []
+        payout_detail.map((item,index)=>{
+            if(!item?.payout?.token_type){
+                selectedToken.push('ETH')
+            }else{
+                selectedToken.push(item?.payout?.token_type?.token?.symbol)
+            }
+        })
+        
+        let availableToken = []
+        token_available.map((item, index)=>{
+            selectedToken.map((x,i)=>{
+                if(!x===item.label){
+                    console.log('itemm', item)
+                    availableToken.push(item)
+                }
+            })
+        })
+
+        return availableToken
+
+    }
     
     const [onFocus, setOnFocus] = useState(false)
+
+    console.log('remaining token', getRemainingToken(), token_available)
 
     const CustomDropDownIndicatior = () => (
         <AiFillCaretDown style={{alignSelf:'center'}} color='black' size={'1rem'}  />
@@ -109,9 +135,6 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 placeholder='Enter Amount' 
                 className={styles.amountInput} 
             />
-            {/* <div className={`${textStyles.m_16} ${styles.usdAmount}`}>
-                {parseFloat(value)>0 && '$400'}
-            </div> */}
             </div>
         </div>
     )

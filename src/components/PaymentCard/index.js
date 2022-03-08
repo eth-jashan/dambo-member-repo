@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import edit_active from "../../assets/Icons/edit_active.svg";
+
 import edit_inactive from "../../assets/Icons/edit_inactive.svg";
 import edit_hover from "../../assets/Icons/edit_hover.svg";
 import three_dots from "../../assets/Icons/three_dots.svg";
@@ -115,7 +116,7 @@ export default function PaymentCard({item, signer}) {
             await serviceClient.confirmTransaction(hash, signature.data)   
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING'))
+            await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
             // await dispatch(set_payout_filter('PENDING'))
           } catch (error) {
@@ -167,7 +168,7 @@ export default function PaymentCard({item, signer}) {
         // if(receipt){
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING'))
+            await dispatch(set_payout_filter('PENDING',1))
             if(safeSdk){
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))

@@ -127,7 +127,7 @@ export const getCommunityRole = () => {
         res.data.data.map((item, index)=>{
           roles.push({value: item, label: item})
         })
-        console.log('community roles....', roles)
+        
         dispatch(authActions.set_community_roles({roles}))
       }
     } catch (error) {
