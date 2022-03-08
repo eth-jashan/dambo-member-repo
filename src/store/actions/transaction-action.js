@@ -49,31 +49,63 @@ export const approveContriRequest =  (payout) => {
         const jwt = getState().auth.jwt
         const currentTransaction = getState().transaction.currentTransaction
         
-        dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
+        // dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
         console.log('transaction.....',JSON.stringify(payout))
-        const data = {
-          status:"APPROVED",
-          tokens:payout
+        let newPayout = []
 
-        }
-        try {
-            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
-                headers:{
-                    Authorization:`Bearer ${jwt}`
-                }
-            })
-            if(res.data.success){
-                let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
-                dispatch(daoAction.set_contri_list({
-                    list:contri_request
-                }))
-                return 1
+        payout((item, index)=>{
+            if(!item?.token_type){
+                newPayout.push({
+                    amount: item.amount,
+                    usd_amount: item?.usd_amount,
+                    address: item?.address,
+                    details: {
+                        name: item?.token?.name,
+                        symbol: "ETH",
+                        decimals: "18",
+                        logo_url: "fhdkjshf.com"
+                    }
+                })
             }else{
-                return 0
+                newPayout.push({
+                    amount: item.amount,
+                    usd_amount: item?.usd_amount,
+                    address: item?.address,
+                    details: {
+                        name: item?.token?.name,
+                        symbol: "ETH",
+                        decimals: "18",
+                        logo_url: "fhdkjshf.com"
+                    }
+                })
             }
-        } catch (error) {
-            console.log('error....', error)
-        }
+        })
+
+        console.log(newPayout)
+
+        // const data = {
+        //   status:"APPROVED",
+        //   tokens:newPayout
+
+        // }
+        // try {
+        //     const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+        //         headers:{
+        //             Authorization:`Bearer ${jwt}`
+        //         }
+        //     })
+        //     if(res.data.success){
+        //         let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
+        //         dispatch(daoAction.set_contri_list({
+        //             list:contri_request
+        //         }))
+        //         return 1
+        //     }else{
+        //         return 0
+        //     }
+        // } catch (error) {
+        //     console.log('error....', error)
+        // }
     }
 }
 
@@ -83,7 +115,7 @@ export const rejectContriRequest =  (id) => {
         const jwt = getState().auth.jwt
         
         const data = {
-          status:"REJECT",
+          status:"REJECTED",
           tokens:[]
         }
         try {

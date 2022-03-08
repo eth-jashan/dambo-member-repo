@@ -173,7 +173,7 @@ export const getContriRequest = () => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}/${routes.contribution.createContri}?dao_uuid=${uuid}`,{
+      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }

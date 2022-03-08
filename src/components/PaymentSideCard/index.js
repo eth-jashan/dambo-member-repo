@@ -13,6 +13,7 @@ import { useSafeSdk } from "../../hooks";
 import { setPayment } from '../../store/actions/transaction-action';
 import crossSvg from '../../assets/Icons/cross_white.svg'
 
+
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 const PaymentSlideCard = ({signer}) =>{

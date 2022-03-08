@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input, Typography } from "antd";
 import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
 import cross from "../../assets/Icons/cross_white.svg";
-
+import delete_icon from '../../assets/Icons/delete_icon.svg'
 import styles from "./style.module.css";
 import textStyle  from "../../commonStyles/textType/styles.module.css";
 import AmountInput from '../AmountInput';
@@ -136,7 +136,7 @@ const TransactionCard = ({signer}) => {
       <div style={{width:'20%', height:'5rem', position:'absolute', bottom:0, background:'black', display:'flex', alignSelf:'center', alignItems:'center', justifyContent:'space-between'}}>
         
         <div onClick={async()=> await dispatch(rejectContriRequest(currentTransaction?.id))} className={styles.deletContainer}>
-        
+        <img  src={delete_icon} alt='cross' className={styles.delete} />
         </div>
 
         <div onClick={() => onApproveTransaction()} className={styles.payNow}>
