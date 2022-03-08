@@ -100,7 +100,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 defaultValue={{label:'ETH', value:'ETH'}}
                 menuPosition='fixed'
             />
-            {/* <div style={{width:'50%', background:'red', padding:12}}/> */}
+            {/* inline style required */}
             <div style={{height:'3rem', width:'70%', background:onFocus?'#D3E5A6':'#ECFFB8', display:'flex', flexDirection:'row', alignItems:'center', borderBottomRightRadius:'0.5rem', borderTopRightRadius:'0.5rem'}}>
             <input 
                 onFocus={()=>setOnFocus(true)} 

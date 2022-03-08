@@ -32,7 +32,7 @@ const TransactionCard = ({signer}) => {
         amount:'',
         token_type:null,
         address:currentTransaction?.requested_by?.public_address,
-        usdAmount:ETHprice
+        usd_amount:ETHprice
     }])
 
   const addToken = async() => {
@@ -41,7 +41,7 @@ const TransactionCard = ({signer}) => {
         const newDetail = {
           amount:'',
           token_type:null,
-          usdAmount:usdCoversion,
+          usd_amount:usdCoversion,
           address:currentTransaction?.requested_by?.public_address
         }
       setPayDetail([...payDetail, newDetail]);
@@ -55,10 +55,9 @@ const TransactionCard = ({signer}) => {
 
     const updateTokenType = async(value, index) => {
         const usdCoversion = await convertTokentoUsd(value.label)
-        console.log(usdCoversion)
         if(usdCoversion){
           payDetail[index].token_type = value.value
-          payDetail[index].usdAmount = usdCoversion
+          payDetail[index].usd_amount = usdCoversion
           setPayDetail(payDetail);
         }
   

@@ -108,7 +108,7 @@ const PaymentSlideCard = ({signer}) =>{
           (confirmation.owner, confirmation.signature)
           safeTransaction.addSignature(signature)
         })
-        console.log('transaction', safeTransaction)
+        
         let executeTxResponse
         try {
           executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
@@ -119,7 +119,7 @@ const PaymentSlideCard = ({signer}) =>{
         }
         const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
         
-        console.log('executeee', receipt)
+        console.log('executeeed succefully')
         // if(receipt){
             await dispatch(getPayoutRequest())
             await dispatch(getPayoutRequest())

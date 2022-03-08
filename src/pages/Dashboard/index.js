@@ -74,7 +74,6 @@ export default function Dashboard() {
         await window.ethereum.enable();
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
-        console.log(account)
         return account
     }
 
@@ -116,7 +115,7 @@ export default function Dashboard() {
     },[address, dispatch, navigate, role])
 
     useEffect(()=>{
-        console.log('start.....')
+        console.log('start..... initial load')
         initialload()
     },[initialload])
 
@@ -181,8 +180,6 @@ export default function Dashboard() {
         </button>
     )
 
-    console.log('current...', curreentDao)
-
     const onPaymentModal = () => {
         setProvider()
         setModalPayment(true)
@@ -197,12 +194,11 @@ export default function Dashboard() {
 
         approvedContriRequest.map((item, index)=>{
             item.payout.map((x, i) => {
-                usd_amount_all.push(((x?.usdAmount) * parseFloat(x?.amount)))
+                usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
             })
         })
 
         const amount_total = usd_amount_all.reduce((a,b)=>a+b)
-        console.log('total amount', amount_total)
         return parseFloat(amount_total).toFixed(2)
         
     }

@@ -13,7 +13,6 @@ const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gn
 
 export const setTransaction = (item, ethPrice) => {
     return (dispatch) => {
-        //console.log('transaction .....card', item.amount)
         dispatch(tranactionAction.set_current_transaction({data:item, price:ethPrice}))
     }
 }
@@ -51,9 +50,11 @@ export const approveContriRequest =  (payout) => {
         const currentTransaction = getState().transaction.currentTransaction
         
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
-        // console.log('transaction.....',payout, newPayoutWithUSD)
+        console.log('transaction.....',JSON.stringify(payout))
         const data = {
-          status:"APPROVED"
+          status:"APPROVED",
+          tokens:payout
+
         }
         try {
             const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
@@ -80,10 +81,10 @@ export const rejectContriRequest =  (id) => {
     return  async (dispatch, getState) => {
         
         const jwt = getState().auth.jwt
-        const currentTransaction = getState().transaction.currentTransaction
         
         const data = {
-          status:"REJECT"
+          status:"REJECT",
+          tokens:[]
         }
         try {
             const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${id}`,data,{
@@ -91,7 +92,6 @@ export const rejectContriRequest =  (id) => {
                     Authorization:`Bearer ${jwt}`
                 }
             })
-            console.log('resss', res)
             if(res.data.success){
                 dispatch(tranactionAction.set_reject_request({id}))
                 return 1

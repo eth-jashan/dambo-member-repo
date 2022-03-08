@@ -30,7 +30,7 @@ export const getRole = (uuid) => {
             }
         })
         if(res.data.success){
-            console.log('role....',res.data.data.role)
+            
             if(res.data.data.role === 'NO_ROLE'){
                return false 
             }else{
@@ -65,7 +65,7 @@ export const createContributionrequest = (title, type, link, time, comments) => 
         
         const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
-        console.log('uuid create', uuid)
+        
         const data = {
             dao_uuid : uuid,
             stream : type,
@@ -80,7 +80,7 @@ export const createContributionrequest = (title, type, link, time, comments) => 
                     Authorization:`Bearer ${jwt}`
                 }
             })
-            console.log('resss', res)
+            
             if(res.data.success){
                 console.log('suucessfully created !')
                 return 1

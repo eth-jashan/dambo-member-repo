@@ -27,7 +27,7 @@ export default function PaymentCard({item, signer}) {
     const currentDao = useSelector(x=>x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === 'REJECTED'
-    console.log('itemmmm......', item)
+    
 
     const checkApproval = () => {
         let confirm = []

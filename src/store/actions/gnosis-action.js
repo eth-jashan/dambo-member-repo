@@ -80,8 +80,6 @@ export const registerDao = () => {
       signers:owner,
       signs_required:threshold
     }
-
-    console.log('safe address.....data',JSON.stringify(data))
     
     try {
         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
@@ -135,7 +133,6 @@ export const getAddressMembership = () => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('contributor joined....', res.data)
       if(res.data.data.length>0){
           dispatch(gnosisAction.set_membershipList({
             list:res.data.data, 

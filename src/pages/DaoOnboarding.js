@@ -50,7 +50,7 @@ export default function Onboarding() {
   },[preventGoingBack])
 
   const deploySafe = useCallback(async (owners) => {
-    console.log('deployingggg', threshold)
+    console.log('deployingggg')
     if (!safeFactory) return
     setDeploying(true)
     const safeAccountConfig = { owners, threshold }

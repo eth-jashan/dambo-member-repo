@@ -278,7 +278,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     dispatch(signout())
     dispatch(setAdminStatus(false))
   }
-
+  
   const daoWallet = () => (
     <div style={{width:'100%'}}>
       <div className={styles.headingCnt}>

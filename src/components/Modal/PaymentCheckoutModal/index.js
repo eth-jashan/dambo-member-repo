@@ -72,7 +72,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             const activeNounce = await safeSdk.getNonce()
             const nextNonce = await getNonceForCreation(currentDao?.safe_public_address)
             nonce = nextNonce?nextNonce:activeNounce
-            console.log('nexxxxt payment nonce',nextNonce?nextNonce:activeNounce, activeNounce, nextNonce)
+            console.log('nexxxxt payment nonce',nextNonce?nextNonce:activeNounce)
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
@@ -127,11 +127,10 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     )
 
     const tokenItem =  (item) => {
-        console.log('conversion', item)
         return(
         <div className={styles.tokenDiv}>
             <div className={`${textStyles.m_16} ${styles.usdText}`}>
-            {(item?.usdAmount * parseFloat(item?.amount)).toFixed(2)}$ •
+            {(item?.usd_amount * parseFloat(item?.amount)).toFixed(2)}$ •
             </div>
             <div style={{marginLeft:'0.75rem'}} className={textStyles.m_16}>
             {item?.amount} {item?.token_type?.token?item?.token_type?.token?.symbol:'ETH'}
@@ -144,7 +143,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const getPayoutTotal = (payout) => {
         const usd_amount = []
         payout?.map((item, index)=>{
-            usd_amount.push(((item?.usdAmount) * parseFloat(item?.amount)).toFixed(2))
+            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)).toFixed(2))
         })
         let amount_total
         usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
@@ -156,7 +155,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
 
         approved_request.map((item, index)=>{
             item.payout.map((x, i) => {
-                usd_amount_all.push(((x?.usdAmount) * parseFloat(x?.amount)))
+                usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
             })
         })
 

@@ -8,7 +8,7 @@ import { daoAction } from "../reducers/dao-slice"
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export const getAllDaowithAddress = () => {
-  console.log('heree....')
+  
     return async (dispatch, getState) => {
       const jwt = getState().auth.jwt
       
@@ -55,7 +55,7 @@ export const getAllDaowithAddress = () => {
 
 export const set_contri_filter = (filter_key) => {
   return async (dispatch, getState) => {
-    console.log('filterrr', filter_key === 'ALL')
+    
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
     try {
@@ -78,7 +78,7 @@ export const set_contri_filter = (filter_key) => {
             list:res.data?.data?.contributions?.filter(x=>x.status !== "APPROVED")
           })) 
         }else if( filter_key === 'ALL'){
-          console.log('all request', res.data?.data?.contributions)
+          
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             list:res.data?.data?.contributions
@@ -120,7 +120,7 @@ export const gnosisDetailsofDao = () => {
       const balance = await serviceClient.getBalances(currentDao?.safe_public_address)
       const usdBalance = await serviceClient.getUsdBalances(currentDao?.safe_public_address)
       
-      console.log('safe owner........', safeInfo) 
+       
       const tokenType = []
       balance.map((item, index)=>{
         if(item.tokenAddress === null){
@@ -171,7 +171,7 @@ export const getContriRequest = () => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending request.....',res.data)
+      console.log('Pending Contri request.....',res.data)
       if(res.data.success){
         dispatch(daoAction.set_contri_list({
           list:res.data?.data?.contributions.filter(x=>x.payout_status === null)
@@ -204,9 +204,9 @@ export const getPayoutRequest = () => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending request.....',res.data)
+      
       const pendingTxs = await serviceClient.getPendingTransactions(safe_address)
-      console.log('pending tx...', pendingTxs, pendingTxs.results)
+      
       let list_of_tx = []
       if(res.data.success){
         //filtering out drepute pending txs from gnosis
@@ -249,7 +249,7 @@ export const getPayoutRequest = () => {
             }
           })
         })
-        console.log('all updated tx for drepute',tx.length, tx )
+        
         const updateTx = []
         tx.map((item, index)=>{
           updateTx.push({
@@ -308,9 +308,9 @@ export const set_payout_filter = (filter_key) => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending request.....',res.data)
+      
       const pendingTxs = await serviceClient.getMultisigTransactions(safe_address)
-      //console.log('pending tx...', pendingTxs, pendingTxs.results)
+      
       let list_of_tx = []
       if(res.data.success){
         //filtering out drepute txs from gnosis
@@ -322,32 +322,32 @@ export const set_payout_filter = (filter_key) => {
           })
         })
         const pending_txs = getState().dao.payout_request
-        // console.log('all executed transaction', list_of_tx.length, list_of_tx, pending_txs.length)
+        
         if(filter_key === 'PENDING'){
-          console.log(pending_txs.length)
+          
           dispatch(daoAction.set_filter_list({
             list:pending_txs
           }))
         }else if(filter_key === 'ALL'){
           const all_payout = pending_txs.concat(list_of_tx)
-          console.log('all', all_payout.length)
+          
           dispatch(daoAction.set_filter_list({
             list:all_payout
           }))
         }else if(filter_key === 'APPROVED'){
           const pending = pending_txs.filter(x=>x.status === filter_key)
-          console.log(pending.length)
+          
           dispatch(daoAction.set_filter_list({
             list:pending
           }))
         }else if(filter_key === 'REJECTED'){
           const pending = pending_txs.filter(x=>x.status === filter_key)
-          console.log(pending.length)
+          
           dispatch(daoAction.set_filter_list({
             list:pending
           }))
         }else if(filter_key === 'PAID'){
-          console.log(list_of_tx.length)
+          
           dispatch(daoAction.set_filter_list({
             list:list_of_tx
           }))
@@ -381,11 +381,10 @@ export const syncTxDataWithGnosis = () => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending request.....',payouts.data)
+
 
       const allTx = await serviceClient.getMultisigTransactions(safe_address)
       const updatedTX = []
-      console.log('All tx...', allTx, payouts)
       
       let nonce_inserted = []
 
@@ -453,7 +452,6 @@ export const syncTxDataWithGnosis = () => {
 }
 
 export const getNonceForCreation = async(safe_address) => {
-  console.log('address', safe_address)
     try {
       const pendingTxs = await serviceClient.getPendingTransactions(safe_address)
       console.log('nonce for creation', pendingTxs)
@@ -500,78 +498,78 @@ export const createPayout = (tranxid, nonce) => {
   }
 }
 
-export const signingPayout = (payId) => {
-  return async (dispatch, getState) => {
-    const jwt = getState().auth.jwt
-    const uuid = getState().dao.currentDao?.uuid
+// export const signingPayout = (payId) => {
+//   return async (dispatch, getState) => {
+//     const jwt = getState().auth.jwt
+//     const uuid = getState().dao.currentDao?.uuid
 
-    const data = {
-      dao_uuid:uuid,
-      payout_id:payId
-    }
-    console.log('data....', JSON.stringify(data))
+//     const data = {
+//       dao_uuid:uuid,
+//       payout_id:payId
+//     }
+//     console.log('data....', JSON.stringify(data))
 
-      // const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.signPayout}`,data,{
-      //   headers:{
-      //     Authorization:`Bearer ${jwt}`
-      //   }
-      // })
-      // if(res.data.success){
-      //   console.log('signed payout.....', res.data)
-      //   return 1
-      // }else{
-      //   return 0
-      // }
-  }
-}
+//       // const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.signPayout}`,data,{
+//       //   headers:{
+//       //     Authorization:`Bearer ${jwt}`
+//       //   }
+//       // })
+//       // if(res.data.success){
+//       //   console.log('signed payout.....', res.data)
+//       //   return 1
+//       // }else{
+//       //   return 0
+//       // }
+//   }
+// }
 
-export const executePayout = (payId) => {
-  return async (dispatch, getState) => {
-    const jwt = getState().auth.jwt
-    const uuid = getState().dao.currentDao?.uuid
+// export const executePayout = (payId) => {
+//   return async (dispatch, getState) => {
+//     const jwt = getState().auth.jwt
+//     const uuid = getState().dao.currentDao?.uuid
 
-    const data = {
-      dao_uuid:uuid,
-      payout_id:payId
-    }
-    console.log('data....', JSON.stringify(data))
+//     const data = {
+//       dao_uuid:uuid,
+//       payout_id:payId
+//     }
+//     console.log('data....', JSON.stringify(data))
 
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.execute}`,data,{
-        headers:{
-          Authorization:`Bearer ${jwt}`
-        }
-      })
-      if(res.data.success){
-        console.log('signed payout.....', res.data)
-        return 1
-      }else{
-        return 0
-      }
-  }
-}
+//       const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.execute}`,data,{
+//         headers:{
+//           Authorization:`Bearer ${jwt}`
+//         }
+//       })
+//       if(res.data.success){
+//         console.log('signed payout.....', res.data)
+//         return 1
+//       }else{
+//         return 0
+//       }
+//   }
+// }
 
-export const rejectPayout = (hash,payId) => {
-  return async (dispatch, getState) => {
-    const jwt = getState().auth.jwt
-    const uuid = getState().dao.currentDao?.uuid
+// export const rejectPayout = (hash,payId) => {
+//   return async (dispatch, getState) => {
+//     const jwt = getState().auth.jwt
+//     const uuid = getState().dao.currentDao?.uuid
 
-    const data = {
-      dao_uuid:uuid,
-      payout_id:payId,
-      gnosis_reference_id:hash
-    }
+//     const data = {
+//       dao_uuid:uuid,
+//       payout_id:payId,
+//       gnosis_reference_id:hash
+//     }
 
 
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.reject}`,data,{
-        headers:{
-          Authorization:`Bearer ${jwt}`
-        }
-      })
-      if(res.data.success){
-        console.log('signed reject payout.....', res.data)
-        return 1
-      }else{
-        return 0
-      }
-  }
-}
+//       const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.reject}`,data,{
+//         headers:{
+//           Authorization:`Bearer ${jwt}`
+//         }
+//       })
+//       if(res.data.success){
+//         console.log('signed reject payout.....', res.data)
+//         return 1
+//       }else{
+//         return 0
+//       }
+//   }
+// }

@@ -15,7 +15,6 @@ const DiscordFallback = () => {
 
 
     const fallbackCheck = useCallback(async() => {
-        console.log('discord....', code, isAdmin)
         try {
             const res = await dispatch(getDiscordOAuth(code))
             if(res){

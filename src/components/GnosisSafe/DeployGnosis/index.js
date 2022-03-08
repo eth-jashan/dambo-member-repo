@@ -51,7 +51,7 @@ const DeployGnosisButton = () => {
     },[])
 
     const proposeSafeTransaction = useCallback(async (transaction) => {
-      console.log('transaction proposinggg 2......',safeSdk)
+      console.log('transaction proposinggg 2......')
       if (!safeSdk || !serviceClient) return
       let safeTransaction
         try {
