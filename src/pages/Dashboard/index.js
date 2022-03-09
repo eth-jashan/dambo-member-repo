@@ -18,6 +18,7 @@ import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
 import { getPendingTransaction, setPayment, setTransaction } from '../../store/actions/transaction-action';
+import { setPayoutToast } from '../../store/actions/toast-action';
 
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -26,17 +27,34 @@ export default function Dashboard() {
 
     const [tab, setTab] = useState('contributions')
     
-    const address = useSelector(x=>x.auth.address)
-    const jwt = useSelector(x=>x.auth.jwt)
-    const {id}  = useParams()
+    const payout_toast = useSelector(x=>x.toast.payout)
+    console.log('payout toast', payout_toast)
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (payout_toast) {
+                dispatch(setPayoutToast(false))
+            }
+        }, 3000);
+        return () => {
+            clearInterval(interval);
+        }
+    }, [dispatch, payout_toast]);
+
+    const address = useSelector(x=>x.auth.address)
+    const jwt = useSelector(x=>x.auth.jwt)
+
     const role = useSelector(x=>x.dao.role)
     const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
     const pending_txs = useSelector(x=>x.transaction.pendingTransaction)
     const curreentDao = useSelector(x=>x.dao.currentDao)
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
+    
     //gnosis setup
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, curreentDao?.safe_public_address)
@@ -78,10 +96,6 @@ export default function Dashboard() {
     }
 
     const initialload = useCallback( async() => {
-        // if(id !== address){
-        //     signout()
-        //     navigate('/')
-        // }else{
         const account = await onInit()
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
@@ -167,12 +181,13 @@ export default function Dashboard() {
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
             </button>
-            {/* {role === 'ADMIN' && paymetButton()} */}
+            {role === 'ADMIN' && paymetButton()}
         </div>
     )
 
+
     const paymetButton = () => (
-        <button className={styles.paymentButton}>
+        <button   className={styles.paymentButton}>
             <div>
             Initiate new Payment
             </div>
@@ -186,8 +201,6 @@ export default function Dashboard() {
     }
 
     const approvedContriRequest = useSelector(x=>x.transaction.approvedContriRequest)
-
-    console.log('APPROVED ', approvedContriRequest)
 
     const getTotalAmount = () => {
         const usd_amount_all = []
@@ -218,6 +231,33 @@ export default function Dashboard() {
 
                 <div onClick={()=>{}} className={styles.payNow}>
                     Pay Now
+                </div>
+            </div>
+        </div>
+    )
+    
+    const payoutToastInfo = () => {
+        if(payout_toast === 'EXECUTED'){
+            return {title:`Payment Executed  •  ${2900}$`, background:'#1D7F60'}
+        }else if(payout_toast === 'SIGNED'){
+            return  {title:`Payment Signed  •  ${2900}$`, background:'#4D4D4D'}
+        }else if(payout_toast === 'ACCEPTED_CONTRI'){
+            return  {title:`2 Request approved  •  ${2900}$`, background:'#4D4D4D'}
+        }else if(payout_toast === 'REJECTED'){
+            return  {title:`Payment rejected  •  ${600}$`, background:'#4D4D4D'}
+        }
+    }
+
+    const transactionToast = () => (
+        <div style={{background:payoutToastInfo().background}} className={styles.toastContainer}>
+            <div  className={styles.toastLeft}>
+                <div style={{color:'white'}} className={textStyles.m_16}>
+                    {payoutToastInfo().title}
+                </div>
+            </div>
+            <div className={styles.toastRight}>
+                <div style={{color:'white'}} className={textStyles.ub_16}>
+                    Details
                 </div>
             </div>
         </div>
@@ -262,8 +302,10 @@ export default function Dashboard() {
                 {<DashboardSearchTab route={tab} />}
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
                 {approve_contri.length>0 && tab==='contributions' && checkoutButton()}
+                {payout_toast && transactionToast()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
                 {(modalPayment&&approve_contri.length>0)&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
+                
             </div>
         </DashboardLayout>
     );

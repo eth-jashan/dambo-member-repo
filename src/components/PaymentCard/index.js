@@ -15,6 +15,7 @@ import { message } from 'antd';
 import { EthSignSignature } from '../../utils/EthSignSignature';
 import { executePayout, getPayoutRequest, set_active_nonce, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import moment from 'moment';
+import { setPayoutToast } from '../../store/actions/toast-action';
 // import { isRejected } from '@reduxjs/toolkit';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -118,6 +119,7 @@ export default function PaymentCard({item, signer}) {
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
+            dispatch(setPayoutToast('SIGNED'))
             // await dispatch(set_payout_filter('PENDING'))
           } catch (error) {
             console.error(error)
@@ -166,6 +168,7 @@ export default function PaymentCard({item, signer}) {
         }
         const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
         // if(receipt){
+            dispatch(setPayoutToast('EXECUTED'))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))

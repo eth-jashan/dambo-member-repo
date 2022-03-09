@@ -77,7 +77,7 @@ export const set_contri_filter = (filter_key, number) => {
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             number:1,
-            list:res.data?.data?.contributions?.filter(x=>x.payout_status === null)
+            list:res.data?.data?.contributions?.filter(x=>x.payout_status === null && x.status!=='REJECTED')
           })) 
         }else if( filter_key === 'ALL'){
           
@@ -181,7 +181,7 @@ export const getContriRequest = () => {
       console.log('Pending Contri request.....',res.data)
       if(res.data.success){
         dispatch(daoAction.set_contri_list({
-          list:res.data?.data?.contributions.filter(x=>x.payout_status === null),
+          list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'),
           number:1
         }))
         return 1

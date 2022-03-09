@@ -22,7 +22,7 @@ const DashboardSearchTab = ({route}) => {
     const payout_filter = ['All requests','Pending Payment Request', 'Approved requests','Paid requests','Rejected requests' ]
 
     const [payoutFilter, setPayoutFilter] = useState(1)
-    console.log('filter key', contri_filter_key)
+    
     const dispatch = useDispatch()
     const onClick = ({ key }) => {
         if(key === '1'){

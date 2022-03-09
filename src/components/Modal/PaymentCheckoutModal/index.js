@@ -13,6 +13,7 @@ import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
 import { createPayout, getContriRequest, getNonceForCreation, set_contri_filter } from '../../../store/actions/dao-action'
 import cross from '../../../assets/Icons/cross.svg'
+import { setPayoutToast } from '../../../store/actions/toast-action'
 // import { convertTokentoUsd } from '../../../utils/conversion'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -108,6 +109,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         console.log(currentDao, safeTxHash)
         dispatch(createPayout(safeTxHash, nonce))
         dispatch(resetApprovedRequest())
+        dispatch(setPayoutToast('ACCEPTED_CONTRI'))
         setLoading(false)
         } catch (error) {
           console.log('error.........', error)
@@ -115,9 +117,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         }
     }
 
-    const startPayout = async() => {
-        await proposeSafeTransaction()
-    }
+    
 
     const modalHeader = () => (
         <div className={styles.header}>
