@@ -42,7 +42,7 @@ export const getPendingTransaction = () => {
     }
 }
 
-export const approveContriRequest =  (payout) => {
+export const approveContriRequest =  (payout, isExternal = false) => {
     return  async (dispatch, getState) => {
         
         // const uuid = getState().dao.currentDao?.uuid
@@ -50,9 +50,14 @@ export const approveContriRequest =  (payout) => {
         const currentTransaction = getState().transaction.currentTransaction
         
         let newPayout = []
-
+        if(isExternal){
+            dispatch(tranactionAction.set_approved_request({item:{contri_detail:{}, payout}}))
+        }
+        else{
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
+        
         payout.map((item, index)=>{
+            console.log(payout, item?.token_type)
             if(!item?.token_type){
                 newPayout.push({
                     amount: item.amount,
@@ -97,6 +102,7 @@ export const approveContriRequest =  (payout) => {
                 dispatch(daoAction.set_contri_list({
                     list:contri_request
                 }))
+                console.log('successfuly confirmed')
                 return 1
             }else{
                 return 0
@@ -104,6 +110,7 @@ export const approveContriRequest =  (payout) => {
         } catch (error) {
             console.log('error....', error)
         }
+    }
     }
 }
 

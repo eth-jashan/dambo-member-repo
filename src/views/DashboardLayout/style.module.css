@@ -1,7 +1,7 @@
 .header{
     width: '100%';
     border: 1px solid #21212B;
-    padding: 1.2rem 1.125rem 1rem 2.5rem;
+    padding: 1.2rem 1.125rem 1rem 2.75rem;
     border-top: 0;
     border-right: 0;
     border-left: 0;
@@ -16,6 +16,14 @@
     text-align: start;
 }
 
+.layoutContainer{
+    display:flex; 
+    flex-direction:row; 
+    width:100%;
+    height:100%;
+    padding: 0rem 0rem 0rem 2rem;
+}
+
 .layout{
     width: 100vw;
     height: 100vh;
@@ -25,7 +33,7 @@
 }
 
 .accountsLayout{
-    width: 3.8%;
+    width: 3.5rem;
     background: #333232;
     height: 100%;
     align-items: center;
@@ -47,11 +55,13 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
+    padding-right: 3rem;
 }
 
 .logoContainer{
-    padding: 0.625rem;
-    /* position: ; */
+    /* padding: 0.625rem; */
+    margin-top: 0.625rem;
+    margin-bottom: 1.125rem;
     background: #333232;
 }
 
@@ -63,7 +73,7 @@
 }
 
 .accountContainer{
-    padding: 0.625rem;
+    margin-bottom: 0.75rem;
 }
 
 .selectedAccount{
@@ -120,4 +130,9 @@
     width:100%; 
     height:100%;
     overflow:hidden
+}
+
+.addIcon{
+    height: 1.5rem;
+    width: 1.5rem;
 }

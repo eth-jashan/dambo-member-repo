@@ -3,6 +3,7 @@ import axios from "axios"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { daoAction } from "../reducers/dao-slice"
+import { tranactionAction } from "../reducers/transaction-slice"
 // import { gnosisAction } from "../reducers/gnosis-slice"
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -77,7 +78,7 @@ export const set_contri_filter = (filter_key, number) => {
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             number:1,
-            list:res.data?.data?.contributions?.filter(x=>x.payout_status === null && x.status!=='REJECTED')
+            list:res.data?.data?.contributions?.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0)
           })) 
         }else if( filter_key === 'ALL'){
           
@@ -180,8 +181,26 @@ export const getContriRequest = () => {
       })
       console.log('Pending Contri request.....',res.data)
       if(res.data.success){
+        res.data?.data?.contributions.map((item, index)=>{
+          let payout = []
+          if(item?.tokens.length>0 && item.payout_status === null){
+            item?.tokens.map((x, index)=>{
+              console.log('xxx', x)
+              payout.push(
+                {
+                  amount:x?.amount,
+                  token_type:{
+                    token:x?.details
+                  },
+                  address:x?.addr,
+                  usd_amount:x?.usd_amount
+                })
+            })
+          }
+          if(payout.length>0)dispatch(tranactionAction.set_approved_request({item:{contri_detail:item, payout:payout}}))
+        })
         dispatch(daoAction.set_contri_list({
-          list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'),
+          list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),
           number:1
         }))
         return 1
@@ -486,7 +505,7 @@ export const getNonceForCreation = async(safe_address) => {
 }
 
 
-export const createPayout = (tranxid, nonce) => {
+export const createPayout = (tranxid, nonce, isExternal= false) => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
@@ -505,9 +524,14 @@ export const createPayout = (tranxid, nonce) => {
       dao_uuid:uuid,
       nonce:nonce
     }
-    console.log('data....', JSON.stringify(data))
+    const data_external = {
+      gnosis_reference_id:tranxid,
+      dao_uuid:uuid,
+      nonce:nonce
+    }
+    console.log('data....', JSON.stringify(isExternal?data_external:data))
 
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,data,{
+      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,isExternal?data_external:data,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }

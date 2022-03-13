@@ -4,19 +4,49 @@
     border-left: 0;
     border-top: 0;
     width:100%; 
-    padding: 3.5rem 0 2rem 2.75rem ;
+    padding: 3.5rem 0 1.5rem 0.75rem ;
     flex-direction: row;
     display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
 }
+
+.routeContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.addPaymentContainer{
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addPaymentContainer>img{
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.addPaymentContainer:hover{
+    background-color: white;
+}
+
 .selectionTab{
     color: #A2A2A3;
     text-align: start;
     cursor: pointer;
 }
+.selectionTab:hover{
+    color: white;
+}
 .selected{
     color: #FFFFFF;
     text-align: start;
-    cursor: pointer;
+    /* cursor: none; */
 }
 .heading {
     font-family: 'TelegrafBolder';
@@ -47,7 +77,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 1rem;
+    /* padding: 1rem; */
 }
 .button{
     padding: 0.5rem 1.25rem ;

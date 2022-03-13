@@ -6,7 +6,7 @@ import styles from './styles.module.css'
 import Select from 'react-select';
 import { getCommunityRole, joinContributor, setAdminStatus, setContriInfo } from '../../store/actions/auth-action';
 import { useNavigate, useParams } from 'react-router';
-import InputText from '../Input';
+import InputText from "../InputComponent/Input";
 
 
 const ContributorSignup = ({increaseStep, decreaseStep}) => {

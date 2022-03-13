@@ -38,3 +38,9 @@
 .descriptionContainer{
     width: 32%;
 }
+
+.menuIcon{
+    height: 1.5rem;
+    width: 1.5rem;
+    /* margin-left: 2.5rem; */
+}

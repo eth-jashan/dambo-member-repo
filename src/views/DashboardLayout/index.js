@@ -9,10 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getContriRequest, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
+import add_white from '../../assets/Icons/add_white.svg'
 import TransactionCard from "../../components/TransactionCard";
 import PaymentSlideCard from "../../components/PaymentSideCard";
 import { setPayment, setTransaction } from "../../store/actions/transaction-action";
 import { useSafeSdk } from "../../hooks";
+import textStyles from '../../commonStyles/textType/styles.module.css'
 // import { getPendingTransaction } from "../../store/actions/transaction-action";
 
 export default function DashboardLayout({ children, route, signer }) {
@@ -44,15 +46,15 @@ export default function DashboardLayout({ children, route, signer }) {
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${currentDao?.uuid}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${currentDao?.uuid}`);
     } else {
-      return document.execCommand('copy', true, `${links.contributor_invite.dev}${currentDao?.uuid}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.local}${currentDao?.uuid}`);
     }
   }
 
   const headerComponet = () => (
     <div className={styles.header}>
-      <div className={styles.headerText}>
+      <div style={{color:'white', textAlign:'start'}} className={textStyles.ub_14}>
         {currentDao?.name}
       </div>
     </div>
@@ -96,14 +98,14 @@ export default function DashboardLayout({ children, route, signer }) {
         ))}
         <div className={styles.addContainer}>
           <div className={styles.addButton} onClick={()=>navigate('/onboard/dao')}>
-            <IoMdAdd color='white' />
+            <img alt='add' className={styles.addIcon} src={add_white}/>
           </div>
         </div>
         </div>
         
         <div className={styles.childrenLayout}>
         {headerComponet()}
-        <div style={{display:'flex', flexDirection:'row', width:'100%', height:'100%',}}>
+        <div className={styles.layoutContainer}>
             <div className={styles.children}>
             {children}
             </div>

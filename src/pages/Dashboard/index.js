@@ -19,13 +19,16 @@ import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
 import { getPendingTransaction, setPayment, setTransaction } from '../../store/actions/transaction-action';
 import { setPayoutToast } from '../../store/actions/toast-action';
-
+import UniversalPaymentModal from '../../components/Modal/UniversalPaymentModal';
+import plus_black from '../../assets/Icons/plus_black.svg'
+import plus_gray from '../../assets/Icons/plus_gray.svg'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export default function Dashboard() {
 
     const [tab, setTab] = useState('contributions')
+    const [uniPayHover, setUniPayHover] = useState(false)
     
     const payout_toast = useSelector(x=>x.toast.payout)
     console.log('payout toast', payout_toast)
@@ -54,6 +57,7 @@ export default function Dashboard() {
     const curreentDao = useSelector(x=>x.dao.currentDao)
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
+    const [modalUniPayment, setModalUniPayment] = useState(false)
     
     //gnosis setup
     const [signer, setSigner] = useState()
@@ -72,9 +76,9 @@ export default function Dashboard() {
     async function copyTextToClipboard() {
         if ('clipboard' in navigator) {
             message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+          return await navigator.clipboard.writeText(`${links.contributor_invite.local}${curreentDao?.uuid}`);
         } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+          return document.execCommand('copy', true, `${links.contributor_invite.local}${curreentDao?.uuid}`);
         }
     }
     
@@ -155,12 +159,21 @@ export default function Dashboard() {
 
     const renderTab = () => (
         <div className={styles.tabContainer}>
-            <div onClick={async()=>await onRouteChange('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
-            Contributions
+            <div className={styles.routeContainer}>
+                <div onClick={async()=>await onRouteChange('contributions')} className={tab==='contributions'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
+                Contributions
+                </div>
+                <div onClick={async()=>await onRouteChange('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
+                Payments
+                </div>
             </div>
-            <div onClick={async()=>await onRouteChange('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
-            Payments
+            <div>
+                <div onMouseEnter={()=>setUniPayHover(true)} onMouseLeave={()=>setUniPayHover(false)} style={{background:modalUniPayment?'white':null}} onClick={()=>setModalUniPayment(true)} className={styles.addPaymentContainer}>
+                    <img src={(uniPayHover|| modalUniPayment)?plus_black:plus_gray} alt='plus' />
+                </div>
+                {modalUniPayment&&<UniversalPaymentModal signer={signer} onClose={()=>setModalUniPayment(false)}/>}
             </div>
+
         </div>
     )
 
@@ -181,18 +194,7 @@ export default function Dashboard() {
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
             </button>
-            {role === 'ADMIN' && paymetButton()}
         </div>
-    )
-
-
-    const paymetButton = () => (
-        <button   className={styles.paymentButton}>
-            <div>
-            Initiate new Payment
-            </div>
-            <IoMdAdd color='#6852FF' />
-        </button>
     )
 
     const onPaymentModal = () => {
@@ -298,10 +300,11 @@ export default function Dashboard() {
     return (
         <DashboardLayout signer={signer} route={tab}>
             <div className={styles.dashView}>
+                {(modalContri||modalPayment || modalUniPayment)&&<div style={{position:'absolute', background:'#7A7A7A',opacity:0.2, bottom:0, right:0, top:0, left:0}}/>}
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
-                {approve_contri.length>0 && tab==='contributions' && checkoutButton()}
+                {approve_contri.length>0 && tab==='contributions' && role === 'ADMIN' && checkoutButton()}
                 {payout_toast && transactionToast()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
                 {(modalPayment&&approve_contri.length>0)&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}

@@ -27,6 +27,8 @@ const PaymentSlideCard = ({signer}) =>{
     const isReject = currentPayment?.status === 'REJECTED'
     const nonce = useSelector(x=>x.dao.active_nonce)
     
+    console.log('current ', currentPayment?.metaInfo?.contributions)
+
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
@@ -141,8 +143,10 @@ const PaymentSlideCard = ({signer}) =>{
                     1600$
                 </div>
 
-                {token_coin.map((item, index)=>(
-                    <div className={`${textStyle.m_16} ${styles.darkerGrey}`}>{item}</div>
+                {currentPayment?.metaInfo?.contributions.map((item, index)=>(
+                    item?.tokens?.map((x, i)=>(
+                        <div key={index} className={`${textStyle.m_16} ${styles.darkerGrey}`}>{x?.amount} {x?.details?.symbol}</div>
+                    ))
                 ))}
 
             </div>

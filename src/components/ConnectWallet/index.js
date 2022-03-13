@@ -19,6 +19,8 @@ import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
 import chevron_right from '../../assets/Icons/chevron_right.svg'
 import { links } from "../../constant/links";
 
+import textStyles from '../../commonStyles/textType/styles.module.css'
+
 const targetNetwork = NETWORKS.rinkeby;
 const localProviderUrl = targetNetwork.rpcUrl;
 const localProvider = new ethers.providers.StaticJsonRpcProvider(
@@ -133,7 +135,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     dispatch(setDiscordOAuth(address,uuid, jwt))
-    window.location.replace(links.discord_oauth.staging)
+    window.location.replace(links.discord_oauth.local)
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -263,8 +265,8 @@ const ConnectWallet = ({ isAdmin }) =>{
         </div>
 
         <Divider />
-        <div className={styles.authHeading}>Authenticate your wallet</div>
-        <div className={styles.authGreyHeading}>This is required to login, create or<br/> import your safes</div>
+        <div style={{color:'black', paddingLeft:'1.25rem'}} className={textStyles.m_23}>Authenticate your wallet</div>
+        <div style={{color:'#999999', paddingLeft:'1.25rem'}} className={styles.authGreyHeading}>This is required to login, create or<br/> import your safes</div>
 
         <div onClick={auth?()=>{}:async()=>await authWithWallet(address)} className={styles.authBtn}>
           <div className={styles.btnTextAuth}>{auth?'Authenticating....':'Authenticate wallet'}</div>
