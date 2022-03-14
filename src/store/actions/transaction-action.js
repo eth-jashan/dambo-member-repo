@@ -17,6 +17,12 @@ export const setTransaction = (item, ethPrice) => {
     }
 }
 
+export const setEthPrice = (ethPrice) => {
+    return (dispatch) => {
+        dispatch(tranactionAction.set_current_Ethprice({price:ethPrice}))
+    }
+}
+
 export const setPayment = (item) => {
     return (dispatch) => {
         setTransaction(null)

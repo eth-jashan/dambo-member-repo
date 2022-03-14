@@ -17,11 +17,12 @@ import { useSafeSdk } from '../../hooks';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
-import { getPendingTransaction, setPayment, setTransaction } from '../../store/actions/transaction-action';
+import { getPendingTransaction, setEthPrice, setPayment, setTransaction } from '../../store/actions/transaction-action';
 import { setPayoutToast } from '../../store/actions/toast-action';
 import UniversalPaymentModal from '../../components/Modal/UniversalPaymentModal';
 import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
+import { convertTokentoUsd } from '../../utils/conversion';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -157,6 +158,14 @@ export default function Dashboard() {
         dispatch(setTransaction(null))
     }
 
+    const onUniModalOpen = async() => {
+        const ethPrice = await convertTokentoUsd('ETH')
+        if(ethPrice){
+            dispatch(setEthPrice(ethPrice))
+            setModalUniPayment(true)
+        }
+    }
+
     const renderTab = () => (
         <div className={styles.tabContainer}>
             <div className={styles.routeContainer}>
@@ -168,7 +177,7 @@ export default function Dashboard() {
                 </div>
             </div>
             <div>
-                <div onMouseEnter={()=>setUniPayHover(true)} onMouseLeave={()=>setUniPayHover(false)} style={{background:modalUniPayment?'white':null}} onClick={()=>setModalUniPayment(true)} className={styles.addPaymentContainer}>
+                <div onMouseEnter={()=>setUniPayHover(true)} onMouseLeave={()=>setUniPayHover(false)} style={{background:modalUniPayment?'white':null}} onClick={async()=>await onUniModalOpen()} className={styles.addPaymentContainer}>
                     <img src={(uniPayHover|| modalUniPayment)?plus_black:plus_gray} alt='plus' />
                 </div>
                 {modalUniPayment&&<UniversalPaymentModal signer={signer} onClose={()=>setModalUniPayment(false)}/>}
