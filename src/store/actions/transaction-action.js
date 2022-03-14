@@ -145,3 +145,11 @@ export const rejectContriRequest =  (id) => {
         }
     }
 }
+
+export const setRejectModal = (status) => {
+
+    return(dispatch)=>{
+        dispatch(tranactionAction.set_reject_modal({status}))
+    }
+
+}

@@ -17,12 +17,13 @@ import { useSafeSdk } from '../../hooks';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
-import { getPendingTransaction, setEthPrice, setPayment, setTransaction } from '../../store/actions/transaction-action';
+import { getPendingTransaction, setEthPrice, setPayment, setRejectModal, setTransaction } from '../../store/actions/transaction-action';
 import { setPayoutToast } from '../../store/actions/toast-action';
 import UniversalPaymentModal from '../../components/Modal/UniversalPaymentModal';
 import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
 import { convertTokentoUsd } from '../../utils/conversion';
+import RejectPayment from '../../components/Modal/RejectPayment';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -32,7 +33,7 @@ export default function Dashboard() {
     const [uniPayHover, setUniPayHover] = useState(false)
     
     const payout_toast = useSelector(x=>x.toast.payout)
-    console.log('payout toast', payout_toast)
+    
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -59,7 +60,8 @@ export default function Dashboard() {
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
     const [modalUniPayment, setModalUniPayment] = useState(false)
-    
+    const rejectModal = useSelector(x=>x.transaction.rejectModal)
+    console.log('payout toast', rejectModal)
     //gnosis setup
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, curreentDao?.safe_public_address)
@@ -313,6 +315,7 @@ export default function Dashboard() {
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
                 {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
+                {rejectModal&&<RejectPayment signer={signer} onClose={()=>dispatch(setRejectModal(false))} />}
                 {approve_contri.length>0 && tab==='contributions' && role === 'ADMIN' && checkoutButton()}
                 {payout_toast && transactionToast()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}

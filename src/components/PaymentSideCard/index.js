@@ -10,7 +10,7 @@ import { EthSignSignature } from '../../utils/EthSignSignature';
 import { message } from 'antd';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import { useSafeSdk } from "../../hooks";
-import { setPayment } from '../../store/actions/transaction-action';
+import { setPayment, setRejectModal } from '../../store/actions/transaction-action';
 import crossSvg from '../../assets/Icons/cross_white.svg'
 import { setPayoutToast } from '../../store/actions/toast-action';
 
@@ -19,15 +19,12 @@ const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gn
 
 const PaymentSlideCard = ({signer}) =>{
 
-    const token_coin = ['0.002 ETH', '4 SOL']
     const currentPayment = useSelector(x=>x.transaction.currentPayment)
     const currentDao = useSelector(x=>x.dao.currentDao)
     const address = useSelector(x=>x.auth.address)
     const delegates = useSelector(x=>x.dao.delegates)
     const isReject = currentPayment?.status === 'REJECTED'
     const nonce = useSelector(x=>x.dao.active_nonce)
-    
-    console.log('current ', currentPayment?.metaInfo?.contributions)
 
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -56,33 +53,8 @@ const PaymentSlideCard = ({signer}) =>{
         }
     }
 
-    const rejectTransaction = async (hash) => {
-        // console.log('started.......', JSON.stringify(hash))
-        const transaction = await serviceClient.getTransaction(hash)
-        
-        if (!safeSdk) return
-
-        const rejectionTransaction = await safeSdk.createRejectionTransaction(transaction.nonce)
-        const safeTxHash = await safeSdk.getTransactionHash(rejectionTransaction)
-        
-        const safeSignature = await safeSdk.signTransactionHash(
-            safeTxHash
-        )
-        try {
-        await serviceClient.proposeTransaction(
-            currentDao?.safe_public_address,
-            rejectionTransaction.data,
-            safeTxHash,
-            safeSignature
-        )
-        await dispatch(getPayoutRequest())
-        await dispatch(syncTxDataWithGnosis())
-        await dispatch(set_payout_filter('PENDING',1))
-        dispatch(setPayment(null))
-        // dispatch(rejectPayout(safeTxHash, currentPayment?.id))
-        } catch (error) {
-          console.log('error.........', error)
-        }
+    const rejectTransaction =  () => {
+        dispatch(setRejectModal(true))
     }
 
 
@@ -179,8 +151,6 @@ const PaymentSlideCard = ({signer}) =>{
             return 'Can be executed only after previous payments are executed'
         }
     }
-
-    console.log('gnosis', currentPayment.gnosis.confirmations.length === delegates.length , nonce===currentPayment?.gnosis?.nonce)
 
     const approve = currentPayment?.gnosis.confirmations
     const renderSigners = () => (
@@ -336,7 +306,7 @@ const PaymentSlideCard = ({signer}) =>{
             ))}
             {renderSigners()}
             <div style={{width:'20%', height:'80px', position:'absolute', bottom:0, background:'black', display:'flex', alignSelf:'center', alignItems:'center', justifyContent:isReject?'center':'space-between'}}>
-                {!isReject&&<div onClick={async()=>await rejectTransaction(currentPayment?.gnosis?.safeTxHash)} className={styles.rejectBtn}>
+                {!isReject&&<div onClick={()=> rejectTransaction()} className={styles.rejectBtn}>
                 <img  src={crossSvg} alt='cross' className={styles.crossIcon} />
                 </div>}
                 {isReject?

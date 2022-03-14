@@ -8,7 +8,8 @@ const transactionSlice = createSlice({
     pendingTransaction:[],
     currentPayment:null,
     approved_token_total:[],
-    initialETHPrice:null
+    initialETHPrice:null,
+    rejectModal:false
   },
   reducers: {
     set_current_transaction(state, action){
@@ -34,6 +35,10 @@ const transactionSlice = createSlice({
     },
     set_current_Ethprice(state, action){
       state.initialETHPrice = action.payload.price
+    },
+    set_reject_modal(state, action){
+      console.log(action.payload.status)
+      state.rejectModal = action.payload.status
     }
 }});
 
