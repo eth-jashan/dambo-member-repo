@@ -1,17 +1,22 @@
+import { Typography } from 'antd';
 import React, { useState } from 'react'
 import { AiFillCaretDown } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 
 import textStyles from '../../../commonStyles/textType/styles.module.css'
+import { convertTokentoUsd } from '../../../utils/conversion';
 // import InputText from "../InputComponent/Input";
 import styles from './styles.module.css'
 
 export const TokenInput = ({dark, value, onChange, updateTokenType}) => {
 
     const token_available = useSelector(x=>x.dao.balance)
-    const [amount, setAmount] = useState('0')
+    const [amount, setAmount] = useState()
+    
     const [onFocus, setOnFocus] = useState(false)
+    const ETHprice = useSelector(x=>x.transaction.initialETHPrice)
+    const [token_symbol, setToken_symbol] = useState(ETHprice)
     const onChangeAmount = (e) => {
         onChange(e)
         setAmount(e.target.value)
@@ -141,6 +146,14 @@ export const TokenInput = ({dark, value, onChange, updateTokenType}) => {
         <AiFillCaretDown style={{alignSelf:'center'}} color='black' size={'1rem'}  />
     )
 
+
+    const dropDownSelect = async(x) => {
+        updateTokenType(x)
+        const amount = await convertTokentoUsd(x.label)
+        console.log('AMOUNT', amount, x.label)
+        setToken_symbol(amount)
+    }
+
     return(
 
         <div className={styles.container}>
@@ -151,7 +164,7 @@ export const TokenInput = ({dark, value, onChange, updateTokenType}) => {
                 closeMenuOnSelect
                 isDisabled={token_available?.length===1}
                 components={{DropdownIndicator:CustomDropDownIndicatior}}
-                onChange={(x)=>updateTokenType(x)}
+                onChange={(x)=>dropDownSelect(x)}
                 styles={dark?darkColourStyles: ligntColourStyles}
                 isSearchable={false}
                 name="color"
@@ -160,7 +173,6 @@ export const TokenInput = ({dark, value, onChange, updateTokenType}) => {
                 menuPosition='fixed'
             />
             </div>
-            {/* <div className={styles.inputContainer}> */}
             <div style={{background:dark?(onFocus?'#D2E4A6':null):null, border:dark?(onFocus?0:0):(onFocus?'1px #6852FF solid ':'1px solid #EEEEF0')}} className={dark?styles.inputContainerDark:styles.inputContainer}>
                 <input 
                     onFocus={()=>setOnFocus(true)} 
@@ -169,11 +181,11 @@ export const TokenInput = ({dark, value, onChange, updateTokenType}) => {
                     onChange={onChangeAmount}
                     className={dark?styles.amountInputDark:styles.amountInput}
                 />
-                <span style={{width:'30%', color:'#818081'}} className={`${textStyles.m_16}`}>
-                {`$ ${parseInt(amount)*2}`}
-                </span>
+                <Typography.Text ellipsis={1} style={{width:'36%', color:'#818081'}} className={`${textStyles.m_16}`}>
+                {amount && `$ ${(parseFloat(amount)*token_symbol).toFixed(2)}`}
+                </Typography.Text>
             </div>
-            {/* </div> */}
+            
         </div>
     )
 }

@@ -18,6 +18,7 @@
     font-size: 1rem;
     line-height: 1.5rem;
     outline: none;
+    height: 3.5rem;
 }
 
 .textInput:focus{

@@ -132,7 +132,6 @@ const ConnectWallet = ({ isAdmin }) =>{
       type="error"
     />
   )
-    // console.log('admin..', isAdmin, address)
   const onDiscordAuth = () => {
     dispatch(setDiscordOAuth(address,uuid, jwt))
     window.location.replace(links.discord_oauth.local)
@@ -143,8 +142,6 @@ const ConnectWallet = ({ isAdmin }) =>{
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider)
     const signer = web3Provider.getSigner()
-    // dispatch(setSigner(signer));
-    // const signer = web3Provider.getSigner()
     const newAddress = await signer.getAddress()
     const chainid = await signer.getChainId()
     dispatch(setAddress(newAddress, signer));
@@ -155,7 +152,6 @@ const ConnectWallet = ({ isAdmin }) =>{
         if(isAdmin){
           const res = await dispatch(getAddressMembership())
           if(res){
-            // console.log('callbacks.........', selected)
             setAuth(false)
             navigate(`/dashboard`)
           }else{

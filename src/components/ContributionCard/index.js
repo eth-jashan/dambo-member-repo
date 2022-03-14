@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styles from './style.module.css'
 import textStyles from '../../commonStyles/textType/styles.module.css'
-import { BiDotsVerticalRounded } from 'react-icons/all'
 import { useDispatch } from 'react-redux'
 import { setTransaction } from '../../store/actions/transaction-action'
 import { convertTokentoUsd } from '../../utils/conversion'

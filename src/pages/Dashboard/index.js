@@ -152,7 +152,7 @@ export default function Dashboard() {
             await dispatch(syncTxDataWithGnosis())
         }
         await dispatch(set_payout_filter('PENDING',1))
-        await dispatch(getContriRequest())
+        await dispatch(getContriRequest(1))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
     }

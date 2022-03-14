@@ -57,7 +57,6 @@ export const approveContriRequest =  (payout, isExternal = false) => {
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
         
         payout.map((item, index)=>{
-            console.log(payout, item?.token_type)
             if(!item?.token_type){
                 newPayout.push({
                     amount: item.amount,

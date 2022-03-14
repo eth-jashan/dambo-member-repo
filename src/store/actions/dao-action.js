@@ -56,7 +56,6 @@ export const getAllDaowithAddress = () => {
 
 export const set_contri_filter = (filter_key, number) => {
   return async (dispatch, getState) => {
-    console.log('number', number)
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
     try {
@@ -183,9 +182,8 @@ export const getContriRequest = () => {
       if(res.data.success){
         res.data?.data?.contributions.map((item, index)=>{
           let payout = []
-          if(item?.tokens.length>0 && item.payout_status === null){
+          if(item?.tokens.length>0 && item.payout_status === null && item?.status !== 'REJECTED'){
             item?.tokens.map((x, index)=>{
-              console.log('xxx', x)
               payout.push(
                 {
                   amount:x?.amount,

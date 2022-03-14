@@ -8,7 +8,6 @@ const toastSlice = createSlice({
   },
   reducers: {
     show_payout_toast(state, action) {
-        console.log(action.payload.status)
       state.payout = action.payload.status
     },
 }});

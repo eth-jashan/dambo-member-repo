@@ -111,9 +111,11 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         dispatch(resetApprovedRequest())
         dispatch(setPayoutToast('ACCEPTED_CONTRI'))
         setLoading(false)
+        onClose()
         } catch (error) {
           console.log('error.........', error)
           setLoading(false)
+          onClose()
         }
     }
 

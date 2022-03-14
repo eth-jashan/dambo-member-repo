@@ -128,7 +128,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (
           <div className={styles.ownerRow} key={owner.id}>
-            <div style={{width:'32%'}}>
+            <div style={{width:'32%', border:0}}>
               <InputText
                 type="text"
                 placeholder={'Owner Name'}
@@ -137,7 +137,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
                 onChange={(e) => updateOwner(e, owner.id, "name")}
               />
             </div>
-            <div style={{width:'60%'}}>
+            <div style={{width:'60%', border:0}}>
               <InputText
                 width={'100%'}
                 disabled={hasMultiSignWallet || index === 0}

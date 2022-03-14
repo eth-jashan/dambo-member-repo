@@ -40,31 +40,53 @@ export default function PaymentCard({item, signer}) {
         return confirm.includes(address)
     }
     
-    
-    
-    const singlePayout = (item, index) => (
+    const singlePayout = (x, index) => {
+        let tokens = []
+        x.tokens.map((x, i)=>{
+            tokens.push(`${x?.amount} ${x?.details?.symbol}`)
+        })
+        console.log(tokens)
+        tokens = tokens.slice(0,2)?.toString()
+        console.log(tokens.replace(/,/g, '+'))
+        return(
         <div key={index} className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
                 <div className={styles.priceContainer}>
-                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.contributions?.length>1?'1600$':null}</div>
+                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?'1600$':null}</div>
                 </div>
 
                 <div className={styles.contriTitle}>
-                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.contributions?.length>1?item?.title:'Single payment'}</div>
+                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?x?.title:'Single payment'}</div>
                 </div>
 
                 <div className={styles.tokenContainer}>
-                <div className={`${textStyles.m_16} ${styles.greyedText}`}>0.25 ETH + 4 SOL & 2 others</div>
+                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{x?.tokens.length<3?tokens.replace(/,/g, '+'):`${tokens.replace(/,/g, '+')} & ${x.tokens?.length - 3} others`}</div>
                 </div>
             </div>
 
             <div className={styles.addressContainer}>
-            <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.requested_by?.metadata?.name?.split(' ')[0]}  •   {item?.requested_by?.public_address?.slice(0,5)+'...'+item?.requested_by?.public_address?.slice(-3)}</div>
+            <div className={`${textStyles.m_16} ${styles.greyedText}`}>{x?.requested_by?.metadata?.name?.split(' ')[0]}  •   {x?.requested_by?.public_address?.slice(0,5)+'...'+x?.requested_by?.public_address?.slice(-3)}</div>
             </div>
         </div>
-    )
+        )
+    }
     
-    const bundleTitle = () => (
+    const bundleTitle = () => {
+
+        let tokenSymbol = []
+
+        item?.metaInfo?.contributions?.map((item, index)=>{
+            item.tokens?.map((y, index)=>{
+                if(!tokenSymbol.includes(y?.details?.symbol)){
+                    tokenSymbol.push(y?.details?.symbol)
+                }
+            })
+        })
+
+        console.log(tokenSymbol,item?.metaInfo?.contributions )
+
+        return(
+        
         <div className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%', alignItems:'center'}}>
 
@@ -77,7 +99,7 @@ export default function PaymentCard({item, signer}) {
                 </div>
 
                 <div className={styles.tokenContainer}>
-                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>USDC, DAI & 2 others</div>
+                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>{tokenSymbol.length>3?`${tokenSymbol.slice(0,2)?.toString()?.replace(/,/g, '+')} & ${tokenSymbol?.length - 3} others`:`${tokenSymbol.slice(0,2)?.toString()?.replace(/,/g, '+')}`}</div>
                 </div>
             </div>
             <div className={styles.addressContainer}>
@@ -96,7 +118,7 @@ export default function PaymentCard({item, signer}) {
                 </div>
             </div>
         </div>
-    )
+    )}
 
     const payout = item.metaInfo?.contributions
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { MdOutlineFilterAlt, BiSearchAlt2 } from 'react-icons/all'
 import { Dropdown, Menu } from 'antd'
 import crossSvg from '../../assets/Icons/cross_white.svg'
 import searchSvg from '../../assets/Icons/white_search.svg'
