@@ -3,13 +3,13 @@ import authSlice from "./reducers/auth-slice";
 import contributorSlice from "./reducers/contributor-slice";
 import gnosisSlice from "./reducers/gnosis-slice";
 // import authSlice from "../redux/authSlice";
-import { persistStore, persistReducer,createTransform, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
-import thunk from 'redux-thunk'
 import web3Slice from "./reducers/web3-slice";
 import daoSlice from "./reducers/dao-slice";
 import transactionSlice from "./reducers/transaction-slice";
+import toastSlice from "./reducers/toast-slice";
 
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
@@ -17,13 +17,14 @@ const rootReducer = combineReducers({
   contributor:contributorSlice.reducer,
   web3:web3Slice.reducer,
   dao:daoSlice.reducer,
-  transaction:transactionSlice.reducer
+  transaction:transactionSlice.reducer,
+  toast:toastSlice.reducer
 })
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist:['transaction','web3','dao']
+  blacklist:['transaction','web3','dao','gnosis','contributor','toast']
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

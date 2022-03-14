@@ -4,12 +4,11 @@ import CrossSvg from "../../assets/Icons/cross.svg";
 import PlusSvg from "../../assets/Icons/plus.svg";
 import { v4 as uuidv4 } from "uuid";
 import NextButton from "../NextButton";
-// import InputField from "../InputField";
 import { useDispatch, useSelector } from "react-redux";
 import { addOwners, addThreshold } from "../../store/actions/gnosis-action";
-import { useSafeSdk, useUserSigner } from "../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import InputText from "../Input";
+import textStyles from '../../commonStyles/textType/styles.module.css'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io')
 
@@ -119,34 +118,37 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       <div className={styles.heading}>Review your owners</div>:<div className={styles.heading}>Add vault owners</div>}
         {hasMultiSignWallet?
         <div className={`${styles.heading} ${styles.greyedHeading}`}>
-          Tell us what to call your team <br/> members.
+          {/* Tell us what to call your team <br/> members. */}
+          Tell us what to call your team  members.
         </div>:
         <div className={`${styles.heading} ${styles.greyedHeading}`}>
-        have more than one owner <br/> to maximize security
+        {/* have more than one owner <br/> to maximize security */}
+        have more than one owner to maximize security
         </div>}
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (
           <div className={styles.ownerRow} key={owner.id}>
-            <InputText
-              type="text"
-              placeholder={'Owner Name'}
-              width={'32%'}
-              // style={{background:owner?.name === ''?'white':'#E1DCFF'}}
-              value={owner?.name}
-              onChange={(e) => updateOwner(e, owner.id, "name")}
-              // className={styles.nameInput}
-            />
-            {/* <InputField /> */}
-            <InputText
-              width={'60%'}
-              disabled={hasMultiSignWallet || index === 0}
-              type="text"
-              placeholder={'Owner Address'}
-              value={owner?.address}
-              style={{background:owner.address === ''?'white':'#E1DCFF'}}
-              onChange={(e) => updateOwner(e, owner.id, "address")}
-              className={styles.addressInput}
-            />
+            <div style={{width:'32%', border:0}}>
+              <InputText
+                type="text"
+                placeholder={'Owner Name'}
+                width={'100%'}
+                value={owner?.name}
+                onChange={(e) => updateOwner(e, owner.id, "name")}
+              />
+            </div>
+            <div style={{width:'60%', border:0}}>
+              <InputText
+                width={'100%'}
+                disabled={hasMultiSignWallet || index === 0}
+                type="text"
+                placeholder={'Owner Address'}
+                value={owner?.address}
+                style={{background:owner.address === ''?'white':'#E1DCFF'}}
+                onChange={(e) => updateOwner(e, owner.id, "address")}
+                className={styles.addressInput}
+              />
+            </div>
             <div onClick={() => (!hasMultiSignWallet && index !== 0) && deleteOwner(owner.id)}>
               <img src={CrossSvg} alt="delete" />
             </div>

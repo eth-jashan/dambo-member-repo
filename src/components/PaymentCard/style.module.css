@@ -1,6 +1,6 @@
 .container{
     width: 100%;
-    padding: 1.5rem;
+    padding: 0.75rem;
     border: 1px solid #292929;
     border-right: 0;
     border-left: 0;
@@ -61,7 +61,7 @@
 }
 
 .btnContainer{
-    width: 20%;
+    max-width: 11.25rem;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1rem;
     padding: 0.375rem 1rem;
@@ -83,7 +83,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* background: red; */
     justify-content: space-between;
 }
 
@@ -107,7 +106,7 @@
 }
 
 .menuIcon{
-    height: 1rem;
-    width: 0.25rem;
+    height: 1.5rem;
+    width: 1.5rem;
     margin-left: 2.5rem;
 }

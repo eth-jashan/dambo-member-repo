@@ -2,7 +2,7 @@ import { Typography } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addDaoInfo } from "../../store/actions/gnosis-action";
-import InputText from "../Input";
+import InputText from "../InputComponent/Input";
 import NextButton from "../NextButton";
 import styles from "./styles.module.css";
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json";

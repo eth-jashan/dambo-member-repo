@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styles from './styles.module.css'
-import textStyles from '../../commonStyles/textType/styles.module.css'
+import textStyles from '../../../commonStyles/textType/styles.module.css'
 
 const InputText = ({value, onChange, placeholder, width, disabled=false, multi, textLabel}) => {
     const [onFocus, setOnFocus] = useState()
@@ -18,7 +18,7 @@ const InputText = ({value, onChange, placeholder, width, disabled=false, multi, 
     }
 
     return(
-        <div className={textLabel?styles.labelContainer:styles.inputContainer}>
+        <div className={textLabel&&styles.inputContainer}>
             {textLabel&&
             <div className={textStyles.m_16}>
                 To

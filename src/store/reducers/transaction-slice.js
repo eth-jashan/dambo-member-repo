@@ -31,6 +31,9 @@ const transactionSlice = createSlice({
     set_reject_request(state, action){
       const newRequestList = state.approvedContriRequest.filter(x=>x.contri_detail?.id !== action.payload.id)
       state.approvedContriRequest = newRequestList
+    },
+    set_current_Ethprice(state, action){
+      state.initialETHPrice = action.payload.price
     }
 }});
 

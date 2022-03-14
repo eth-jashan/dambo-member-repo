@@ -17,6 +17,12 @@ export const setTransaction = (item, ethPrice) => {
     }
 }
 
+export const setEthPrice = (ethPrice) => {
+    return (dispatch) => {
+        dispatch(tranactionAction.set_current_Ethprice({price:ethPrice}))
+    }
+}
+
 export const setPayment = (item) => {
     return (dispatch) => {
         setTransaction(null)
@@ -42,28 +48,31 @@ export const getPendingTransaction = () => {
     }
 }
 
-export const approveContriRequest =  (payout) => {
+export const approveContriRequest =  (payout, isExternal = false) => {
     return  async (dispatch, getState) => {
         
         // const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
         const currentTransaction = getState().transaction.currentTransaction
         
-        // dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
-        console.log('transaction.....',JSON.stringify(payout))
         let newPayout = []
-
-        payout((item, index)=>{
+        if(isExternal){
+            dispatch(tranactionAction.set_approved_request({item:{contri_detail:{}, payout}}))
+        }
+        else{
+        dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
+        
+        payout.map((item, index)=>{
             if(!item?.token_type){
                 newPayout.push({
                     amount: item.amount,
                     usd_amount: item?.usd_amount,
                     address: item?.address,
                     details: {
-                        name: item?.token?.name,
+                        name: "Ethereum",
                         symbol: "ETH",
                         decimals: "18",
-                        logo_url: "fhdkjshf.com"
+                        logo_url: "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png"
                     }
                 })
             }else{
@@ -72,40 +81,41 @@ export const approveContriRequest =  (payout) => {
                     usd_amount: item?.usd_amount,
                     address: item?.address,
                     details: {
-                        name: item?.token?.name,
-                        symbol: "ETH",
-                        decimals: "18",
-                        logo_url: "fhdkjshf.com"
+                        name: item?.token_type?.token?.name,
+                        symbol: item?.token_type?.token?.symbol,
+                        decimals: item?.token_type?.token?.decimals,
+                        logo_url: item?.token_type?.token?.logoUri
                     }
                 })
             }
         })
 
-        console.log(newPayout)
+        const data = {
+          status:"APPROVED",
+          tokens:newPayout
 
-        // const data = {
-        //   status:"APPROVED",
-        //   tokens:newPayout
-
-        // }
-        // try {
-        //     const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
-        //         headers:{
-        //             Authorization:`Bearer ${jwt}`
-        //         }
-        //     })
-        //     if(res.data.success){
-        //         let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
-        //         dispatch(daoAction.set_contri_list({
-        //             list:contri_request
-        //         }))
-        //         return 1
-        //     }else{
-        //         return 0
-        //     }
-        // } catch (error) {
-        //     console.log('error....', error)
-        // }
+        }
+        console.log("Contribution appproval api body", JSON.stringify(data))
+        try {
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+                headers:{
+                    Authorization:`Bearer ${jwt}`
+                }
+            })
+            if(res.data.success){
+                let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
+                dispatch(daoAction.set_contri_list({
+                    list:contri_request
+                }))
+                console.log('successfuly confirmed')
+                return 1
+            }else{
+                return 0
+            }
+        } catch (error) {
+            console.log('error....', error)
+        }
+    }
     }
 }
 

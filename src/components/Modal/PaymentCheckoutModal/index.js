@@ -13,7 +13,8 @@ import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
 import { createPayout, getContriRequest, getNonceForCreation, set_contri_filter } from '../../../store/actions/dao-action'
 import cross from '../../../assets/Icons/cross.svg'
-// import { convertTokentoUsd } from '../../../utils/conversion'
+import { setPayoutToast } from '../../../store/actions/toast-action'
+import chevron_down from '../../../assets/Icons/expand_more_black.svg'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -36,8 +37,8 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         if(approved_request.length>0){
             approved_request.map((item, index)=>{
                 item?.payout?.map((item,index)=>{
-        
-                    if(item?.token_type === null || !item?.token_type ){
+                    
+                    if(item?.token_type === null || !item?.token_type || item?.token_type?.token?.symbol === 'ETH' ){
                         transaction_obj.push(
                             {
                                 to: ethers.utils.getAddress(item?.address),
@@ -46,14 +47,14 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                                 operation:0
                             }
                         )
-                    }else if(item?.token_type?.token?.symbol){
+                    }else if(item?.token_type?.token?.symbol !== 'ETH'){
                         var web3Client = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"));
                         const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress)
                         const amount = parseFloat(item?.amount) * 1e18
                         
                         transaction_obj.push(
                             {
-                                to: item?.token_type?.tokenAddress,
+                                to: '0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735',
                                 data:coin.methods.transfer(ethers.utils.getAddress(item?.address), amount.toString()).encodeABI(),
                                 value: '0',
                                 operation: 0
@@ -108,31 +109,32 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         console.log(currentDao, safeTxHash)
         dispatch(createPayout(safeTxHash, nonce))
         dispatch(resetApprovedRequest())
+        dispatch(setPayoutToast('ACCEPTED_CONTRI'))
         setLoading(false)
+        onClose()
         } catch (error) {
           console.log('error.........', error)
           setLoading(false)
+          onClose()
         }
     }
 
-    const startPayout = async() => {
-        await proposeSafeTransaction()
-    }
+    
 
     const modalHeader = () => (
         <div className={styles.header}>
             <div className={textStyles.ub_23}>Approved Requests • {approved_request.length}</div>
-            <GoChevronDown onClick={onClose} size={'1rem'} color='black' />
+            <img alt='chevron_down' src={chevron_down} onClick={onClose} className={styles.chevron} color='black' />
         </div>
     )
 
     const tokenItem =  (item) => {
         return(
-        <div className={styles.tokenDiv}>
+        <div style={{}} className={styles.tokenDiv}>
             <div className={`${textStyles.m_16} ${styles.usdText}`}>
             {(item?.usd_amount * parseFloat(item?.amount)).toFixed(2)}$ •
             </div>
-            <div style={{marginLeft:'0.75rem'}} className={textStyles.m_16}>
+            <div style={{}} className={textStyles.m_16}>
             {item?.amount} {item?.token_type?.token?item?.token_type?.token?.symbol:'ETH'}
             </div>
         </div>)

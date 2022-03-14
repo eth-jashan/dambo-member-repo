@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Select from 'react-select';
 import styles from './style.module.css'
 import { AiFillCaretDown } from 'react-icons/all'
-import textStyles from '../../commonStyles/textType/styles.module.css'
+import textStyles from '../../../commonStyles/textType/styles.module.css'
 import { useSelector } from 'react-redux';
 
 const { Option } = Select;
@@ -78,36 +78,14 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
 
     const token_available = useSelector(x=>x.dao.balance)
     const payout_detail = useSelector(x=>x.transaction.approvedContriRequest)
-    const getRemainingToken = () => {
-        let selectedToken = []
-        payout_detail.map((item,index)=>{
-            if(!item?.payout?.token_type){
-                selectedToken.push('ETH')
-            }else{
-                selectedToken.push(item?.payout?.token_type?.token?.symbol)
-            }
-        })
-        
-        let availableToken = []
-        token_available.map((item, index)=>{
-            selectedToken.map((x,i)=>{
-                if(!x===item.label){
-                    console.log('itemm', item)
-                    availableToken.push(item)
-                }
-            })
-        })
-
-        return availableToken
-
-    }
+    
     
     const [onFocus, setOnFocus] = useState(false)
 
-    console.log('remaining token', getRemainingToken(), token_available)
+    
 
     const CustomDropDownIndicatior = () => (
-        <AiFillCaretDown style={{alignSelf:'center'}} color='black' size={'1rem'}  />
+        <AiFillCaretDown style={{alignSelf:'center'}} color='black' size={'1.5rem'}  />
     )
 
     return(
@@ -116,7 +94,7 @@ const AmountInput = ({value, onChange, updateTokenType}) => {
                 className="basic-single"
                 classNamePrefix="select"
                 closeMenuOnSelect
-                isDisabled={token_available.length===1}
+                isDisabled={token_available?.length===1}
                 components={{DropdownIndicator:CustomDropDownIndicatior}}
                 onChange={(x)=>updateTokenType(x)}
                 styles={colourStyles}

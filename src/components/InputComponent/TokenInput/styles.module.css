@@ -1,0 +1,90 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+}
+
+.selectContainer{
+    width: 30%;
+    height: 100%;
+}
+
+.inputContainer{
+    width: 70%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #EEEEF0 ;
+    border-radius: 0rem 0.5rem 0.5rem 0rem;
+    padding-right: 1rem;
+}
+
+.inputContainerDark{
+    width: 70%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #A1AE7E ;
+    border-radius: 0rem 0.5rem 0.5rem 0rem;
+    padding-right: 1rem;
+    background-color: #ECFFB8;
+}
+
+.amountInputDark{
+    width: 70%;
+    background-color: #ECFFB8;
+    border:0 ;
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding-left: 1rem;
+    height: 100%;
+}
+.amountInputDark::placeholder{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+.amountInputDark:focus{
+    border: 1px #6852FF solid ;
+    border: 0rem ;
+    outline: none;
+    background-color: #D2E4A6;
+
+}
+
+
+.amountInput{
+    width: 70%;
+    /* background-color: white; */
+    border:0 ;
+    font-family: 'TelegrafBolder';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding-left: 1rem;
+    height: 100%;
+}
+.amountInput::placeholder{
+    font-family: 'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+.amountInput:focus{
+    border: 1px #6852FF solid ;
+    border: 0rem ;
+    outline: none;
+    /* background-color: #E1DCFF; */
+
+}

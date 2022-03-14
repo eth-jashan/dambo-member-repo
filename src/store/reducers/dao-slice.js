@@ -32,7 +32,6 @@ const daoSlice = createSlice({
       state.community_role = action.payload.community_role
     },
     set_contri_list(state, action){
-      console.log(action.payload.number)
       state.contribution_request = action.payload.list
       state.contri_filter_key = action.payload.number
     },

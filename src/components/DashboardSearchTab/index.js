@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { MdOutlineFilterAlt, BiSearchAlt2 } from 'react-icons/all'
 import { Dropdown, Menu } from 'antd'
 import crossSvg from '../../assets/Icons/cross_white.svg'
 import searchSvg from '../../assets/Icons/white_search.svg'
@@ -22,7 +21,7 @@ const DashboardSearchTab = ({route}) => {
     const payout_filter = ['All requests','Pending Payment Request', 'Approved requests','Paid requests','Rejected requests' ]
 
     const [payoutFilter, setPayoutFilter] = useState(1)
-    console.log('filter key', contri_filter_key)
+    
     const dispatch = useDispatch()
     const onClick = ({ key }) => {
         if(key === '1'){

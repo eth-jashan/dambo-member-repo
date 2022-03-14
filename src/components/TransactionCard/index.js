@@ -7,10 +7,11 @@ import cross from "../../assets/Icons/cross_white.svg";
 import delete_icon from '../../assets/Icons/delete_icon.svg'
 import styles from "./style.module.css";
 import textStyle  from "../../commonStyles/textType/styles.module.css";
-import AmountInput from '../AmountInput';
+import AmountInput from '../InputComponent/AmountInput';
 import { approveContriRequest, rejectContriRequest, setTransaction } from '../../store/actions/transaction-action';
 import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
 import { convertTokentoUsd } from "../../utils/conversion";
+import { TokenInput } from "../InputComponent/TokenInput";
 
 
 const TransactionCard = ({signer}) => {
@@ -119,7 +120,8 @@ const TransactionCard = ({signer}) => {
 
           <div className={styles.amountScroll}>
             {payDetail?.map((item, index) => (
-              <AmountInput
+              <TokenInput
+                dark={true}
                 updateTokenType={(x) => updateTokenType(x, index)}
                 value={item.amount}
                 onChange={(e) => updatedPayDetail(e, index)}

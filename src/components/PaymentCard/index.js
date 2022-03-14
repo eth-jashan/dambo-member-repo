@@ -15,6 +15,7 @@ import { message } from 'antd';
 import { EthSignSignature } from '../../utils/EthSignSignature';
 import { executePayout, getPayoutRequest, set_active_nonce, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import moment from 'moment';
+import { setPayoutToast } from '../../store/actions/toast-action';
 // import { isRejected } from '@reduxjs/toolkit';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -39,31 +40,53 @@ export default function PaymentCard({item, signer}) {
         return confirm.includes(address)
     }
     
-    
-    
-    const singlePayout = (item, index) => (
+    const singlePayout = (x, index) => {
+        let tokens = []
+        x.tokens.map((x, i)=>{
+            tokens.push(`${x?.amount} ${x?.details?.symbol}`)
+        })
+        console.log(tokens)
+        tokens = tokens.slice(0,2)?.toString()
+        console.log(tokens.replace(/,/g, '+'))
+        return(
         <div key={index} className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
                 <div className={styles.priceContainer}>
-                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.contributions?.length>1?'1600$':null}</div>
+                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?'1600$':null}</div>
                 </div>
 
                 <div className={styles.contriTitle}>
-                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.contributions?.length>1?item?.title:'Single payment'}</div>
+                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?x?.title:'Single payment'}</div>
                 </div>
 
                 <div className={styles.tokenContainer}>
-                <div className={`${textStyles.m_16} ${styles.greyedText}`}>0.25 ETH + 4 SOL & 2 others</div>
+                <div className={`${textStyles.m_16} ${styles.greyedText}`}>{x?.tokens.length<3?tokens.replace(/,/g, '+'):`${tokens.replace(/,/g, '+')} & ${x.tokens?.length - 3} others`}</div>
                 </div>
             </div>
 
             <div className={styles.addressContainer}>
-            <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.requested_by?.metadata?.name?.split(' ')[0]}  •   {item?.requested_by?.public_address?.slice(0,5)+'...'+item?.requested_by?.public_address?.slice(-3)}</div>
+            <div className={`${textStyles.m_16} ${styles.greyedText}`}>{x?.requested_by?.metadata?.name?.split(' ')[0]}  •   {x?.requested_by?.public_address?.slice(0,5)+'...'+x?.requested_by?.public_address?.slice(-3)}</div>
             </div>
         </div>
-    )
+        )
+    }
     
-    const bundleTitle = () => (
+    const bundleTitle = () => {
+
+        let tokenSymbol = []
+
+        item?.metaInfo?.contributions?.map((item, index)=>{
+            item.tokens?.map((y, index)=>{
+                if(!tokenSymbol.includes(y?.details?.symbol)){
+                    tokenSymbol.push(y?.details?.symbol)
+                }
+            })
+        })
+
+        console.log(tokenSymbol,item?.metaInfo?.contributions )
+
+        return(
+        
         <div className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%', alignItems:'center'}}>
 
@@ -76,7 +99,7 @@ export default function PaymentCard({item, signer}) {
                 </div>
 
                 <div className={styles.tokenContainer}>
-                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>USDC, DAI & 2 others</div>
+                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>{tokenSymbol.length>3?`${tokenSymbol.slice(0,2)?.toString()?.replace(/,/g, '+')} & ${tokenSymbol?.length - 3} others`:`${tokenSymbol.slice(0,2)?.toString()?.replace(/,/g, '+')}`}</div>
                 </div>
             </div>
             <div className={styles.addressContainer}>
@@ -95,7 +118,7 @@ export default function PaymentCard({item, signer}) {
                 </div>
             </div>
         </div>
-    )
+    )}
 
     const payout = item.metaInfo?.contributions
 
@@ -118,6 +141,7 @@ export default function PaymentCard({item, signer}) {
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
+            dispatch(setPayoutToast('SIGNED'))
             // await dispatch(set_payout_filter('PENDING'))
           } catch (error) {
             console.error(error)
@@ -166,6 +190,7 @@ export default function PaymentCard({item, signer}) {
         }
         const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
         // if(receipt){
+            dispatch(setPayoutToast('EXECUTED'))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
@@ -176,40 +201,24 @@ export default function PaymentCard({item, signer}) {
             dispatch(setPayment(null))
         // }
     }
-
-    const buttonTitleColor = () => {
-        if(!onHover && checkApproval() && !isReject){
-            return '#ECFFB8'
-        }else if (checkApproval() && onHover && !isReject){
-            return '#ECFFB8' 
-        }else if (!checkApproval() && onHover && !isReject){
-            return 'black'
-        }else if ((checkApproval() && delegates.length === item?.gnosis?.confirmations?.length) && onHover && !isReject){
-            return 'white'
-        }else if (!checkApproval()&& isReject){
-            return 'white'
-        }else if(delegates.length === item?.gnosis?.confirmations?.length && isReject){
-            return 'white'
-        }else if (checkApproval()&& isReject){
-            return '#FF6262' 
+//333333
+    const getButtonProperty = () => {
+        if(checkApproval() && delegates.length === item?.gnosis?.confirmations?.length && !isReject ){
+            return {title:'Execute Payment', color:'black', background:'white'}
+        }else if(checkApproval() && delegates.length !== item?.gnosis?.confirmations?.length && !isReject){
+            return {title:'Payment Signed', color:'#ECFFB8', background:'#464740'}
+        }else if(!checkApproval() && !isReject && !onHover){
+            return {title:'Sign Payment', color:'white', background:'#333333'}
+        }else if(!checkApproval() && !isReject && onHover){
+            return {title:'Sign Payment', color:'black', background:'white'}
+        }else if(isReject && delegates.length === item?.gnosis?.confirmations?.length){
+            return {title:'Reject Payment', color:'white', background:'#FF6262'}
+        }
+        else if(isReject && checkApproval()){
+            return {title:'Payment Rejected', color:'#FF6262', background:'#331414'}
         }
     }
 
-    const buttonTitle = () => {
-        if(delegates.length === item?.gnosis?.confirmations?.length && !isReject){
-            return 'Execute Payment'
-        }else if (checkApproval()&& !isReject){
-            return 'Payment Signed' 
-        }else if (!checkApproval()&& !isReject){
-            return 'Sign Payment'
-        }else if (!checkApproval()&& isReject){
-            return 'Reject Payment'
-        }else if(delegates.length === item?.gnosis?.confirmations?.length && isReject){
-            return 'Execute Reject'
-        }else if (checkApproval()&& isReject){
-            return 'Payment Rejected' 
-        }
-    }
 
     const buttonFunc = async(tranx) => {
         if(delegates.length === item?.gnosis?.confirmations?.length){
@@ -218,24 +227,6 @@ export default function PaymentCard({item, signer}) {
             console.log('Already Signed !!!')
         }else if (!checkApproval() && onHover){
             await confirmTransaction(tranx)
-        }
-    }
-
-    const buttonColor = () => {
-        if(!onHover && checkApproval() && !isReject){
-            return '#333333'
-        }else if (checkApproval() && onHover && !isReject){
-            return '#333333' 
-        }else if (!checkApproval()  && onHover && !isReject){
-            return 'white'
-        }else if ((checkApproval() && delegates.length === item?.gnosis?.confirmations?.length) && onHover && !isReject){
-            return 'white'
-        }else if (!checkApproval() && isReject){
-            return '#FF6262'
-        }else if(delegates.length === item?.gnosis?.confirmations?.length && isReject){
-            return '#FF6262'
-        }else if (checkApproval()&& isReject){
-            return '#5C3C3C' 
         }
     }
     
@@ -249,8 +240,11 @@ export default function PaymentCard({item, signer}) {
             )):null}
             {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval()) ? 
             <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex'}}>
-                <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:buttonColor()}} className={styles.btnContainer}>
-                    <div style={{color:buttonTitleColor()}} className={textStyles.ub_14}>{buttonTitle()}</div>
+                <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
+                    <div style={{marginRight:0}} className={styles.priceContainer}/>
+                    <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:getButtonProperty()?.background}} className={styles.btnContainer}>
+                        <div style={{color:getButtonProperty()?.color}} className={textStyles.ub_14}>{getButtonProperty()?.title}</div>
+                    </div>
                 </div>
             </div>:null}
         </div>

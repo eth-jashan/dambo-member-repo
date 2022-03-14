@@ -12,6 +12,7 @@ import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import { useSafeSdk } from "../../hooks";
 import { setPayment } from '../../store/actions/transaction-action';
 import crossSvg from '../../assets/Icons/cross_white.svg'
+import { setPayoutToast } from '../../store/actions/toast-action';
 
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -26,6 +27,8 @@ const PaymentSlideCard = ({signer}) =>{
     const isReject = currentPayment?.status === 'REJECTED'
     const nonce = useSelector(x=>x.dao.active_nonce)
     
+    console.log('current ', currentPayment?.metaInfo?.contributions)
+
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
@@ -41,6 +44,7 @@ const PaymentSlideCard = ({signer}) =>{
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
+            dispatch(setPayoutToast('SIGNED'))
           } catch (error) {
             console.error(error)
             message.error('Error on confirming sign')
@@ -122,6 +126,7 @@ const PaymentSlideCard = ({signer}) =>{
         const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
         
         console.log('executeeed succefully')
+        dispatch(setPayoutToast('EXECUTED'))
         // if(receipt){
             await dispatch(getPayoutRequest())
             await dispatch(getPayoutRequest())
@@ -138,8 +143,10 @@ const PaymentSlideCard = ({signer}) =>{
                     1600$
                 </div>
 
-                {token_coin.map((item, index)=>(
-                    <div className={`${textStyle.m_16} ${styles.darkerGrey}`}>{item}</div>
+                {currentPayment?.metaInfo?.contributions.map((item, index)=>(
+                    item?.tokens?.map((x, i)=>(
+                        <div key={index} className={`${textStyle.m_16} ${styles.darkerGrey}`}>{x?.amount} {x?.details?.symbol}</div>
+                    ))
                 ))}
 
             </div>
