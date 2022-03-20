@@ -28,6 +28,8 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
 
+    console.log('approved_request', approved_request )
+
     const proposeSafeTransaction = async () => {
 
         let transaction_obj = []
@@ -48,13 +50,14 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                             }
                         )
                     }else if(item?.token_type?.token?.symbol !== 'ETH'){
+                        console.log('token', item?.token_type?.tokenAddress||item?.token_type?.token?.address)
                         var web3Client = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"));
-                        const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress)
+                        const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress||item?.token_type?.token?.address)
                         const amount = parseFloat(item?.amount) * 1e18
                         
                         transaction_obj.push(
                             {
-                                to: '0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735',
+                                to: item?.token_type?.tokenAddress||item?.token_type?.token?.address,
                                 data:coin.methods.transfer(ethers.utils.getAddress(item?.address), amount.toString()).encodeABI(),
                                 value: '0',
                                 operation: 0
@@ -145,7 +148,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const getPayoutTotal = (payout) => {
         const usd_amount = []
         payout?.map((item, index)=>{
-            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)).toFixed(2))
+            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)))
         })
         let amount_total
         usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
@@ -189,7 +192,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  aviralsb.eth
                     </div>
                     <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
-                        Jashan has been doing the phenominal boi, keep it up GG.
+                        {/* Jashan has been doing the phenominal boi, keep it up GG. */}
                     </Typography.Paragraph>
                 </div>
                 <div>
@@ -215,11 +218,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                     requestItem(item)
                 ))}
                 </div>
-                {/* {!loading&&<div onClick={async()=>await startPayout()} className={styles.btnCnt}>
-                    <div className={styles.payBtn}>
-                        {getTotalAmount()}$  •  Sign and Pay
-                    </div>
-                </div>} */}
                 {approved_request.length>0&&<div onClick={async()=>await proposeSafeTransaction()} className={styles.btnCnt}>
                     <div className={styles.payBtn}>
                         {getTotalAmount()}$  •  Sign and Pay

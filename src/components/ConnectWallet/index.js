@@ -280,8 +280,8 @@ const ConnectWallet = ({ isAdmin }) =>{
   const daoWallet = () => (
     <div style={{width:'100%'}}>
       <div className={styles.headingCnt}>
-        <div className={styles.heading}>Connect wallet</div>
-        <div className={styles.greyHeading}>First step towards<br/> streamlining your DAO</div>
+        <div className={`${styles.heading} ${textStyles.ub_53}`}>Connect wallet</div>
+        <div className={`${styles.greyHeading} ${textStyles.ub_53}`}>First step towards<br/> streamlining your DAO</div>
       </div>
       {address?authWallet():connectWallet()}
     </div>

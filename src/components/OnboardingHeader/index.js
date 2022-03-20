@@ -4,7 +4,7 @@ import { Row, Col, Typography } from "antd";
 import { useSelector } from "react-redux";
 import styles from "./style.module.css";
 
-export default function Header({ children, decreaseStep }) {
+export default function Header({ children, decreaseStep, signer }) {
   
   const jwt = useSelector(x=>x.auth.jwt)
 
@@ -25,7 +25,7 @@ export default function Header({ children, decreaseStep }) {
         
       
       {jwt&&<div>
-        <WalletPicker />
+        <WalletPicker signer={signer} />
       </div>}
       </div>
     </div>

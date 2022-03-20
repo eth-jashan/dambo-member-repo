@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
-import { getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
+import { getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
@@ -33,7 +33,7 @@ export default function Dashboard() {
     const [uniPayHover, setUniPayHover] = useState(false)
     
     const payout_toast = useSelector(x=>x.toast.payout)
-    
+    const initial_setup = useSelector(x=>x.dao.initial_setup)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()

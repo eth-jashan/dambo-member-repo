@@ -191,7 +191,7 @@ export default function Onboarding() {
   };
   return (
     <div>
-      <Layout decreaseStep={decreaseStep} currentStep={currentStep}>
+      <Layout signer={signer} decreaseStep={decreaseStep} currentStep={currentStep}>
         {getComponentFromStep(currentStep, hasMultiSignWallet)}
       </Layout>
     </div>

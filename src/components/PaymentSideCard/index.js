@@ -108,17 +108,38 @@ const PaymentSlideCard = ({signer}) =>{
         // }
     }
     
+    const getPayoutTotal = (payout) => {
+        const usd_amount = []
+        payout?.map((item, index)=>{
+            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)))
+        })
+        let amount_total
+        usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
+        return amount_total
+    }
+
+    const getTotalAmount = () => {
+        const usd_amount_all = []
+
+        currentPayment?.metaInfo?.contributions.map((item, index)=>{
+            item.tokens.map((x, i) => {
+                usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
+            })
+        })
+
+        const amount_total = usd_amount_all?.reduce((a,b)=>a+b)
+        return parseFloat(amount_total)?.toFixed(2)
+        
+    }
+
     const renderContribution = (item) => (
         <div className={styles.contribContainer}>
             <div className={styles.leftContent}>
                 <div className={`${textStyle.m_16} ${styles.greyishText}`}>
-                    1600$
+                    {getPayoutTotal(item?.tokens)}$
                 </div>
-
-                {currentPayment?.metaInfo?.contributions.map((item, index)=>(
-                    item?.tokens?.map((x, i)=>(
-                        <div key={index} className={`${textStyle.m_16} ${styles.darkerGrey}`}>{x?.amount} {x?.details?.symbol}</div>
-                    ))
+                {item?.tokens?.map((x, i)=>(
+                    <div key={i} className={`${textStyle.m_16} ${styles.darkerGrey}`}>{x?.amount} {x?.details?.symbol}</div>
                 ))}
 
             </div>
@@ -276,26 +297,26 @@ const PaymentSlideCard = ({signer}) =>{
     }
 
     const buttonFunction = async(hash) => {
-        if(nonce === currentPayment?.gnosis?.nonce){
-            if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length){
+            if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
                 await executeSafeTransaction(hash)
             }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
                 console.log("Payment Already Signed")
             }else if(!checkApproval()){
             await  confirmTransaction(hash)
             }
-        }
     }
+
+    console.log(currentPayment)
     
     return(
         <div className={styles.container}>
             <img onClick={()=>console.log('on cross press')} src={cross} alt='cross' className={styles.cross} />
 
             <div className={`${textStyle.ub_23} ${styles.whiteText}`}>
-                2900$
+                {getTotalAmount()}$
             </div>
             <div className={`${textStyle.ub_23} ${styles.whiteText}`}>
-                Bundled Payments • {currentPayment?.contributions?.length}
+                Bundled Payments • {currentPayment?.metaInfo?.contributions?.length}
             </div>
             <div style={{marginBottom:'2.5rem'}} className={`${textStyle.m_23} ${styles.greyishText}`}>
                 {moment(currentPayment?.gnosis?.submissionDate).format("h:mm a , Do MMM['] YY")}

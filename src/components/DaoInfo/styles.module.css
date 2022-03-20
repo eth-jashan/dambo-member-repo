@@ -90,11 +90,13 @@
 }
 .photoContainer{
     border:1px solid #EBEBEB;
-    width: 60%;
-    height: 75%;
+    width: 15rem;
+    height: 15rem;
     border-radius: 5%;
     text-align: center;
-    padding: 0rem .5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .uploadIcon{
     height: 3.25rem;
@@ -127,4 +129,29 @@
 }
 .divTextUpload *{
     color: #c9c5c5;
+}
+
+.uploadContainer{
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.uploadBtn{
+    cursor: pointer;
+    width: 48%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: black;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remove{
+  color: red;
+  font-size: 1rem;
 }

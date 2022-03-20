@@ -51,17 +51,18 @@ export const getPendingTransaction = () => {
 export const approveContriRequest =  (payout, isExternal = false) => {
     return  async (dispatch, getState) => {
         
-        // const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
         const currentTransaction = getState().transaction.currentTransaction
-        
+        const contri_filter_key = getState().dao.contri_filter_key
+        const contri_filter = getState().dao.contri_filter
+
         let newPayout = []
         if(isExternal){
             dispatch(tranactionAction.set_approved_request({item:{contri_detail:{}, payout}}))
         }
         else{
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
-        
+        console.log('payout', payout)
         payout.map((item, index)=>{
             if(!item?.token_type){
                 newPayout.push({
@@ -72,7 +73,8 @@ export const approveContriRequest =  (payout, isExternal = false) => {
                         name: "Ethereum",
                         symbol: "ETH",
                         decimals: "18",
-                        logo_url: "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png"
+                        logo_url: "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                        address:''
                     }
                 })
             }else{
@@ -84,7 +86,8 @@ export const approveContriRequest =  (payout, isExternal = false) => {
                         name: item?.token_type?.token?.name,
                         symbol: item?.token_type?.token?.symbol,
                         decimals: item?.token_type?.token?.decimals,
-                        logo_url: item?.token_type?.token?.logoUri
+                        logo_url: item?.token_type?.token?.logoUri,
+                        address:item?.token_type?.tokenAddress
                     }
                 })
             }
@@ -105,7 +108,9 @@ export const approveContriRequest =  (payout, isExternal = false) => {
             if(res.data.success){
                 let contri_request = getState().dao.contribution_request.filter(x=>x.id !== currentTransaction.id)
                 dispatch(daoAction.set_contri_list({
-                    list:contri_request
+                    list:contri_request,
+                    key:contri_filter,
+                    number:contri_filter_key
                 }))
                 console.log('successfuly confirmed')
                 return 1

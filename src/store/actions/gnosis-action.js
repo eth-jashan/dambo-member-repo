@@ -32,10 +32,10 @@ export const addThreshold = (threshold) => {
     }
 };
 
-export const addDaoInfo = (name, email) => {
+export const addDaoInfo = (name, email, discord, logo) => {
   return (dispatch) => {
       dispatch(
-        gnosisAction.set_dainInfo({email, name})
+        gnosisAction.set_dainInfo({email, name, discord, logo})
       )
     }
 };
@@ -67,6 +67,9 @@ export const registerDao = () => {
     const safeAddress = getState().gnosis.safeAddress
     const threshold = getState().gnosis.newSafeSetup.threshold
     const name = getState().gnosis.newSafeSetup.dao_name
+    const logo = getState().gnosis.newSafeSetup.dao_logo_url
+    const discord = getState().gnosis.newSafeSetup.dao_discord
+
     const owner = []
 
     owners.map((item,index)=>(
@@ -78,8 +81,11 @@ export const registerDao = () => {
       safe_addr:safeAddress,
       by:address,
       signers:owner,
-      signs_required:threshold
+      signs_required:threshold,
+      logo_url:logo,
+      discord_link:discord
     }
+    console.log('data.....', data)
     
     try {
         const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,

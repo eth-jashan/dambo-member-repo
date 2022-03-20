@@ -16,6 +16,7 @@ const routes = {
         createContri:'/contrib',
         updatePayout:'/contrib/payout/update',
         payout:'/contrib/payout',
+        externalPayout:'/contrib/external_payout',
         signPayout:'/contrib/payout/sign',
         execute:'/contrib/payout/execute',
         reject:'/contrib/payout/reject'

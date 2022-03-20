@@ -29,8 +29,31 @@ export default function PaymentCard({item, signer}) {
     const currentDao = useSelector(x=>x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === 'REJECTED'
-    
 
+    const getPayoutTotal = (payout) => {
+        const usd_amount = []
+        payout?.map((item, index)=>{
+            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)))
+        })
+        let amount_total
+        usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
+        return amount_total
+    }
+
+    const getTotalAmount = () => {
+        const usd_amount_all = []
+
+        item?.metaInfo?.contributions.map((item, index)=>{
+            item.tokens.map((x, i) => {
+                usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
+            })
+        })
+
+        const amount_total = usd_amount_all?.reduce((a,b)=>a+b)
+        return parseFloat(amount_total)?.toFixed(2)
+        
+    }
+    
     const checkApproval = () => {
         let confirm = []
         item.gnosis?.confirmations.map((item, index)=>{
@@ -52,7 +75,7 @@ export default function PaymentCard({item, signer}) {
         <div key={index} className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
                 <div className={styles.priceContainer}>
-                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?'1600$':null}</div>
+                    <div className={`${textStyles.m_16} ${styles.greyedText}`}>{item?.metaInfo?.contributions?.length>1?`${getPayoutTotal(x.tokens)}$`:null}</div>
                 </div>
 
                 <div className={styles.contriTitle}>
@@ -91,7 +114,7 @@ export default function PaymentCard({item, signer}) {
             <div style={{flexDirection:'row', display:'flex', width:'60%', alignItems:'center'}}>
 
                 <div className={styles.priceContainer}>
-                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>2900$</div>
+                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>{getTotalAmount()}$</div>
                 </div>
 
                 <div className={styles.contriTitle}>
@@ -212,13 +235,17 @@ export default function PaymentCard({item, signer}) {
         }else if(!checkApproval() && !isReject && onHover){
             return {title:'Sign Payment', color:'black', background:'white'}
         }else if(isReject && delegates.length === item?.gnosis?.confirmations?.length){
-            return {title:'Reject Payment', color:'white', background:'#FF6262'}
+            return {title:'Execute Reject', color:'white', background:'#FF6262'}
+        }
+        else if(isReject && !checkApproval()){
+            return {title:'Reject Payment', color:'#FF6262', background:'#331414'}
         }
         else if(isReject && checkApproval()){
             return {title:'Payment Rejected', color:'#FF6262', background:'#331414'}
         }
     }
 
+    console.log('status button', isReject , delegates.length , item?.gnosis?.confirmations?.length, checkApproval(), item?.status)
 
     const buttonFunc = async(tranx) => {
         if(delegates.length === item?.gnosis?.confirmations?.length){
