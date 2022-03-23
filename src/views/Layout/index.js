@@ -7,7 +7,7 @@ import Lottie from 'react-lottie';
 import {IoArrowBackOutline} from 'react-icons/io'
 import background from '../../assets/lottie/onboarding_background.json'
 
-export default function Layout({ children, decreaseStep, currentStep, contributorWallet}) {
+export default function Layout({ children, decreaseStep, currentStep, contributorWallet, signer}) {
   const checkRoute = () => {
     if(currentStep >1 && currentStep <= 4){
       return true
@@ -27,7 +27,7 @@ export default function Layout({ children, decreaseStep, currentStep, contributo
     <div className={styles.layout}>
       <Lottie options={defaultOptions} style={{position:'absolute', height:'70vh', bottom:0}} className={styles.layoutImage}/>
       <div className={styles.content}>
-        <OnboardingHeader />
+        <OnboardingHeader signer={signer} />
         {!contributorWallet&&<div className={styles.modal}>
         {/* <div> */}
           {(!contributorWallet && checkRoute())? <img className={styles.backImg} onClick={decreaseStep} src={BackSvg} alt="back" />:<div className={styles.backImg}/>}

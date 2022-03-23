@@ -20,6 +20,7 @@ import textStyles from '../../commonStyles/textType/styles.module.css'
 export default function DashboardLayout({ children, route, signer }) {
 
   const accounts = useSelector(x=>x.dao.dao_list)
+  console.log('accounts...', accounts)
   const currentDao = useSelector(x=>x.dao.currentDao) 
   const currentTransaction = useSelector(x=>x.transaction.currentTransaction)
   const currentPayment = useSelector(x=>x.transaction.currentPayment)
@@ -46,9 +47,9 @@ export default function DashboardLayout({ children, route, signer }) {
   async function copyTextToClipboard() {
     if ('clipboard' in navigator) {
       message.success('invite link copied succesfully!')
-      return await navigator.clipboard.writeText(`${links.contributor_invite.local}${currentDao?.uuid}`);
+      return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${currentDao?.uuid}`);
     } else {
-      return document.execCommand('copy', true, `${links.contributor_invite.local}${currentDao?.uuid}`);
+      return document.execCommand('copy', true, `${links.contributor_invite.dev}${currentDao?.uuid}`);
     }
   }
 
@@ -92,7 +93,9 @@ export default function DashboardLayout({ children, route, signer }) {
         {accounts.map((item, index)=>(
           <div className={styles.accountContainer}>
             <Tooltip placement="right" title={()=>text(item?.dao_details?.name)}>
-            <div onClick={()=>changeAccount(item)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186'}}/>
+            <div onClick={()=>changeAccount(item)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186', display:'flex', justifyContent:'center', alignItems:'center'}}>
+              {item?.dao_details?.logo_url?<img src={item?.dao_details?.logo_url} alt='logo'height='100%' width='100%' style={{borderRadius:'2.25rem'}} />:null}
+            </div>
             </Tooltip>
           </div>
         ))}

@@ -7,6 +7,7 @@ import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/gn
 import { useNavigate } from 'react-router';
 import chevron_right from '../../../assets/Icons/chevron_right.svg'
 import plus from '../../../assets/Icons/plus_black.svg'
+import textStyles from '../../../commonStyles/textType/styles.module.css'
 
 const GnosisSafeList = (props) => {
 
@@ -75,10 +76,10 @@ const GnosisSafeList = (props) => {
     return(
         <div className={styles.layout}>
             {safeList.length>0? 
-            <div className={styles.heading}>
+            <div className={`${styles.heading} ${textStyles.ub_53}`}>
                 Select the safe you<br/> want to continue with
             </div>:
-            <div className={styles.headingSecondary}>
+            <div className={`${styles.headingSecondary} ${textStyles.ub_53}`}>
                 Couldn’t find multisig
             </div>}
             {!safeList.length>0&&

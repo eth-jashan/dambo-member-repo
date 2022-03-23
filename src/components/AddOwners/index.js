@@ -115,15 +115,15 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
   return (
     <div className={styles.wrapper}>
       {hasMultiSignWallet?
-      <div className={styles.heading}>Review your owners</div>:<div className={styles.heading}>Add vault owners</div>}
+      <div className={`${styles.heading} ${textStyles.ub_53}`}>Review your owners</div>:<div className={styles.heading}>Add vault owners</div>}
         {hasMultiSignWallet?
-        <div className={`${styles.heading} ${styles.greyedHeading}`}>
-          {/* Tell us what to call your team <br/> members. */}
-          Tell us what to call your team  members.
+        <div className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}>
+          Tell us what to call your team<br/> members.
+          {/* Tell us what to call your team  members. */}
         </div>:
-        <div className={`${styles.heading} ${styles.greyedHeading}`}>
-        {/* have more than one owner <br/> to maximize security */}
-        have more than one owner to maximize security
+        <div className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}>
+        have more than one owner to <br/> maximize security
+        {/* have more than one owner to maximize security */}
         </div>}
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (
@@ -157,7 +157,7 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
         
         <div  className={styles.bottomBar}>
           <NextButton
-            text="Add Permissions"
+            text={hasMultiSignWallet?"Add DAO details":"Add Permissions"}
             increaseStep={onNext}
             isDisabled={!areValidOwners()}
           />

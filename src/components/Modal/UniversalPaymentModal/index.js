@@ -10,12 +10,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { approveContriRequest, resetApprovedRequest } from '../../../store/actions/transaction-action'
 import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
-import { createPayout, getNonceForCreation } from '../../../store/actions/dao-action'
+import { createExternalPayment, createPayout, getNonceForCreation } from '../../../store/actions/dao-action'
 import cross from '../../../assets/Icons/cross.svg'
 import { setPayoutToast } from '../../../store/actions/toast-action'
-
 import { convertTokentoUsd } from '../../../utils/conversion'
 import { TokenInput } from '../../InputComponent/TokenInput'
+
+import {AiOutlineMinus} from 'react-icons/all'
 
 import plus from '../../../assets/Icons/plus_black.svg'
 
@@ -33,6 +34,7 @@ const UniversalPaymentModal = ({onClose, signer}) => {
     const [address, setAddress] = useState('')
     const [onFocus, setOnFocus] = useState(false)
     const [showFeedBack, setShowFeedBack] = useState(false)
+    const token_available = useSelector(x=>x.dao.balance)
 
     const currentTransaction = useSelector(
         (x) => x.transaction.currentTransaction
@@ -82,10 +84,7 @@ const UniversalPaymentModal = ({onClose, signer}) => {
         console.log('pay detail', payDetail)
         setLoading(true)
 
-        // dispatch(approveContriRequest(payDetail, true))
-
         if(payDetail.length>0){
-            // approved_request.map((item, index)=>{
                 payDetail?.map((item,index)=>{
         
                     if(item?.token_type === null || !item?.token_type ){
@@ -112,7 +111,6 @@ const UniversalPaymentModal = ({onClose, signer}) => {
                         )
                     }
                 })
-            // })
             
         }
 
@@ -159,7 +157,7 @@ const UniversalPaymentModal = ({onClose, signer}) => {
             safeSignature
         )
         console.log(currentDao, safeTxHash)
-        dispatch(createPayout(safeTxHash, nonce, true))
+        dispatch(createExternalPayment(safeTxHash, nonce, payDetail))
         dispatch(resetApprovedRequest())
         dispatch(setPayoutToast('ACCEPTED_CONTRI'))
         setLoading(false)
@@ -203,18 +201,18 @@ const UniversalPaymentModal = ({onClose, signer}) => {
               />
             ))}
 
-            <div onClick={()=>addToken()} style={{marginTop:'1.5rem'}} className={styles.addToken}>
+            <div onClick={token_available.length>1?() => addToken():()=>{}} style={{marginTop:'1.5rem'}} className={styles.addToken}>
                 <div style={{color:'#808080'}} className={`${textStyles.m_16}`}>
                     Add another token
                 </div>
                 <img src={plus} alt='plus' className={styles.plus} />
             </div>
 
-            <div className={styles.addToken}>
+            <div onClick={()=>setFeedBackSow(!feedBackShow)} className={styles.addToken}>
                 <div style={{color:'#808080'}} className={`${textStyles.m_16}`}>
                     Add Feedback
                 </div>
-                <img src={plus} alt='plus' className={styles.plus} />
+                {feedBackShow?<AiOutlineMinus size={'14px'}/>:<img src={plus} alt='plus' className={styles.plus} />}
             </div>
 
         </div>
@@ -229,12 +227,12 @@ const UniversalPaymentModal = ({onClose, signer}) => {
             <div className={styles.modal}>
                 {modalHeader()}
                 {renderForm()}
-                <div style={{height:'4.5rem'}}>
+                {feedBackShow&&<div style={{height:'4.5rem'}}>
                     <Input.TextArea
                         placeholder='Write your feedback here'
                         className={styles.textArea}
                     />
-                </div>
+                </div>}
                 {/* <div style={{ width:'100%', background:'white', left:0, height:'5rem', bottom:0, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', alignSelf:'flex-end'}}> */}
                 <div onClick={async()=>await proposeSafeTransaction()} className={styles.buttonContainer}>
                     <div style={{color:'white'}} className={textStyles.ub_16}>

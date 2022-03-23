@@ -48,34 +48,42 @@ const ContributionRequestModal = ({setVisibility}) => {
                         New contribution<br/> request
                     </div>
 
+                    <div style={{width:'100%'}}>
                     <InputText 
                         placeholder='Contribution Title' 
                         onChange={e=>setTile(e.target.value)} 
                         value={title} 
                         width={'100%'} 
                     />
+                    </div>
                     
                     <div className={styles.rowInput}>
+                    <div style={{width:'48%'}}>
                         <InputText 
                             placeholder='Time Spent' 
                             onChange={e=>setTime(e.target.value)} 
                             value={time} 
-                            width={'48%'} 
+                            width={'100%'} 
                         />
+                    </div>
+                    <div style={{width:'48%'}}>
                         <InputText 
                             placeholder='External Link' 
                             onChange={e=>setLink(e.target.value)}   
                             value={link} 
-                            width={'48%'} 
+                            width={'100%'} 
                         />
                     </div>
+                    </div>
 
+                    <div style={{width:'100%'}}>
                     <InputText 
                         placeholder='Contribution Type' 
                         onChange={e=>setContributionType(e.target.value)} 
                         value={contributionType} 
                         width={'100%'} 
                     />
+                    </div>
                     
                     <div className={styles.multiInput}>
                     <InputText 

@@ -17,6 +17,7 @@ const daoSlice = createSlice({
     contri_filter:'ACTIVE',
     active_nonce:0,
     contri_filter_key:1,
+    initial_setup:false,
     payout_filter_key:1,
   },
   reducers: {
@@ -51,6 +52,9 @@ const daoSlice = createSlice({
     set_contribution_filter(state, action){
       state.contri_filter_key = action.payload.number;
       state.contribution_request = action.payload.list
+    },
+    set_initial_setup(state, action){
+      state.initial_setup = action.payload.status
     }
 }});
 

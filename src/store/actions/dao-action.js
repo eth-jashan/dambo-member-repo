@@ -172,6 +172,7 @@ export const getContriRequest = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
+    const approvedContriRequest = getState().transaction.approvedContriRequest
     try {
       const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`,{
         headers:{
@@ -195,7 +196,8 @@ export const getContriRequest = () => {
                 })
             })
           }
-          if(payout.length>0)dispatch(tranactionAction.set_approved_request({item:{contri_detail:item, payout:payout}}))
+          const include_payout = approvedContriRequest.filter(x=>x.contri_detail.id === item.id)
+          if(payout.length>0 && include_payout.length===0)dispatch(tranactionAction.set_approved_request({item:{contri_detail:item, payout:payout}}))
         })
         dispatch(daoAction.set_contri_list({
           list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),
@@ -540,6 +542,74 @@ export const createPayout = (tranxid, nonce, isExternal= false) => {
       }else{
         return 0
       }
+  }
+}
+
+export const createExternalPayment = (tranxid, nonce, payout, description) => {
+  return async (dispatch, getState) => {
+    const jwt = getState().auth.jwt
+    const uuid = getState().dao.currentDao?.uuid
+    const transaction = getState().transaction.approvedContriRequest
+
+    let newPayout = []
+
+    payout.map((item, index)=>{
+      if(!item?.token_type){
+          newPayout.push({
+              amount: item.amount,
+              usd_amount: item?.usd_amount,
+              address: item?.address,
+              details: {
+                  name: "Ethereum",
+                  symbol: "ETH",
+                  decimals: "18",
+                  logo_url: "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                  address:''
+              }
+          })
+      }else{
+          newPayout.push({
+              amount: item.amount,
+              usd_amount: item?.usd_amount,
+              address: item?.address,
+              details: {
+                  name: item?.token_type?.token?.name,
+                  symbol: item?.token_type?.token?.symbol,
+                  decimals: item?.token_type?.token?.decimals,
+                  logo_url: item?.token_type?.token?.logoUri,
+                  address:item?.token_type?.token?.tokenAddress
+              }
+          })
+      }
+  })
+    
+    
+    const data = {
+      gnosis_reference_id:tranxid,
+      dao_uuid:uuid,
+      nonce:nonce,
+      tokens:newPayout,
+      description:description
+    }
+    console.log('data....', JSON.stringify(data))
+
+      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.externalPayout}`,data,{
+        headers:{
+          Authorization:`Bearer ${jwt}`
+        }
+      })
+      if(res.data.success){
+        console.log('created payout.....', res.data)
+        return 1
+      }else{
+        return 0
+      }
+  }
+}
+
+export const set_initial_setup = (status) => {
+  return (dispatch) => {
+    dispatch(daoAction.set_initial_setup({status}))
   }
 }
 
