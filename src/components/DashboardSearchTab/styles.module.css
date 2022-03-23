@@ -74,6 +74,9 @@
 .icon:hover{
     background: #333333;
 }
+.filterOpen{
+    background: #333333;
+}
 
 .searchContainer{
     min-width: 17.313rem;
@@ -123,6 +126,6 @@
     color: white;
 }
 
-.iconContainer{
+/* .iconContainer{
 
-}
+} */

@@ -8,6 +8,7 @@ import styles from './styles.module.css'
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { set_contri_filter, set_payout_filter } from '../../store/actions/dao-action'
+import FilterModal from '../Modal/FilterModal';
 
 const DashboardSearchTab = ({route}) => {
 
@@ -16,6 +17,7 @@ const DashboardSearchTab = ({route}) => {
     const payout_filter_key = useSelector(x=>x.dao.payout_filter_key)
     const [contriFilter, setContriFilter] = useState(1)
     const [search, setSearch] = useState(false)
+    const [filterShow, setFilterShow] = useState(false)
     
     const contri_filter = ['All requests', 'Active requests', 'Approved requests', 'Paid requests' ]
     const payout_filter = ['All requests','Pending Payment Request', 'Approved requests','Paid requests','Rejected requests' ]
@@ -119,8 +121,11 @@ const DashboardSearchTab = ({route}) => {
                     <img src={search_inactive} alt='cross' className={styles.searchIcon} />
                 </div>:
                 renderSearchBar()}
-                <div className={styles.icon}>
-                <img src={filter} alt='cross' className={styles.searchIcon} />
+                <div>
+                <div className={`${styles.icon} ${filterShow ? styles.filterOpen:""}`} onClick={() => setFilterShow(true)}>
+                <img src={filter} alt='cross' className={`${styles.searchIcon} ${filterShow ? styles.filterOpen:""}`} />
+                </div>
+                <FilterModal onClose={() => setFilterShow(false)} show={filterShow} />
                 </div>
             </div>
         </div>
