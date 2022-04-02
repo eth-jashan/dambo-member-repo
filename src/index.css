@@ -25,6 +25,12 @@ body {
   url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
   font-weight: bolder;
 }
+@font-face {
+  font-family: "ArrayBold";
+  src: local("ArrayBold"),
+  url("./assets/fonts/Array-Bold.otf") format("opentype");
+  font-weight: bold;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

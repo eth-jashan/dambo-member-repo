@@ -1,0 +1,4 @@
+export const web3 = {
+    POCP_Forwarder:'0x9F7C257B7Daa50e776b75741B96e1c40289E3Ca1',
+    POCP_Proxy:'0xd58081053cD985fB7dB5103Dc22c504A27562F19'
+}

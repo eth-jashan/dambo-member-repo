@@ -1,10 +1,11 @@
 import { message } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
+import ReactDOMServer from "react-dom/server";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
-import { getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
+import { createVoucher, getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
@@ -24,6 +25,9 @@ import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
 import { convertTokentoUsd } from '../../utils/conversion';
 import RejectPayment from '../../components/Modal/RejectPayment';
+import { createMetaTransactionSigning, createVoucherSigning } from '../../utils/POCPutils';
+import POCPBadge from '../../components/POCPBadge';
+import axios from 'axios';
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -76,13 +80,28 @@ export default function Dashboard() {
         setProvider()
     },[])
 
+    
+
     async function copyTextToClipboard() {
-        if ('clipboard' in navigator) {
-            message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        }
+        // if ('clipboard' in navigator) {
+        //     message.success('invite link copied succesfully!')
+        //   return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        // } else {
+        //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        // }
+        //const {signature, voucher, claimer, types, domain} =  await createVoucherSigning('0xecaAfF201CB289731E689119180B8Cf066B04C08', { tokenId:0, uri:'https://ipfs.io/ipfs/Qmd3UnDWu3HKyXDqwnuvWv8Gg6rG1ppVkZKsYeMyYkrzHb', minPrice:'100', approvedFor:'0xecaAfF201CB289731E689119180B8Cf066B04C08' },signer)
+        // console.log('signature response', signature)
+        // await dispatch(createVoucher(voucher, types, domain, signature))
+        await createMetaTransactionSigning(signer)
+        const html = ReactDOMServer.renderToStaticMarkup(<POCPBadge name={'Jashan'} />);
+        // var blob = new Blob([html], { type: 'text/html' });
+        // const url = URL.createObjectURL(blob)
+        // var file = new File([blob], "pocp.html", {type: "text/html"});
+        // a.setAttribute('href', url) // Set "a" element link
+        // a.setAttribute('download', file.name) // Set download filename
+        // a.click() // Start downloading
+        // const res = await axios.post('https://localhost:3002/ipfs/upload',JSON.stringify())
+        console.log('file', html)
     }
     
     const preventGoingBack = useCallback(() => {
@@ -291,6 +310,18 @@ export default function Dashboard() {
         renderEmptyScreen()
     )
 
+    const renderContributorContribution = () => (
+        // contribution_request.length > 0 ?
+        <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
+            <div style={{width:'100%',  marginBottom:'100px'}}>
+                {/* {contribution_request.map((item, index)=>( */}
+                    <ContributionCard item={{"id":5,"title":"Dedd","requested_by":{"public_address":"0x05786f2c6730469B2df4A500E2325494521087f6","metadata":{"name":"Aviral Bohra","email":null},"access_role":"CONTRIBUTOR","community_role":"DESIGNER"},"stream":"DESIGN","time_spent":2,"status":"EXECUTED","payout_status":null,"tokens":[{"amount":1,"usd_amount":2580.27,"addr":"0x05786f2c6730469B2df4A500E2325494521087f6","details":{"id":1,"symbol":"ETH","name":"Ethereum","decimals":18,"logo_url":"https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png","address":"0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8"}}]}} />
+                {/* ))} */}
+            </div>
+        </div>
+        // :renderEmptyScreen()
+    )
+
     const renderPayment = () => (
         payout_request.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
@@ -314,7 +345,7 @@ export default function Dashboard() {
                 {(modalContri||modalPayment || modalUniPayment)&&<div style={{position:'absolute', background:'#7A7A7A',opacity:0.2, bottom:0, right:0, top:0, left:0}}/>}
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
-                {role === 'ADMIN'? adminScreen():renderEmptyScreen()}
+                {role === 'ADMIN'? adminScreen():renderContributorContribution()}
                 {rejectModal&&<RejectPayment signer={signer} onClose={()=>dispatch(setRejectModal(false))} />}
                 {approve_contri.length>0 && tab==='contributions' && role === 'ADMIN' && checkoutButton()}
                 {payout_toast && transactionToast()}

@@ -1,0 +1,266 @@
+.container{
+    width: 100%;
+    height: 85%;
+    padding: 2rem 1.5rem 0rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.cross{
+    height: 1rem;
+    width: 1rem;
+    margin-bottom: 3.13rem;
+}
+
+.delete{
+    height: 1rem;
+    width: 1rem;
+    /* margin-bottom: 3.13rem; */
+}
+
+.title{
+    color: white;
+    text-align: start;
+    width: 70%;
+    align-self: flex-start;
+    /* max-lines: 2; */
+}
+
+.ownerInfo{
+    color: white;
+    text-align: start;
+    margin-top: 1.5rem;
+}
+
+.timeInfo{
+    text-align: start;
+    margin-bottom: 1.5rem;
+    color: #737373;
+}
+
+.description{
+    color: #737373;
+    text-align: start;
+    margin-bottom: 1.5rem;
+}
+
+
+.addToken{
+    width: 100%;
+    padding: 1rem ;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px #292929 solid;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    align-items: center;
+}
+.addToken>div{
+    color: #808080;
+}
+
+.feedBackContainer{
+    width: 100%;
+    padding: 1rem ;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.feedBackContainer>div{
+    color: #808080;
+}
+
+.add{
+    color: #808080;
+    height: 0.875rem;
+    width: 0.875rem;
+}
+
+.payNow{
+    padding: 0.5rem 1.25rem 0.5rem 1.25rem;
+    background: white;
+    border-radius: 1.5rem;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
+    display: flex;
+    align-self: center;
+    cursor: pointer;
+}
+.payNow:hover{
+    background-color: #E1DCFF;
+}
+.payNow>div{
+    color: #6852FF;
+}
+
+.amountScroll{
+    width: 100%;
+    /* max-height: 6.25rem; */
+    /* overflow-y: scroll; */
+    margin-bottom: 2px;
+
+}
+
+.buttonTile{
+    color: #808080;
+}
+
+.textArea{
+    width: 100%;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
+    border-radius: 0.5rem;
+    background-color: #7A7A7A;
+    font-family:'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: white;
+    outline: none;
+    padding: 1rem;
+    min-height: 4.5rem;
+    border:0
+}
+.textArea::placeholder{
+    font-family:'TelegrafMedium';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #808080;
+}
+.textArea:focus{
+    outline: none;
+    border: 0px;
+}
+.deleteButton{
+    height: 2.5rem;
+    border-radius: 2.25rem;
+    width: 2.5rem;
+    background: #737373;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-top: 0.625rem; */
+    /* position: absolute;*/
+    bottom: 1.25rem; 
+    
+}
+
+.bottomContainer{
+    position: absolute;
+    bottom: 0;
+    height: 7.5rem;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
+    filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.25));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: space-between; */
+}
+
+.deletContainer{
+    height: 2.5rem;
+    width: 2.5rem;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
+    border-radius: 1.5rem;
+    background-color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tokenDiv{
+    width: '100%';
+    padding: 0.75rem 1rem;
+    background-color: #ECFFB830;
+    border-radius: 0.5rem;
+}
+
+.divider{
+    width: 100%;
+    height: 1px;
+    /* background-color: #e2e2e2; */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tokenHeader{
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+}
+
+.singleTimeline_created{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.connectorContainer{
+    /* width: 10%; */
+    /* background: red; */
+    margin-right: 0.75rem ;
+}
+
+.headerTimeline_created{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.singleTimeline_signer{
+    /* display: flex;
+    flex-direction: row; */
+    width: 100%;
+    /* background-color: red; */
+}
+
+.singleHeaderContainer_signer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.headerTimeline_signer{
+    display: flex;
+    /* justify-content: space-between; */
+    width: 80%;
+}
+
+.childrenTimeline_created{
+    width: 100%;
+    border-left: 1px solid #666666;
+    margin-left: 3px;
+    padding-left: 1.5rem;
+    padding-top: 0.75rem;
+    height: 1.25rem;
+}
+
+.childrenTimeline_signer{
+    width: 100%;
+    border-left: 1px solid #666666;
+    margin-left: 3px;
+    padding-left: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+}
+
+.childrenTimeline_execution{
+    width: 100%;
+    border-left: 1px solid #666666;
+    margin-left: 3px;
+    padding-left: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+}
+
+.singleAddress{
+    display: flex;
+    flex-direction: row;
+}

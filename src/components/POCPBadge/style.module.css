@@ -1,0 +1,77 @@
+.container{
+    border-radius: 0.5rem;
+    background-color: black;
+    box-shadow: 0 0  20px 2px #FFFFFF30;
+    margin-bottom: 2.5rem;
+}
+
+.streamTitle{
+    color: #95F2FE;
+    font-size: 2rem;
+    line-height: 1.75rem;
+    text-align: start;
+    font-family: 'ArrayBold';
+}
+
+.daoInfoContainer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.daoTitle{
+    color: #FF0087;
+    font-size: 1.75rem;
+    line-height: 1.75rem;
+    font-family: 'ArrayBold';
+    text-align: start;
+}
+
+.daoProfile{
+    height: 3rem;
+    width: 3rem;
+    border-radius: 0.5rem;
+}
+
+.upperContainer{
+    width: 100%;
+    margin-bottom: 0.875rem;
+    padding: 1.25rem;
+}
+
+.bottomContainer{
+    width: 100%;
+    background-color: #FFFFFF30;
+    padding: 1.25rem;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.title{
+    font-family: monospace;
+    color: white;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+.to{
+    font-family: monospace;
+    color: #FFFFFF30;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+.triangle_bottomright{
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid #FFFFFF30;
+    border-left: 10px solid transparent;
+}
+
+.rectangle{
+    height: 10px;
+    width: 40%;
+    background-color:#FFFFFF30;
+}

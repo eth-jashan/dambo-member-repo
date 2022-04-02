@@ -179,7 +179,7 @@ export const getContriRequest = () => {
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending Contri request.....',res.data)
+      console.log('Pending Contri request.....',JSON.stringify(res.data.data))
       if(res.data.success){
         res.data?.data?.contributions.map((item, index)=>{
           let payout = []
@@ -610,6 +610,28 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
 export const set_initial_setup = (status) => {
   return (dispatch) => {
     dispatch(daoAction.set_initial_setup({status}))
+  }
+}
+
+//create a voucher
+
+export const createVoucher = (voucher, types, domain,signature) => {
+  return async (dispatch, getState) => {
+    const res = await axios.post(api.pocp_service.BASE_URL,{
+      data:{...voucher, signature},
+      types,
+      signingDomain:domain
+    })
+    console.log('voucher created', res)
+  }
+}
+
+export const filterRequests = (time, verticals) => {
+  return (dispatch, getState) => {
+    const contribution_request = getState().dao.contribution_request
+    const payout_request = getState().dao.payout_request
+    console.log('contribution', contribution_request, time, verticals)
+    // verticals.map
   }
 }
 

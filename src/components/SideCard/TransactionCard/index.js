@@ -1,17 +1,15 @@
-import { style } from "dom-helpers";
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input, Typography } from "antd";
 import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
-import cross from "../../assets/Icons/cross_white.svg";
-import delete_icon from '../../assets/Icons/delete_icon.svg'
+import cross from '../../../assets/Icons/cross_white.svg'
+import delete_icon from '../../../assets/Icons/delete_icon.svg'
 import styles from "./style.module.css";
-import textStyle  from "../../commonStyles/textType/styles.module.css";
-import AmountInput from '../InputComponent/AmountInput';
-import { approveContriRequest, rejectContriRequest, setTransaction } from '../../store/actions/transaction-action';
-import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
-import { convertTokentoUsd } from "../../utils/conversion";
-import { TokenInput } from "../InputComponent/TokenInput";
+import textStyle  from "../../../commonStyles/textType/styles.module.css";
+import { approveContriRequest, rejectContriRequest, setTransaction } from '../../../store/actions/transaction-action';
+import { getAllDaowithAddress, getContriRequest } from '../../../store/actions/dao-action';
+import { convertTokentoUsd } from "../../../utils/conversion";
+import { TokenInput } from "../../InputComponent/TokenInput";
 
 
 const TransactionCard = ({signer}) => {

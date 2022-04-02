@@ -92,3 +92,9 @@ export const createContributionrequest = (title, type, link, time, comments) => 
         }
     }
 }
+
+export const setContributionDetail = (item) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_contribution_detail({item}))
+    }
+}

@@ -10,24 +10,25 @@ import { getContriRequest, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 import add_white from '../../assets/Icons/add_white.svg'
-import TransactionCard from "../../components/TransactionCard";
-import PaymentSlideCard from "../../components/PaymentSideCard";
+import TransactionCard from "../../components/SideCard/TransactionCard";
+import PaymentSlideCard from "../../components/SideCard/PaymentSideCard";
 import { setPayment, setTransaction } from "../../store/actions/transaction-action";
 import { useSafeSdk } from "../../hooks";
 import textStyles from '../../commonStyles/textType/styles.module.css'
-// import { getPendingTransaction } from "../../store/actions/transaction-action";
+import ContributionSideCard from "../../components/SideCard/ContributionSideCard";
 
 export default function DashboardLayout({ children, route, signer }) {
 
   const accounts = useSelector(x=>x.dao.dao_list)
-  console.log('accounts...', accounts)
   const currentDao = useSelector(x=>x.dao.currentDao) 
   const currentTransaction = useSelector(x=>x.transaction.currentTransaction)
   const currentPayment = useSelector(x=>x.transaction.currentPayment)
+  const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
   const role = useSelector(x=>x.dao.role)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
+  const contribution_detail = useSelector(x=>x.contributor.contribution_detail)
 
   const changeAccount = async(item) => {
     dispatch(set_dao(item))
@@ -71,13 +72,19 @@ export default function DashboardLayout({ children, route, signer }) {
   )
 
   const renderSideBarComp = () => {
+    if(role === 'ADMIN'){
     if(route==='contributions' && currentTransaction){
-      return <TransactionCard signer={signer} />
+      return contri_filter_key?<TransactionCard signer={signer} />:<ContributionSideCard signer={signer} />
     }else if (route==='payments' && currentPayment){
       return <PaymentSlideCard signer={signer}/>
     }else{
       return renderAdminStats()
     }
+  }else{
+    if(contribution_detail){
+      return <ContributionSideCard isAdmin={false} signer={signer} />
+    }
+  }
   }
 
   const text = (item) => <span>{item}</span>;
@@ -112,10 +119,10 @@ export default function DashboardLayout({ children, route, signer }) {
             <div className={styles.children}>
             {children}
             </div>
-            {role === 'ADMIN' &&
+            {/* {role === 'ADMIN' && */}
             <div className={styles.adminStats}>
               {renderSideBarComp()}
-            </div>}
+            </div>
         </div>
         </div>
 

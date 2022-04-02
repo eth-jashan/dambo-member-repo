@@ -52,16 +52,16 @@ function App() {
       if(chainId === '0x4'){
 
       }else{
-      if(isAdmin){
-        dispatch(setLoggedIn(false))
-        dispatch(signout())
-        navigate('/')
-      }else{
-        dispatch(setLoggedIn(false))
-        dispatch(signout())
-        dispatch(setAdminStatus(false))
-        navigate('/')
-      }
+      // if(isAdmin){
+      //   dispatch(setLoggedIn(false))
+      //   dispatch(signout())
+      //   navigate('/')
+      // }else{
+      //   dispatch(setLoggedIn(false))
+      //   dispatch(signout())
+      //   dispatch(setAdminStatus(false))
+      //   navigate('/')
+      // }
     }
     });
 

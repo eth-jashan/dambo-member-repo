@@ -1,18 +1,18 @@
 import React from 'react'
-import cross from '../../assets/Icons/cross_white.svg'
+import cross from '../../../assets/Icons/cross_white.svg'
 import styles from './style.module.css'
-import textStyle  from "../../commonStyles/textType/styles.module.css";
+import textStyle  from "../../../commonStyles/textType/styles.module.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import moment from 'moment'
-import { executePayout, getPayoutRequest, rejectPayout, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../store/actions/dao-action';
-import { EthSignSignature } from '../../utils/EthSignSignature';
+import { executePayout, getPayoutRequest, rejectPayout, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../../store/actions/dao-action';
+import { EthSignSignature } from '../../../utils/EthSignSignature';
 import { message } from 'antd';
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
-import { useSafeSdk } from "../../hooks";
-import { setPayment, setRejectModal } from '../../store/actions/transaction-action';
-import crossSvg from '../../assets/Icons/cross_white.svg'
-import { setPayoutToast } from '../../store/actions/toast-action';
+import { useSafeSdk } from "../../../hooks";
+import { setPayment, setRejectModal } from '../../../store/actions/transaction-action';
+import crossSvg from '../../../assets/Icons/cross_white.svg'
+import { setPayoutToast } from '../../../store/actions/toast-action';
 
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')

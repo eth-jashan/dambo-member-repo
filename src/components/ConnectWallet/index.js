@@ -67,7 +67,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
   
-    if(chainId === 4){
+    // if(chainId === 4){
       try {
       const res =  await dispatch(authWithSign(address, signer))
       if(res){
@@ -102,11 +102,15 @@ const ConnectWallet = ({ isAdmin }) =>{
       } catch (error) {
         console.log('error on signing....', error)
       }
-    }else{
-      console.log('change chain id')
-      message.error('change chain to rinkeby.....')
-    }
-    setAuth(false)
+    // }else{
+      // console.log('change chain id')
+      //   await web3Provider.provider.request({
+      //     method: 'wallet_switchEthereumChain',
+      //     params: [{ chainId: '0x4'}],
+      //   });
+      
+    // }
+    // setAuth(false)
     // navigate('/dashboard')
   },[dispatch, isAdmin, navigate, uuid])
 

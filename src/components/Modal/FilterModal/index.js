@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { filterRequests } from "../../../store/actions/dao-action";
 import styles from "./styles.module.css";
 
 const FilterModal = ({ show, onClose }) => {
   const CloseRef = useRef();
 
   const [checkedVerticles, setCheckedVerticles] = useState([]);
+  const dispatch = useDispatch()
 
   const checkList = ["Development", "Design", "Writing", "Marketing"];
   const radioList = [
@@ -15,6 +18,8 @@ const FilterModal = ({ show, onClose }) => {
     { key: "30hr", value: "> 30 hr" },
   ];
   const [time, setTime] = useState("");
+
+  console.log('time', time, checkedVerticles)
 
   const handleCheckVerticles = (event) => {
     var updatedList = [...checkedVerticles];
@@ -63,14 +68,6 @@ const FilterModal = ({ show, onClose }) => {
             <div className={styles.filterHeading}>Verticals</div>
             <div className={styles.checkListContainer}>
               {checkList.map((item, index) => (
-                // <div key={index}>
-                //   <input
-                //     value={item}
-                //     type="checkbox"
-                //     onChange={handleCheckVerticles}
-                //   />
-                //   <span className={styles.checkmark}>{item}</span>
-                // </div>
                 <label class={styles.oneCheckcontainer}>
                   {item}
                   <input
@@ -86,51 +83,6 @@ const FilterModal = ({ show, onClose }) => {
           <div style={{ width: "53%", padding: "1rem 1rem 0rem 1rem " }}>
             <div className={styles.filterHeading}>Time</div>
             <div className={styles.checkListContainer} onChange={onChangeRadio}>
-              {/* <div>
-                <input
-                  type="radio"
-                  value="1hr"
-                  name="time"
-                  checked={time === "1hr"}
-                />{" "}
-                &lt; 1 hr
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  value="1hr4"
-                  name="time"
-                  checked={time === "1hr4"}
-                />{" "}
-                1 hr - 4 hr
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  value="4hr12"
-                  name="time"
-                  checked={time === "4hr12"}
-                />{" "}
-                4 hr - 12 hr
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  value="12hr30"
-                  name="time"
-                  checked={time === "12hr30"}
-                />{" "}
-                12 hr - 30 hr
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  value="30hr"
-                  name="time"
-                  checked={time === "30hr"}
-                />{" "}
-                &gt; 30 hr
-              </div> */}
               {radioList.map((item, index) => (
                   <label class={styles.oneRadioContainer} key={item.key}>{item.value}
                   <input type="radio" value={item.key} checked={time === item.key} name="time" />
@@ -144,7 +96,7 @@ const FilterModal = ({ show, onClose }) => {
           <div style={{display:"flex"}}>
             {checkedVerticles.length === 0 ? null : <div>{checkedVerticles.length} . &nbsp; </div> }
             <span className={styles.clearbutton}> Clear</span></div>
-          <div className={styles.approveButton}>Approve Request</div>
+          <div onClick={()=>dispatch(filterRequests(time, checkedVerticles))} className={styles.approveButton}>Approve Request</div>
         </div>
       </div>
     </div>
