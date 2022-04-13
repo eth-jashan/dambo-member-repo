@@ -34,8 +34,9 @@ export const getRole = (uuid) => {
             if(res.data.data.role === 'NO_ROLE'){
                return false 
             }else{
-                return true
+                return res.data.data.role
             }
+            
         }else{
             return false
         }

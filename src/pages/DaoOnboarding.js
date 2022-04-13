@@ -17,15 +17,16 @@ import { useSafeSdk } from "../hooks";
 import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
 import { message } from "antd";
+import { approvePOCPBadge, claimPOCPBadges, registerDaoToPocp } from "../utils/POCPutils";
+import { relayFunction, updatePocpRegister } from "../utils/relayFunctions";
+import { getAuthToken } from "../store/actions/auth-action";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(1);
   const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false);
-  // const history = useHistory();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [deploying, setDeploying] = useState(false);
   const [signer, setSigner] = useState();
-  // const userSigner = useSelector(x=>x.web3.signer);
   const [safeAddress, setSafeAddress] = useState();
   const { safeFactory } = useSafeSdk(signer, safeAddress);
   const [gnosisLoad, setGnosisLoad] = useState(false);
@@ -117,12 +118,32 @@ export default function Onboarding() {
       }
     } else if (currentStep === 4) {
       if (hasMultiSignWallet) {
-        const res = await dispatch(registerDao());
-        if (res) {
-          navigate(`/dashboard`);
-        } else {
-          navigate(`/onboard/dao`);
-        }
+        // const res = await dispatch(registerDao());
+        // if (res) {
+          const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+          try {
+            await web3Provider.provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: '0x13881'}],})
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
+              const signer = provider.getSigner()
+              console.log('changed', signer)
+              const {data, signature} = await claimPOCPBadges(signer,'jashan', 'drepute.xyz',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'])
+              // const token = await dispatch(getAuthToken())
+              // const tx_hash = await relayFunction(token,0,data,signature)
+              await provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x4'}],
+              })
+              // console.log(res, tx_hash)
+              // await updatePocpRegister(jwt, tx_hash, res)
+          } catch (error) {
+            console.log(error.toString())
+          }
+          // navigate(`/dashboard`);
+        // } else {
+        //   navigate(`/onboard/dao`);
+        // }
       } else {
         try {
           try {

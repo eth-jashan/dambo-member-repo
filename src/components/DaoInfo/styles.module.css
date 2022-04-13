@@ -132,26 +132,41 @@
 }
 
 .uploadContainer{
-    width: 100%;
+    width: 60%;
     flex-direction: row;
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
+    align-self: center;
+    /* bottom: 2rem; */
 }
-
-.uploadBtn{
-    cursor: pointer;
-    width: 48%;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: black;
-    height: 30px;
+.retry{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 2rem;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12), 0px 3px 6px rgba(0, 0, 0, 0.08);
     display: flex;
+    align-self: center;
     justify-content: center;
     align-items: center;
 }
+.retry>img{
+    width: 1rem;
+    height: 1.25rem;
+}
 
-.remove{
-  color: red;
-  font-size: 1rem;
+.upload{
+    width: 6.5rem;
+    padding: 4px 12px;
+    border-radius: 1rem;
+    background-color: #6852FF;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12), 0px 3px 6px rgba(0, 0, 0, 0.08);
+}
+.upload>img{
+    height: 1rem;
+    width: 1rem;
 }

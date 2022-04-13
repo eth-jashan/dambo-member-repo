@@ -29,8 +29,8 @@ export default function Layout({ children, decreaseStep, currentStep, contributo
       <div className={styles.content}>
         <OnboardingHeader signer={signer} />
         {!contributorWallet&&<div className={styles.modal}>
+        {(!contributorWallet && checkRoute())? <img className={styles.backImg} onClick={decreaseStep} src={BackSvg} alt="back" />:<div className={styles.backImg}/>}
         {/* <div> */}
-          {(!contributorWallet && checkRoute())? <img className={styles.backImg} onClick={decreaseStep} src={BackSvg} alt="back" />:<div className={styles.backImg}/>}
           {children}
         </div>}
         {contributorWallet && children}

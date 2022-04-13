@@ -6,18 +6,25 @@ import InputText from "../InputComponent/Input";
 import NextButton from "../NextButton";
 import styles from "./styles.module.css";
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json";
+import retry from "../../assets/Icons/retry.svg";
+import upload from "../../assets/Icons/upload.svg";
 import Lottie from "react-lottie";
 import { RiFileUploadLine } from "react-icons/all";
 import api from "../../constant/api";
 import axios from "axios";
 
 import textStyles from '../../commonStyles/textType/styles.module.css'
+import { ethers } from "ethers";
+import { registerDaoToPocp } from "../../utils/POCPutils";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import { INFURA_ID } from "../../constants";
 
 const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [discord, setDiscord] = useState("");
   const [image, setImage] = useState()
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
 
   const defaultOptions = {
@@ -29,12 +36,11 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
     },
   };
 
-  const onSubmit = () => {
-    console.log('register info===>', discord, image?.url)
+  
+  const onSubmit = async() => {
     dispatch(addDaoInfo(name, email, discord, image?.url));
     increaseStep();
-  };
-
+  }
   const createImage = (file) => {
     let reader = new FileReader();
     reader.onload = (e) => {
@@ -58,7 +64,8 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
   };
 
 
-  const uploadImage = async (e, key) => {
+  const uploadImage = async () => {
+    setLoading(true)
     const response = await axios({
       method: "GET",
       url: api.s3Uplaod.url,
@@ -77,15 +84,17 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
     console.log(result, response.data.uploadURL.split("?")[0])
     // Final URL for the user doesn't need the query string params
       setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }));
+      setLoading(false)
   };
 
   const renderUploadOption = () => (
     <div className={styles.uploadContainer}>
-      <div onClick={async()=> await uploadImage()} className={styles.uploadBtn}>
-        <div style={{color:'white', fontSize:'1rem'}}>Save</div>
+      <div onClick={()=>setImage()} className={styles.retry}>
+        <img src={retry} alt='retry'/>
       </div>
-      <div onClick={()=>setImage()} style={{background:'white', border:'1px red solid'}} className={styles.uploadBtn}>
-        <div className={styles.remove}>Remove</div>
+      <div onClick={()=>uploadImage()} className={styles.upload}>
+        <img src={upload} alt='upload'/>
+        <div style={{color:'white'}} className={textStyles.m_16}>upload</div>
       </div>
     </div>
   )
@@ -195,7 +204,7 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
             <NextButton
               text={hasMultiSignWallet?"Register Dao":"Add Owners"}
               increaseStep={onSubmit}
-              isDisabled={name === "" || deploying}
+              isDisabled={name === "" || deploying||loading}
               // loader={deploying}
             />
           </div>

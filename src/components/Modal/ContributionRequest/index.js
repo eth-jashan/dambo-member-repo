@@ -3,7 +3,7 @@ import styles from './styles.module.css'
 import { MdChevronRight } from 'react-icons/all'
 import cross from '../../../assets/Icons/cross.svg'
 import InputText from '../../InputComponent/Input'
-import { Input, message } from 'antd'
+import { Input, message,Progress } from 'antd'
 import { useDispatch } from 'react-redux'
 import { createContributionrequest } from '../../../store/actions/contibutor-action'
 const ContributionRequestModal = ({setVisibility}) => {
@@ -13,6 +13,7 @@ const ContributionRequestModal = ({setVisibility}) => {
     const [link, setLink] = useState('')
     const [comments, setComments] = useState('')
     const [contributionType, setContributionType] = useState('')
+    const [descriptionFocus, setDescriptionFocus] = useState('')
 
     const dispatch = useDispatch()
 
@@ -31,6 +32,16 @@ const ContributionRequestModal = ({setVisibility}) => {
             setVisibility(false)
         }else{
             message.error('Try creating again')
+        }
+    }
+
+    const textAreaProperty = () => {
+        if(descriptionFocus){
+            return{background:'white', border:'1px solid #6852FF'}
+        }else if(!descriptionFocus && comments.length>0){
+            return{background:'#E1DCFF', border:'1px solid #EEEEF0'}
+        }else if(!descriptionFocus && comments.length===0){
+            return{background:'white', border:'1px solid #EEEEF0'}
         }
     }
 
@@ -85,14 +96,20 @@ const ContributionRequestModal = ({setVisibility}) => {
                     />
                     </div>
                     
-                    <div className={styles.multiInput}>
-                    <InputText 
-                        placeholder='Additional Comments' 
-                        onChange={e=>setComments(e.target.value)} 
-                        value={comments} 
-                        width={'100%'} 
-                        multi={'7.25rem'}
-                    />
+                    <div style={{height:'7.25rem', width:'100%', marginTop:'1rem', position:'relative', border:textAreaProperty()?.border, borderRadius:'0.5rem', background:textAreaProperty()?.background}}>
+                        <Input.TextArea
+                            placeholder='Write your feedback here'
+                            className={styles.textArea}
+                            onFocus={()=>setDescriptionFocus(true)}
+                            onBlur={()=>setDescriptionFocus(false)}
+                            autoSize={{ maxRows: 3}}
+                            maxLength={200}
+                            bordered={false}
+                            value={comments}
+                            onChange={(e)=>setComments(e.target.value)}
+                        />
+                        <Progress trailColor='#CCCCCC' strokeColor='#6852FF' strokeWidth={10} style={{ bottom:12, right:12, position:'absolute'}} width={20} type="circle" showInfo={false} percent={(comments.length/200)*100} />
+                        
                     </div>
                 </div>
 

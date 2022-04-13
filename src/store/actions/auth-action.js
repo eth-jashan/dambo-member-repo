@@ -4,6 +4,21 @@ import routes from "../../constant/routes";
 import { authActions } from "../reducers/auth-slice";
 import { contributorAction } from "../reducers/contributor-slice";
 
+export const getAuthToken = () => {
+  return async (dispatch, getState)=>{
+    const jwt = getState().auth.jwt
+    const res = await axios.get('https://staging.api.drepute.xyz/auth/fetch_api_token',{
+      headers: {
+        Authorization:`Bearer ${jwt}`
+      }
+    })
+    console.log(res.data.data.data.token)
+    if(res.data.success){
+      return res.data.data.data.token
+    }
+  }
+}
+
 export const authWithSign = (address, signer) => {
   return async (dispatch, getState) => {
     console.log('signin start')

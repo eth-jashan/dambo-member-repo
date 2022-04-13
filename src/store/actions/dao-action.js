@@ -19,7 +19,7 @@ export const getAllDaowithAddress = () => {
             Authorization:`Bearer ${jwt}`
           }
         })
-        console.log(`total daos of ${res.data.data.length}`)
+        console.log(`total daos of`, res.data.data)
         if(res.data.data.length>0){
             dispatch(daoAction.set_dao_list({
               list:res.data.data,
@@ -27,7 +27,9 @@ export const getAllDaowithAddress = () => {
             dispatch(daoAction.set_current_dao({
               dao:res.data.data[0].dao_details,
               role: res.data.data[0].access_role,
-              community_role: res.data.data[0].community_role
+              community_role: res.data.data[0].community_role,
+              account_mode:res.data.data[0].access_role,
+              index:0
             }))
         }else{
           dispatch(daoAction.set_dao_list({
@@ -36,7 +38,9 @@ export const getAllDaowithAddress = () => {
           dispatch(daoAction.set_current_dao({
             dao:null,
             role: null,
-            community_role: null
+            community_role: null,
+            account_mode:null,
+            index:0
           }))
           return 0
         }
@@ -47,7 +51,9 @@ export const getAllDaowithAddress = () => {
         dispatch(daoAction.set_current_dao({
           dao:null,
           role: null,
-          community_role: null
+          community_role: null,
+          account_mode:null,
+          index:0
         }))
         return 0
       }
@@ -58,8 +64,10 @@ export const set_contri_filter = (filter_key, number) => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
+    const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
+    console.log('role', getState().dao.role)
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`,{
+      const res = await axios.get(url,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -70,7 +78,7 @@ export const set_contri_filter = (filter_key, number) => {
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             number:2,
-            list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED")
+            list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED" && x.payout_status==='REQUESTED')
           }))
         } else if( filter_key === 'ACTIVE'){
 
@@ -148,12 +156,14 @@ export const gnosisDetailsofDao = () => {
   }
 }
 
-export const set_dao = (dao) => {
+export const set_dao = (dao, index) => {
   return (dispatch) => {
     dispatch(daoAction.set_current_dao({
       dao:dao.dao_details,
       role:dao.access_role,
-      community_role:dao.community_role
+      community_role:dao.community_role,
+      account_mode:dao.access_role,
+      index:index
     }))
     gnosisDetailsofDao()
   }
@@ -173,13 +183,14 @@ export const getContriRequest = () => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
     const approvedContriRequest = getState().transaction.approvedContriRequest
+    const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`,{
+      const res = await axios.get(url,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
       })
-      console.log('Pending Contri request.....',JSON.stringify(res.data.data))
+      console.log('Pending Contri request.....',res.data.data)
       if(res.data.success){
         res.data?.data?.contributions.map((item, index)=>{
           let payout = []
@@ -227,6 +238,7 @@ export const getPayoutRequest = () => {
     const jwt = getState().auth.jwt
     const safe_address = getState().dao.currentDao?.safe_public_address
     const uuid = getState().dao.currentDao?.uuid
+    console.log('uuid', uuid)
     try {
       const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
         headers:{
@@ -632,6 +644,12 @@ export const filterRequests = (time, verticals) => {
     const payout_request = getState().dao.payout_request
     console.log('contribution', contribution_request, time, verticals)
     // verticals.map
+  }
+}
+
+export const switchRole = (role) => {
+  return (dispatch, getState) => {
+    dispatch(daoAction.switch_account_role({role}))
   }
 }
 

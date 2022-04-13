@@ -31,6 +31,12 @@ body {
   url("./assets/fonts/Array-Bold.otf") format("opentype");
   font-weight: bold;
 }
+@font-face {
+  font-family: "SFMono";
+  src: local("SFMono"),
+  url("./assets/fonts/SF-Mono-Medium.otf") format("opentype");
+  font-weight: bold;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

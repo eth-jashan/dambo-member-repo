@@ -6,7 +6,6 @@ import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
 import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout } from "../../store/actions/auth-action";
-
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
 import { Divider, Alert, message } from "antd";
@@ -104,10 +103,10 @@ const ConnectWallet = ({ isAdmin }) =>{
       }
     // }else{
       // console.log('change chain id')
-      //   await web3Provider.provider.request({
-      //     method: 'wallet_switchEthereumChain',
-      //     params: [{ chainId: '0x4'}],
-      //   });
+        // await web3Provider.provider.request({
+        //   method: 'wallet_switchEthereumChain',
+        //   params: [{ chainId: '0x4'}],
+        // });
       
     // }
     // setAuth(false)

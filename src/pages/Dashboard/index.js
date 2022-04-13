@@ -1,9 +1,9 @@
-import { message } from 'antd';
+import { message, List } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 import ReactDOMServer from "react-dom/server";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
-import { getJwt, signout } from '../../store/actions/auth-action';
+import { getAuthToken, getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
 import { createVoucher, getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
@@ -11,7 +11,7 @@ import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
 import { links } from '../../constant/links';
 import ContributionRequestModal from '../../components/Modal/ContributionRequest';
-import { ethers } from 'ethers';
+import { ethers, providers } from 'ethers';
 import DashboardSearchTab from '../../components/DashboardSearchTab';
 import ContributionCard from '../../components/ContributionCard';
 import { useSafeSdk } from '../../hooks';
@@ -25,10 +25,15 @@ import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
 import { convertTokentoUsd } from '../../utils/conversion';
 import RejectPayment from '../../components/Modal/RejectPayment';
-import { createMetaTransactionSigning, createVoucherSigning } from '../../utils/POCPutils';
+import { approvePOCPBadge, claimPOCPBadges, createMetaTransactionSigning, createVoucherSigning,registerDaoToPocp } from '../../utils/POCPutils';
 import POCPBadge from '../../components/POCPBadge';
 import axios from 'axios';
-
+import GnosisExternalPayment from '../../components/Alert/GnosisExternalPayment/index';
+import BadgeItem from '../../components/BadgeItem';
+import HtmlBadge from '../../components/HtmlBadge';
+import { relayFunction } from '../../utils/relayFunctions';
+import { web3 } from '../../constant/web3';
+import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export default function Dashboard() {
@@ -38,7 +43,8 @@ export default function Dashboard() {
     
     const payout_toast = useSelector(x=>x.toast.payout)
     const initial_setup = useSelector(x=>x.dao.initial_setup)
-
+    const account_mode = useSelector(x=>x.dao.account_mode)
+    const account_index = useSelector(x=>x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     
@@ -80,7 +86,17 @@ export default function Dashboard() {
         setProvider()
     },[])
 
-    
+    const asyncTask = async (hash) => {
+        setTimeout(async () => {
+        //   try {
+        //     const _mobileNumber = await SmsRetriever.requestPhoneNumber();
+        //     setMobileNumber(_mobileNumber.substring(3));
+        //   } catch (e) {
+        //     console.log(e);
+        //   }
+        console.log('ran once after 3sec')
+        }, 30000);
+      };
 
     async function copyTextToClipboard() {
         // if ('clipboard' in navigator) {
@@ -89,11 +105,63 @@ export default function Dashboard() {
         // } else {
         //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
         // }
+
+
+        // try {
+            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            try {
+                
+                await web3Provider.provider.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: '0x13881'}],})
+                  const provider = new ethers.providers.Web3Provider(window.ethereum);
+                  const signer = provider.getSigner()
+                  console.log('changed', signer)
+                  let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+                  const {data, signature} = await approvePOCPBadge(signer,1,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
+                  const token = await dispatch(getAuthToken())
+                  const tx_hash = await relayFunction(token,5,data,signature)
+                  console.log('approve hash',tx_hash)
+                  await asyncTask(tx_hash)
+                //   await provider.provider.request({
+                //     method: 'wallet_switchEthereumChain',
+                //     params: [{ chainId: '0x4'}],
+                //   })
+              } catch (error) {
+                console.log(error.toString())
+              }
+        //   try {
+        //     await web3Provider.provider.request({
+        //       method: 'wallet_switchEthereumChain',
+        //       params: [{ chainId: '0x13881'}],})
+        //       const provider = new ethers.providers.Web3Provider(window.ethereum);
+        //       const signer = provider.getSigner()
+        //       console.log('changed', signer)
+        //       const {data, signature} = await approvePOCPBadge(signer, 3, address, ['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
+        //       const token = await dispatch(getAuthToken())
+        //       await relayFunction(token,5,data,signature)
+        //       await provider.provider.request({
+        //         method: 'wallet_switchEthereumChain',
+        //         params: [{ chainId: '0x4'}],
+        //       })
+        //       // await updatePocpRegister(jwt, tx_hash, res)
+        //   } catch (error) {
+        //     console.log(error.toString())
+        //   }
+        // } catch (error) {
+        //     console.log('error on register', error)
+        // }
+
+        
+
+        // 0x2a95214d0a71539657e19da8a5f64a89467e4a1787ba66d4fe484a69b7677bdc
+        
+        
         //const {signature, voucher, claimer, types, domain} =  await createVoucherSigning('0xecaAfF201CB289731E689119180B8Cf066B04C08', { tokenId:0, uri:'https://ipfs.io/ipfs/Qmd3UnDWu3HKyXDqwnuvWv8Gg6rG1ppVkZKsYeMyYkrzHb', minPrice:'100', approvedFor:'0xecaAfF201CB289731E689119180B8Cf066B04C08' },signer)
         // console.log('signature response', signature)
         // await dispatch(createVoucher(voucher, types, domain, signature))
-        await createMetaTransactionSigning(signer)
-        const html = ReactDOMServer.renderToStaticMarkup(<POCPBadge name={'Jashan'} />);
+        // await createMetaTransactionSigning(signer)
+        // const html = ReactDOMServer.renderToStaticMarkup(<HtmlBadge/>);
         // var blob = new Blob([html], { type: 'text/html' });
         // const url = URL.createObjectURL(blob)
         // var file = new File([blob], "pocp.html", {type: "text/html"});
@@ -101,7 +169,7 @@ export default function Dashboard() {
         // a.setAttribute('download', file.name) // Set download filename
         // a.click() // Start downloading
         // const res = await axios.post('https://localhost:3002/ipfs/upload',JSON.stringify())
-        console.log('file', html)
+        // console.log('file', html)
     }
     
     const preventGoingBack = useCallback(() => {
@@ -130,18 +198,19 @@ export default function Dashboard() {
                    await dispatch(getAllDaowithAddress())
                    await dispatch(gnosisDetailsofDao())
                     if(role === 'ADMIN'){
-                      await  dispatch(getContriRequest())
-                      await dispatch(getPayoutRequest())
-                      await dispatch(getPendingTransaction())
+                        await  dispatch(getContriRequest())
+                        await dispatch(getPayoutRequest())
+                        await dispatch(getPendingTransaction())
                         dispatch(setPayment(null))
                         dispatch(setTransaction(null))
-                      await dispatch(syncTxDataWithGnosis())
+                        await dispatch(syncTxDataWithGnosis())
                         if(safeSdk){
                             const nonce = await safeSdk.getNonce()
                             dispatch(set_active_nonce(nonce))
                         }
                     }else{
                         console.log('fetch when contributor....')
+                        await  dispatch(getContriRequest())
                     }
                 }else{
                     message.info('Token expired')
@@ -152,12 +221,35 @@ export default function Dashboard() {
             signout()
         }
     // }
-    },[address, dispatch, navigate, role])
+    },[address, dispatch, navigate, role, safeSdk])
+
+    const accountSwitch = useCallback( async() => {
+        if(role === 'ADMIN'){
+            await  dispatch(getContriRequest())
+            await dispatch(getPayoutRequest())
+            await dispatch(getPendingTransaction())
+            dispatch(setPayment(null))
+            dispatch(setTransaction(null))
+            await dispatch(syncTxDataWithGnosis())
+            if(safeSdk){
+                const nonce = await safeSdk.getNonce()
+                dispatch(set_active_nonce(nonce))
+            }        
+        }else{
+            console.log('fetch when contributor....Contributo')
+            await  dispatch(getContriRequest())
+        }
+    },[dispatch, role, safeSdk])
 
     useEffect(()=>{
-        console.log('start..... initial load')
-        initialload()
-    },[initialload])
+        console.log('start..... initial load',account_mode, account_index)
+        if(role === account_mode && account_index===0 ){
+            initialload()
+        }else{
+            accountSwitch()
+        }
+        
+    },[accountSwitch, account_index, account_mode, initialload, role])
 
     useEffect(()=>{
         preventGoingBack()
@@ -165,16 +257,20 @@ export default function Dashboard() {
 
     const onRouteChange = async(route) =>{
         setTab(route)
-        if(safeSdk){
-            const nonce = await safeSdk.getNonce()
-            dispatch(set_active_nonce(nonce))
+        if(role === 'ADMIN'){
+            if(safeSdk){
+                const nonce = await safeSdk.getNonce()
+                dispatch(set_active_nonce(nonce))
+            }
+            await dispatch(getPayoutRequest())
+            if(route === 'payments'){
+                await dispatch(syncTxDataWithGnosis())
+            }
+            await dispatch(set_payout_filter('PENDING',1))
+            await dispatch(getContriRequest())
+        }else{
+            await dispatch(getContriRequest())
         }
-        await dispatch(getPayoutRequest())
-        if(route === 'payments'){
-            await dispatch(syncTxDataWithGnosis())
-        }
-        await dispatch(set_payout_filter('PENDING',1))
-        await dispatch(getContriRequest(1))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
     }
@@ -194,11 +290,11 @@ export default function Dashboard() {
                 Contributions
                 </div>
                 <div onClick={async()=>await onRouteChange('payments')} style={{marginLeft:'2rem'}} className={tab==='payments'?`${styles.selected} ${textStyles.ub_23}`:`${styles.selectionTab} ${textStyles.ub_23}`}>
-                Payments
+                {role==='ADMIN'?'Payments':'Badges'}
                 </div>
             </div>
             <div>
-                <div onMouseEnter={()=>setUniPayHover(true)} onMouseLeave={()=>setUniPayHover(false)} style={{background:modalUniPayment?'white':null}} onClick={async()=>await onUniModalOpen()} className={styles.addPaymentContainer}>
+                <div onMouseEnter={()=>setUniPayHover(true)} onMouseLeave={()=>setUniPayHover(false)} style={{background:modalUniPayment?'white':null}} onClick={role==='ADMIN'?async()=>await onUniModalOpen():()=>setModalContri(true)} className={styles.addPaymentContainer}>
                     <img src={(uniPayHover|| modalUniPayment)?plus_black:plus_gray} alt='plus' />
                 </div>
                 {modalUniPayment&&<UniversalPaymentModal signer={signer} onClose={()=>setModalUniPayment(false)}/>}
@@ -219,7 +315,7 @@ export default function Dashboard() {
                 Share link to onboard<br/> contributors
             </div>}
 
-            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>{setModalContri(true)}} className={styles.button}>
+            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>copyTextToClipboard()} className={styles.button}>
                 <div>
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
@@ -311,21 +407,30 @@ export default function Dashboard() {
     )
 
     const renderContributorContribution = () => (
-        // contribution_request.length > 0 ?
+        contribution_request.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
             <div style={{width:'100%',  marginBottom:'100px'}}>
-                {/* {contribution_request.map((item, index)=>( */}
-                    <ContributionCard item={{"id":5,"title":"Dedd","requested_by":{"public_address":"0x05786f2c6730469B2df4A500E2325494521087f6","metadata":{"name":"Aviral Bohra","email":null},"access_role":"CONTRIBUTOR","community_role":"DESIGNER"},"stream":"DESIGN","time_spent":2,"status":"EXECUTED","payout_status":null,"tokens":[{"amount":1,"usd_amount":2580.27,"addr":"0x05786f2c6730469B2df4A500E2325494521087f6","details":{"id":1,"symbol":"ETH","name":"Ethereum","decimals":18,"logo_url":"https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png","address":"0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8"}}]}} />
-                {/* ))} */}
+                {contribution_request.map((item, index)=>(
+                    <ContributionCard item={item} />
+                ))}
             </div>
         </div>
-        // :renderEmptyScreen()
+        :renderEmptyScreen()
+    )
+    const dataSource= ['1', '2', '3']
+    const renderBadges = () => (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridGap: 0,overflowY:'scroll',marginBottom:'2rem'}}>
+            {dataSource.map((x,i)=>(
+                <BadgeItem/>
+            ))}
+        </div>
     )
 
     const renderPayment = () => (
         payout_request.length > 0 ?
         <div style={{width:'100%', height:'100%', overflowY:'scroll'}}>
             <div style={{width:'100%',  marginBottom:'100px'}}>
+                <GnosisExternalPayment />
                 {payout_request.map((item, index)=>(
                     <PaymentCard gnosis={pending_txs}  signer={signer} item={item} />
                 ))}
@@ -338,6 +443,10 @@ export default function Dashboard() {
         tab === 'contributions'?renderContribution():renderPayment()
     )
 
+    const contributorScreen = () => (
+        tab === 'contributions'?renderContributorContribution():renderBadges()
+    )
+
     
     return (
         <DashboardLayout signer={signer} route={tab}>
@@ -345,13 +454,13 @@ export default function Dashboard() {
                 {(modalContri||modalPayment || modalUniPayment)&&<div style={{position:'absolute', background:'#7A7A7A',opacity:0.2, bottom:0, right:0, top:0, left:0}}/>}
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
-                {role === 'ADMIN'? adminScreen():renderContributorContribution()}
+                {role === 'ADMIN'? adminScreen():contributorScreen()}
                 {rejectModal&&<RejectPayment signer={signer} onClose={()=>dispatch(setRejectModal(false))} />}
                 {approve_contri.length>0 && tab==='contributions' && role === 'ADMIN' && checkoutButton()}
                 {payout_toast && transactionToast()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
                 {(modalPayment&&approve_contri.length>0)&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
-                
+                {/* {renderEmptyScreen()} */}
             </div>
         </DashboardLayout>
     );

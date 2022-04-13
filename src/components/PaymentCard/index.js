@@ -16,7 +16,12 @@ import { EthSignSignature } from '../../utils/EthSignSignature';
 import { executePayout, getPayoutRequest, set_active_nonce, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import moment from 'moment';
 import { setPayoutToast } from '../../store/actions/toast-action';
+import { relayFunction, updatePocpRegister, uplaodApproveMetaDataUpload } from '../../utils/relayFunctions';
+import { approvePOCPBadge } from '../../utils/POCPutils';
+import { getAuthToken } from '../../store/actions/auth-action';
+import { web3 } from '../../constant/web3';
 // import { isRejected } from '@reduxjs/toolkit';
+import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -247,9 +252,76 @@ export default function PaymentCard({item, signer}) {
 
     console.log('status button', isReject , delegates.length , item?.gnosis?.confirmations?.length, checkApproval(), item?.status)
 
+    const uploadApproveMetatoIpfs = async() => {
+        let metaInfo = []
+        item?.metaInfo?.contributions.map((x,index)=>{
+            
+            metaInfo.push({   
+                dao_name:currentDao?.name, 
+                contri_title:x?.title, 
+                signer:address, 
+                claimer:x?.requested_by?.public_address, 
+                //date_of_approve:item?.gnosis?.created_at, 
+                date_of_approve:'21 April 2022', 
+                id:x?.id, 
+                dao_logo_url:currentDao?.logo_url||"https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png" ,
+                work_type:x?.stream.toString()
+            });
+        })
+        // console.log('meta info', metaInfo)
+        const response = await uplaodApproveMetaDataUpload(metaInfo)
+        if(response){
+            return 1
+        }else{
+            return 0
+        }
+    }
+
+    const executeFunction = async() => {
+        try {
+        //   const res =  await uploadApproveMetatoIpfs()
+        //   if(res){
+            await executeSafeTransaction()
+            console.log('success')
+            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            try {
+                
+                await web3Provider.provider.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: '0x13881'}],})
+                  const provider = new ethers.providers.Web3Provider(window.ethereum);
+                  const signer = provider.getSigner()
+                  console.log('changed', signer)
+                  let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+                  const {data, signature} = await approvePOCPBadge(signer,2,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
+                  const token = await dispatch(getAuthToken())
+                  const tx_hash = await relayFunction(token,5,data,signature)
+                  console.log('approve hash',tx_hash)
+                    pocpProxy.on("Voucher", (a, b, c, d) => {
+                        // if(c === '0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'){
+                        //     console.log("Registered Contract", a, b);
+                        // }
+                        console.log(a, b, c, d)
+                    })
+                  await provider.provider.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x4'}],
+                  })
+                //   console.log(res, tx_hash)
+                //   await updatePocpRegister(jwt, tx_hash, res)
+              } catch (error) {
+                console.log(error.toString())
+              }
+        //   }
+            
+        } catch (error) {
+            
+        }
+    }
+
     const buttonFunc = async(tranx) => {
         if(delegates.length === item?.gnosis?.confirmations?.length){
-            await executeSafeTransaction()
+            await executeFunction()
         }else if (checkApproval()){
             console.log('Already Signed !!!')
         }else if (!checkApproval() && onHover){

@@ -1,9 +1,7 @@
 .container{
-    /* border-radius: 0.5rem; */
-    /* margin-top: 1.875rem; */
     min-height: 17.688rem;
     position: relative;
-    width: 300px;
+    width: 280px;
     max-width: 20rem;
     height: 17.5rem;
     background: black;

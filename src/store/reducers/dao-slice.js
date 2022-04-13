@@ -19,6 +19,8 @@ const daoSlice = createSlice({
     contri_filter_key:1,
     initial_setup:false,
     payout_filter_key:1,
+    account_mode:null,
+    account_index:0
   },
   reducers: {
     set_dao_list(state, action){
@@ -30,7 +32,9 @@ const daoSlice = createSlice({
     set_current_dao(state, action){
       state.currentDao = action.payload.dao;
       state.role = action.payload.role;
-      state.community_role = action.payload.community_role
+      state.community_role = action.payload.community_role;
+      state.account_mode = action.payload.account_mode
+      state.account_index = action.payload.index
     },
     set_contri_list(state, action){
       state.contribution_request = action.payload.list
@@ -55,6 +59,9 @@ const daoSlice = createSlice({
     },
     set_initial_setup(state, action){
       state.initial_setup = action.payload.status
+    },
+    switch_account_role(state, action){
+      state.role = action.payload.role
     }
 }});
 

@@ -16,6 +16,10 @@ import { setPayment, setTransaction } from "../../store/actions/transaction-acti
 import { useSafeSdk } from "../../hooks";
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import ContributionSideCard from "../../components/SideCard/ContributionSideCard";
+import ProfileModal from "../../components/Modal/ProfileModal";
+import ContributionOverview from "../../components/SideCard/ContributorOverview";
+import chevron_down from '../../assets/Icons/expand_more_black.svg'
+import AccountSwitchModal from "../../components/Modal/AccountSwitchModal";
 
 export default function DashboardLayout({ children, route, signer }) {
 
@@ -29,12 +33,16 @@ export default function DashboardLayout({ children, route, signer }) {
   const dispatch = useDispatch()
   const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
   const contribution_detail = useSelector(x=>x.contributor.contribution_detail)
-
-  const changeAccount = async(item) => {
+  const account_mode = useSelector(x=>x.dao.account_mode)
+  const [profile_modal, setProfileModal] = useState(false)
+  const [switchRoleModal,setSwitchRoleModal] = useState(false)
+  const [roleContainerHover, setRoleContainerHover] = useState(false)
+  const changeAccount = async(item, index) => {
+    console.log('item', index)
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
     await  dispatch(getContriRequest())
-    await dispatch(getPayoutRequest())
+    // await dispatch(getPayoutRequest())
     await dispatch(syncTxDataWithGnosis())
     dispatch(setPayment(null))
     dispatch(setTransaction(null))
@@ -54,13 +62,41 @@ export default function DashboardLayout({ children, route, signer }) {
     }
   }
 
-  const headerComponet = () => (
+  console.log('current dao', account_mode)
+
+  const onProfileModal = () => {
+    setProfileModal(!profile_modal)
+    setSwitchRoleModal(false)
+  }
+
+  const onSwitchRoleModal = () => {
+    setProfileModal(false)
+    setSwitchRoleModal(!switchRoleModal)
+  }
+
+  const headerComponet = () => {
+    return(
     <div className={styles.header}>
       <div style={{color:'white', textAlign:'start'}} className={textStyles.ub_14}>
         {currentDao?.name}
       </div>
+      <div className={styles.profileContainer}>
+        <div>
+          {account_mode==='ADMIN'&&<div onMouseEnter={()=>setRoleContainerHover(true)} onMouseLeave={()=>setRoleContainerHover(false)} onClick={()=>onSwitchRoleModal()} style={{background:roleContainerHover?'white':'#5D5C5D', cursor:'pointer'}} className={styles.roleSwitchContainer}>
+            <div style={{color:roleContainerHover?'black':'white'}} className={textStyles.m_14}>{role==='ADMIN'?'Approval':'Contributor'}</div>
+            <img alt='chevron_down' src={chevron_down} className={styles.chevron} color='black' />
+          </div>}
+          {switchRoleModal&&<AccountSwitchModal onChange={()=>setSwitchRoleModal(false)} />}
+        </div>
+        <div>
+          <div onClick={()=>onProfileModal()} className={styles.accountIcon}>
+          </div>
+          {profile_modal&&<ProfileModal />}
+        </div>
+      </div>
     </div>
-  )
+    )
+  }
 
   const renderAdminStats = () => (
     <div onClick={()=>copyTextToClipboard()} className={styles.copyLink}>
@@ -83,6 +119,8 @@ export default function DashboardLayout({ children, route, signer }) {
   }else{
     if(contribution_detail){
       return <ContributionSideCard isAdmin={false} signer={signer} />
+    }else{
+      return <ContributionOverview />
     }
   }
   }
@@ -100,7 +138,7 @@ export default function DashboardLayout({ children, route, signer }) {
         {accounts.map((item, index)=>(
           <div className={styles.accountContainer}>
             <Tooltip placement="right" title={()=>text(item?.dao_details?.name)}>
-            <div onClick={()=>changeAccount(item)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186', display:'flex', justifyContent:'center', alignItems:'center'}}>
+            <div onClick={()=>changeAccount(item, index)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186', display:'flex', justifyContent:'center', alignItems:'center'}}>
               {item?.dao_details?.logo_url?<img src={item?.dao_details?.logo_url} alt='logo'height='100%' width='100%' style={{borderRadius:'2.25rem'}} />:null}
             </div>
             </Tooltip>

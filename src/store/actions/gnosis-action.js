@@ -107,6 +107,8 @@ export const registerDao = () => {
     }
 };
 
+
+
 export const getAllSafeFromAddress = (address) => {
   return async (dispatch, getState) => {
     const list = await serviceClient.getSafesByOwner(address)
