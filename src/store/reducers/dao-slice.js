@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const daoSlice = createSlice({
   name: "dao",
   initialState: {
+    allSafeList:[],
     dao_list:[],
     contribution_request:[],
     payout_request:[],
@@ -20,9 +21,36 @@ const daoSlice = createSlice({
     initial_setup:false,
     payout_filter_key:1,
     account_mode:null,
-    account_index:0
+    account_index:0,
+    newSafeSetup:{
+      owners:[],
+      threshold:0,
+      dao_name:'',
+      dao_email:'',
+      dao_discord:'',
+      dao_logo_url:'',
+      safeAddress:null
+    },
   },
   reducers: {
+    set_allSafe(state, action) {
+      state.allSafeList = action.payload.list;
+    },
+    set_safeAdress(state, action) {
+      state.newSafeSetup.safeAddress = action.payload.safeAddress;
+    },
+    set_dainInfo(state, action){
+      state.newSafeSetup.dao_email = action.payload.email
+      state.newSafeSetup.dao_name = action.payload.name
+      state.newSafeSetup.dao_discord = action.payload.discord
+      state.newSafeSetup.dao_logo_url = action.payload.logo
+    },
+    set_newSafeOwners(state, action){
+      state.newSafeSetup.owners = action.payload.owners
+    },
+    set_newSafeThreshold(state, action){
+      state.newSafeSetup.threshold = action.payload.threshold
+    },
     set_dao_list(state, action){
         state.dao_list = action.payload.list
     },

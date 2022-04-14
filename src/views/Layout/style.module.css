@@ -42,6 +42,7 @@
 }
 
 .modal {
+  overflow-y:auto ;
   width: 70vw;
   height: 86vh;
   background-color: #fff;

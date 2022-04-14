@@ -30,6 +30,8 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
   const getEmoji = () => {
     if (currentTransaction?.stream === "DESIGN") {
       return "🎨";
+    }else{
+      return "🎨";
     }
   };
 

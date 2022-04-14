@@ -1,23 +1,20 @@
 import { Typography } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addDaoInfo } from "../../store/actions/gnosis-action";
+import { addDaoInfo } from "../../store/actions/dao-action";
 import InputText from "../InputComponent/Input";
 import NextButton from "../NextButton";
 import styles from "./styles.module.css";
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json";
 import retry from "../../assets/Icons/retry.svg";
 import upload from "../../assets/Icons/upload.svg";
+import upload_file from "../../assets/Icons/upload_file.svg";
 import Lottie from "react-lottie";
-import { RiFileUploadLine } from "react-icons/all";
 import api from "../../constant/api";
 import axios from "axios";
 
 import textStyles from '../../commonStyles/textType/styles.module.css'
-import { ethers } from "ethers";
 import { registerDaoToPocp } from "../../utils/POCPutils";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import { INFURA_ID } from "../../constants";
 
 const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) => {
   const [name, setName] = useState("");
@@ -166,35 +163,18 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
                   </div>
                 </div>
                   <div style={{ flexGrow: 100, display:'flex', alignItems:'center', flexDirection:'column' }}>
-                
-                    <Typography.Text className={styles.helperTextSec}>
-                      Upload Logo
-                    </Typography.Text>
-                    <div className={styles.photoContainer}>
-                       {image?<img alt='logo' src={image?.preview} style={{width:'100%', height:'100%'}} />:
-                        <div>
-                        <label htmlFor="upload-button">
-                        <div className={styles.uploadIconCont}>
-                          <div className={styles.uploadIcon}>
-                            <RiFileUploadLine />
-                          </div>
+                      {image?<img alt='logo' src={image?.preview} style={{width:'15rem', height:'15rem'}} />:      
+                      <div className={styles.picContainer}>
+                      <label className={styles.label} htmlFor="upload-button">
+                        <div className={styles.icon_uplaod}>
+                          <img alt='file' src={upload_file} className={styles.upload_file} />
                         </div>
-                        <div>
-                          <Typography.Text className={styles.helperText}>
-                            Click here to upload a file
-                          </Typography.Text>
-                          <div className={styles.divTextUpload}>
-                            <Typography.Text className={styles.uploadText}>
-                              PNG,JPG,GIF up to 10MB (recommended size 400px x
-                              400px)
-                            </Typography.Text>
-                          </div>
-                        </div>
-                        </label>
                         <input accept='image/png, image/gif, image/jpeg' type="file" id="upload-button" style={{ display: 'none' }} onChange={onFileChange} />
-                        <br />
+                        <div style={{alignSelf:'center'}} className={`${textStyles.m_16}`}>Click here to upload a file</div>
+                        <div style={{alignSelf:'center', textAlign:'center', marginTop:'0.5rem', color:'#00000050'}} className={`${textStyles.m_14}`}>PNG, JPG, GIF up to 10MB (recommended size: 400px x 400px)</div>
+                      </label>
                       </div>}
-                      </div>
+
                       {image&&renderUploadOption()}
                   </div>
               </div>
@@ -205,7 +185,6 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
               text={hasMultiSignWallet?"Register Dao":"Add Owners"}
               increaseStep={onSubmit}
               isDisabled={name === "" || deploying||loading}
-              // loader={deploying}
             />
           </div>
         </>

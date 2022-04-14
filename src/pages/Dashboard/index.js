@@ -99,37 +99,37 @@ export default function Dashboard() {
       };
 
     async function copyTextToClipboard() {
-        // if ('clipboard' in navigator) {
-        //     message.success('invite link copied succesfully!')
-        //   return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        // } else {
-        //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        // }
+        if ('clipboard' in navigator) {
+            message.success('invite link copied succesfully!')
+          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        } else {
+          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        }
 
 
         // try {
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            try {
+            // const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            // try {
                 
-                await web3Provider.provider.request({
-                  method: 'wallet_switchEthereumChain',
-                  params: [{ chainId: '0x13881'}],})
-                  const provider = new ethers.providers.Web3Provider(window.ethereum);
-                  const signer = provider.getSigner()
-                  console.log('changed', signer)
-                  let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-                  const {data, signature} = await approvePOCPBadge(signer,1,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
-                  const token = await dispatch(getAuthToken())
-                  const tx_hash = await relayFunction(token,5,data,signature)
-                  console.log('approve hash',tx_hash)
-                  await asyncTask(tx_hash)
-                //   await provider.provider.request({
-                //     method: 'wallet_switchEthereumChain',
-                //     params: [{ chainId: '0x4'}],
-                //   })
-              } catch (error) {
-                console.log(error.toString())
-              }
+            //     await web3Provider.provider.request({
+            //       method: 'wallet_switchEthereumChain',
+            //       params: [{ chainId: '0x13881'}],})
+            //       const provider = new ethers.providers.Web3Provider(window.ethereum);
+            //       const signer = provider.getSigner()
+            //       console.log('changed', signer)
+            //       let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+            //       const {data, signature} = await approvePOCPBadge(signer,1,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
+            //       const token = await dispatch(getAuthToken())
+            //       const tx_hash = await relayFunction(token,5,data,signature)
+            //       console.log('approve hash',tx_hash)
+            //       await asyncTask(tx_hash)
+            //     //   await provider.provider.request({
+            //     //     method: 'wallet_switchEthereumChain',
+            //     //     params: [{ chainId: '0x4'}],
+            //     //   })
+            //   } catch (error) {
+            //     console.log(error.toString())
+            //   }
         //   try {
         //     await web3Provider.provider.request({
         //       method: 'wallet_switchEthereumChain',
@@ -315,7 +315,7 @@ export default function Dashboard() {
                 Share link to onboard<br/> contributors
             </div>}
 
-            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>copyTextToClipboard()} className={styles.button}>
+            <button onClick={role==='ADMIN'?()=>copyTextToClipboard():()=>setModalContri(true)} className={styles.button}>
                 <div>
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>

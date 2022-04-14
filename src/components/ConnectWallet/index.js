@@ -195,8 +195,8 @@ const ConnectWallet = ({ isAdmin }) =>{
       }
 
     provider.on("chainChanged", async(chainId) => {
-      dispatch(setLoggedIn(false))
-      navigate('/')
+      // dispatch(setLoggedIn(false))
+      // navigate('/')
     });
 
     provider.on("accountsChanged",async () => {

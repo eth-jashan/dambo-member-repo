@@ -10,7 +10,7 @@ export const relayFunction = async(token, functionType, request, signature) => {
         signature: signature,
         callback_api:'https://staging.api.drepute.xyz/eth/callback'
     }
-    console.log('relayer', token)
+    console.log('relayer', token, JSON.stringify(data))
     try {
         const res = await axios.post(`https://staging.api.drepute.xyz:5001${routes.pocp.relay}`,data,{
             headers: {
@@ -18,12 +18,10 @@ export const relayFunction = async(token, functionType, request, signature) => {
             }
         })
 
-        return res.data.data.hash
-
-        // console.log('res', res.data.data.hash, res.data)
+      return res.data.data.hash
         
     } catch (error) {
-        
+        console.log('relay api error', error.toString())
     }
 }
 
@@ -48,7 +46,7 @@ export const updatePocpRegister = async(jwt,tx_hash, dao_uuid) => {
     const data = {tx_hash, dao_uuid}
       
     try {
-          const res = await axios.post(`${api.drepute.dev.BASE_URL}/update/pocp`,data,
+          const res = await axios.post(`${api.drepute.dev.BASE_URL}dao/update/pocp`,data,
             {
               headers:{
                 Authorization:`Bearer ${jwt}`

@@ -7,9 +7,10 @@ import POCPProxy from '../smartContract/POCP_Contracts/POCP.json'
 import { getAuthToken } from "../store/actions/auth-action";
 
 //signing function for registering dao
-export const registerDaoToPocp = async(signer, name, url, ownerAddress) => {
+export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
     let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+    console.log('address',address)
     const nonceBigNumber = await contract.getNonce('0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8')
     console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ))
     const chainId = (await contract.provider.getNetwork()).chainId
@@ -54,21 +55,18 @@ export const registerDaoToPocp = async(signer, name, url, ownerAddress) => {
         gas:1e6,
         data: pocpProxy.interface.encodeFunctionData("register", [
             name,
-            url,
+            // url,
             ownerAddress
         ]),
     }
-    await pocpProxy.register(name,
-        url,
-        ownerAddress)
-    // let signature
-    // try {
-    //     signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
-    //     return {data, signature} 
-    // } catch (error) {
-    //     console.log("Error on signing register dao data", error)
-    // }
-    // console.log('signature for register dao', signature)
+    let signature
+    try {
+        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
+        return {data, signature} 
+    } catch (error) {
+        console.log("Error on signing register dao data", error)
+    }
+    console.log('signature for register dao', signature)
     
 }
 

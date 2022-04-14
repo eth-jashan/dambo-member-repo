@@ -297,7 +297,8 @@ const PaymentSlideCard = ({signer}) =>{
     }
 
     const buttonFunction = async(hash) => {
-            if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
+        if(checkApproval()){
+            // if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
                 await executeSafeTransaction(hash)
             }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
                 console.log("Payment Already Signed")

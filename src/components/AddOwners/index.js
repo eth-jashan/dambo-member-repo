@@ -5,17 +5,17 @@ import PlusSvg from "../../assets/Icons/plus.svg";
 import { v4 as uuidv4 } from "uuid";
 import NextButton from "../NextButton";
 import { useDispatch, useSelector } from "react-redux";
-import { addOwners, addThreshold } from "../../store/actions/gnosis-action";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import InputText from "../Input";
 import textStyles from '../../commonStyles/textType/styles.module.css'
+import { addOwners, addThreshold } from "../../store/actions/dao-action";
+import { web3 } from "../../constant/web3";
 
-const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io')
+const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
 
 export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep }) {
   
   const address = useSelector(x=>x.auth.address)
-  const owner = useSelector(x=>x.gnosis.owners)
   const [owners, setOwners] = useState([
     {
       id: uuidv4(),
@@ -25,15 +25,10 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
   ])
   const [threshold, setThreshold] = useState(0)
   const dispatch = useDispatch()
-  // const provider = useSelector(x=>x.auth.web3Provider);
-  const safeAddress = useSelector(x=>x.gnosis.safeAddress)
-  // const userSigner = useUserSigner(provider, null);
+  const safeAddress = useSelector(x=>x.dao.newSafeSetup.safeAddress)
   const [loading, setLoading] = useState(false)
   
   const getSafeOwners = useCallback( async() =>{
-    if(owner.length>0){
-      setOwners(owner)
-    }else{
       let ownerObj = []
       const safeInfo = await serviceClient.getSafeInfo(safeAddress)
       if(safeInfo.owners){
@@ -48,9 +43,9 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
       })
       setOwners(ownerObj)
       setThreshold(safeInfo.threshold)
-      }
+      // }
     }
-  },[owner, safeAddress])
+  },[safeAddress])
 
   useEffect(()=>{
     if(hasMultiSignWallet){
@@ -119,11 +114,9 @@ export default function AddOwners({ increaseStep, hasMultiSignWallet, setStep })
         {hasMultiSignWallet?
         <div className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}>
           Tell us what to call your team<br/> members.
-          {/* Tell us what to call your team  members. */}
         </div>:
         <div className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}>
         have more than one owner to <br/> maximize security
-        {/* have more than one owner to maximize security */}
         </div>}
       <div className={styles.ownerContainer}>
         {!loading && owners.length>0&& owners.map((owner,index) => (

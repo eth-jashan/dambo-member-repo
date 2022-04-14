@@ -11,7 +11,7 @@ import {
   addSafeAddress,
   addThreshold,
   registerDao,
-} from "../store/actions/gnosis-action";
+} from "../store/actions/dao-action";
 // import { useHistory } from "react-router-dom";
 import { useSafeSdk } from "../hooks";
 import { ethers, providers } from "ethers";
@@ -20,6 +20,7 @@ import { message } from "antd";
 import { approvePOCPBadge, claimPOCPBadges, registerDaoToPocp } from "../utils/POCPutils";
 import { relayFunction, updatePocpRegister } from "../utils/relayFunctions";
 import { getAuthToken } from "../store/actions/auth-action";
+import { web3 } from "../constant/web3";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -31,8 +32,8 @@ export default function Onboarding() {
   const { safeFactory } = useSafeSdk(signer, safeAddress);
   const [gnosisLoad, setGnosisLoad] = useState(false);
 
-  const owners = useSelector((x) => x.gnosis.newSafeSetup.owners);
-  const threshold = useSelector((x) => x.gnosis.newSafeSetup.threshold);
+  const owners = useSelector((x) => x.dao.newSafeSetup.owners);
+  const threshold = useSelector((x) => x.dao.newSafeSetup.threshold);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -118,32 +119,32 @@ export default function Onboarding() {
       }
     } else if (currentStep === 4) {
       if (hasMultiSignWallet) {
-        // const res = await dispatch(registerDao());
-        // if (res) {
-          const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-          try {
-            await web3Provider.provider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: '0x13881'}],})
-              const provider = new ethers.providers.Web3Provider(window.ethereum);
-              const signer = provider.getSigner()
-              console.log('changed', signer)
-              const {data, signature} = await claimPOCPBadges(signer,'jashan', 'drepute.xyz',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'])
-              // const token = await dispatch(getAuthToken())
-              // const tx_hash = await relayFunction(token,0,data,signature)
-              await provider.provider.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x4'}],
-              })
-              // console.log(res, tx_hash)
-              // await updatePocpRegister(jwt, tx_hash, res)
-          } catch (error) {
-            console.log(error.toString())
-          }
-          // navigate(`/dashboard`);
-        // } else {
-        //   navigate(`/onboard/dao`);
-        // }
+        const res = await dispatch(registerDao());
+        if (res) {
+        //   const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        //   try {
+        //     await web3Provider.provider.request({
+        //       method: 'wallet_switchEthereumChain',
+        //       params: [{ chainId: web3.chainid.polygon}],})
+        //       const provider = new ethers.providers.Web3Provider(window.ethereum);
+        //       const signer = provider.getSigner()
+        //       const {data, signature} = await registerDaoToPocp(signer,'drepute',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
+        //       const token = await dispatch(getAuthToken())
+        //       const tx_hash = await relayFunction(token,0,data,signature)
+        //       console.log('tx hash====>', tx_hash)
+        //       await provider.provider.request({
+        //         method: 'wallet_switchEthereumChain',
+        //         params: [{ chainId: web3.chainid.rinkeby}],
+        //       })
+        //       console.log(tx_hash)
+        //       await updatePocpRegister(jwt, tx_hash, 1)
+        //   } catch (error) {
+        //     console.log(error.toString())
+        //   }
+        // navigate(`/dashboard`);
+        } else {
+          navigate(`/onboard/dao`);
+        }
       } else {
         try {
           try {
@@ -192,7 +193,6 @@ export default function Onboarding() {
             hasMultiSignWallet={hasMultiSignWallet}
             increaseStep={increaseStep}
             setStep={(x) => setCurrentStep(x)}
-            // setOwners={setOwners}
           />
         );
       }
