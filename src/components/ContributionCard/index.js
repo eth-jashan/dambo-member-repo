@@ -12,7 +12,6 @@ export default function ContributionCard({item}) {
     const dispatch = useDispatch()
     const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
     const role = useSelector(x=>x.dao.role)
-    console.log('item', item)
     const onContributionPress = async() => {
         if(role==='ADMIN'){
             const ethPrice = await convertTokentoUsd('ETH')

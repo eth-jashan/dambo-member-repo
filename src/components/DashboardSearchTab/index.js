@@ -36,6 +36,7 @@ const DashboardSearchTab = ({route}) => {
             dispatch(set_contri_filter('APPROVED'), 2)
             setContriFilter(2)
         }else if(key === '4'){
+            dispatch(set_contri_filter('PAID'), 4)
         }
     };
 

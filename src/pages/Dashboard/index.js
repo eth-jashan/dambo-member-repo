@@ -193,7 +193,6 @@ export default function Dashboard() {
         const account = await onInit()
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
-                console.log('jwt expiry check....',jwtIfo)
                 if(jwtIfo){
                    await dispatch(getAllDaowithAddress())
                    await dispatch(gnosisDetailsofDao())
@@ -204,6 +203,7 @@ export default function Dashboard() {
                         dispatch(setPayment(null))
                         dispatch(setTransaction(null))
                         await dispatch(syncTxDataWithGnosis())
+                        // get active nonce
                         if(safeSdk){
                             const nonce = await safeSdk.getNonce()
                             dispatch(set_active_nonce(nonce))

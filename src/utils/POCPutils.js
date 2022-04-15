@@ -55,7 +55,6 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
         gas:1e6,
         data: pocpProxy.interface.encodeFunctionData("register", [
             name,
-            // url,
             ownerAddress
         ]),
     }

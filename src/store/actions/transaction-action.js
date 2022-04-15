@@ -48,7 +48,7 @@ export const getPendingTransaction = () => {
     }
 }
 
-export const approveContriRequest =  (payout, isExternal = false) => {
+export const approveContriRequest =  (payout, isExternal = false, feedback) => {
     return  async (dispatch, getState) => {
         
         const jwt = getState().auth.jwt
@@ -62,7 +62,6 @@ export const approveContriRequest =  (payout, isExternal = false) => {
         }
         else{
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
-        console.log('payout', payout)
         payout.map((item, index)=>{
             if(!item?.token_type){
                 newPayout.push({
@@ -96,7 +95,6 @@ export const approveContriRequest =  (payout, isExternal = false) => {
         const data = {
           status:"APPROVED",
           tokens:newPayout
-
         }
         console.log("Contribution appproval api body", JSON.stringify(data))
         try {

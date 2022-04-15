@@ -119,32 +119,32 @@ export default function Onboarding() {
       }
     } else if (currentStep === 4) {
       if (hasMultiSignWallet) {
-        const res = await dispatch(registerDao());
-        if (res) {
-        //   const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-        //   try {
-        //     await web3Provider.provider.request({
-        //       method: 'wallet_switchEthereumChain',
-        //       params: [{ chainId: web3.chainid.polygon}],})
-        //       const provider = new ethers.providers.Web3Provider(window.ethereum);
-        //       const signer = provider.getSigner()
-        //       const {data, signature} = await registerDaoToPocp(signer,'drepute',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
-        //       const token = await dispatch(getAuthToken())
-        //       const tx_hash = await relayFunction(token,0,data,signature)
-        //       console.log('tx hash====>', tx_hash)
-        //       await provider.provider.request({
-        //         method: 'wallet_switchEthereumChain',
-        //         params: [{ chainId: web3.chainid.rinkeby}],
-        //       })
-        //       console.log(tx_hash)
-        //       await updatePocpRegister(jwt, tx_hash, 1)
-        //   } catch (error) {
-        //     console.log(error.toString())
-        //   }
-        // navigate(`/dashboard`);
-        } else {
-          navigate(`/onboard/dao`);
-        }
+        // const res = await dispatch(registerDao());
+        // if (res) {
+          const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+          try {
+            await web3Provider.provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: web3.chainid.polygon}],})
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
+              const signer = provider.getSigner()
+              const {data, signature} = await registerDaoToPocp(signer,'quick test 1',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
+              const token = await dispatch(getAuthToken())
+              const tx_hash = await relayFunction(token,0,data,signature)
+              console.log('tx hash====>', tx_hash)
+              await provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
+              })
+              // console.log(tx_hash)
+              // await updatePocpRegister(jwt, tx_hash, 1)
+          } catch (error) {
+            console.log(error.toString())
+          }
+        //navigate(`/dashboard`);
+        // } else {
+        //   navigate(`/onboard/dao`);
+        // }
       } else {
         try {
           try {

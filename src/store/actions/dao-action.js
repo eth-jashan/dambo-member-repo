@@ -175,9 +175,13 @@ export const set_contri_filter = (filter_key, number) => {
             number:0,
             list:res.data?.data?.contributions
           })) 
-        }
-         else {
-
+        }else if(filter_key === 'PAID'){
+          dispatch(daoAction.set_contribution_filter({
+            key:filter_key,
+            number:2,
+            list:res.data?.data?.contributions?.filter(x=>x.status === "APPROVED" && x.payout_status==='PAID')
+          }))
+        }else {
           dispatch(daoAction.set_contribution_filter({
             key:filter_key,
             number:number,
@@ -263,7 +267,6 @@ export const getContriRequest = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
-    const approvedContriRequest = getState().transaction.approvedContriRequest
     const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
     try {
       const res = await axios.get(url,{
@@ -273,9 +276,11 @@ export const getContriRequest = () => {
       })
       console.log('Pending Contri request.....',res.data.data)
       if(res.data.success){
-        res.data?.data?.contributions.map((item, index)=>{
+        //Approved Request without gnosis
+
+        res?.data?.data?.contributions?.map((item, index) => {
           let payout = []
-          if(item?.tokens.length>0 && item.payout_status === null && item?.status !== 'REJECTED'){
+          if(item?.tokens?.length>0 && item?.payout_status === null && item?.status === 'APPROVED' && item?.gnosis_reference_id === ''){
             item?.tokens.map((x, index)=>{
               payout.push(
                 {
@@ -287,10 +292,14 @@ export const getContriRequest = () => {
                   usd_amount:x?.usd_amount
                 })
             })
+            if(payout?.length > 0){
+              dispatch(tranactionAction.set_approved_request({item:{contri_detail:item, payout:payout}}))
+            }else{
+              console.log('Its A coppy....')
+            }
           }
-          const include_payout = approvedContriRequest.filter(x=>x.contri_detail.id === item.id)
-          if(payout.length>0 && include_payout.length===0)dispatch(tranactionAction.set_approved_request({item:{contri_detail:item, payout:payout}}))
         })
+        
         dispatch(daoAction.set_contri_list({
           list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),
           number:1

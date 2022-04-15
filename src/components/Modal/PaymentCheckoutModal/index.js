@@ -1,22 +1,21 @@
-import React, { useCallback, useState } from 'react'
-
-import { GoChevronDown } from 'react-icons/all'
+import React, { useState } from 'react'
 import styles from './styles.module.css'
 import textStyles from '../../../commonStyles/textType/styles.module.css'
-import { message, Typography } from 'antd'
+import { message } from 'antd'
 import { useSafeSdk } from '../../../hooks'
 import { ethers } from 'ethers'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import { useDispatch, useSelector } from 'react-redux'
-import { rejectContriRequest, resetApprovedRequest } from '../../../store/actions/transaction-action'
+import { resetApprovedRequest } from '../../../store/actions/transaction-action'
 import ERC20_ABI from '../../../smartContract/erc20.json'
 import Web3 from 'web3'
-import { createPayout, getContriRequest, getNonceForCreation, set_contri_filter } from '../../../store/actions/dao-action'
-import cross from '../../../assets/Icons/cross.svg'
+import { createPayout, getNonceForCreation } from '../../../store/actions/dao-action'
 import { setPayoutToast } from '../../../store/actions/toast-action'
 import chevron_down from '../../../assets/Icons/expand_more_black.svg'
+import { web3 } from '../../../constant/web3'
+import RequestItem from './RequestItem'
 
-const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
+const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
 
 
 const PaymentCheckoutModal = ({onClose, signer}) => {
@@ -27,8 +26,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const dispatch  = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
-
-    console.log('approved_request', approved_request )
 
     const proposeSafeTransaction = async () => {
 
@@ -143,18 +140,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         </div>)
     }
 
-    const [onCancelHover, setCancelHover] = useState(false)
-
-    const getPayoutTotal = (payout) => {
-        const usd_amount = []
-        payout?.map((item, index)=>{
-            usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)))
-        })
-        let amount_total
-        usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
-        return amount_total
-    }
-
     const getTotalAmount = () => {
         const usd_amount_all = []
 
@@ -169,56 +154,16 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         
     }
     
-
-    const requestItem = (item) => (
-        <div className={styles.requestItem}>
-        <div style={{width:'100%', display:'flex', flexDirection:'row'}}>
-            <div style={{width:'5.2%'}}>
-                <div onClick={async()=>await dispatch(rejectContriRequest(item?.contri_detail?.id))} onMouseLeave={()=>setCancelHover(false)} onMouseEnter={()=>setCancelHover(true)} className={styles.cancel}>
-                    <img src={cross} alt='cancel' className={styles.cross}/>
-                    {onCancelHover&&<div className={textStyles.m_14}>Cancel Approval</div>}
-                </div>
-            </div>
-            <Typography.Paragraph style={{marginLeft:'0.75rem'}} ellipsis={{rows:1}} className={`${textStyles.ub_19} ${styles.alignText}`}>
-                {item?.contri_detail?.title}
-            </Typography.Paragraph>
-        </div>
-            <div className={styles.infoContainer}>
-                <div style={{width:'60%',marginLeft:'0.75rem'}}>
-                    <div className={`${textStyles.m_16} ${styles.alignText}`}>
-                        {item?.contri_detail?.stream?.toLowerCase()}  •  {item?.contri_detail?.time_spent} hrs
-                    </div>
-                    <div className={`${textStyles.m_16} ${styles.alignText}`}>
-                        {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  aviralsb.eth
-                    </div>
-                    <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
-                        {/* Jashan has been doing the phenominal boi, keep it up GG. */}
-                    </Typography.Paragraph>
-                </div>
-                <div>
-                    {item?.payout.map((item, index)=>{
-                        return tokenItem(item)
-                    })}
-                    <div style={{textAlign:'end'}} className={`${textStyles.m_16} ${styles.usdText}`}>
-                        {approved_request.length===0?0:getPayoutTotal(item?.payout)}$
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-
-    
-    
     return(
         <div className={styles.backdrop}>
             <div className={styles.modal}>
                 {modalHeader()}
                 <div style={{marginBottom:'5rem'}}>
                 {approved_request.map((item, index)=>(
-                    requestItem(item)
+                    <RequestItem item={item} tokenItem={tokenItem} approved_request={approved_request} />
                 ))}
                 </div>
-                {approved_request.length>0&&<div onClick={async()=>await proposeSafeTransaction()} className={styles.btnCnt}>
+                {approved_request.length>0&&<div onClick={async()=> !loading && await proposeSafeTransaction()} className={styles.btnCnt}>
                     <div className={styles.payBtn}>
                         {getTotalAmount()}$  •  Sign and Pay
                     </div>

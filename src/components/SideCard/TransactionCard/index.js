@@ -27,6 +27,7 @@ const TransactionCard = ({signer}) => {
 
   const ETHprice = useSelector(x=>x.transaction.initialETHPrice)
   const [feedBackShow, setFeedBackSow] = useState(false)
+  const [feedback, setFeedback] = useState('')
   const [payDetail, setPayDetail] = useState([{
         amount:'',
         token_type:null,
@@ -67,7 +68,7 @@ const TransactionCard = ({signer}) => {
       dispatch(setTransaction(null))
     }
     const onApproveTransaction = async() => {
-      dispatch(approveContriRequest(payDetail))
+      dispatch(approveContriRequest(payDetail, false, feedback))
       dispatch(setTransaction(null))
     }
 
@@ -85,6 +86,8 @@ const TransactionCard = ({signer}) => {
             <Input.TextArea
                 placeholder='Write your feedback here'
                 className={styles.textArea}
+                value={feedback}
+                onChange={(e)=>setFeedback(e.target.value)}
             />
           }
         </div>

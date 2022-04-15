@@ -12,7 +12,7 @@ import logo from '../../assets/drepute_logo.svg'
 import add_white from '../../assets/Icons/add_white.svg'
 import TransactionCard from "../../components/SideCard/TransactionCard";
 import PaymentSlideCard from "../../components/SideCard/PaymentSideCard";
-import { setPayment, setTransaction } from "../../store/actions/transaction-action";
+import { resetApprovedRequest, setPayment, setTransaction } from "../../store/actions/transaction-action";
 import { useSafeSdk } from "../../hooks";
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import ContributionSideCard from "../../components/SideCard/ContributionSideCard";
@@ -38,7 +38,7 @@ export default function DashboardLayout({ children, route, signer }) {
   const [switchRoleModal,setSwitchRoleModal] = useState(false)
   const [roleContainerHover, setRoleContainerHover] = useState(false)
   const changeAccount = async(item, index) => {
-    console.log('item', index)
+    dispatch(resetApprovedRequest())
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
     await  dispatch(getContriRequest())
