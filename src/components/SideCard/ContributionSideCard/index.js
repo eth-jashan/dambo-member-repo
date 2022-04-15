@@ -66,7 +66,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
     }
   }
 
-  console.log('total', currentTransaction, isAdmin)
+  console.log('total', currentTransaction, isAdmin, txInfo)
 
     const onContributionCrossPress = () => {
       dispatch(setTransaction(null))
@@ -147,105 +147,6 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
       }
     }
 
-    // const renderSigners_contributor = () => (
-    //   <div style={{marginBottom:'2.5rem'}} className={styles.signerContainer}>
-    //       <div className={styles.singleTimeline_signer}>
-    //           <div className={styles.singleHeaderContainer_signer}>
-                  
-    //               <div className={styles.connectorContainer}>
-    //               <div style={{height:'6px', width:'6px', background:getStatusProperty().dotColor, borderRadius:'6px'}} />
-    //               </div>
-
-                  
-    //               <div className={styles.headerTimeline_created}>
-    //                   <div style={{color:getStatusProperty().color}} className={textStyle.m_16}>{getStatusProperty().title}</div>
-    //                   {/* <div style={{color:'gray'}} className={textStyle.m_16}>{moment(currentPayment?.gnosis?.submissionDate).startOf('hour').fromNow()}</div> */}
-    //               </div>
-
-    //           </div>
-
-    //           <div  className={styles.singleHeaderContainer_signer}>
-    //               <div style={{height:'1.5rem'}} className={styles.childrenTimeline_signer}/>
-
-    //           </div>
-              
-    //       </div>
-          
-    //       {/* signing container */}
-    //       <div className={styles.singleTimeline_signer}>
-    //           <div className={styles.singleHeaderContainer_signer}>
-                  
-    //               <div className={styles.connectorContainer}>
-    //                   <div style={{height:'6px', width:'6px', background:getSigningProperty().dotColor, borderRadius:'6px'}} />
-    //               </div>
-
-                  
-    //               <div className={styles.headerTimeline_signer}>
-    //                   <div style={{color:!isAdmin && currentTransaction?.status !== 'REQUESTED'&& currentTransaction?.status !== 'REJECTED'?'gray':!(safeInfo?.owners?.length === txInfo?.confirmations?.length)?getSigningProperty()?.color:'#FFFFFF'}} className={textStyle.m_16}>{'Signing'}</div>
-    //                   {!isAdmin && currentTransaction?.status !== 'REQUESTED' &&<div style={{color:!(safeInfo?.owners?.length === txInfo?.confirmations?.length)?currentTransaction?.status!=='REJECTED'?'#ECFFB8':'red':'grey', marginLeft:'0.5rem'}} className={textStyle.m_16}>{txInfo?.confirmations?.length} of {safeInfo?.owners?.length}</div>}
-    //               </div>
-
-    //           </div>
-
-    //           <div  className={styles.singleHeaderContainer_signer}>
-                  
-                  
-    //               <div className={styles.childrenTimeline_signer}>
-    //                   {!isAdmin && currentTransaction?.status !== 'REQUESTED' && !(safeInfo?.owners?.length === txInfo?.confirmations?.length) && txInfo?.confirmations?.map((item, index)=>(
-    //                       <div className={styles.singleAddress} key={index}>
-    //                           <div style={{color:currentTransaction?.status!=='REJECTED'?'#ECFFB8':'red'}} className={`${textStyle.m_16}`}>
-    //                               somesh  •   
-    //                           </div>
-    //                           <div style={{color:'white'}} className={`${textStyle.m_16}`}>
-    //                             {`${item?.owner.slice(0,5)}...${item?.owner.slice(-3)}`}
-    //                           </div>
-    //                       </div>
-    //                   ))}
-    //               </div>
-
-    //           </div>
-              
-    //       </div>
-
-    //       {/* execution container */}
-
-    //       <div className={styles.singleTimeline_signer}>
-    //           <div className={styles.singleHeaderContainer_signer}>
-                  
-    //               <div className={styles.connectorContainer}>
-    //                   <div style={{height:'6px', width:'6px', background:!(safeInfo?.owners?.length === txInfo.confirmations?.length)||currentTransaction?.status==='REQUESTED'?getExecutionProperty().dotColor:'#ECFFB8', borderRadius:'6px'}} />
-    //               </div>
-
-                  
-    //               <div className={styles.headerTimeline_signer}>
-    //                   <div style={{color:!(safeInfo?.owners?.length === txInfo?.confirmations?.length)|| currentTransaction?.status==='REQUESTED'?getExecutionProperty().color:'#ECFFB8'}} className={textStyle.m_16}>Executed</div>
-    //               </div>
-
-    //           </div>
-
-    //           {/* {!(currentPayment.gnosis.confirmations.length === delegates.length && nonce===currentPayment?.gnosis?.nonce)&& */}
-    //               {isAdmin&&<div  className={styles.singleHeaderContainer_signer}>
-                      
-    //                   <div style={{border:0}} className={styles.childrenTimeline_signer}>
-    //                       <div style={{color:'gray', textAlign:'start'}} className={`${textStyle.m_16}`}>
-    //                           <div style={{color:'#FFFFFF80'}} className={textStyle.m_16}>
-    //                             Executed by {txInfo?.executor}
-    //                           </div>  
-    //                           <div style={{color:'#FFFFFF80', textDecoration:'underline'}} className={textStyle.m_16}>
-    //                           view on etherscan
-    //                           </div>  
-    //                       </div>
-    //                   </div>
-
-    //               </div>
-    //           }
-              
-    //       </div>
-
-          
-    //   </div>
-    // )
-
     const renderSigners_admin = () => (
       <div style={{marginBottom:'2.5rem'}} className={styles.signerContainer}>
           <div className={styles.singleTimeline_signer}>
@@ -280,7 +181,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
 
                   
                   <div className={styles.headerTimeline_signer}>
-                      <div style={{color:!(safeInfo?.owners?.length === txInfo?.confirmations?.length)?getSigningProperty()?.color:'#FFFFFF'}} className={textStyle.m_16}>{'Signing'}</div>
+                      <div style={{color:isAdmin?'white':(!(safeInfo?.owners?.length === txInfo?.confirmations?.length)?getSigningProperty()?.color:'white')}} className={textStyle.m_16}>{'Signing'}</div>
                       {currentTransaction?.status !== 'REQUESTED' &&<div style={{color:isAdmin?'white':(!(safeInfo?.owners?.length === txInfo?.confirmations?.length)?currentTransaction?.status!=='REJECTED'?'#ECFFB8':'red':'grey'), marginLeft:'0.5rem'}} className={textStyle.m_16}>{txInfo?.confirmations?.length} of {safeInfo?.owners?.length}</div>}
                   </div>
 
@@ -322,7 +223,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
 
               </div>
 
-              {isAdmin&&txInfo&&<div  className={styles.singleHeaderContainer_signer}>
+              {isAdmin&&txInfo&&txInfo?.isExecuted&&<div  className={styles.singleHeaderContainer_signer}>
                       
                       <div style={{border:0}} className={styles.childrenTimeline_signer}>
                           <div style={{color:'gray', textAlign:'start'}} className={`${textStyle.m_16}`}>

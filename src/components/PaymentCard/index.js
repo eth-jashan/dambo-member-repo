@@ -31,6 +31,8 @@ export default function PaymentCard({item, signer}) {
     const [onHover, setOnHover] = useState(false)
     const delegates = useSelector(x=>x.dao.delegates)
     const nonce = useSelector(x=>x.dao.active_nonce)
+    console.log('nounce', item?.gnosis?.isExecuted)
+    const [loading, setLoading] = useState(false)
     const currentDao = useSelector(x=>x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === 'REJECTED'
@@ -158,7 +160,11 @@ export default function PaymentCard({item, signer}) {
     }
 
     const confirmTransaction = async () => {
-        if (!safeSdk || !serviceClient) return
+        setLoading(true)
+        if (!safeSdk || !serviceClient) {
+            setLoading(false)
+            return
+        }
         const hash = item?.gnosis?.safeTxHash
         let signature
         try {
@@ -174,16 +180,19 @@ export default function PaymentCard({item, signer}) {
           } catch (error) {
             console.error(error)
             message.error('Error on confirming sign')
+            setLoading(false)
           }
         } catch (error) {
           console.error(error)
           message.error('Error on signing payment')
+          setLoading(false)
           return
         }
+        setLoading(false)
     }
 
     const executeSafeTransaction = async () => {
-        
+        setLoading(true)
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
@@ -199,8 +208,10 @@ export default function PaymentCard({item, signer}) {
             refundReceiver: transaction.refundReceiver,
             nonce: transaction.nonce
         }
-        if (!safeSdk) return
-        
+        if (!safeSdk) {
+            setLoading(false) 
+            return
+        }
         
         const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
         
@@ -214,10 +225,10 @@ export default function PaymentCard({item, signer}) {
           console.log('done transaction.......')
         } catch(error) {
           console.error(error)
+          setLoading(false)
           return
         }
-        const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-        // if(receipt){
+        executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
             dispatch(setPayoutToast('EXECUTED'))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
@@ -227,9 +238,8 @@ export default function PaymentCard({item, signer}) {
                 dispatch(set_active_nonce(nonce))
             }
             dispatch(setPayment(null))
-        // }
-    }
-//333333
+            setLoading(false)
+        }
     const getButtonProperty = () => {
         if(checkApproval() && delegates.length === item?.gnosis?.confirmations?.length && !isReject ){
             return {title:'Execute Payment', color:'black', background:'white'}
@@ -337,13 +347,13 @@ export default function PaymentCard({item, signer}) {
             payout.map((item,index)=>(
                 singlePayout(item, index)
             )):null}
-            {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval()) ? 
-            <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex'}}>
+            {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval())? 
+            <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex', cursor:'pointer'}}>
                 <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
                     <div style={{marginRight:0}} className={styles.priceContainer}/>
-                    <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:getButtonProperty()?.background}} className={styles.btnContainer}>
+                    {!item?.gnosis?.isExecuted && <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:getButtonProperty()?.background}} className={styles.btnContainer}>
                         <div style={{color:getButtonProperty()?.color}} className={textStyles.ub_14}>{getButtonProperty()?.title}</div>
-                    </div>
+                    </div>}
                 </div>
             </div>:null}
         </div>

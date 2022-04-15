@@ -328,17 +328,17 @@ const PaymentSlideCard = ({signer}) =>{
             ))}
             {renderSigners()}
             <div style={{width:'20%', height:'80px', position:'absolute', bottom:0, background:'black', display:'flex', alignSelf:'center', alignItems:'center', justifyContent:isReject?'center':'space-between'}}>
-                {!isReject&&<div onClick={()=> rejectTransaction()} className={styles.rejectBtn}>
+                {(!isReject||!currentPayment?.gnosis?.isExecuted)&&<div onClick={()=> rejectTransaction()} className={styles.rejectBtn}>
                 <img  src={crossSvg} alt='cross' className={styles.crossIcon} />
                 </div>}
-                {isReject?
+                {!currentPayment?.gnosis?.isExecuted?(isReject?
                 <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getRejectButton()?.background}} className={styles.actionBtnCnt}>
                 <div style={{color:getRejectButton()?.color}} className={textStyle.ub_16}>{getRejectButton()?.title}</div>
                 </div>:
                 <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getButtonTitle()?.background}} className={styles.actionBtnCnt}>
                     <div style={{color:getButtonTitle()?.color}} className={textStyle.ub_16}>{getButtonTitle()?.title}</div>
-                </div>
-                }
+                </div>)
+                :null}
             </div>
         </div>
     )
