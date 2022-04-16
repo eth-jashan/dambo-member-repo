@@ -18,7 +18,7 @@ import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router";
 import { message } from "antd";
 import { approvePOCPBadge, claimPOCPBadges, registerDaoToPocp } from "../utils/POCPutils";
-import { relayFunction, updatePocpRegister } from "../utils/relayFunctions";
+import { pollingTransaction, relayFunction, updatePocpRegister } from "../utils/relayFunctions";
 import { getAuthToken } from "../store/actions/auth-action";
 import { web3 } from "../constant/web3";
 
@@ -119,8 +119,8 @@ export default function Onboarding() {
       }
     } else if (currentStep === 4) {
       if (hasMultiSignWallet) {
-        // const res = await dispatch(registerDao());
-        // if (res) {
+        const res = await dispatch(registerDao());
+        if (res) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           try {
             await web3Provider.provider.request({
@@ -128,23 +128,44 @@ export default function Onboarding() {
               params: [{ chainId: web3.chainid.polygon}],})
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               const signer = provider.getSigner()
-              const {data, signature} = await registerDaoToPocp(signer,'quick test 1',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
+              const {data, signature} = await registerDaoToPocp(signer,'quick test 10',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
               const token = await dispatch(getAuthToken())
               const tx_hash = await relayFunction(token,0,data,signature)
-              console.log('tx hash====>', tx_hash)
+              await updatePocpRegister(jwt, tx_hash, res)
+              if(tx_hash){
+              const startTime = Date.now()
+              const interval = setInterval(async()=>{
+                if(Date.now() - startTime > 30000){
+                  clearInterval(interval)
+                  console.log('failed to get confirmation')
+                }
+                const reciept = await web3Provider.getTransactionReceipt(tx_hash)
+                if(reciept?.status){
+                  console.log('done', reciept)
+                  clearTimeout(interval)
+                  console.log('successfully registered')
+                await provider.provider.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: web3.chainid.rinkeby}],
+                })
+                navigate(`/dashboard`)
+                }
+                console.log('again....')
+              },2000)
+            }else{
+              console.log('error in fetching tx hash....')
+            }
+          } catch (error) {
+              console.log(error.toString())
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
               await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.chainid.rinkeby}],
-              })
-              // console.log(tx_hash)
-              // await updatePocpRegister(jwt, tx_hash, 1)
-          } catch (error) {
-            console.log(error.toString())
+            })
           }
-        //navigate(`/dashboard`);
-        // } else {
-        //   navigate(`/onboard/dao`);
-        // }
+        } else {
+          navigate(`/onboard/dao`);
+        }
       } else {
         try {
           try {

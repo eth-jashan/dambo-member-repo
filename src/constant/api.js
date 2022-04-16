@@ -12,6 +12,9 @@ const api = {
     },
     s3Uplaod:{
         url:'https://qs17tofrz7.execute-api.us-east-1.amazonaws.com/uploads?'
+    },
+    subgraph:{
+        url:'https://api.thegraph.com/subgraphs/name/eth-jashan/final-drepute'
     }
 }
 

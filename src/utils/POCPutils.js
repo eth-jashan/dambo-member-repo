@@ -70,11 +70,12 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
 }
 
 //signing function for approving badge
-export const approvePOCPBadge = async(signer, communityId, address, claimers) => {
+export const approvePOCPBadge = async(signer, communityId, address, claimers, cids) => {
     let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-    const nonceBigNumber = await contract.getNonce('0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8')
-    console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ))
+
+    const nonceBigNumber = await contract.getNonce(address)
+    console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ), address)
     const chainId = (await contract.provider.getNetwork()).chainId
     console.log('Chain ID ===>', chainId)
     const nonce = parseInt(nonceBigNumber)
@@ -109,36 +110,29 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers) =>
         primaryType: "ForwardRequest",
     }
 
-    // const data = {
-    //     from: address,
-    //     to: pocpProxy.address,
-    //     nonce,
-    //     value:0,
-    //     gas:1e6,
-    //     data: pocpProxy.interface.encodeFunctionData("approveBadge", [
-    //         communityId,
-    //         claimers,
-    //         [
-    //           "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzds",
-    //         ],
-    //     ])
-    // }
-    await pocpProxy.approveBadge(
-        2,
-        ['0x3ee2cf04a59fbb967e2b181a60eb802f36cf9fc8'],
-        [
-          "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzds",
-        ],
-        [1]
-    )
-    // let signature
-    // try {
-    //     signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
-    //     return {data, signature} 
-    // } catch (error) {
-    //     console.log("Error on signing register dao data", error)
-    // }
-    // console.log('signature for register dao', signature)
+    const data = {
+        from: address,
+        to: pocpProxy.address,
+        nonce,
+        value:0,
+        gas:1e6,
+        data: pocpProxy.interface.encodeFunctionData("approveBadge", [
+            communityId,
+            claimers,
+            [
+              "https://bafybeifygcaberx6ei6xmrtflapevdqoeg2nkwdf4ozkavyrvafnv4snla.ipfs.infura-ipfs.io/",
+            ],
+            cids
+        ])
+    }
+    let signature
+    try {
+        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
+        return {data, signature} 
+    } catch (error) {
+        console.log("Error on signing register dao data", error)
+    }
+    console.log('signature for register dao', signature)
     
 }
 

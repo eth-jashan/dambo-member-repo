@@ -1,10 +1,8 @@
 import React from "react";
 import styles from "./style.module.css";
-import Bg from "../../assets/bg.png";
 import BackSvg from "../../assets/Icons/backSvg.svg";
 import OnboardingHeader from "../../components/OnboardingHeader";
 import Lottie from 'react-lottie';
-import {IoArrowBackOutline} from 'react-icons/io'
 import background from '../../assets/lottie/onboarding_background.json'
 
 export default function Layout({ children, decreaseStep, currentStep, contributorWallet, signer}) {

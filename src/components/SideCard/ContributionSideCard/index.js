@@ -13,6 +13,7 @@ import { setContributionDetail } from "../../../store/actions/contibutor-action"
 import POCPBadge from "../../POCPBadge";
 import { useSafeSdk } from "../../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
+import moment from "moment";
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -55,12 +56,9 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
   const getTotalAmount = () => {
     const usd_amount_all = []
     if(currentTransaction?.status !== 'REQUESTED'){
-      // currentTransaction?.map((item, index)=>{
-          currentTransaction.tokens.map((x, i) => {
-              usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
-          })
-      // })
-
+        currentTransaction.tokens.map((x, i) => {
+          usd_amount_all.push(((x?.usd_amount) * parseFloat(x?.amount)))
+      })
       const amount_total = usd_amount_all?.reduce((a,b)=>a+b)
       return parseFloat(amount_total)?.toFixed(2)
     }
@@ -271,7 +269,13 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit
             </Typography.Paragraph>
             </div>:
-            <POCPBadge />}
+            <POCPBadge 
+              dao_name={currentDao?.name} 
+              date={`${moment().format('D MMM YYYY')}`}
+              title={currentTransaction?.title} 
+              from={`${txInfo?.executor?.slice(0,5)}...${txInfo?.executor?.slice(-3)}`} 
+              to={`${currentTransaction?.requested_by?.public_address?.slice(0,5)}...${currentTransaction?.requested_by?.public_address?.slice(-3)}`} 
+            />}
             {currentTransaction?.status==='APPROVED'&&currentTransaction?.payout_status==='PAID'&&<div className={styles.divider}/>}
             {currentTransaction?.status!=='REQUESTED'&&tokenInfo()}
             {/* {currentTransaction?.status==='APPROVED'&&currentTransaction?.payout_status==='PAID'&&
@@ -287,7 +291,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
             </div>} */}
             <div className={styles.divider}/>  
               {renderSigners_admin()}
-            {!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED')&&<div className={styles.claim_container}>
+            {!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED'&&txInfo?.isExecuted)&&<div className={styles.claim_container}>
               <div onClick={async()=> await dispatch(rejectContriRequest(currentTransaction?.id))} className={styles.deletContainer}>
               <img  src={delete_icon} alt='cross' className={styles.delete} />
               </div>

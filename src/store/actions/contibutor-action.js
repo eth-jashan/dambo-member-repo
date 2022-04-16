@@ -1,8 +1,11 @@
 import axios from "axios"
+import { ethers } from "ethers"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
+import { web3 } from "../../constant/web3"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
+import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
@@ -99,3 +102,35 @@ export const setContributionDetail = (item) => {
         dispatch(contributorAction.set_contribution_detail({item}))
     }
 }
+
+export const getAllBadges = (signer) => {
+    return async (dispatch) => {
+
+        var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+        let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+        const approvedBadgesId = await pocpProxy.userBadgeIds()
+        let approvedBadges = []
+
+        
+        
+        // approvedBadgesId.map(async(x,i)=>{
+        //     const userBadge = await pocpProxy.userBadge(parseInt(x.toString()));
+        //     console.log({
+        //         approvedBy:userBadge?.approvedBy, 
+        //         claimed:userBadge?.claimed, 
+        //         communityId:parseInt(x.toString()),
+        //         initiated: userBadge?.initiated
+        //     })
+        //     approvedBadges.push(
+        //         {
+        //         approvedBy:userBadge?.approvedBy, 
+        //         claimed:userBadge?.claimed, 
+        //         communityId:parseInt(x.toString()),
+        //         initiated: userBadge?.initiated
+        //     })
+
+        // })
+        
+    }
+    // const 
+} 

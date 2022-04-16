@@ -1,6 +1,8 @@
 import axios from "axios"
+import { ethers } from "ethers"
 import api from "../constant/api"
 import routes from "../constant/routes"
+import { web3 } from "../constant/web3"
 
 export const relayFunction = async(token, functionType, request, signature) => {
 
@@ -46,7 +48,7 @@ export const updatePocpRegister = async(jwt,tx_hash, dao_uuid) => {
     const data = {tx_hash, dao_uuid}
       
     try {
-          const res = await axios.post(`${api.drepute.dev.BASE_URL}dao/update/pocp`,data,
+          const res = await axios.post(`${api.drepute.dev.BASE_URL}/dao/update/pocp`,data,
             {
               headers:{
                 Authorization:`Bearer ${jwt}`
@@ -83,4 +85,8 @@ export const updatePocpClaim = async(jwt,tx_hash, dao_uuid) => {
     } catch (error) {
         console.log('error in registering.....', error)    
     }
+}
+
+export const pollingTransaction = async(web3Provider,tx_hash, startTime = Date.now()) => {
+  
 }

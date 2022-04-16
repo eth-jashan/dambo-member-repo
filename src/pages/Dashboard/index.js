@@ -34,6 +34,7 @@ import HtmlBadge from '../../components/HtmlBadge';
 import { relayFunction } from '../../utils/relayFunctions';
 import { web3 } from '../../constant/web3';
 import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
+import { getAllBadges } from '../../store/actions/contibutor-action';
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export default function Dashboard() {
@@ -99,77 +100,57 @@ export default function Dashboard() {
       };
 
     async function copyTextToClipboard() {
-        if ('clipboard' in navigator) {
-            message.success('invite link copied succesfully!')
-          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        } else {
-          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        }
-
-
-        // try {
-            // const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            // try {
-                
-            //     await web3Provider.provider.request({
-            //       method: 'wallet_switchEthereumChain',
-            //       params: [{ chainId: '0x13881'}],})
-            //       const provider = new ethers.providers.Web3Provider(window.ethereum);
-            //       const signer = provider.getSigner()
-            //       console.log('changed', signer)
-            //       let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-            //       const {data, signature} = await approvePOCPBadge(signer,1,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
-            //       const token = await dispatch(getAuthToken())
-            //       const tx_hash = await relayFunction(token,5,data,signature)
-            //       console.log('approve hash',tx_hash)
-            //       await asyncTask(tx_hash)
-            //     //   await provider.provider.request({
-            //     //     method: 'wallet_switchEthereumChain',
-            //     //     params: [{ chainId: '0x4'}],
-            //     //   })
-            //   } catch (error) {
-            //     console.log(error.toString())
-            //   }
+        // if ('clipboard' in navigator) {
+        //     message.success('invite link copied succesfully!')
+        //   return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        // } else {
+        //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        // }
+        await dispatch(getAllBadges(signer))
+        // const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         //   try {
         //     await web3Provider.provider.request({
         //       method: 'wallet_switchEthereumChain',
-        //       params: [{ chainId: '0x13881'}],})
+        //       params: [{ chainId: web3.chainid.polygon}],})
         //       const provider = new ethers.providers.Web3Provider(window.ethereum);
         //       const signer = provider.getSigner()
-        //       console.log('changed', signer)
-        //       const {data, signature} = await approvePOCPBadge(signer, 3, address, ['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
+        //       const {data, signature} = await approvePOCPBadge(signer,10,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'],[3])
         //       const token = await dispatch(getAuthToken())
-        //       await relayFunction(token,5,data,signature)
+        //       const tx_hash = await relayFunction(token,5,data,signature)
+        //       console.log('tx_hash', tx_hash)
+        //       // update api call for claim
+
+        //       if(tx_hash){
+        //       const startTime = Date.now()
+        //       const interval = setInterval(async()=>{
+        //         if(Date.now() - startTime > 30000){
+        //           clearInterval(interval)
+        //           console.log('failed to get confirmation')
+        //         }
+        //         const reciept = await web3Provider.getTransactionReceipt(tx_hash)
+        //         if(reciept?.status){
+        //           console.log('done', reciept)
+        //           clearTimeout(interval)
+        //           console.log('successfully registered')
+        //         await provider.provider.request({
+        //           method: 'wallet_switchEthereumChain',
+        //           params: [{ chainId: web3.chainid.rinkeby}],
+        //         })
+        //         navigate(`/dashboard`)
+        //         }
+        //         console.log('again....')
+        //       },2000)
+        //     }else{
+        //       console.log('error in fetching tx hash....')
+        //     }
+        //   } catch (error) {
+        //       console.log(error.toString())
+        //       const provider = new ethers.providers.Web3Provider(window.ethereum);
         //       await provider.provider.request({
         //         method: 'wallet_switchEthereumChain',
-        //         params: [{ chainId: '0x4'}],
-        //       })
-        //       // await updatePocpRegister(jwt, tx_hash, res)
-        //   } catch (error) {
-        //     console.log(error.toString())
-        //   }
-        // } catch (error) {
-        //     console.log('error on register', error)
+        //         params: [{ chainId: web3.chainid.rinkeby}],
+        //     })
         // }
-
-        
-
-        // 0x2a95214d0a71539657e19da8a5f64a89467e4a1787ba66d4fe484a69b7677bdc
-        
-        
-        //const {signature, voucher, claimer, types, domain} =  await createVoucherSigning('0xecaAfF201CB289731E689119180B8Cf066B04C08', { tokenId:0, uri:'https://ipfs.io/ipfs/Qmd3UnDWu3HKyXDqwnuvWv8Gg6rG1ppVkZKsYeMyYkrzHb', minPrice:'100', approvedFor:'0xecaAfF201CB289731E689119180B8Cf066B04C08' },signer)
-        // console.log('signature response', signature)
-        // await dispatch(createVoucher(voucher, types, domain, signature))
-        // await createMetaTransactionSigning(signer)
-        // const html = ReactDOMServer.renderToStaticMarkup(<HtmlBadge/>);
-        // var blob = new Blob([html], { type: 'text/html' });
-        // const url = URL.createObjectURL(blob)
-        // var file = new File([blob], "pocp.html", {type: "text/html"});
-        // a.setAttribute('href', url) // Set "a" element link
-        // a.setAttribute('download', file.name) // Set download filename
-        // a.click() // Start downloading
-        // const res = await axios.post('https://localhost:3002/ipfs/upload',JSON.stringify())
-        // console.log('file', html)
     }
     
     const preventGoingBack = useCallback(() => {

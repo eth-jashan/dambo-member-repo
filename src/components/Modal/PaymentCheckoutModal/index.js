@@ -28,10 +28,8 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const [loading, setLoading] = useState(false)
 
     const proposeSafeTransaction = async () => {
-
+        console.log('started...')
         let transaction_obj = []
-        
-        setLoading(true)
 
         if(approved_request.length>0){
             approved_request.map((item, index)=>{
@@ -83,7 +81,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             
           } catch (error) {
             console.error('errorrrr',error)
-            setLoading(false)
+            // setLoading(false)
             message.error('Error on creating Transaction')
             return
           }
@@ -96,7 +94,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                 safeTxHash
             )
         } catch (error) {
-            setLoading(false)
+            // setLoading(false)
         }
         
         try {
@@ -110,11 +108,11 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
         dispatch(createPayout(safeTxHash, nonce))
         dispatch(resetApprovedRequest())
         dispatch(setPayoutToast('ACCEPTED_CONTRI'))
-        setLoading(false)
+        // setLoading(false)
         onClose()
         } catch (error) {
           console.log('error.........', error)
-          setLoading(false)
+        //   setLoading(false)
           onClose()
         }
     }

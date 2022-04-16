@@ -295,7 +295,7 @@ export default function PaymentCard({item, signer}) {
             console.log('success')
             // const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             // try {
-                
+                //
             //     await web3Provider.provider.request({
             //       method: 'wallet_switchEthereumChain',
             //       params: [{ chainId: '0x13881'}],})
