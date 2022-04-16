@@ -16,7 +16,7 @@ import { EthSignSignature } from '../../utils/EthSignSignature';
 import { executePayout, getPayoutRequest, set_active_nonce, set_payout_filter, signingPayout, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import moment from 'moment';
 import { setPayoutToast } from '../../store/actions/toast-action';
-import { relayFunction, updatePocpRegister, uplaodApproveMetaDataUpload } from '../../utils/relayFunctions';
+import { getIpfsUrl, relayFunction, updatePocpRegister, uplaodApproveMetaDataUpload } from '../../utils/relayFunctions';
 import { approvePOCPBadge } from '../../utils/POCPutils';
 import { getAuthToken } from '../../store/actions/auth-action';
 import { web3 } from '../../constant/web3';
@@ -28,10 +28,11 @@ const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gn
 export default function PaymentCard({item, signer}) {
 
     const address = useSelector(x=>x.auth.address)
+    const jwt = useSelector((x) => x.auth.jwt);
     const [onHover, setOnHover] = useState(false)
     const delegates = useSelector(x=>x.dao.delegates)
     const nonce = useSelector(x=>x.dao.active_nonce)
-    console.log('nounce', item?.gnosis?.isExecuted)
+    // console.log('nounce', item)
     const [loading, setLoading] = useState(false)
     const currentDao = useSelector(x=>x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -77,7 +78,7 @@ export default function PaymentCard({item, signer}) {
         })
         console.log(tokens)
         tokens = tokens.slice(0,2)?.toString()
-        console.log(tokens.replace(/,/g, '+'))
+
         return(
         <div key={index} className={styles.singleItem}>
             <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
@@ -191,53 +192,106 @@ export default function PaymentCard({item, signer}) {
         setLoading(false)
     }
 
-    const executeSafeTransaction = async () => {
+    const executeSafeTransaction = async (c_id, to) => {
         setLoading(true)
-        const hash = item?.gnosis?.safeTxHash
-        const transaction = await serviceClient.getTransaction(hash)
-        const safeTransactionData = {
-            to: transaction.to,
-            safeTxHash: transaction.safeTxHash,
-            value: transaction.value,
-            data: transaction.data || '0x',
-            operation: transaction.operation,
-            safeTxGas: transaction.safeTxGas,
-            baseGas: transaction.baseGas,
-            gasPrice: transaction.gasPrice,
-            gasToken: transaction.gasToken,
-            refundReceiver: transaction.refundReceiver,
-            nonce: transaction.nonce
-        }
-        if (!safeSdk) {
-            setLoading(false) 
-            return
-        }
+        // const hash = item?.gnosis?.safeTxHash
+        // const transaction = await serviceClient.getTransaction(hash)
+        // const safeTransactionData = {
+        //     to: transaction.to,
+        //     safeTxHash: transaction.safeTxHash,
+        //     value: transaction.value,
+        //     data: transaction.data || '0x',
+        //     operation: transaction.operation,
+        //     safeTxGas: transaction.safeTxGas,
+        //     baseGas: transaction.baseGas,
+        //     gasPrice: transaction.gasPrice,
+        //     gasToken: transaction.gasToken,
+        //     refundReceiver: transaction.refundReceiver,
+        //     nonce: transaction.nonce
+        // }
+        // if (!safeSdk) {
+        //     setLoading(false) 
+        //     return
+        // }
         
-        const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
+        // const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
         
-        transaction.confirmations.forEach(confirmation => {
-          const signature = new EthSignSignature(confirmation.owner, confirmation.signature)
-          safeTransaction.addSignature(signature)
-        })
-        let executeTxResponse
-        try {
-          executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-          console.log('done transaction.......')
-        } catch(error) {
-          console.error(error)
-          setLoading(false)
-          return
-        }
-        executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-            dispatch(setPayoutToast('EXECUTED'))
-            await dispatch(getPayoutRequest())
-            await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING',1))
-            if(safeSdk){
-                const nonce = await safeSdk.getNonce()
-                dispatch(set_active_nonce(nonce))
+        // transaction.confirmations.forEach(confirmation => {
+        //   const signature = new EthSignSignature(confirmation.owner, confirmation.signature)
+        //   safeTransaction.addSignature(signature)
+        // })
+        // let executeTxResponse
+        // try {
+        //   executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+        //   console.log('done transaction.......')
+        // } catch(error) {
+        //   console.error(error)
+        //   setLoading(false)
+        //   return
+        // }
+        // executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+        //     dispatch(setPayoutToast('EXECUTED'))
+        //     await dispatch(getPayoutRequest())
+        //     await dispatch(syncTxDataWithGnosis())
+        //     await dispatch(set_payout_filter('PENDING',1))
+        //     if(safeSdk){
+        //         const nonce = await safeSdk.getNonce()
+        //         dispatch(set_active_nonce(nonce))
+        //     }
+        //     dispatch(setPayment(null))
+            const {cid, url} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
+            console.log('cid', cid, 'url', url)
+            if(cid?.length>0){
+                const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+                try {
+                    await web3Provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.polygon}]
+                    })
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner()
+                    await approvePOCPBadge(signer,1, address,to,cid,url)
+                    // const token = await dispatch(getAuthToken())
+                    // const tx_hash = await relayFunction(token,5,data,signature)
+                    // if(tx_hash){
+                    // const startTime = Date.now()
+                    // const interval = setInterval(async()=>{
+                    //     if(Date.now() - startTime > 30000){
+                    //     clearInterval(interval)
+                    //     console.log('failed to get confirmation')
+                    //     }
+                    //     console.log('tx_hash', tx_hash)
+                    //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                    //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+                        
+                    //     if(reciept?.status){
+                    //     console.log('done', reciept)
+                    //     clearTimeout(interval)
+                    //     console.log('successfully registered')
+                    //     await provider.provider.request({
+                    //     method: 'wallet_switchEthereumChain',
+                    //     params: [{ chainId: web3.chainid.rinkeby}],
+                    //     })
+                    //     }
+
+                    //     console.log('again....')
+                    // },2000)
+                    // }else{
+                    // console.log('error in fetching tx hash....')
+                    //     await provider.provider.request({
+                    //         method: 'wallet_switchEthereumChain',
+                    //         params: [{ chainId: web3.chainid.rinkeby}],
+                    //     })
+                    // }
+                } catch (error) {
+                    console.log(error.toString())
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.rinkeby}],
+                    })
+                }
             }
-            dispatch(setPayment(null))
             setLoading(false)
         }
     const getButtonProperty = () => {
@@ -264,66 +318,39 @@ export default function PaymentCard({item, signer}) {
 
     const uploadApproveMetatoIpfs = async() => {
         let metaInfo = []
+        let cid = []
+        let to = []
         item?.metaInfo?.contributions.map((x,index)=>{
             
             metaInfo.push({   
                 dao_name:currentDao?.name, 
                 contri_title:x?.title, 
                 signer:address, 
-                claimer:x?.requested_by?.public_address, 
-                //date_of_approve:item?.gnosis?.created_at, 
-                date_of_approve:'21 April 2022', 
+                claimer:x?.requested_by?.public_address,
+                date_of_approve:moment().format('D MMM YYYY'), 
                 id:x?.id, 
                 dao_logo_url:currentDao?.logo_url||"https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png" ,
                 work_type:x?.stream.toString()
             });
+            cid.push(x?.id)
+            to.push(x?.requested_by?.public_address)
         })
-        // console.log('meta info', metaInfo)
         const response = await uplaodApproveMetaDataUpload(metaInfo)
         if(response){
-            return 1
+            return {status:true, cid, to}
         }else{
-            return 0
+            return {status:false, cid:[], to:[]}
         }
     }
 
     const executeFunction = async() => {
         try {
-        //   const res =  await uploadApproveMetatoIpfs()
-        //   if(res){
-            await executeSafeTransaction()
-            console.log('success')
-            // const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            // try {
-                //
-            //     await web3Provider.provider.request({
-            //       method: 'wallet_switchEthereumChain',
-            //       params: [{ chainId: '0x13881'}],})
-            //       const provider = new ethers.providers.Web3Provider(window.ethereum);
-            //       const signer = provider.getSigner()
-            //       console.log('changed', signer)
-            //       let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-            //       const {data, signature} = await approvePOCPBadge(signer,2,address,['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'])
-            //       const token = await dispatch(getAuthToken())
-            //       const tx_hash = await relayFunction(token,5,data,signature)
-            //       console.log('approve hash',tx_hash)
-            //         pocpProxy.on("Voucher", (a, b, c, d) => {
-            //             // if(c === '0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8'){
-            //             //     console.log("Registered Contract", a, b);
-            //             // }
-            //             console.log(a, b, c, d)
-            //         })
-            //       await provider.provider.request({
-            //         method: 'wallet_switchEthereumChain',
-            //         params: [{ chainId: '0x4'}],
-            //       })
-            //     //   console.log(res, tx_hash)
-            //     //   await updatePocpRegister(jwt, tx_hash, res)
-            //   } catch (error) {
-            //     console.log(error.toString())
-            //   }
-        //   }
-            
+            const res =  await uploadApproveMetatoIpfs()
+            if(res.status){
+                await executeSafeTransaction(res?.cid, res?.to)
+                console.log('success')
+            }
+            console.log('success')            
         } catch (error) {
             console.log('error', error.toString())
         }

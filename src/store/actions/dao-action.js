@@ -79,7 +79,7 @@ export const registerDao = () => {
         )
 
         if(res.data.success){
-          return res.data.data.dao_uuid
+          return {dao_uuid:res.data.data.dao_uuid, name, owners}
         }else{
           return 0
         }
@@ -277,9 +277,10 @@ export const getContriRequest = () => {
       console.log('Pending Contri request.....',res.data.data)
       if(res.data.success){
         //Approved Request without gnosis
-
+        let cid = []
         res?.data?.data?.contributions?.map((item, index) => {
           let payout = []
+          cid.push(item)
           if(item?.tokens?.length>0 && item?.payout_status === null && item?.status === 'APPROVED' && item?.gnosis_reference_id === ''){
             item?.tokens.map((x, index)=>{
               payout.push(
@@ -299,6 +300,8 @@ export const getContriRequest = () => {
             }
           }
         })
+
+        dispatch(daoAction.set_contribution_id({cid}))
         
         dispatch(daoAction.set_contri_list({
           list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),

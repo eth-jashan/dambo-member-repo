@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './style.module.css'
 import textStyle from '../../../commonStyles/textType/styles.module.css'
+import { useSelector } from 'react-redux'
 
 const ContributionOverview = () => {
 
@@ -24,11 +25,14 @@ const ContributionOverview = () => {
         </div>
     )
 
+    const claimed = useSelector(x=>x.contributor.claimed)
+    const unclaimed = useSelector(x=>x.contributor.unclaimed)
+
     const contributionStats = () => (
         <div className={styles.contributionContainer}>
             <div style={{color:'white', textAlign:'start', borderBottom:'1px solid #292929', paddingTop:'1rem', paddingLeft:'1rem', paddingBottom:'1rem'}} className={textStyle.m_14}>1 Payouts</div>
-            <div style={{color:'white', textAlign:'start', borderBottom:'1px solid #292929', paddingTop:'1rem', paddingLeft:'1rem', paddingBottom:'1rem'}} className={textStyle.m_14}>1 Claimed badges</div>
-            <div style={{color:'white', textAlign:'start', paddingTop:'1rem', paddingLeft:'1rem', paddingBottom:'1rem'}} className={textStyle.m_14}>1 Unclaimed badges</div>
+            <div style={{color:'white', textAlign:'start', borderBottom:'1px solid #292929', paddingTop:'1rem', paddingLeft:'1rem', paddingBottom:'1rem'}} className={textStyle.m_14}>{claimed.length} Claimed badges</div>
+            <div style={{color:'white', textAlign:'start', paddingTop:'1rem', paddingLeft:'1rem', paddingBottom:'1rem'}} className={textStyle.m_14}>{unclaimed.length} Unclaimed badges</div>
         </div>
     )
 

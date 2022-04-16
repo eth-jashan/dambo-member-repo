@@ -21,7 +21,6 @@ export default function ContributionCard({item}) {
                 dispatch(setTransaction(item, ethPrice))
             }
         }else{
-            console.log('item', item)
             dispatch(setContributionDetail(item))
         }
     }

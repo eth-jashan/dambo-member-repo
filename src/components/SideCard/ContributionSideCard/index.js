@@ -14,6 +14,12 @@ import POCPBadge from "../../POCPBadge";
 import { useSafeSdk } from "../../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import moment from "moment";
+import { claimPOCPBadges } from "../../../utils/POCPutils";
+import { getAuthToken } from "../../../store/actions/auth-action";
+import { relayFunction } from "../../../utils/relayFunctions";
+import { ethers } from "ethers";
+import { web3 } from "../../../constant/web3";
+import Web3 from "web3";
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -43,7 +49,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
       tx  = await serviceClient.getTransaction(currentTransaction?.gnosis_reference_id)
     }
     const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
-    console.log('transaction', tx)
+    console.log('transaction', currentTransaction?.isClaimed)
     setTxInfo(tx)
     setSafeInfo(safeInfo)
     
@@ -241,11 +247,62 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
           
       </div>
     )
+    const unclaimed = useSelector(x=>x.contributor.unclaimed)
+    const claimBadges = async() => {
+      const claimInfo = unclaimed.filter(x=>(x.identifier) === Web3.utils.hexToBytes(Web3.utils.numberToHex(14)))
+      // console.log('claim', claimInfo, unclaimed, Web3.utils.hexToBytes(Web3.utils.numberToHex(14)), currentTransaction )
+      try {
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        await web3Provider.provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.chainid.polygon}]
+        })
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+        const {data, signature} = await claimPOCPBadges(signer,address,[1])
+        const token = await dispatch(getAuthToken())
+        const tx_hash = await relayFunction(token,3,data,signature)
+        if(tx_hash){
+        const startTime = Date.now()
+        const interval = setInterval(async()=>{
+            if(Date.now() - startTime > 30000){
+            clearInterval(interval)
+            console.log('failed to get confirmation')
+            }
+            var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+            const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+            if(reciept?.status){
+            console.log('done', reciept)
+            clearTimeout(interval)
+            console.log('successfully registered')
+            await provider.provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.chainid.rinkeby}],
+            })
+            }
+            console.log('again....')
+        },2000)
+        }else{
+        console.log('error in fetching tx hash....')
+            await provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
+            })
+        }
+    } catch (error) {
+        console.log(error.toString())
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.chainid.rinkeby}],
+        })
+    }
+    }
 
     return(
         <div className={styles.container}>
             <img onClick={()=>onContributionCrossPress()} src={cross} alt='cross' className={styles.cross} />
-            {!(currentTransaction?.status==='APPROVED'&&currentTransaction?.payout_status==='PAID'&&!isAdmin)||isAdmin?
+            {!(currentTransaction?.status==='APPROVED'&&currentTransaction?.payout_status==='PAID'&&!isAdmin)||isAdmin ||currentTransaction?.isClaimed?
             <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
               <span
                   className={`${textStyle.ub_23} ${styles.title}`}
@@ -291,12 +348,12 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
             </div>} */}
             <div className={styles.divider}/>  
               {renderSigners_admin()}
-            {!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED'&&txInfo?.isExecuted)&&<div className={styles.claim_container}>
+            {!currentTransaction?.isClaimed&&!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED'&&txInfo?.isExecuted)&&<div className={styles.claim_container}>
               <div onClick={async()=> await dispatch(rejectContriRequest(currentTransaction?.id))} className={styles.deletContainer}>
               <img  src={delete_icon} alt='cross' className={styles.delete} />
               </div>
 
-              <div  className={styles.payNow}>
+              <div onClick={()=>claimBadges()}  className={styles.payNow}>
                 <div className={`${textStyle.ub_16}`}>Claim Badge</div>
               </div>
             </div>}

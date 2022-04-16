@@ -25,7 +25,7 @@ import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
 import { convertTokentoUsd } from '../../utils/conversion';
 import RejectPayment from '../../components/Modal/RejectPayment';
-import { approvePOCPBadge, claimPOCPBadges, createMetaTransactionSigning, createVoucherSigning,registerDaoToPocp } from '../../utils/POCPutils';
+import { approvePOCPBadge} from '../../utils/POCPutils';
 import POCPBadge from '../../components/POCPBadge';
 import axios from 'axios';
 import GnosisExternalPayment from '../../components/Alert/GnosisExternalPayment/index';
@@ -98,7 +98,7 @@ export default function Dashboard() {
         console.log('ran once after 3sec')
         }, 30000);
       };
-
+      const claimed = useSelector(x=>x.contributor.claimed)
     async function copyTextToClipboard() {
         // if ('clipboard' in navigator) {
         //     message.success('invite link copied succesfully!')
@@ -106,51 +106,8 @@ export default function Dashboard() {
         // } else {
         //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
         // }
-        // await dispatch(getAllBadges(signer))
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-          try {
-            await web3Provider.provider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: web3.chainid.polygon}],})
-              const provider = new ethers.providers.Web3Provider(window.ethereum);
-              const signer = provider.getSigner()
-              const {data, signature} = await claimPOCPBadges(signer,address)
-              const token = await dispatch(getAuthToken())
-              const tx_hash = await relayFunction(token,5,data,signature)
-              console.log('tx_hash', tx_hash)
-              // update api call for claim
-
-              if(tx_hash){
-              const startTime = Date.now()
-              const interval = setInterval(async()=>{
-                if(Date.now() - startTime > 30000){
-                  clearInterval(interval)
-                  console.log('failed to get confirmation')
-                }
-                const reciept = await web3Provider.getTransactionReceipt(tx_hash)
-                if(reciept?.status){
-                  console.log('done', reciept)
-                  clearTimeout(interval)
-                  console.log('successfully registered')
-                await provider.provider.request({
-                  method: 'wallet_switchEthereumChain',
-                  params: [{ chainId: web3.chainid.rinkeby}],
-                })
-                navigate(`/dashboard`)
-                }
-                console.log('again....')
-              },2000)
-            }else{
-              console.log('error in fetching tx hash....')
-            }
-          } catch (error) {
-              console.log(error.toString())
-              const provider = new ethers.providers.Web3Provider(window.ethereum);
-              await provider.provider.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: web3.chainid.rinkeby}],
-            })
-        }
+        await dispatch(getAllBadges(signer,address, '1'))
+        console.log('cklame',claimed)
     }
     
     const preventGoingBack = useCallback(() => {
@@ -219,6 +176,7 @@ export default function Dashboard() {
         }else{
             console.log('fetch when contributor....Contributo')
             await  dispatch(getContriRequest())
+            await dispatch(getAllBadges(signer,address,'1'))
         }
     },[dispatch, role, safeSdk])
 
@@ -251,6 +209,7 @@ export default function Dashboard() {
             await dispatch(getContriRequest())
         }else{
             await dispatch(getContriRequest())
+            await dispatch(getAllBadges(signer, address,"1"))
         }
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -398,11 +357,11 @@ export default function Dashboard() {
         </div>
         :renderEmptyScreen()
     )
-    const dataSource= ['1', '2', '3']
+    const dataSource= useSelector(x=>x.contributor.claimed)
     const renderBadges = () => (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridGap: 0,overflowY:'scroll',marginBottom:'2rem'}}>
+        <div style={{display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridGap: 0,overflowY:'scroll',marginBottom:'2rem'}}>
             {dataSource.map((x,i)=>(
-                <BadgeItem/>
+                <BadgeItem item={x}/>
             ))}
         </div>
     )

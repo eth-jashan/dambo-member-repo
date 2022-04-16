@@ -6,7 +6,7 @@ import { web3 } from "../../constant/web3"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
-import { POCP_CLAIMED_TOKEN } from "../../utils/subgraphQuery"
+import { POCP_APPROVED_TOKEN, POCP_CLAIMED_TOKEN } from "../../utils/subgraphQuery"
 import {createClient} from 'urql'
 
 export const set_invite_id = (id) => {
@@ -105,28 +105,36 @@ export const setContributionDetail = (item) => {
     }
 }
 
-export const getAllBadges = (signer) => {
-    return async (dispatch) => {
-
-        var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-        let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-        
-        const approvedBadges = await pocpProxy.userBadgeIds()
-        
-        let approvedBadgesId = []
-
-        approvedBadges.map((x,i)=>{
-            approvedBadgesId.push(x.toString())
-        })
-        console.log("Approved Badges",approvedBadgesId)
-        const query = POCP_CLAIMED_TOKEN
+export const getAllBadges = (signer, address,communityId) => {
+    return async (dispatch, getState) => {
+        // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+        const cid = getState().dao.contribution_id
+        const query_claimed = POCP_CLAIMED_TOKEN
+        const query_approved = POCP_APPROVED_TOKEN
 
         const client = createClient({
             url:api.subgraph.url
         })
 
-        const res = await client.query(query).toPromise()
-        console.log('claimed tokens', res.data?.pocpTokens)
+        try {
+            let unclaimed = []
+            const resApproved = await client.query(query_approved).toPromise()
+            const resClaimed = await client.query(query_claimed).toPromise()
+
+            const claimed = resClaimed.data?.pocpTokens.filter(x=>ethers.utils.hexlify(x.claimer) === ethers.utils.hexlify(address))
+            
+            const allApproved = resApproved?.data?.approvedTokens.filter(x=>x?.community?.id === communityId)
+                allApproved.map((x,i)=>{
+                    let isClaimed = claimed.filter(y=>y.id === x?.id)
+                    if(isClaimed.length===0){
+                        unclaimed.push(x)
+                    }
+                })
+            console.log('unclaimed',cid )
+            dispatch(contributorAction.set_badges({claimed, unclaimed}))
+        } catch (error) {
+            console.log('error: ', error.toString())
+        }
     }
     // const 
 } 

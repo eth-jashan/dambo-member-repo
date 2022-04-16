@@ -119,8 +119,19 @@ export default function Onboarding() {
       }
     } else if (currentStep === 4) {
       if (hasMultiSignWallet) {
-        const res = await dispatch(registerDao());
-        if (res) {
+        const {dao_uuid, name, owners} = await dispatch(registerDao());
+        let owner = [address]
+        if(owners.length>1){
+          owners.map((x,i)=>{
+            if(x.address !== address){
+              owner.push(x.address)
+            }
+          })
+        }
+
+        console.log('address', owner, owners)
+
+        if (dao_uuid) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           try {
             await web3Provider.provider.request({
@@ -128,10 +139,13 @@ export default function Onboarding() {
               params: [{ chainId: web3.chainid.polygon}],})
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               const signer = provider.getSigner()
-              const {data, signature} = await registerDaoToPocp(signer,'quick test 10',['0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8','0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377'], address)
+              const {data, signature} = await registerDaoToPocp(signer,name,owner, address)
               const token = await dispatch(getAuthToken())
               const tx_hash = await relayFunction(token,0,data,signature)
-              await updatePocpRegister(jwt, tx_hash, res)
+              
+              await updatePocpRegister(jwt, tx_hash, dao_uuid)
+              //get /contrib/get/ipfs
+
               if(tx_hash){
               const startTime = Date.now()
               const interval = setInterval(async()=>{
@@ -139,7 +153,8 @@ export default function Onboarding() {
                   clearInterval(interval)
                   console.log('failed to get confirmation')
                 }
-                const reciept = await web3Provider.getTransactionReceipt(tx_hash)
+                var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                 if(reciept?.status){
                   console.log('done', reciept)
                   clearTimeout(interval)

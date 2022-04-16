@@ -1,5 +1,6 @@
 import axios from "axios"
 import { ethers } from "ethers"
+import Web3 from "web3"
 import api from "../constant/api"
 import routes from "../constant/routes"
 import { web3 } from "../constant/web3"
@@ -32,7 +33,7 @@ export const uplaodApproveMetaDataUpload = async(approveContri) => {
         contribution_meta_array:approveContri
     }
     try {
-        const res = await axios.post('http://staging.api.drepute.xyz:3001/upload?',data)
+        const res = await axios.post('http://localhost:3001/upload?',data)
         console.log(res)
         if(res){
             return 1
@@ -87,6 +88,52 @@ export const updatePocpClaim = async(jwt,tx_hash, dao_uuid) => {
     }
 }
 
-export const pollingTransaction = async(web3Provider,tx_hash, startTime = Date.now()) => {
+const buildQuery = (cid) => {
+  let cid_and_array = []
+
+  cid?.map((x,i)=>{
+    cid_and_array.push((`cid=${x}`).toString())
+  })
+  let queryString = cid_and_array.toString()
+  queryString = queryString.replace(/,/g, '&')
+  console.log('query', queryString)
+  return queryString
+}
+
+export const getIpfsUrl = async(jwt, dao_uuid, cid) => {
   
+  try {
+    const query = buildQuery(cid)
+    console.log('query====', query)
+    const res = await axios.get(`${api.drepute.dev.BASE_URL}/contrib/get/ipfs?${query}&dao_uuid=${dao_uuid}`,
+    {
+      headers:{
+        Authorization:`Bearer ${jwt}`
+      }
+    })
+    console.log('ress....', res.data.data)
+    if(res.data?.data?.contributions?.length>0){
+      let cid = []
+      let url = []
+      res.data?.data?.contributions?.map((item, index)=>{
+        // cid.push(item?.)
+        cid.push(Web3.utils.hexToBytes(Web3.utils.stringToHex(item?.id.toString())))
+        url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
+      })
+      return {cid, url}
+    }else{
+      return false
+    }
+  } catch (error) {
+    console.log('error',error.toString())
+    return false
+  }
+}
+
+export const getMetaInfo = async(url) => {
+  const res = await axios.get(url)
+  if(res.status){
+    console.log('resss', res.data)
+    return res.data
+  }
 }

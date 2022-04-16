@@ -22,6 +22,7 @@ const daoSlice = createSlice({
     payout_filter_key:1,
     account_mode:null,
     account_index:0,
+    contribution_id:[],
     newSafeSetup:{
       owners:[],
       threshold:0,
@@ -90,6 +91,10 @@ const daoSlice = createSlice({
     },
     switch_account_role(state, action){
       state.role = action.payload.role
+    },
+    set_contribution_id(state, action){
+      console.log('unclaimed cid', action.payload.cid)
+      state.contribution_id = action.payload.cid
     }
 }});
 
