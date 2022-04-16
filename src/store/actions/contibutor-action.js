@@ -6,6 +6,8 @@ import { web3 } from "../../constant/web3"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
+import { POCP_CLAIMED_TOKEN } from "../../utils/subgraphQuery"
+import {createClient} from 'urql'
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
@@ -108,29 +110,23 @@ export const getAllBadges = (signer) => {
 
         var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
         let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-        const approvedBadgesId = await pocpProxy.userBadgeIds()
-        let approvedBadges = []
+        
+        const approvedBadges = await pocpProxy.userBadgeIds()
+        
+        let approvedBadgesId = []
 
-        
-        
-        // approvedBadgesId.map(async(x,i)=>{
-        //     const userBadge = await pocpProxy.userBadge(parseInt(x.toString()));
-        //     console.log({
-        //         approvedBy:userBadge?.approvedBy, 
-        //         claimed:userBadge?.claimed, 
-        //         communityId:parseInt(x.toString()),
-        //         initiated: userBadge?.initiated
-        //     })
-        //     approvedBadges.push(
-        //         {
-        //         approvedBy:userBadge?.approvedBy, 
-        //         claimed:userBadge?.claimed, 
-        //         communityId:parseInt(x.toString()),
-        //         initiated: userBadge?.initiated
-        //     })
+        approvedBadges.map((x,i)=>{
+            approvedBadgesId.push(x.toString())
+        })
+        console.log("Approved Badges",approvedBadgesId)
+        const query = POCP_CLAIMED_TOKEN
 
-        // })
-        
+        const client = createClient({
+            url:api.subgraph.url
+        })
+
+        const res = await client.query(query).toPromise()
+        console.log('claimed tokens', res.data?.pocpTokens)
     }
     // const 
 } 

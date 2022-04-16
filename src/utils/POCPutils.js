@@ -178,21 +178,19 @@ export const claimPOCPBadges = async(signer, address) => {
         primaryType: "ForwardRequest",
     }
 
-    // const data = {
-    //     from: address,
-    //     to: pocpProxy.address,
-    //     nonce,
-    //     value:0,
-    //     gas:1e6,
-    //     data: pocpProxy.interface.encodeFunctionData("claim", [
-    //         // communityId,
-    //         // claimers,
-    //         [
-    //             userBadgeIds[0],
-    //         ],
-    //     ])
-    // }
-    await pocpProxy.claim([2])
+    const data = {
+        from: address,
+        to: pocpProxy.address,
+        nonce,
+        value:0,
+        gas:1e6,
+        data: pocpProxy.interface.encodeFunctionData("claim", [
+            [
+                userBadgeIds[0],
+            ],
+        ])
+    }
+    
     // await pocpProxy.approveBadge(
     //     2,
     //     ['0x3ee2cf04a59fbb967e2b181a60eb802f36cf9fc8'],
@@ -201,14 +199,14 @@ export const claimPOCPBadges = async(signer, address) => {
     //     ],
     //     [1]
     // )
-    // let signature
-    // try {
-    //     signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
-    //     return {data, signature} 
-    // } catch (error) {
-    //     console.log("Error on signing register dao data", error)
-    // }
-    // console.log('signature for register dao', signature)
+    let signature
+    try {
+        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
+        return {data, signature} 
+    } catch (error) {
+        console.log("Error on signing register dao data", error)
+    }
+    console.log('signature for register dao', signature)
     
 }
 
