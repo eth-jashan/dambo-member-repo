@@ -194,51 +194,51 @@ export default function PaymentCard({item, signer}) {
 
     const executeSafeTransaction = async (c_id, to) => {
         setLoading(true)
-        // const hash = item?.gnosis?.safeTxHash
-        // const transaction = await serviceClient.getTransaction(hash)
-        // const safeTransactionData = {
-        //     to: transaction.to,
-        //     safeTxHash: transaction.safeTxHash,
-        //     value: transaction.value,
-        //     data: transaction.data || '0x',
-        //     operation: transaction.operation,
-        //     safeTxGas: transaction.safeTxGas,
-        //     baseGas: transaction.baseGas,
-        //     gasPrice: transaction.gasPrice,
-        //     gasToken: transaction.gasToken,
-        //     refundReceiver: transaction.refundReceiver,
-        //     nonce: transaction.nonce
-        // }
-        // if (!safeSdk) {
-        //     setLoading(false) 
-        //     return
-        // }
+        const hash = item?.gnosis?.safeTxHash
+        const transaction = await serviceClient.getTransaction(hash)
+        const safeTransactionData = {
+            to: transaction.to,
+            safeTxHash: transaction.safeTxHash,
+            value: transaction.value,
+            data: transaction.data || '0x',
+            operation: transaction.operation,
+            safeTxGas: transaction.safeTxGas,
+            baseGas: transaction.baseGas,
+            gasPrice: transaction.gasPrice,
+            gasToken: transaction.gasToken,
+            refundReceiver: transaction.refundReceiver,
+            nonce: transaction.nonce
+        }
+        if (!safeSdk) {
+            setLoading(false) 
+            return
+        }
         
-        // const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
+        const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
         
-        // transaction.confirmations.forEach(confirmation => {
-        //   const signature = new EthSignSignature(confirmation.owner, confirmation.signature)
-        //   safeTransaction.addSignature(signature)
-        // })
-        // let executeTxResponse
-        // try {
-        //   executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-        //   console.log('done transaction.......')
-        // } catch(error) {
-        //   console.error(error)
-        //   setLoading(false)
-        //   return
-        // }
-        // executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-        //     dispatch(setPayoutToast('EXECUTED'))
-        //     await dispatch(getPayoutRequest())
-        //     await dispatch(syncTxDataWithGnosis())
-        //     await dispatch(set_payout_filter('PENDING',1))
-        //     if(safeSdk){
-        //         const nonce = await safeSdk.getNonce()
-        //         dispatch(set_active_nonce(nonce))
-        //     }
-        //     dispatch(setPayment(null))
+        transaction.confirmations.forEach(confirmation => {
+          const signature = new EthSignSignature(confirmation.owner, confirmation.signature)
+          safeTransaction.addSignature(signature)
+        })
+        let executeTxResponse
+        try {
+          executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+          console.log('done transaction.......')
+        } catch(error) {
+          console.error(error)
+          setLoading(false)
+          return
+        }
+        executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+            dispatch(setPayoutToast('EXECUTED'))
+            await dispatch(getPayoutRequest())
+            await dispatch(syncTxDataWithGnosis())
+            await dispatch(set_payout_filter('PENDING',1))
+            if(safeSdk){
+                const nonce = await safeSdk.getNonce()
+                dispatch(set_active_nonce(nonce))
+            }
+            dispatch(setPayment(null))
             const {cid, url} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
             console.log('cid', cid, 'url', url)
             if(cid?.length>0){
@@ -250,39 +250,39 @@ export default function PaymentCard({item, signer}) {
                     })
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner()
-                    await approvePOCPBadge(signer,1, address,to,cid,url)
-                    // const token = await dispatch(getAuthToken())
-                    // const tx_hash = await relayFunction(token,5,data,signature)
-                    // if(tx_hash){
-                    // const startTime = Date.now()
-                    // const interval = setInterval(async()=>{
-                    //     if(Date.now() - startTime > 30000){
-                    //     clearInterval(interval)
-                    //     console.log('failed to get confirmation')
-                    //     }
-                    //     console.log('tx_hash', tx_hash)
-                    //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-                    //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+                    const {data, signature} = await approvePOCPBadge(signer,1, address,to,cid,url)
+                    const token = await dispatch(getAuthToken())
+                    const tx_hash = await relayFunction(token,5,data,signature)
+                    if(tx_hash){
+                    const startTime = Date.now()
+                    const interval = setInterval(async()=>{
+                        if(Date.now() - startTime > 30000){
+                        clearInterval(interval)
+                        console.log('failed to get confirmation')
+                        }
+                        console.log('tx_hash', tx_hash)
+                        var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                        const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                         
-                    //     if(reciept?.status){
-                    //     console.log('done', reciept)
-                    //     clearTimeout(interval)
-                    //     console.log('successfully registered')
-                    //     await provider.provider.request({
-                    //     method: 'wallet_switchEthereumChain',
-                    //     params: [{ chainId: web3.chainid.rinkeby}],
-                    //     })
-                    //     }
+                        if(reciept?.status){
+                        console.log('done', reciept)
+                        clearTimeout(interval)
+                        console.log('successfully registered')
+                        await provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.rinkeby}],
+                        })
+                        }
 
-                    //     console.log('again....')
-                    // },2000)
-                    // }else{
-                    // console.log('error in fetching tx hash....')
-                    //     await provider.provider.request({
-                    //         method: 'wallet_switchEthereumChain',
-                    //         params: [{ chainId: web3.chainid.rinkeby}],
-                    //     })
-                    // }
+                        console.log('again....')
+                    },2000)
+                    }else{
+                    console.log('error in fetching tx hash....')
+                        await provider.provider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: web3.chainid.rinkeby}],
+                        })
+                    }
                 } catch (error) {
                     console.log(error.toString())
                     const provider = new ethers.providers.Web3Provider(window.ethereum);

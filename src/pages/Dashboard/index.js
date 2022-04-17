@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getAuthToken, getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
-import { createVoucher, getAllDaowithAddress, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
+import { createVoucher, getAllDaowithAddress, getContributorOverview, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
@@ -87,17 +87,6 @@ export default function Dashboard() {
         setProvider()
     },[])
 
-    const asyncTask = async (hash) => {
-        setTimeout(async () => {
-        //   try {
-        //     const _mobileNumber = await SmsRetriever.requestPhoneNumber();
-        //     setMobileNumber(_mobileNumber.substring(3));
-        //   } catch (e) {
-        //     console.log(e);
-        //   }
-        console.log('ran once after 3sec')
-        }, 30000);
-      };
       const claimed = useSelector(x=>x.contributor.claimed)
     async function copyTextToClipboard() {
         // if ('clipboard' in navigator) {
@@ -149,6 +138,8 @@ export default function Dashboard() {
                     }else{
                         console.log('fetch when contributor....')
                         await  dispatch(getContriRequest())
+                        await dispatch(getContributorOverview())
+                        await dispatch(getAllBadges(signer, address,'1'))
                     }
                 }else{
                     message.info('Token expired')
@@ -176,6 +167,7 @@ export default function Dashboard() {
         }else{
             console.log('fetch when contributor....Contributo')
             await  dispatch(getContriRequest())
+            await dispatch(getContributorOverview())
             await dispatch(getAllBadges(signer,address,'1'))
         }
     },[dispatch, role, safeSdk])

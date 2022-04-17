@@ -16,6 +16,15 @@ query{
 }
 `
 
+export const COMMUNITY_HASH = `
+  {
+    communities(first:100){
+      id
+      txhash
+    }
+  }
+`
+
 export const POCP_APPROVED_TOKEN = `
 {
   approvedTokens(first:100) {

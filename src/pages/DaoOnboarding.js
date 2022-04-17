@@ -144,7 +144,7 @@ export default function Onboarding() {
               const tx_hash = await relayFunction(token,0,data,signature)
               
               await updatePocpRegister(jwt, tx_hash, dao_uuid)
-              //get /contrib/get/ipfs
+    
 
               if(tx_hash){
               const startTime = Date.now()

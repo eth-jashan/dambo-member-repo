@@ -162,7 +162,7 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
                     </div>
                   </div>
                 </div>
-                  <div style={{ flexGrow: 100, display:'flex', alignItems:'center', flexDirection:'column' }}>
+                  <div style={{ flexGrow: 100, display:'flex', alignItems:'center', flexDirection:'column',position:'relative' }}>
                       {image?<img alt='logo' src={image?.preview} style={{width:'15rem', height:'15rem'}} />:      
                       <div className={styles.picContainer}>
                       <label className={styles.label} htmlFor="upload-button">

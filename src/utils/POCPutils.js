@@ -111,29 +111,29 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
         primaryType: "ForwardRequest",
     }
 
-    // const data = {
-    //     from: address,
-    //     to: pocpProxy.address,
-    //     nonce,
-    //     value:0,
-    //     gas:1e6,
-    //     data: pocpProxy.interface.encodeFunctionData("approveBadge", [
-    //         communityId,
-    //         claimers,
-    //         url,
-    //         cids
-    //     ])
-    // }
-    // let signature
-    // try {
-    //     signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
-    //     return {data, signature} 
-    // } catch (error) {
-    //     console.log("Error on signing register dao data", error)
-    // }
-    // console.log('signature for register dao', signature)
+    const data = {
+        from: address,
+        to: pocpProxy.address,
+        nonce,
+        value:0,
+        gas:1e6,
+        data: pocpProxy.interface.encodeFunctionData("approveBadge", [
+            communityId,
+            claimers,
+            url,
+            cids
+        ])
+    }
+    let signature
+    try {
+        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
+        return {data, signature} 
+    } catch (error) {
+        console.log("Error on signing register dao data", error)
+    }
+    console.log('signature for register dao', signature)
     // console.log('cid', Web3.utils.he(Web3.utils.stringToHex('23')))
-    pocpProxy.approveBadge(communityId, claimers, ['https://ipfs.infura.io/ipfs/QmTzyDWqL4Py7AEQPyAViF2bXjwTznQvitTMjTsGrw4pLM'], ['23'])
+    //pocpProxy.approveBadge(communityId, claimers, ['https://ipfs.infura.io/ipfs/QmTzyDWqL4Py7AEQPyAViF2bXjwTznQvitTMjTsGrw4pLM'], ['23'])
     
 }
 

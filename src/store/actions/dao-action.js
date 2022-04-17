@@ -746,6 +746,40 @@ export const switchRole = (role) => {
   }
 }
 
+export const getContributorOverview = () => {
+  return (dispatch, getState) => {
+    const all_contribution = getState().dao.contribution_id
+    
+    let all_paid_contribution = []
+    let type_of_token = []
+    let token_info = []
+    let totalAmount = 0
+
+    all_contribution.map((item, index)=>{
+      if(item?.status === 'APPROVED'&&item?.payout_status === 'PAID'){
+        all_paid_contribution.push(item.id)
+        item?.tokens?.map((y, i)=>{
+          if(type_of_token?.includes(y?.details?.symbol)){
+            let token = token_info.filter(x=>x.symbol === y?.details?.symbol)
+            token[0].value = token[0].value + y?.amount*y?.usd_amount
+            token[0].amount = y?.amount
+            let new_token_list = token_info.filter(x=>x.symbol !== y?.details?.symbol)
+            new_token_list.push(token[0])
+            token_info = new_token_list
+            totalAmount = totalAmount + y?.amount*y?.usd_amount
+          }else{
+            type_of_token.push(y?.details?.symbol)
+            totalAmount = totalAmount + y?.amount*y?.usd_amount
+            token_info.push({symbol:y?.details?.symbol, value:y?.amount*y?.usd_amount, amount:y?.amount})
+          }
+        })
+      }
+    })
+    dispatch(daoAction.set_contribution_overview({token_info, all_paid_contribution, total_amount:totalAmount}))
+    console.log('token info', totalAmount)
+  }
+}
+
 export const getAllSafeFromAddress = (address) => {
   return async (dispatch, getState) => {
     const list = await serviceClient.getSafesByOwner(address)

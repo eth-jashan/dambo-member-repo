@@ -138,7 +138,8 @@
     display: flex;
     justify-content: space-between;
     align-self: center;
-    /* bottom: 2rem; */
+    bottom: 2rem;
+    position: absolute;
 }
 
 .picContainer{

@@ -20,6 +20,7 @@ import ProfileModal from "../../components/Modal/ProfileModal";
 import ContributionOverview from "../../components/SideCard/ContributorOverview";
 import chevron_down from '../../assets/Icons/expand_more_black.svg'
 import AccountSwitchModal from "../../components/Modal/AccountSwitchModal";
+import { AiFillCaretDown } from "react-icons/ai";
 
 export default function DashboardLayout({ children, route, signer }) {
 
@@ -84,7 +85,7 @@ export default function DashboardLayout({ children, route, signer }) {
         <div>
           {account_mode==='ADMIN'&&<div onMouseEnter={()=>setRoleContainerHover(true)} onMouseLeave={()=>setRoleContainerHover(false)} onClick={()=>onSwitchRoleModal()} style={{background:roleContainerHover?'white':'#5D5C5D', cursor:'pointer'}} className={styles.roleSwitchContainer}>
             <div style={{color:roleContainerHover?'black':'white'}} className={textStyles.m_14}>{role==='ADMIN'?'Approval':'Contributor'}</div>
-            <img alt='chevron_down' src={chevron_down} className={styles.chevron} color='black' />
+            {<AiFillCaretDown color={switchRoleModal||roleContainerHover?'black':'white'} style={{alignSelf:'center'}} size={12} />}
           </div>}
           {switchRoleModal&&<AccountSwitchModal onChange={()=>setSwitchRoleModal(false)} />}
         </div>

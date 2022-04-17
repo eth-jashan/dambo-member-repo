@@ -48,8 +48,8 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                         console.log('token', item?.token_type?.tokenAddress||item?.token_type?.token?.address)
                         var web3Client = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"));
                         const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress||item?.token_type?.token?.address)
-                        const amount = parseFloat(item?.amount) * 1e18
-                        
+                        const amount = parseFloat(item?.amount) * 1000000000000000000
+                        console.log('here', parseFloat(amount))
                         transaction_obj.push(
                             {
                                 to: item?.token_type?.tokenAddress||item?.token_type?.token?.address,

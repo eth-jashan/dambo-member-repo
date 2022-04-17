@@ -23,6 +23,11 @@ const daoSlice = createSlice({
     account_mode:null,
     account_index:0,
     contribution_id:[],
+    contributionOverview:{
+      total_payout:[],
+      token_info:[],
+      total_amount:0
+    },
     newSafeSetup:{
       owners:[],
       threshold:0,
@@ -93,8 +98,12 @@ const daoSlice = createSlice({
       state.role = action.payload.role
     },
     set_contribution_id(state, action){
-      console.log('unclaimed cid', action.payload.cid)
       state.contribution_id = action.payload.cid
+    },
+    set_contribution_overview(state, action){
+      state.contributionOverview.token_info = action.payload.token_info
+      state.contributionOverview.total_amount = action.payload.total_amount
+      state.contributionOverview.total_payout = action.payload.all_paid_contribution
     }
 }});
 
