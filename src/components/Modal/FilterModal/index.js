@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { filterRequests } from "../../../store/actions/dao-action";
 import styles from "./styles.module.css";
 
-const FilterModal = ({ show, onClose }) => {
+const FilterModal = ({ show, onClose, isContribution }) => {
   const CloseRef = useRef();
 
   const [checkedVerticles, setCheckedVerticles] = useState([]);
@@ -18,8 +18,6 @@ const FilterModal = ({ show, onClose }) => {
     { key: "30hr", value: "> 30 hr" },
   ];
   const [time, setTime] = useState("");
-
-  console.log('time', time, checkedVerticles)
 
   const handleCheckVerticles = (event) => {
     var updatedList = [...checkedVerticles];
@@ -50,6 +48,10 @@ const FilterModal = ({ show, onClose }) => {
   }, [show]);
   if (!show) {
     return null;
+  }
+  const onApprove = () => {
+    dispatch(filterRequests(time, checkedVerticles,isContribution))
+    onClose()
   }
   return (
     <div className={styles.filterContainer} ref={CloseRef}>
@@ -96,7 +98,7 @@ const FilterModal = ({ show, onClose }) => {
           <div style={{display:"flex"}}>
             {checkedVerticles.length === 0 ? null : <div>{checkedVerticles.length} . &nbsp; </div> }
             <span className={styles.clearbutton}> Clear</span></div>
-          <div onClick={()=>dispatch(filterRequests(time, checkedVerticles))} className={styles.approveButton}>Approve Request</div>
+          <div onClick={()=>onApprove()} className={styles.approveButton}>Approve Request</div>
         </div>
       </div>
     </div>

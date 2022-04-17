@@ -21,6 +21,7 @@ import ContributionOverview from "../../components/SideCard/ContributorOverview"
 import chevron_down from '../../assets/Icons/expand_more_black.svg'
 import AccountSwitchModal from "../../components/Modal/AccountSwitchModal";
 import { AiFillCaretDown } from "react-icons/ai";
+import { setLoadingState } from "../../store/actions/toast-action";
 
 export default function DashboardLayout({ children, route, signer }) {
 
@@ -38,12 +39,14 @@ export default function DashboardLayout({ children, route, signer }) {
   const [profile_modal, setProfileModal] = useState(false)
   const [switchRoleModal,setSwitchRoleModal] = useState(false)
   const [roleContainerHover, setRoleContainerHover] = useState(false)
+  
   const changeAccount = async(item, index) => {
+    dispatch(setLoadingState(true))
     dispatch(resetApprovedRequest())
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
     await  dispatch(getContriRequest())
-    // await dispatch(getPayoutRequest())
+    await dispatch(getPayoutRequest())
     await dispatch(syncTxDataWithGnosis())
     dispatch(setPayment(null))
     dispatch(setTransaction(null))
@@ -52,6 +55,7 @@ export default function DashboardLayout({ children, route, signer }) {
       dispatch(set_active_nonce(nonce))
   }
     await dispatch(set_payout_filter('PENDING',1))
+    dispatch(setLoadingState(false))
   }
 
   async function copyTextToClipboard() {

@@ -19,7 +19,7 @@ import SafeServiceClient from '@gnosis.pm/safe-service-client';
 import PaymentCheckoutModal from '../../components/Modal/PaymentCheckoutModal';
 import PaymentCard from '../../components/PaymentCard';
 import { getPendingTransaction, setEthPrice, setPayment, setRejectModal, setTransaction } from '../../store/actions/transaction-action';
-import { setPayoutToast } from '../../store/actions/toast-action';
+import { setLoadingState, setPayoutToast } from '../../store/actions/toast-action';
 import UniversalPaymentModal from '../../components/Modal/UniversalPaymentModal';
 import plus_black from '../../assets/Icons/plus_black.svg'
 import plus_gray from '../../assets/Icons/plus_gray.svg'
@@ -35,6 +35,7 @@ import { relayFunction } from '../../utils/relayFunctions';
 import { web3 } from '../../constant/web3';
 import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
 import { getAllBadges } from '../../store/actions/contibutor-action';
+import { LinearProgress, Stack } from '@mui/material';
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
 export default function Dashboard() {
@@ -117,10 +118,12 @@ export default function Dashboard() {
     }
 
     const initialload = useCallback( async() => {
+        dispatch(setLoadingState(true))
         const account = await onInit()
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 if(jwtIfo){
+                    dispatch(setLoadingState(true))
                    await dispatch(getAllDaowithAddress())
                    await dispatch(gnosisDetailsofDao())
                     if(role === 'ADMIN'){
@@ -135,25 +138,32 @@ export default function Dashboard() {
                             const nonce = await safeSdk.getNonce()
                             dispatch(set_active_nonce(nonce))
                         }
+                        dispatch(setLoadingState(false))
                     }else{
+                        dispatch(setLoadingState(true))
                         console.log('fetch when contributor....')
                         await  dispatch(getContriRequest())
                         await dispatch(getContributorOverview())
                         await dispatch(getAllBadges(signer, address,'1'))
+                        dispatch(setLoadingState(false))
                     }
                 }else{
+                    dispatch(setLoadingState(false))
                     message.info('Token expired')
                     navigate('/')
                 }
                 
         }else{
             signout()
+            dispatch(setLoadingState(false))
         }
     // }
-    },[address, dispatch, navigate, role, safeSdk])
+    },[address, dispatch, navigate, role, safeSdk, signer])
 
     const accountSwitch = useCallback( async() => {
+        dispatch(setLoadingState(true))
         if(role === 'ADMIN'){
+            dispatch(setLoadingState(true))
             await  dispatch(getContriRequest())
             await dispatch(getPayoutRequest())
             await dispatch(getPendingTransaction())
@@ -164,44 +174,57 @@ export default function Dashboard() {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
             }        
+            dispatch(setLoadingState(false))
         }else{
             console.log('fetch when contributor....Contributo')
+            dispatch(setLoadingState(true))
             await  dispatch(getContriRequest())
             await dispatch(getContributorOverview())
             await dispatch(getAllBadges(signer,address,'1'))
+            dispatch(setLoadingState(false))
         }
-    },[dispatch, role, safeSdk])
+    },[address, dispatch, role, safeSdk, signer])
 
     useEffect(()=>{
         console.log('start..... initial load',account_mode, account_index)
         if(role === account_mode && account_index===0 ){
+            dispatch(setLoadingState(true))
             initialload()
+            dispatch(setLoadingState(false))
         }else{
+            dispatch(setLoadingState(true))
             accountSwitch()
+            dispatch(setLoadingState(false))
         }
         
-    },[accountSwitch, account_index, account_mode, initialload, role])
+    },[accountSwitch, account_index, account_mode, dispatch, initialload, role])
 
     useEffect(()=>{
         preventGoingBack()
     },[preventGoingBack])
 
     const onRouteChange = async(route) =>{
+        dispatch(setLoadingState(true))
         setTab(route)
         if(role === 'ADMIN'){
+        dispatch(setLoadingState(true))
             if(safeSdk){
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
             }
+        dispatch(setLoadingState(true))
             await dispatch(getPayoutRequest())
             if(route === 'payments'){
                 await dispatch(syncTxDataWithGnosis())
             }
             await dispatch(set_payout_filter('PENDING',1))
             await dispatch(getContriRequest())
+            dispatch(setLoadingState(false))
         }else{
+            dispatch(setLoadingState(true))
             await dispatch(getContriRequest())
             await dispatch(getAllBadges(signer, address,"1"))
+            dispatch(setLoadingState(false))
         }
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -252,6 +275,14 @@ export default function Dashboard() {
                     {role !== 'ADMIN'?'Create Contribution Request':'Copy Invite Link'}
                 </div>
             </button>
+        </div>
+    )
+
+    const renderLoadingScreen = () => (
+        <div className={styles.emptyDiv}>
+            <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
+                <LinearProgress style={{background:'#ECFFB8'}} color="inherit" />
+            </Stack>
         </div>
     )
 
@@ -325,6 +356,7 @@ export default function Dashboard() {
 
     const contribution_request = useSelector(x=>x.dao.contribution_request)
     const payout_request = useSelector(x=>x.dao.payout_filter)
+    const loadingState = useSelector(x=>x.toast.loading_state)
 
     const renderContribution = () => (
         contribution_request.length > 0 ?
@@ -386,13 +418,12 @@ export default function Dashboard() {
                 {(modalContri||modalPayment || modalUniPayment)&&<div style={{position:'absolute', background:'#7A7A7A',opacity:0.2, bottom:0, right:0, top:0, left:0}}/>}
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
-                {role === 'ADMIN'? adminScreen():contributorScreen()}
+                {loadingState?renderLoadingScreen():(role === 'ADMIN'? adminScreen():contributorScreen())}
                 {rejectModal&&<RejectPayment signer={signer} onClose={()=>dispatch(setRejectModal(false))} />}
                 {approve_contri.length>0 && tab==='contributions' && role === 'ADMIN' && checkoutButton()}
                 {payout_toast && transactionToast()}
                 {modalContri&&<ContributionRequestModal setVisibility={setModalContri} />}
                 {(modalPayment&&approve_contri.length>0)&&<PaymentCheckoutModal signer={signer} onClose={()=>setModalPayment(false)} />}
-                {/* {renderEmptyScreen()} */}
             </div>
         </DashboardLayout>
     );

@@ -731,11 +731,44 @@ export const createVoucher = (voucher, types, domain,signature) => {
   }
 }
 
-export const filterRequests = (time, verticals) => {
+export const filterRequests = (time, verticals, isContribution) => {
   return (dispatch, getState) => {
+    
     const contribution_request = getState().dao.contribution_request
-    const payout_request = getState().dao.payout_request
-    console.log('contribution', contribution_request, time, verticals)
+    // const payout_request = getState().dao.payout_request
+    const contri_filter_key = getState().dao.contri_filter_key
+    let new_array_contrib_time = []
+    if(isContribution){
+      if(time === '1hr'){
+        new_array_contrib_time =  contribution_request.filter(x=>x.time_spent<1)
+      }else if(time === '1hr4'){
+        new_array_contrib_time =  contribution_request.filter(x=>x.time_spent>1 && x.time_spent<4)
+      }else if(time === '4hr12'){
+        new_array_contrib_time =  contribution_request.filter(x=>x.time_spent>4 && x.time_spent<12)
+      }else if(time === '12hr30'){
+        new_array_contrib_time =  contribution_request.filter(x=>x.time_spent>12 && x.time_spent<30)
+      }else if(time === '30hr'){
+        new_array_contrib_time =  contribution_request.filter(x=>x.time_spent>30)
+      }else{
+        new_array_contrib_time = contribution_request
+      }
+    }
+    let new_array_contrib_veritcal = []
+    if(verticals.length>0){
+      verticals.map((x,i)=>{
+        new_array_contrib_time.map((y,i)=>{
+          if(x.toUpperCase() === y.stream){
+            console.log(x.toUpperCase()===y.stream)
+            new_array_contrib_veritcal.push(y)
+          }
+        })
+      })
+    }
+    dispatch(daoAction.set_contri_list({
+      list:verticals.length>0?new_array_contrib_veritcal:new_array_contrib_time,
+      number:contri_filter_key
+    }))
+    
     // verticals.map
   }
 }
@@ -802,3 +835,4 @@ export const getAllSafeFromAddress = (address) => {
     )
     }
 };
+

@@ -8,5 +8,13 @@ export const setPayoutToast = (status) => {
             status
           })
         );
-      }
-  };
+    }
+};
+
+export const setLoadingState = (loading) => {
+  return dispatch => {
+    dispatch(
+      toastAction.set_loading_state({loading})
+    )
+  }
+}
