@@ -250,46 +250,49 @@ export default function PaymentCard({item, signer}) {
                     })
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner()
-                    const {data, signature} = await approvePOCPBadge(signer,1, address,to,cid,url)
-                    const token = await dispatch(getAuthToken())
-                    const tx_hash = await relayFunction(token,5,data,signature)
-                    if(tx_hash){
-                    const startTime = Date.now()
-                    const interval = setInterval(async()=>{
-                        if(Date.now() - startTime > 30000){
-                        clearInterval(interval)
-                        console.log('failed to get confirmation')
-                        }
-                        console.log('tx_hash', tx_hash)
-                        var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-                        const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+                    // const {data, signature} = await approvePOCPBadge(signer,1, address,to,cid,url)
+                    // await approvePOCPBadge(signer,0, address,to,cid,url)
+                    let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+                    await pocpProxy.approveBadge(0, to, url, cid)
+                    // const token = await dispatch(getAuthToken())
+                    // const tx_hash = await relayFunction(token,5,data,signature)
+                    // if(tx_hash){
+                    // const startTime = Date.now()
+                    // const interval = setInterval(async()=>{
+                    //     if(Date.now() - startTime > 30000){
+                    //     clearInterval(interval)
+                    //     console.log('failed to get confirmation')
+                    //     }
+                    //     console.log('tx_hash', tx_hash)
+                    //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                    //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                         
-                        if(reciept?.status){
-                        console.log('done', reciept)
-                        clearTimeout(interval)
-                        console.log('successfully registered')
-                        await provider.provider.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: web3.chainid.rinkeby}],
-                        })
-                        }
+                    //     if(reciept?.status){
+                    //     console.log('done', reciept)
+                    //     clearTimeout(interval)
+                    //     console.log('successfully registered')
+                        // await provider.provider.request({
+                        // method: 'wallet_switchEthereumChain',
+                        // params: [{ chainId: web3.chainid.rinkeby}],
+                        // })
+                    //     }
 
-                        console.log('again....')
-                    },2000)
-                    }else{
-                    console.log('error in fetching tx hash....')
-                        await provider.provider.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: web3.chainid.rinkeby}],
-                        })
-                    }
+                    //     console.log('again....')
+                    // },2000)
+                    // }else{
+                    // console.log('error in fetching tx hash....')
+                    //     await provider.provider.request({
+                    //         method: 'wallet_switchEthereumChain',
+                    //         params: [{ chainId: web3.chainid.rinkeby}],
+                    //     })
+                    // }
                 } catch (error) {
                     console.log(error.toString())
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.provider.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: web3.chainid.rinkeby}],
-                    })
+                    // const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    // await provider.provider.request({
+                    //     method: 'wallet_switchEthereumChain',
+                    //     params: [{ chainId: web3.chainid.rinkeby}],
+                    // })
                 }
             }
             setLoading(false)

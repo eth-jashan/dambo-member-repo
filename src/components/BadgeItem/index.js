@@ -24,7 +24,8 @@ const BadgeItem = ({item}) => {
     const [onHover, setHover] = useState(false)
     const dispatch = useDispatch()
     const onBadgeClick = () => {
-        dispatch(setContributionDetail({...allContribution[0],isClaimed:true}))
+        const contribution = allContribution.filter(x=>x.id.toString() === item?.identifier) 
+        dispatch(setContributionDetail({...contribution[0],isClaimed:true}))
     }
 
     return(

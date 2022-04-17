@@ -96,7 +96,7 @@ export default function Dashboard() {
         // } else {
         //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
         // }
-        await dispatch(getAllBadges(signer,address, '1'))
+        await dispatch(getAllBadges(signer,address, '0'))
         console.log('cklame',claimed)
     }
     
@@ -144,7 +144,7 @@ export default function Dashboard() {
                         console.log('fetch when contributor....')
                         await  dispatch(getContriRequest())
                         await dispatch(getContributorOverview())
-                        await dispatch(getAllBadges(signer, address,'1'))
+                        await dispatch(getAllBadges(signer, address,'0'))
                         dispatch(setLoadingState(false))
                     }
                 }else{
@@ -180,7 +180,7 @@ export default function Dashboard() {
             dispatch(setLoadingState(true))
             await  dispatch(getContriRequest())
             await dispatch(getContributorOverview())
-            await dispatch(getAllBadges(signer,address,'1'))
+            await dispatch(getAllBadges(signer,address,'0'))
             dispatch(setLoadingState(false))
         }
     },[address, dispatch, role, safeSdk, signer])
@@ -223,7 +223,7 @@ export default function Dashboard() {
         }else{
             dispatch(setLoadingState(true))
             await dispatch(getContriRequest())
-            await dispatch(getAllBadges(signer, address,"1"))
+            await dispatch(getAllBadges(signer, address,"0"))
             dispatch(setLoadingState(false))
         }
         dispatch(setPayment(null))

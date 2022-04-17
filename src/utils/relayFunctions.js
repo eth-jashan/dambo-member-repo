@@ -116,8 +116,7 @@ export const getIpfsUrl = async(jwt, dao_uuid, cid) => {
       let cid = []
       let url = []
       res.data?.data?.contributions?.map((item, index)=>{
-        // cid.push(item?.)
-        cid.push(Web3.utils.hexToBytes(Web3.utils.stringToHex(item?.id.toString())))
+        cid.push(item?.id.toString())
         url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
       })
       return {cid, url}

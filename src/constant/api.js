@@ -14,7 +14,7 @@ const api = {
         url:'https://qs17tofrz7.execute-api.us-east-1.amazonaws.com/uploads?'
     },
     subgraph:{
-        url:'https://api.thegraph.com/subgraphs/name/eth-jashan/final-drepute'
+        url:'https://api.thegraph.com/subgraphs/id/QmYdDT55qCw1Y29U8zV5bM2gEf86djNpzPPraeDqzsimDB'
     }
 }
 

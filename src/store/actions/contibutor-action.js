@@ -120,18 +120,32 @@ export const getAllBadges = (signer, address,communityId) => {
             let unclaimed = []
             const resApproved = await client.query(query_approved).toPromise()
             const resClaimed = await client.query(query_claimed).toPromise()
-
-            const claimed = resClaimed.data?.pocpTokens.filter(x=>ethers.utils.hexlify(x.claimer) === ethers.utils.hexlify(address))
-            
+            const claimed = resClaimed.data?.pocpTokens.filter(x=>ethers.utils.hexlify(x.claimer) === ethers.utils.hexlify(address)&&x?.community?.id === communityId)
             const allApproved = resApproved?.data?.approvedTokens.filter(x=>x?.community?.id === communityId)
+            const claimed_identifier  = []
+            
+            //filtering out current unclaimed token
                 allApproved.map((x,i)=>{
                     let isClaimed = claimed.filter(y=>y.id === x?.id)
                     if(isClaimed.length===0){
-                        unclaimed.push(x)
+                        cid.map((y, index)=>{
+                            if(y.id.toString() === x.identifier){
+                                unclaimed.push(x)
+                            }
+                        })
                     }
-                })
-            console.log('unclaimed',cid )
-            dispatch(contributorAction.set_badges({claimed, unclaimed}))
+                    claimed.filter((z)=>{
+                        if(x.id === z.id){
+                            claimed_identifier.push({...z, identifier:x?.identifier})
+                        }
+                    })
+                }) 
+
+                
+
+            
+            console.log('unclaimed',cid,unclaimed)
+            dispatch(contributorAction.set_badges({claimed:claimed_identifier, unclaimed}))
         } catch (error) {
             console.log('error: ', error.toString())
         }

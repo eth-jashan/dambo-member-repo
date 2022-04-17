@@ -129,8 +129,6 @@ export default function Onboarding() {
           })
         }
 
-        console.log('address', owner, owners)
-
         if (dao_uuid) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           try {
@@ -139,44 +137,49 @@ export default function Onboarding() {
               params: [{ chainId: web3.chainid.polygon}],})
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               const signer = provider.getSigner()
-              const {data, signature} = await registerDaoToPocp(signer,name,owner, address)
-              const token = await dispatch(getAuthToken())
-              const tx_hash = await relayFunction(token,0,data,signature)
+              // const {data, signature} = await registerDaoToPocp(signer,name,owner, address)
+              await registerDaoToPocp(signer,name,owner, address)
+              // const token = await dispatch(getAuthToken())
+              // const tx_hash = await relayFunction(token,0,data,signature)
               
-              await updatePocpRegister(jwt, tx_hash, dao_uuid)
-    
+              // await updatePocpRegister(jwt, tx_hash, dao_uuid)
+              
+              await provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
+              })
 
-              if(tx_hash){
-              const startTime = Date.now()
-              const interval = setInterval(async()=>{
-                if(Date.now() - startTime > 30000){
-                  clearInterval(interval)
-                  console.log('failed to get confirmation')
-                }
-                var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-                const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
-                if(reciept?.status){
-                  console.log('done', reciept)
-                  clearTimeout(interval)
-                  console.log('successfully registered')
-                await provider.provider.request({
-                  method: 'wallet_switchEthereumChain',
-                  params: [{ chainId: web3.chainid.rinkeby}],
-                })
-                navigate(`/dashboard`)
-                }
-                console.log('again....')
-              },2000)
-            }else{
-              console.log('error in fetching tx hash....')
-            }
+            //   if(tx_hash){
+            //   const startTime = Date.now()
+            //   const interval = setInterval(async()=>{
+            //     if(Date.now() - startTime > 30000){
+            //       clearInterval(interval)
+            //       console.log('failed to get confirmation')
+            //     }
+            //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+            //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+            //     if(reciept?.status){
+            //       console.log('done', reciept)
+            //       clearTimeout(interval)
+            //       console.log('successfully registered')
+            //     await provider.provider.request({
+            //       method: 'wallet_switchEthereumChain',
+            //       params: [{ chainId: web3.chainid.rinkeby}],
+            //     })
+            //     navigate(`/dashboard`)
+            //     }
+            //     console.log('again....')
+            //   },2000)
+            // }else{
+            //   console.log('error in fetching tx hash....')
+            // }
           } catch (error) {
               console.log(error.toString())
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.chainid.rinkeby}],
-            })
+              })
           }
         } else {
           navigate(`/onboard/dao`);

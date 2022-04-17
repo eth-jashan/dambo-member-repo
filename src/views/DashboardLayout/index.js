@@ -130,6 +130,8 @@ export default function DashboardLayout({ children, route, signer }) {
   }
   }
 
+  console.log('ffff', currentDao?.uuid, accounts[0])
+
   const text = (item) => <span>{item}</span>;
   return (
       <div className={styles.layout}>
@@ -143,8 +145,9 @@ export default function DashboardLayout({ children, route, signer }) {
         {accounts.map((item, index)=>(
           <div className={styles.accountContainer}>
             <Tooltip placement="right" title={()=>text(item?.dao_details?.name)}>
-            <div onClick={()=>changeAccount(item, index)} style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186', display:'flex', justifyContent:'center', alignItems:'center'}}>
-              {item?.dao_details?.logo_url?<img src={item?.dao_details?.logo_url} alt='logo'height='100%' width='100%' style={{borderRadius:'2.25rem'}} />:null}
+            <div onClick={()=>changeAccount(item, index)} style={{height:'2.25rem',borderRadius:!item?.dao_details?.logo_url?0:'2.25rem', width:'100%', background:'transparent', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              {/* {currentDao?.uuid === item?.dao_details?.uuid?<div style={{height:'100%', width:'4px', background:'white', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem', marginRight:'8px'}}/>:<div style={{height:'100%', width:'4px', background:'transparent', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem',marginRight:'8px'}}/>} */}
+              {item?.dao_details?.logo_url?<img src={item?.dao_details?.logo_url} alt='logo'height='100%'  style={{borderRadius:'2.25rem',background:'black', width:'2.25rem'}} />:<div style={{height:'2.25rem',borderRadius:'2.25rem', width:'2.25rem', background:'#FF0186', display:'flex', justifyContent:'center', alignItems:'center'}}/>}
             </div>
             </Tooltip>
           </div>

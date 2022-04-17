@@ -39,6 +39,16 @@ export default function ContributionCard({item}) {
             return {color:'#808080', title:'paid'}
         }
     }
+    const unclaimed = useSelector(x=>x.contributor.unclaimed)
+    const isApprovedToken = () => {
+        const token = unclaimed.filter(x=>x.identifier === item?.id.toString())
+        console.log('badge contri', unclaimed[0], item?.id)
+        if(token.length>0){
+          return true
+        }else{
+          return false
+        }
+      }
 
     const getContributionStatus = () => {
         if(item.status === 'REQUESTED'){
@@ -74,7 +84,7 @@ export default function ContributionCard({item}) {
             {role==='ADMIN'?null:
             <div className={styles.statusContributorContainer}>
                 <div className={textStyles.m_16} style={{color:getContributionStatus()?.color, textAlign:'start'}}>{getContributionStatus()?.title}</div>
-                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • claim badge</div> }
+                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • claim badge</div> }
             </div>}
             <img className={styles.menuIcon} alt='menu' src={three_dots} />
         </div>

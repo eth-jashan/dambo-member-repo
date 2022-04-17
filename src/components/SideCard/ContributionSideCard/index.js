@@ -19,6 +19,7 @@ import { getAuthToken } from "../../../store/actions/auth-action";
 import { relayFunction } from "../../../utils/relayFunctions";
 import { ethers } from "ethers";
 import { web3 } from "../../../constant/web3";
+import POCPProxy from '../../../smartContract/POCP_Contracts/POCP.json'
 import Web3 from "web3";
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -247,10 +248,20 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
           
       </div>
     )
+
     const unclaimed = useSelector(x=>x.contributor.unclaimed)
+    
+    const isApprovedToken = () => {
+      const token = unclaimed.filter(x=>x.identifier === currentTransaction?.id.toString())
+      console.log('is approved', token, currentTransaction, unclaimed[0])
+      if(token.length>0){
+        return {status:true, token:token}
+      }else{
+        return {status:false, token:[]}
+      }
+    }
+
     const claimBadges = async() => {
-      const claimInfo = unclaimed.filter(x=>(x.identifier) === Web3.utils.hexToBytes(Web3.utils.numberToHex(14)))
-      // console.log('claim', claimInfo, unclaimed, Web3.utils.hexToBytes(Web3.utils.numberToHex(14)), currentTransaction )
       try {
         const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         await web3Provider.provider.request({
@@ -259,36 +270,39 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
         })
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner()
-        const {data, signature} = await claimPOCPBadges(signer,address,[1])
-        const token = await dispatch(getAuthToken())
-        const tx_hash = await relayFunction(token,3,data,signature)
-        if(tx_hash){
-        const startTime = Date.now()
-        const interval = setInterval(async()=>{
-            if(Date.now() - startTime > 30000){
-            clearInterval(interval)
-            console.log('failed to get confirmation')
-            }
-            var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-            const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
-            if(reciept?.status){
-            console.log('done', reciept)
-            clearTimeout(interval)
-            console.log('successfully registered')
-            await provider.provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: web3.chainid.rinkeby}],
-            })
-            }
-            console.log('again....')
-        },2000)
-        }else{
-        console.log('error in fetching tx hash....')
-            await provider.provider.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: web3.chainid.rinkeby}],
-            })
-        }
+        // const {data, signature} = await claimPOCPBadges(signer,address,[1])
+        // await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
+        let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+        await pocpProxy.claim([parseInt(isApprovedToken().token[0].id)])
+        // const token = await dispatch(getAuthToken())
+        // const tx_hash = await relayFunction(token,3,data,signature)
+        // if(tx_hash){
+        // const startTime = Date.now()
+        // const interval = setInterval(async()=>{
+        //     if(Date.now() - startTime > 30000){
+        //     clearInterval(interval)
+        //     console.log('failed to get confirmation')
+        //     }
+        //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+        //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+        //     if(reciept?.status){
+        //     console.log('done', reciept)
+        //     clearTimeout(interval)
+        //     console.log('successfully registered')
+        //     await web3Provider.provider.request({
+        //     method: 'wallet_switchEthereumChain',
+        //     params: [{ chainId: web3.chainid.rinkeby}],
+        //     })
+        //     }
+        //     console.log('again....')
+        // },2000)
+        // }else{
+        // console.log('error in fetching tx hash....')
+            // await web3Provider.provider.request({
+            //     method: 'wallet_switchEthereumChain',
+            //     params: [{ chainId: web3.chainid.rinkeby}],
+            // })
+        // }
     } catch (error) {
         console.log(error.toString())
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -348,7 +362,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
             </div>} */}
             <div className={styles.divider}/>  
               {renderSigners_admin()}
-            {!currentTransaction?.isClaimed&&!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED'&&txInfo?.isExecuted)&&<div className={styles.claim_container}>
+            {isApprovedToken().status&&!currentTransaction?.isClaimed&&!isAdmin&&(currentTransaction?.status!=='REQUESTED'&&currentTransaction?.status!=='REJECTED'&&txInfo?.isExecuted)&&<div className={styles.claim_container}>
               <div onClick={async()=> await dispatch(rejectContriRequest(currentTransaction?.id))} className={styles.deletContainer}>
               <img  src={delete_icon} alt='cross' className={styles.delete} />
               </div>
