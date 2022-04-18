@@ -270,39 +270,36 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
         })
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner()
-        // const {data, signature} = await claimPOCPBadges(signer,address,[1])
-        // await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
-        let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-        await pocpProxy.claim([parseInt(isApprovedToken().token[0].id)])
-        // const token = await dispatch(getAuthToken())
-        // const tx_hash = await relayFunction(token,3,data,signature)
-        // if(tx_hash){
-        // const startTime = Date.now()
-        // const interval = setInterval(async()=>{
-        //     if(Date.now() - startTime > 30000){
-        //     clearInterval(interval)
-        //     console.log('failed to get confirmation')
-        //     }
-        //     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-        //     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
-        //     if(reciept?.status){
-        //     console.log('done', reciept)
-        //     clearTimeout(interval)
-        //     console.log('successfully registered')
-        //     await web3Provider.provider.request({
-        //     method: 'wallet_switchEthereumChain',
-        //     params: [{ chainId: web3.chainid.rinkeby}],
-        //     })
-        //     }
-        //     console.log('again....')
-        // },2000)
-        // }else{
-        // console.log('error in fetching tx hash....')
-            // await web3Provider.provider.request({
-            //     method: 'wallet_switchEthereumChain',
-            //     params: [{ chainId: web3.chainid.rinkeby}],
-            // })
-        // }
+        const {data, signature} = await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
+        const token = await dispatch(getAuthToken())
+        const tx_hash = await relayFunction(token,3,data,signature)
+        if(tx_hash){
+        const startTime = Date.now()
+        const interval = setInterval(async()=>{
+            if(Date.now() - startTime > 30000){
+            clearInterval(interval)
+            console.log('failed to get confirmation')
+            }
+            var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+            const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+            if(reciept?.status){
+            console.log('done', reciept)
+            clearTimeout(interval)
+            console.log('successfully registered')
+            await web3Provider.provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.chainid.rinkeby}],
+            })
+            }
+            console.log('again....')
+        },2000)
+        }else{
+        console.log('error in fetching tx hash....')
+            await web3Provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
+            })
+        }
     } catch (error) {
         console.log(error.toString())
         const provider = new ethers.providers.Web3Provider(window.ethereum);

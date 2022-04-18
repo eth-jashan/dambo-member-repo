@@ -144,7 +144,7 @@ export const getAllBadges = (signer, address,communityId) => {
                 
 
             
-            console.log('unclaimed',cid,unclaimed)
+            // console.log('unclaimed',cid,unclaimed)
             dispatch(contributorAction.set_badges({claimed:claimed_identifier, unclaimed}))
         } catch (error) {
             console.log('error: ', error.toString())
