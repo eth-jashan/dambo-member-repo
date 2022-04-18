@@ -135,7 +135,7 @@ const TransactionCard = ({signer}) => {
             ))}
           </div>
 
-          <div onClick={token_available.length>1?() => addToken():()=>{}} className={styles.addToken}>
+          <div onClick={token_available?.length>1?() => addToken():()=>{}} className={styles.addToken}>
             <div className={`${textStyle.m_16}`}>Add another token</div>
             <IoAddOutline color="#808080" className={styles.add} />
           </div>

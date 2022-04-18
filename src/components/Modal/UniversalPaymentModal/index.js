@@ -123,7 +123,6 @@ const UniversalPaymentModal = ({onClose, signer}) => {
             const activeNounce = await safeSdk.getNonce()
             const nextNonce = await getNonceForCreation(currentDao?.safe_public_address)
             nonce = nextNonce?nextNonce:activeNounce
-            console.log('nexxxxt payment nonce',nextNonce?nextNonce:activeNounce)
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
@@ -159,7 +158,10 @@ const UniversalPaymentModal = ({onClose, signer}) => {
         console.log(currentDao, safeTxHash)
         dispatch(createExternalPayment(safeTxHash, nonce, payDetail))
         dispatch(resetApprovedRequest())
-        dispatch(setPayoutToast('ACCEPTED_CONTRI'))
+        // dispatch(setPayoutToast('ACCEPTED_CONTRI',{
+        //     // item:0,
+        //     value:
+        //   }))
         setLoading(false)
         } catch (error) {
           console.log('error.........', error)

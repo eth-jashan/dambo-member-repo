@@ -59,6 +59,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
   useEffect(()=>{
     getTransactionInfo()
   },[getTransactionInfo])
+
   
   const getTotalAmount = () => {
     const usd_amount_all = []
@@ -152,6 +153,11 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
       }
     }
 
+    const getSignerName = (address) => {
+      console.log(currentDao?.signers[0].public_address, address.toString())
+      return currentDao?.signers?.filter(x=>x.public_address === address)[0]?.metadata?.name
+  }
+
     const renderSigners_admin = () => (
       <div style={{marginBottom:'2.5rem'}} className={styles.signerContainer}>
           <div className={styles.singleTimeline_signer}>
@@ -199,7 +205,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
                       { currentTransaction?.status !== 'REQUESTED' && !(safeInfo?.owners?.length === txInfo?.confirmations?.length) && txInfo?.confirmations?.map((item, index)=>(
                           <div className={styles.singleAddress} key={index}>
                               <div style={{color:currentTransaction?.status!=='REJECTED'?'#ECFFB8':'red'}} className={`${textStyle.m_16}`}>
-                                  somesh  •   
+                                  {`${getSignerName(item?.owner)}  •   `}
                               </div>
                               <div style={{color:'white'}} className={`${textStyle.m_16}`}>
                                 {`${item?.owner.slice(0,5)}...${item?.owner.slice(-3)}`}

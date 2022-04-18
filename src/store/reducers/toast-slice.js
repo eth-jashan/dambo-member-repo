@@ -14,6 +14,7 @@ const toastSlice = createSlice({
   reducers: {
     show_payout_toast(state, action) {
       state.payout = action.payload.status
+      state.payout_data = action.payload.payout_data
     },
 
     set_loading_state(state,action){

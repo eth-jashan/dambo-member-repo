@@ -17,7 +17,7 @@ const ContributionOverview = () => {
             {contributionOverview.token_info.length>0&&
             contributionOverview.token_info?.map((x,i)=>(
                 <div style={{marginTop:'1.5rem'}} className={styles.flex_totalPayout}>
-                    <div style={{color:'white'}} className={textStyle.m_14}>{x?.amount} {x?.symbol}</div>
+                    <div style={{color:'white'}} className={textStyle.m_14}>{(x?.amount).toFixed(2)} {x?.symbol}</div>
                     <div style={{color:'#FFFFFF66'}} className={textStyle.m_16}>{(x?.value).toFixed(2)}$</div>
                 </div>
             ))}

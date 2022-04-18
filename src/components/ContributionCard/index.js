@@ -6,9 +6,14 @@ import { setTransaction } from '../../store/actions/transaction-action'
 import { convertTokentoUsd } from '../../utils/conversion'
 import three_dots from "../../assets/Icons/three_dots.svg";
 import { setContributionDetail } from '../../store/actions/contibutor-action'
+import { ethers } from 'ethers'
+import { web3 } from '../../constant/web3'
+import { claimPOCPBadges } from '../../utils/POCPutils'
+import { getAuthToken } from '../../store/actions/auth-action'
+import { relayFunction } from '../../utils/relayFunctions'
 
 export default function ContributionCard({item}) {
-
+    const address = item?.requested_by?.public_address;
     const dispatch = useDispatch()
     const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
     const role = useSelector(x=>x.dao.role)
@@ -42,11 +47,10 @@ export default function ContributionCard({item}) {
     const unclaimed = useSelector(x=>x.contributor.unclaimed)
     const isApprovedToken = () => {
         const token = unclaimed.filter(x=>x.identifier === item?.id.toString())
-        console.log('badge contri', unclaimed[0], item?.id)
         if(token.length>0){
-          return true
+          return {status:true, token:token}
         }else{
-          return false
+          return {status:false, token:[]}
         }
       }
 
@@ -64,6 +68,56 @@ export default function ContributionCard({item}) {
             return{title:'executed', color:'white'}
           }
     }
+    
+
+    const claimBadges = async() => {
+        try {
+          const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+          await web3Provider.provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: web3.chainid.polygon}]
+          })
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner()
+          const {data, signature} = await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
+          const token = await dispatch(getAuthToken())
+          const tx_hash = await relayFunction(token,3,data,signature)
+          if(tx_hash){
+          const startTime = Date.now()
+          const interval = setInterval(async()=>{
+              if(Date.now() - startTime > 30000){
+              clearInterval(interval)
+              console.log('failed to get confirmation')
+              }
+              var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+              const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+              if(reciept?.status){
+              console.log('done', reciept)
+              clearTimeout(interval)
+              console.log('successfully registered')
+              await web3Provider.provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: web3.chainid.rinkeby}],
+              })
+              }
+              console.log('again....')
+          },2000)
+          }else{
+          console.log('error in fetching tx hash....')
+              await web3Provider.provider.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: web3.chainid.rinkeby}],
+              })
+          }
+      } catch (error) {
+          console.log(error.toString())
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: web3.chainid.rinkeby}],
+          })
+      }
+      }
 
     return(
         <div 
@@ -84,7 +138,7 @@ export default function ContributionCard({item}) {
             {role==='ADMIN'?null:
             <div className={styles.statusContributorContainer}>
                 <div className={textStyles.m_16} style={{color:getContributionStatus()?.color, textAlign:'start'}}>{getContributionStatus()?.title}</div>
-                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • claim badge</div> }
+                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • claim badge</div> }
             </div>}
             <img className={styles.menuIcon} alt='menu' src={three_dots} />
         </div>

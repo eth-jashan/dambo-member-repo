@@ -176,7 +176,10 @@ export default function PaymentCard({item, signer}) {
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
-            dispatch(setPayoutToast('SIGNED'))
+            dispatch(setPayoutToast('SIGNED',{
+                item:0,
+                value:getTotalAmount()
+              }))
             // await dispatch(set_payout_filter('PENDING'))
           } catch (error) {
             console.error(error)
@@ -230,7 +233,10 @@ export default function PaymentCard({item, signer}) {
           return
         }
         executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-            dispatch(setPayoutToast('EXECUTED'))
+            dispatch(setPayoutToast('EXECUTED',{
+                item:0,
+                value:getTotalAmount()
+              }))
             if(safeSdk){
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
@@ -358,29 +364,36 @@ export default function PaymentCard({item, signer}) {
     }
 
     const buttonFunc = async(tranx) => {
-        if(delegates.length === item?.gnosis?.confirmations?.length){
-            await executeFunction()
-        }else if (checkApproval()){
-            console.log('Already Signed !!!')
-        }else if (!checkApproval() && onHover){
-            await confirmTransaction(tranx)
+        if(!loading){
+            setLoading(true)
+            if(delegates.length === item?.gnosis?.confirmations?.length){
+                await executeFunction()
+            }else if (checkApproval()){
+                console.log('Already Signed !!!')
+            }else if (!checkApproval() && onHover){
+                await confirmTransaction(tranx)
+            }
         }
+        setLoading(false)
     }
     
 
     return(
-        <div onClick={()=>onPaymentPress()} style={{background:onHover&&'#333333', border:onHover&&0, borderRadius:onHover&&'0.75rem'}} onMouseLeave={()=>setOnHover(false)} onMouseEnter={()=>setOnHover(true)} className={styles.container}>
-            {bundleTitle()}
-            {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval()) ?
-            payout.map((item,index)=>(
-                singlePayout(item, index)
-            )):null}
+        <div style={{background:onHover&&'#333333', border:onHover&&0, borderRadius:onHover&&'0.75rem'}} onMouseLeave={()=>setOnHover(false)} onMouseEnter={()=>setOnHover(true)} className={styles.container}>
+            <div style={{cursor:'pointer'}} onClick={()=>onPaymentPress()}>
+                {bundleTitle()}
+                {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval()) ?
+                payout.map((item,index)=>(
+                    singlePayout(item, index)
+                )):null}
+            </div>
             {(checkApproval() && nonce===item?.gnosis?.nonce)|| (!checkApproval())? 
             <div style={{flexDirection:'row', justifyContent:'space-between', width:'100%', display:'flex', cursor:'pointer'}}>
                 <div style={{flexDirection:'row', display:'flex', width:'60%'}}>
                     <div style={{marginRight:0}} className={styles.priceContainer}/>
-                    {!item?.gnosis?.isExecuted && <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:getButtonProperty()?.background}} className={styles.btnContainer}>
-                        <div style={{color:getButtonProperty()?.color}} className={textStyles.ub_14}>{getButtonProperty()?.title}</div>
+                    {!item?.gnosis?.isExecuted && 
+                    <div onClick={async ()=>{await buttonFunc(item?.gnosis?.safeTxHash)}} style={{background:getButtonProperty()?.background}} className={styles.btnContainer}>
+                        <div style={{color:getButtonProperty()?.color}} className={textStyles.ub_14}>{!loading?getButtonProperty()?.title:'Processing...'}</div>
                     </div>}
                 </div>
             </div>:null}

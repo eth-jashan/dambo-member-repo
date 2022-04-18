@@ -1,11 +1,12 @@
 import { toastAction } from "../reducers/toast-slice";
 
 
-export const setPayoutToast = (status) => {
+export const setPayoutToast = (status,payout_data) => {
     return (dispatch) => {
         dispatch(
           toastAction.show_payout_toast({
-            status
+            status,
+            payout_data
           })
         );
     }

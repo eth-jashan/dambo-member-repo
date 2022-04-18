@@ -18,7 +18,7 @@ import RequestItem from './RequestItem'
 const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
 
 
-const PaymentCheckoutModal = ({onClose, signer}) => {
+const PaymentCheckoutModal = ({onClose, signer, onPayNow}) => {
 
 
     const currentDao = useSelector(x=>x.dao.currentDao)
@@ -27,8 +27,12 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
 
+    
+
     const proposeSafeTransaction = async () => {
-        console.log('started...')
+
+        setLoading(true)
+        
         let transaction_obj = []
 
         if(approved_request.length>0){
@@ -45,11 +49,9 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                             }
                         )
                     }else if(item?.token_type?.token?.symbol !== 'ETH'){
-                        console.log('token', item?.token_type?.tokenAddress||item?.token_type?.token?.address)
                         var web3Client = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"));
                         const coin = new web3Client.eth.Contract(ERC20_ABI, item?.token_type?.tokenAddress||item?.token_type?.token?.address)
                         const amount = parseFloat(item?.amount) * 1000000000000000000
-                        console.log('here', parseFloat(amount))
                         transaction_obj.push(
                             {
                                 to: item?.token_type?.tokenAddress||item?.token_type?.token?.address,
@@ -71,7 +73,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             const activeNounce = await safeSdk.getNonce()
             const nextNonce = await getNonceForCreation(currentDao?.safe_public_address)
             nonce = nextNonce?nextNonce:activeNounce
-            console.log('nexxxxt payment nonce',nextNonce?nextNonce:activeNounce)
             safeTransaction = await safeSdk.createTransaction(
                 transaction_obj
             ,{
@@ -81,7 +82,6 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             
           } catch (error) {
             console.error('errorrrr',error)
-            // setLoading(false)
             message.error('Error on creating Transaction')
             return
           }
@@ -94,7 +94,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                 safeTxHash
             )
         } catch (error) {
-            // setLoading(false)
+            console.log('error on signing...', error.toString())
         }
         
         try {
@@ -104,17 +104,18 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
             safeTxHash,
             safeSignature
         )
-        console.log(currentDao, safeTxHash)
         dispatch(createPayout(safeTxHash, nonce))
         dispatch(resetApprovedRequest())
-        dispatch(setPayoutToast('ACCEPTED_CONTRI'))
-        // setLoading(false)
-        onClose()
+        dispatch(setPayoutToast('ACCEPTED_CONTRI',{
+            item:approved_request?.length,
+            value:getTotalAmount()
+          }))
+        // onClose()
         } catch (error) {
           console.log('error.........', error)
-        //   setLoading(false)
-          onClose()
         }
+        setLoading(false)
+        onClose()
     }
 
     
@@ -163,7 +164,7 @@ const PaymentCheckoutModal = ({onClose, signer}) => {
                 </div>
                 {approved_request.length>0&&<div onClick={async()=> !loading && await proposeSafeTransaction()} className={styles.btnCnt}>
                     <div className={styles.payBtn}>
-                        {getTotalAmount()}$  •  Sign and Pay
+                        {!loading?`${getTotalAmount()}$  •  Sign and Pay`:'Signing....'}
                     </div>
                 </div>}
             </div>

@@ -798,7 +798,7 @@ export const getContributorOverview = () => {
           if(type_of_token?.includes(y?.details?.symbol)){
             let token = token_info.filter(x=>x.symbol === y?.details?.symbol)
             token[0].value = token[0].value + y?.amount*y?.usd_amount
-            token[0].amount = y?.amount
+            token[0].amount = token[0].amount+y?.amount
             let new_token_list = token_info.filter(x=>x.symbol !== y?.details?.symbol)
             new_token_list.push(token[0])
             token_info = new_token_list
@@ -812,7 +812,6 @@ export const getContributorOverview = () => {
       }
     })
     dispatch(daoAction.set_contribution_overview({token_info, all_paid_contribution, total_amount:totalAmount}))
-    console.log('token info', totalAmount)
   }
 }
 

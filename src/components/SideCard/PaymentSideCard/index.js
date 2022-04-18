@@ -13,6 +13,10 @@ import { useSafeSdk } from "../../../hooks";
 import { setPayment, setRejectModal } from '../../../store/actions/transaction-action';
 import crossSvg from '../../../assets/Icons/cross_white.svg'
 import { setPayoutToast } from '../../../store/actions/toast-action';
+import { getIpfsUrl, relayFunction, uplaodApproveMetaDataUpload } from '../../../utils/relayFunctions';
+import { web3 } from '../../../constant/web3';
+import { approvePOCPBadge } from '../../../utils/POCPutils';
+import { getAuthToken } from '../../../store/actions/auth-action';
 
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
@@ -21,10 +25,13 @@ const PaymentSlideCard = ({signer}) =>{
 
     const currentPayment = useSelector(x=>x.transaction.currentPayment)
     const currentDao = useSelector(x=>x.dao.currentDao)
+    const jwt = useSelector((x) => x.auth.jwt);
     const address = useSelector(x=>x.auth.address)
     const delegates = useSelector(x=>x.dao.delegates)
     const isReject = currentPayment?.status === 'REJECTED'
     const nonce = useSelector(x=>x.dao.active_nonce)
+    const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+    const community_id = pocp_dao_info.filter(x=>x.txhash === currentDao?.tx_hash)
 
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -41,7 +48,10 @@ const PaymentSlideCard = ({signer}) =>{
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter('PENDING',1))
             dispatch(setPayment(null))
-            dispatch(setPayoutToast('SIGNED'))
+            dispatch(setPayoutToast('SIGNED',{
+                item:0,
+                value:getTotalAmount()
+              }))
           } catch (error) {
             console.error(error)
             message.error('Error on confirming sign')
@@ -59,9 +69,8 @@ const PaymentSlideCard = ({signer}) =>{
 
 
 
-    const executeSafeTransaction = async (hash) => {
-        
-        // console.log('started.......', JSON.stringify(hash))
+    const executeSafeTransaction = async (hash,c_id, to) => {
+    
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
             to: transaction.to,
@@ -95,11 +104,65 @@ const PaymentSlideCard = ({signer}) =>{
           console.error(error)
           return
         }
-        const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-        
-        console.log('executeeed succefully')
-        dispatch(setPayoutToast('EXECUTED'))
+        executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+        dispatch(setPayoutToast('EXECUTED',{
+            item:0,
+            value:getTotalAmount()
+          }))
         // if(receipt){
+            const {cid, url} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
+            if(cid?.length>0){
+                const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+                try {
+                    await web3Provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.polygon}]
+                    })
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner()
+                    console.log('community id....', community_id[0].id)
+                    const {data, signature} = await approvePOCPBadge(signer,parseInt(community_id[0].id), address,to,cid,url)
+                    const token = await dispatch(getAuthToken())
+                    const tx_hash = await relayFunction(token,5,data,signature)
+                    if(tx_hash){
+                    const startTime = Date.now()
+                    const interval = setInterval(async()=>{
+                        if(Date.now() - startTime > 30000){
+                        clearInterval(interval)
+                        console.log('failed to get confirmation')
+                        }
+                        console.log('tx_hash', tx_hash)
+                        var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                        const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+                        
+                        if(reciept?.status){
+                        console.log('done', reciept)
+                        clearTimeout(interval)
+                        console.log('successfully registered')
+                        await provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.rinkeby}],
+                        })
+                        }
+
+                        console.log('again....')
+                    },2000)
+                    }else{
+                    console.log('error in fetching tx hash....')
+                        await provider.provider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: web3.chainid.rinkeby}],
+                        })
+                    }
+                } catch (error) {
+                    console.log(error.toString())
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.provider.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: web3.chainid.rinkeby}],
+                    })
+                }
+            }
             await dispatch(getPayoutRequest())
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
@@ -114,8 +177,8 @@ const PaymentSlideCard = ({signer}) =>{
             usd_amount.push(((item?.usd_amount) * parseFloat(item?.amount)))
         })
         let amount_total
-        usd_amount.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
-        return amount_total
+        usd_amount?.length ===0?amount_total=0: amount_total = usd_amount.reduce((a,b)=>a+b)
+        return amount_total.toFixed(2)
     }
 
     const getTotalAmount = () => {
@@ -164,13 +227,18 @@ const PaymentSlideCard = ({signer}) =>{
     }
 
     const getExecutionMessage = () => {
-        if(((isReject && currentPayment.gnosis.confirmations.length !== delegates.length && checkApproval() )|| (isReject && checkApproval()) || (isReject && !checkApproval()) )&& !nonce !== currentPayment?.gnosis?.nonce ){
+        if(((isReject && currentPayment.gnosis.confirmations?.length !== delegates.length && checkApproval() )|| (isReject && checkApproval()) || (isReject && !checkApproval()) )&& !nonce !== currentPayment?.gnosis?.nonce ){
             return 'Payment will be cancelled only after required signs are done  '
         }else if((currentPayment.gnosis.confirmations.length !== delegates.length && checkApproval() ) || ( !checkApproval() || !nonce !== currentPayment?.gnosis?.nonce) ){
             return 'Can be executed once the required signs are done '
         }else if(nonce !== currentPayment?.gnosis?.nonce && currentPayment.gnosis.confirmations.length === delegates.length ){
             return 'Can be executed only after previous payments are executed'
         }
+    }
+
+    const getSignerName = (address) => {
+        console.log(currentDao?.signers[0].public_address, address.toString())
+        return currentDao?.signers?.filter(x=>x.public_address === address)[0]?.metadata?.name
     }
 
     const approve = currentPayment?.gnosis.confirmations
@@ -222,7 +290,7 @@ const PaymentSlideCard = ({signer}) =>{
                             <div className={styles.singleAddress} key={index}>
                                 <div style={{color:isReject?'red':'#ECFFB8'}} className={`${textStyle.m_16}`}>
                                 {/* {item?.metadata?.name?.split(' ')[0]}  •   */}
-                                    somesh  •   
+                                    {`${getSignerName(item?.owner)}  •   `}
                                 </div>
                                 <div style={{color:'white'}} className={`${textStyle.m_16}`}>
                                   {`${item?.owner.slice(0,5)}...${item?.owner.slice(-3)}`}
@@ -296,10 +364,45 @@ const PaymentSlideCard = ({signer}) =>{
         }
     }
 
+    const uploadApproveMetatoIpfs = async() => {
+        let metaInfo = []
+        let cid = []
+        let to = []
+        currentPayment?.metaInfo?.contributions.map((x,index)=>{
+            
+            metaInfo.push({   
+                dao_name:currentDao?.name, 
+                contri_title:x?.title, 
+                signer:address, 
+                claimer:x?.requested_by?.public_address,
+                date_of_approve:moment().format('D MMM YYYY'), 
+                id:x?.id, 
+                dao_logo_url:currentDao?.logo_url||"https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png" ,
+                work_type:x?.stream.toString()
+            });
+            cid.push(x?.id)
+            to.push(x?.requested_by?.public_address)
+        })
+        const response = await uplaodApproveMetaDataUpload(metaInfo)
+        if(response){
+            return {status:true, cid, to}
+        }else{
+            return {status:false, cid:[], to:[]}
+        }
+    }
+
+    const executeTransaction = async(hash) => {
+        const res =  await uploadApproveMetatoIpfs()
+        if(res.status){
+            await executeSafeTransaction(hash,res?.cid, res?.to)
+            console.log('success')
+        }
+    }
+
     const buttonFunction = async(hash) => {
         if(checkApproval()){
             // if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
-                await executeSafeTransaction(hash)
+                await executeTransaction(hash)
             }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
                 console.log("Payment Already Signed")
             }else if(!checkApproval()){
@@ -321,7 +424,6 @@ const PaymentSlideCard = ({signer}) =>{
             </div>
             <div style={{marginBottom:'2.5rem'}} className={`${textStyle.m_23} ${styles.greyishText}`}>
                 {moment(currentPayment?.gnosis?.submissionDate).format("h:mm a , Do MMM['] YY")}
-                {/* 11:32 am, 20 feb’ 22   */}
             </div>
             {currentPayment?.metaInfo?.contributions?.map((item, index)=>(
                 renderContribution(item)
