@@ -1,7 +1,9 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
+import { createClient } from "@urql/core"
 import axios from "axios"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
+import { POCP_COMMUNTIES_TX_HASH } from "../../utils/subgraphQuery"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 // import { gnosisAction } from "../reducers/gnosis-slice"
@@ -242,7 +244,7 @@ export const gnosisDetailsofDao = () => {
 }
 
 export const set_dao = (dao, index) => {
-  return (dispatch) => {
+  return async(dispatch) => {
     dispatch(daoAction.set_current_dao({
       dao:dao.dao_details,
       role:dao.access_role,
@@ -267,6 +269,7 @@ export const getContriRequest = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
+    dispatch(tranactionAction.reset_approved_request())
     const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
     try {
       const res = await axios.get(url,{
@@ -836,3 +839,20 @@ export const getAllSafeFromAddress = (address) => {
     }
 };
 
+export const getDaoHash = () => {
+  return async (dispatch, getState) => {
+      const query_communtiy = POCP_COMMUNTIES_TX_HASH
+      const client = createClient({
+          url:api.subgraph.url
+      })
+
+      try {
+          const resCommunity = await client.query(query_communtiy).toPromise()   
+          const communities = resCommunity.data.communities      
+          dispatch(daoAction.set_pocp_dao({info:communities}))
+      } catch (error) {
+          console.log('error: ', error.toString())
+      }
+  }
+  // const 
+}

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Typography } from "antd";
+import { Input, message, Typography } from "antd";
 import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
 import cross from '../../../assets/Icons/cross_white.svg'
 import delete_icon from '../../../assets/Icons/delete_icon.svg'
@@ -68,8 +68,13 @@ const TransactionCard = ({signer}) => {
       dispatch(setTransaction(null))
     }
     const onApproveTransaction = async() => {
+      if(payDetail[0].amount!==0 && payDetail[0].amount!=='' && payDetail[0].amount!=='0'){
       dispatch(approveContriRequest(payDetail, false, feedback))
       dispatch(setTransaction(null))
+      }else{
+      message.error('Please Add Amount')
+      }
+      console.log('paydetail', payDetail)
     }
 
     

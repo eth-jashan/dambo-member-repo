@@ -36,3 +36,11 @@ export const POCP_APPROVED_TOKEN = `
   }
 }
 `
+
+export const POCP_COMMUNTIES_TX_HASH = `
+{
+  communities(first:100){
+    id
+    txhash
+  }
+}`

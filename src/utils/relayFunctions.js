@@ -33,7 +33,7 @@ export const uplaodApproveMetaDataUpload = async(approveContri) => {
         contribution_meta_array:approveContri
     }
     try {
-        const res = await axios.post('http://localhost:3001/upload?',data)
+        const res = await axios.post('https://staging.api.drepute.xyz:3001/upload?',data)
         console.log(res)
         if(res){
             return 1

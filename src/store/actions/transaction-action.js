@@ -94,11 +94,13 @@ export const approveContriRequest =  (payout, isExternal = false, feedback) => {
 
         const data = {
           status:"APPROVED",
-          tokens:newPayout
+          tokens:newPayout,
+          id:currentTransaction.id,
+          feedback
         }
         console.log("Contribution appproval api body", JSON.stringify(data))
         try {
-            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,data,{
                 headers:{
                     Authorization:`Bearer ${jwt}`
                 }

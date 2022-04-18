@@ -28,6 +28,7 @@ const daoSlice = createSlice({
       token_info:[],
       total_amount:0
     },
+    pocp_dao_info:[],
     newSafeSetup:{
       owners:[],
       threshold:0,
@@ -104,6 +105,9 @@ const daoSlice = createSlice({
       state.contributionOverview.token_info = action.payload.token_info
       state.contributionOverview.total_amount = action.payload.total_amount
       state.contributionOverview.total_payout = action.payload.all_paid_contribution
+    },
+    set_pocp_dao(state, action){
+      state.pocp_dao_info = action.payload.info
     }
 }});
 

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { getAuthToken, getJwt, signout } from '../../store/actions/auth-action';
 import { IoMdAdd, AiOutlineCaretDown } from 'react-icons/all'
-import { createVoucher, getAllDaowithAddress, getContributorOverview, getContriRequest, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
+import { createVoucher, getAllDaowithAddress, getContributorOverview, getContriRequest, getDaoHash, getPayoutRequest, gnosisDetailsofDao, set_active_nonce, set_initial_setup, set_payout_filter, syncTxDataWithGnosis } from '../../store/actions/dao-action';
 import DashboardLayout from '../../views/DashboardLayout';
 import styles from "./style.module.css";
 import textStyles from '../../commonStyles/textType/styles.module.css';
@@ -49,6 +49,8 @@ export default function Dashboard() {
     const account_index = useSelector(x=>x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+    
     
 
     useEffect(() => {
@@ -69,6 +71,7 @@ export default function Dashboard() {
     const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
     const pending_txs = useSelector(x=>x.transaction.pendingTransaction)
     const curreentDao = useSelector(x=>x.dao.currentDao)
+    const community_id = pocp_dao_info.filter(x=>x.txhash === curreentDao?.tx_hash)
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
     const [modalUniPayment, setModalUniPayment] = useState(false)
@@ -90,14 +93,12 @@ export default function Dashboard() {
 
       const claimed = useSelector(x=>x.contributor.claimed)
     async function copyTextToClipboard() {
-        // if ('clipboard' in navigator) {
-        //     message.success('invite link copied succesfully!')
-        //   return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        // } else {
-        //   return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
-        // }
-        await dispatch(getAllBadges(signer,address, '0'))
-        console.log('cklame',claimed)
+        if ('clipboard' in navigator) {
+            message.success('invite link copied succesfully!')
+          return await navigator.clipboard.writeText(`${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        } else {
+          return document.execCommand('copy', true, `${links.contributor_invite.dev}${curreentDao?.uuid}`);
+        }
     }
     
     const preventGoingBack = useCallback(() => {
@@ -120,6 +121,7 @@ export default function Dashboard() {
     const initialload = useCallback( async() => {
         dispatch(setLoadingState(true))
         const account = await onInit()
+        await dispatch(getDaoHash())
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 if(jwtIfo){
@@ -144,7 +146,7 @@ export default function Dashboard() {
                         console.log('fetch when contributor....')
                         await  dispatch(getContriRequest())
                         await dispatch(getContributorOverview())
-                        await dispatch(getAllBadges(signer, address,'0'))
+                        await dispatch(getAllBadges(signer, address,community_id[0]?.id))
                         dispatch(setLoadingState(false))
                     }
                 }else{
@@ -162,6 +164,7 @@ export default function Dashboard() {
 
     const accountSwitch = useCallback( async() => {
         dispatch(setLoadingState(true))
+        await dispatch(getDaoHash())
         if(role === 'ADMIN'){
             dispatch(setLoadingState(true))
             await  dispatch(getContriRequest())
@@ -180,7 +183,7 @@ export default function Dashboard() {
             dispatch(setLoadingState(true))
             await  dispatch(getContriRequest())
             await dispatch(getContributorOverview())
-            await dispatch(getAllBadges(signer,address,'0'))
+            await dispatch(getAllBadges(signer,address,community_id[0]?.id))
             dispatch(setLoadingState(false))
         }
     },[address, dispatch, role, safeSdk, signer])
@@ -205,6 +208,7 @@ export default function Dashboard() {
 
     const onRouteChange = async(route) =>{
         dispatch(setLoadingState(true))
+        await dispatch(getDaoHash())
         setTab(route)
         if(role === 'ADMIN'){
         dispatch(setLoadingState(true))
@@ -223,7 +227,7 @@ export default function Dashboard() {
         }else{
             dispatch(setLoadingState(true))
             await dispatch(getContriRequest())
-            await dispatch(getAllBadges(signer, address,"0"))
+            await dispatch(getAllBadges(signer, address,community_id[0]?.id))
             dispatch(setLoadingState(false))
         }
         dispatch(setPayment(null))

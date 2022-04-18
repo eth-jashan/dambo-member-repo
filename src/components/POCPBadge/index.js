@@ -3,11 +3,11 @@ import styles from './style.module.css'
 // import Hexagon from 'react-hexagon'
 import pocp_bg from '../../assets/POCP_background.svg'
 
-const POCPBadge = ({dao_name, title, to, from, date}) => {
+const POCPBadge = ({dao_name, title, to, from, date, doa_url}) => {
     
     return(
         <div className={styles.container}>
-                <div style={{width:'4rem', height:'4.1rem', position:'absolute', right:'0.4rem', top:'0.5rem', background:'black',backgroundRepeat: 'no-repeat',backgroundPosition: 'center',backgroundSize: 'cover', backgroundImage: `url("https://s3uploader-s3uploadbucket-q66lac569ais.s3.amazonaws.com/1694805252.jpg")` }}>
+                <div style={{width:'4rem', height:'4.1rem', position:'absolute', right:'0.4rem', top:'0.5rem', background:'black',backgroundRepeat: 'no-repeat',backgroundPosition: 'center',backgroundSize: 'cover', backgroundImage: `url(${doa_url})` }}>
                 <div style={{height:0, width:0, borderBottom:'16px solid black',borderRight:'16px solid transparent', bottom:0, position:'absolute'}}/>
                 <div style={{height:0, width:0, borderBottom:'20px solid transparent',borderRight:'20px solid black', top:0, position:'absolute', right:0}}/>
                 </div>

@@ -15,6 +15,10 @@ const api = {
     },
     subgraph:{
         url:'https://api.thegraph.com/subgraphs/id/QmYdDT55qCw1Y29U8zV5bM2gEf86djNpzPPraeDqzsimDB'
+    },
+    ipfs:{
+        // url:'https://staging.api.drepute.xyz:5001'
+        url:'https://localhost:3001'
     }
 }
 

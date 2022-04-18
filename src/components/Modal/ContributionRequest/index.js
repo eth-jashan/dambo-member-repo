@@ -26,7 +26,7 @@ const ContributionRequestModal = ({setVisibility}) => {
     }
 
     const onSubmit = async() => {
-        const res = await dispatch(createContributionrequest(title, 'DESIGN', link, time, comments))
+        const res = await dispatch(createContributionrequest(title, "DESIGN", link, time, comments))
         if(res){
             message.success('Request Submitted Successfully')
             setVisibility(false)

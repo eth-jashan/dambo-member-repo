@@ -107,6 +107,7 @@ export const setContributionDetail = (item) => {
 
 export const getAllBadges = (signer, address,communityId) => {
     return async (dispatch, getState) => {
+        console.log('community id', communityId)
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const cid = getState().dao.contribution_id
         const query_claimed = POCP_CLAIMED_TOKEN

@@ -32,11 +32,13 @@ export default function PaymentCard({item, signer}) {
     const [onHover, setOnHover] = useState(false)
     const delegates = useSelector(x=>x.dao.delegates)
     const nonce = useSelector(x=>x.dao.active_nonce)
-    // console.log('nounce', item)
     const [loading, setLoading] = useState(false)
     const currentDao = useSelector(x=>x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === 'REJECTED'
+    const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+    const community_id = pocp_dao_info.filter(x=>x.txhash === currentDao?.tx_hash)
+    console.log('communit id', community_id, pocp_dao_info, currentDao)
 
     const getPayoutTotal = (payout) => {
         const usd_amount = []
@@ -113,8 +115,6 @@ export default function PaymentCard({item, signer}) {
                 }
             })
         })
-
-        console.log(tokenSymbol,item?.metaInfo?.contributions )
 
         return(
         
@@ -231,9 +231,6 @@ export default function PaymentCard({item, signer}) {
         }
         executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
             dispatch(setPayoutToast('EXECUTED'))
-            await dispatch(getPayoutRequest())
-            await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter('PENDING',1))
             if(safeSdk){
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
@@ -251,7 +248,8 @@ export default function PaymentCard({item, signer}) {
                     })
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner()
-                    const {data, signature} = await approvePOCPBadge(signer,0, address,to,cid,url)
+                    console.log('community id....', community_id[0].id)
+                    const {data, signature} = await approvePOCPBadge(signer,parseInt(community_id[0].id), address,to,cid,url)
                     const token = await dispatch(getAuthToken())
                     const tx_hash = await relayFunction(token,5,data,signature)
                     if(tx_hash){
@@ -293,6 +291,9 @@ export default function PaymentCard({item, signer}) {
                     })
                 }
             }
+            await dispatch(getPayoutRequest())
+            await dispatch(syncTxDataWithGnosis())
+            await dispatch(set_payout_filter('PENDING',1))
         }
     const getButtonProperty = () => {
         if(checkApproval() && delegates.length === item?.gnosis?.confirmations?.length && !isReject ){

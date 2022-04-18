@@ -339,6 +339,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
             </div>:
             <POCPBadge 
               dao_name={currentDao?.name} 
+              doa_url={currentDao?.logo_url?currentDao?.logo_url:"https://s3uploader-s3uploadbucket-q66lac569ais.s3.amazonaws.com/1694805252.jpg"}
               date={`${moment().format('D MMM YYYY')}`}
               title={currentTransaction?.title} 
               from={`${txInfo?.executor?.slice(0,5)}...${txInfo?.executor?.slice(-3)}`} 

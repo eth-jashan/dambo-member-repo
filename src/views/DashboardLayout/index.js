@@ -6,7 +6,7 @@ import { IoMdAdd } from 'react-icons/io'
 import { MdLink } from 'react-icons/md'
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { getContriRequest, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
+import { getContriRequest, getDaoHash, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 import add_white from '../../assets/Icons/add_white.svg'
@@ -42,6 +42,7 @@ export default function DashboardLayout({ children, route, signer }) {
   
   const changeAccount = async(item, index) => {
     dispatch(setLoadingState(true))
+    await dispatch(getDaoHash())
     dispatch(resetApprovedRequest())
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
