@@ -566,7 +566,7 @@ export default function Dashboard() {
 
   const renderContribution = () =>
     contribution_request.length > 0 ? (
-      <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
+      <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           {contribution_request.map((item, index) => (
             <ContributionCard item={item} />
@@ -579,7 +579,7 @@ export default function Dashboard() {
 
   const renderContributorContribution = () =>
     contribution_request.length > 0 ? (
-      <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
+      <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           {contribution_request.map((item, index) => (
             <ContributionCard item={item} />
@@ -596,7 +596,7 @@ export default function Dashboard() {
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gridGap: 0,
-        overflowY: "scroll",
+        overflowY: "auto",
         marginBottom: "2rem",
       }}
     >
@@ -608,7 +608,7 @@ export default function Dashboard() {
 
   const renderPayment = () =>
     payout_request.length > 0 ? (
-      <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
+      <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           <GnosisExternalPayment />
           {payout_request.map((item, index) => (
