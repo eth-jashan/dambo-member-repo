@@ -19,3 +19,31 @@
   padding: 10px 20px;
   text-transform: uppercase;
 }
+
+.ant-input-number-focused {
+  border: 1px solid #6852ff;
+  box-shadow: none;
+}
+
+.ant-input-number:hover {
+  border: 1px solid #eeeef0;
+}
+.ant-input-number:hover.ant-input-number-focused {
+  border: 1px solid #6852ff;
+}
+
+.ant-input-number:focus {
+  border: 1px solid #6852ff;
+}
+.ant-input-number-handler-wrap {
+  display: none;
+}
+
+.ant-input-number-input {
+  height: auto;
+}
+
+.ant-input-number-input::placeholder {
+  color: #999;
+  padding: 0;
+}

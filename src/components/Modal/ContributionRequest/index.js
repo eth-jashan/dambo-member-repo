@@ -3,9 +3,11 @@ import styles from "./styles.module.css";
 import { MdChevronRight } from "react-icons/all";
 import cross from "../../../assets/Icons/cross.svg";
 import InputText from "../../InputComponent/Input";
-import { Input, message, Progress } from "antd";
+import { Input, message, Progress, InputNumber } from "antd";
 import { useDispatch } from "react-redux";
 import { createContributionrequest } from "../../../store/actions/contibutor-action";
+import Select from "react-select";
+
 const ContributionRequestModal = ({ setVisibility }) => {
   const [title, setTile] = useState("");
   const [time, setTime] = useState("");
@@ -14,16 +16,19 @@ const ContributionRequestModal = ({ setVisibility }) => {
   const [contributionType, setContributionType] = useState("");
   const [descriptionFocus, setDescriptionFocus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [focusOnTime, setFocusOnTime] = useState(false);
+  const [focusOnSelect, setFocusOnSelect] = useState(false);
 
   const dispatch = useDispatch();
 
   const isValid = () => {
-    if (
-      title.length > 0 &&
-      time.length > 0 &&
-      link.length > 0 &&
-      comments.length > 0
-    ) {
+    let urlExpression =
+      /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+    let regex = new RegExp(urlExpression);
+    if (link.length > 0 && !link.match(regex)) {
+      return false;
+    }
+    if (title.length > 0 && time > 0 && comments.length > 0) {
       return true;
     } else {
       return false;
@@ -37,7 +42,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
         const res = await dispatch(
           createContributionrequest(
             title,
-            contributionType,
+            contributionType.value,
             link,
             time,
             comments
@@ -64,6 +69,80 @@ const ContributionRequestModal = ({ setVisibility }) => {
     }
   };
 
+  const colourStyles = {
+    control: (styles, state) => {
+      return {
+        ...styles,
+        width: "100%",
+        borderRadius: "0.5rem",
+        padding: "0.5rem",
+        backgroundColor: "transparent",
+        border:
+          state.menuIsOpen || state.isFocused
+            ? "1px solid #6852FF"
+            : "1px solid #eeeef0",
+      };
+    },
+    option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+      //   const color = chroma(data.color);
+      return {
+        ...styles,
+        fontFamily: "TelegrafMedium",
+        fontStyle: "normal",
+        fontWeight: "normal",
+        fontSize: "1rem",
+        lineHeight: "1.1rem",
+        width: "100%",
+        color: "black",
+        textAlign: "left",
+      };
+    },
+    dropdownIndicator: (styles, state) => ({
+      ...styles,
+      color: state.menuIsOpen || state.isFocused ? "#6852FF" : "#e0e0e0",
+    }),
+    menu: (styles) => ({ ...styles, width: "100%" }),
+    input: (styles, { data, isDisabled, isFocused, isSelected }) => {
+      return {
+        ...styles,
+        fontFamily: "TelegrafMedium",
+        fontStyle: "normal",
+        fontWeight: "normal",
+        fontSize: "16px",
+        lineHeight: "24px",
+        textAlign: "left",
+      };
+    },
+    placeholder: (styles) => ({
+      ...styles,
+      fontFamily: "TelegrafMedium",
+      fontStyle: "normal",
+      fontWeight: "normal",
+      fontSize: "16px",
+      lineHeight: "24px",
+      textAlign: "left",
+    }),
+    singleValue: (styles, { data }) => ({
+      ...styles,
+      fontFamily: "TelegrafMedium",
+      fontStyle: "normal",
+      fontWeight: "normal",
+      fontSize: "16px",
+      lineHeight: "24px",
+      width: "100%",
+      color: "black",
+      textAlign: "left",
+    }),
+  };
+
+  const contributionTypeOptions = [
+    { value: "DESIGN", label: "DESIGN" },
+    { value: "CODEBASE", label: "CODEBASE" },
+    { value: "CONTENT", label: "CONTENT" },
+  ];
+
+  //   const contributionTypeOptions = ['DESIGN', 'CODEBASE', 'DUMMY', 'CONTENT']
+  // console.log("contributionType", contributionType);
   return (
     <div className={styles.backdrop}>
       <div className={styles.modal}>
@@ -97,11 +176,17 @@ const ContributionRequestModal = ({ setVisibility }) => {
 
           <div className={styles.rowInput}>
             <div style={{ width: "48%" }}>
-              <InputText
-                placeholder="Time Spent"
-                onChange={(e) => setTime(e.target.value)}
+              <InputNumber
+                placeholder="Time Spent(in hours)"
+                onChange={(value) => setTime(value)}
                 value={time}
                 width={"100%"}
+                min={0}
+                onFocus={() => setFocusOnTime(true)}
+                onBlur={() => setFocusOnTime(false)}
+                className={`${styles.numberInput} ${
+                  !focusOnTime && time ? styles.timeDark : ""
+                }`}
               />
             </div>
             <div style={{ width: "48%" }}>
@@ -115,12 +200,32 @@ const ContributionRequestModal = ({ setVisibility }) => {
           </div>
 
           <div style={{ width: "100%" }}>
-            <InputText
+            {/* <InputText
               placeholder="Contribution Type"
               onChange={(e) => setContributionType(e.target.value)}
               value={contributionType}
               width={"100%"}
-            />
+            /> */}
+            <div>
+              <Select
+                // components={{Option: CustomOption}}
+                classNamePrefix="select"
+                closeMenuOnSelect
+                onChange={setContributionType}
+                styles={colourStyles}
+                isSearchable={false}
+                name="color"
+                options={contributionTypeOptions}
+                placeholder="Contribution Type"
+                onFocus={() => setFocusOnSelect(true)}
+                onBlur={() => setFocusOnSelect(false)}
+                className={`basic-single ${
+                  !focusOnSelect && contributionType?.value
+                    ? styles.selectDark
+                    : ""
+                }`}
+              />
+            </div>
           </div>
 
           <div
