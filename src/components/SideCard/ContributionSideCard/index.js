@@ -266,54 +266,61 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
         return {status:false, token:[]}
       }
     }
+    const [load, setLoad] = useState(false)
 
     const claimBadges = async() => {
-      try {
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-        await web3Provider.provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: web3.chainid.polygon}]
-        })
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner()
-        const {data, signature} = await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
-        const token = await dispatch(getAuthToken())
-        const tx_hash = await relayFunction(token,3,data,signature)
-        if(tx_hash){
-        const startTime = Date.now()
-        const interval = setInterval(async()=>{
-            if(Date.now() - startTime > 30000){
-            clearInterval(interval)
-            console.log('failed to get confirmation')
-            }
-            var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
-            const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
-            if(reciept?.status){
-            console.log('done', reciept)
-            clearTimeout(interval)
-            console.log('successfully registered')
+      if(!load){
+        setLoad(true)
+          try {
+            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             await web3Provider.provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: web3.chainid.rinkeby}],
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.polygon}]
             })
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner()
+            const {data, signature} = await claimPOCPBadges(signer,address,[parseInt(isApprovedToken().token[0].id)])
+            const token = await dispatch(getAuthToken())
+            const tx_hash = await relayFunction(token,3,data,signature)
+            if(tx_hash){
+            const startTime = Date.now()
+            const interval = setInterval(async()=>{
+                if(Date.now() - startTime > 30000){
+                clearInterval(interval)
+                console.log('failed to get confirmation')
+                }
+                var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+                const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
+                if(reciept?.status){
+                console.log('done', reciept)
+                clearTimeout(interval)
+                console.log('successfully registered')
+                await web3Provider.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
+                })
+                }
+                console.log('again....')
+            },2000)
+            }else{
+            console.log('error in fetching tx hash....')
+                await web3Provider.provider.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: web3.chainid.rinkeby}],
+                })
             }
-            console.log('again....')
-        },2000)
-        }else{
-        console.log('error in fetching tx hash....')
-            await web3Provider.provider.request({
+        } catch (error) {
+            console.log(error.toString())
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.chainid.rinkeby}],
             })
-        }
-    } catch (error) {
-        console.log(error.toString())
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: web3.chainid.rinkeby}],
-        })
-    }
+          }
+
+        setLoad(false)
+        onContributionCrossPress()
+      }
     }
 
     return(
@@ -328,7 +335,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
               {`${currentTransaction?.title}`}
               </span>
               <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${currentTransaction?.requested_by?.metadata?.name} . (${address.slice(0,5)}...${address.slice(-3)})`}</div>
-              <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${'Design  • '} ${currentTransaction?.time_spent} hrs`}</div>
+              <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${currentTransaction?.stream.toLowerCase()} ${currentTransaction?.time_spent} hrs`}</div>
               <Typography.Paragraph
                 className={`${styles.description} ${textStyle.m_16}`}
                 ellipsis={
@@ -372,7 +379,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
               </div>
 
               <div onClick={()=>claimBadges()}  className={styles.payNow}>
-                <div className={`${textStyle.ub_16}`}>Claim Badge</div>
+                <div className={`${textStyle.ub_16}`}>{load?'Claim Badge':'Claiming....'}</div>
               </div>
             </div>}
         </div>

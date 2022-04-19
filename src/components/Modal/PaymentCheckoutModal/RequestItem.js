@@ -22,6 +22,8 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
         return amount_total.toFixed(2)
     }
 
+    console.log('item....', item)
+
     return(
             <div className={styles.requestItem}>
             <div style={{width:'100%', display:'flex', flexDirection:'row'}}>
@@ -41,7 +43,7 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
                             {item?.contri_detail?.stream?.toLowerCase()}  •  {item?.contri_detail?.time_spent} hrs
                         </div>
                         <div className={`${textStyles.m_16} ${styles.alignText}`}>
-                            {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  aviralsb.eth
+                            {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  {`${item?.contri_detail?.requested_by?.public_address?.slice(0,4)}...${item?.contri_detail?.requested_by?.public_address?.slice(-3)}`}
                         </div>
                         <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
                             Jashan has been doing the phenominal boi, keep it up GG.

@@ -46,8 +46,26 @@ export default function Dashboard() {
     const account_index = useSelector(x=>x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const curreentDao = useSelector(x=>x.dao.currentDao)
     const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+    const community_id = pocp_dao_info.filter(x=>x.txhash === curreentDao?.tx_hash)
+    const address = useSelector(x=>x.auth.address)
+    const jwt = useSelector(x=>x.auth.jwt)
+    const role = useSelector(x=>x.dao.role)
+    const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
+    const pending_txs = useSelector(x=>x.transaction.pendingTransaction)
     
+    const [modalContri, setModalContri] = useState(false)
+    const [modalPayment, setModalPayment] = useState(false)
+    const [modalUniPayment, setModalUniPayment] = useState(false)
+    const rejectModal = useSelector(x=>x.transaction.rejectModal)
+    const approved_request = useSelector(x=>x.transaction.approvedContriRequest)
+    const contribution_request = useSelector(x=>x.dao.contribution_request)
+    const payout_request = useSelector(x=>x.dao.payout_filter)
+    const loadingState = useSelector(x=>x.toast.loading_state)
+    //gnosis setup
+    const [signer, setSigner] = useState()
+    const { safeSdk } = useSafeSdk(signer, curreentDao?.safe_public_address)
     
 
     useEffect(() => {
@@ -61,23 +79,6 @@ export default function Dashboard() {
         }
     }, [dispatch, payout_toast]);
 
-    const address = useSelector(x=>x.auth.address)
-    const jwt = useSelector(x=>x.auth.jwt)
-
-    const role = useSelector(x=>x.dao.role)
-    const approve_contri = useSelector(x=>x.transaction.approvedContriRequest)
-    const pending_txs = useSelector(x=>x.transaction.pendingTransaction)
-    const curreentDao = useSelector(x=>x.dao.currentDao)
-    const community_id = pocp_dao_info.filter(x=>x.txhash === curreentDao?.tx_hash)
-    const [modalContri, setModalContri] = useState(false)
-    const [modalPayment, setModalPayment] = useState(false)
-    const [modalUniPayment, setModalUniPayment] = useState(false)
-    const rejectModal = useSelector(x=>x.transaction.rejectModal)
-    const approved_request = useSelector(x=>x.transaction.approvedContriRequest)
-    console.log('payout toast', rejectModal)
-    //gnosis setup
-    const [signer, setSigner] = useState()
-    const { safeSdk } = useSafeSdk(signer, curreentDao?.safe_public_address)
     const setProvider = async() => {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         await provider.send("eth_requestAccounts", []);
@@ -123,15 +124,18 @@ export default function Dashboard() {
         if(address === ethers.utils.getAddress(account) ){
                 const jwtIfo = await dispatch(getJwt(address))
                 if(jwtIfo){
-                   await dispatch(getAllDaowithAddress())
+                   const account_role =  await dispatch(getAllDaowithAddress())
                    await dispatch(gnosisDetailsofDao())
-                    if(role === 'ADMIN'){
-                        await  dispatch(getContriRequest())
-                        await dispatch(getPayoutRequest())
-                        await dispatch(getPendingTransaction())
+                   console.log('load', account_role)
+                    if(account_role === 'ADMIN'){
                         dispatch(setPayment(null))
                         dispatch(setTransaction(null))
-                        await dispatch(syncTxDataWithGnosis())
+                        await  dispatch(getContriRequest())
+                        console.log('payout request.....')
+                        // await dispatch(getPayoutRequest())
+                        // await dispatch(getPendingTransaction())
+                        // await dispatch(syncTxDataWithGnosis())
+                        // console.log('payout request.....ended')
                         // get active nonce
                         if(safeSdk){
                             const nonce = await safeSdk.getNonce()
@@ -162,13 +166,18 @@ export default function Dashboard() {
     const accountSwitch = useCallback( async() => {
         dispatch(setLoadingState(true))
         await dispatch(getDaoHash())
-        if(role === 'ADMIN'){
-            await  dispatch(getContriRequest())
-            await dispatch(getPayoutRequest())
-            await dispatch(getPendingTransaction())
+        const account_role =  await dispatch(getAllDaowithAddress())
+        if(account_role === 'ADMIN'){
+            console.log('admin......account changed')
             dispatch(setPayment(null))
             dispatch(setTransaction(null))
-            await dispatch(syncTxDataWithGnosis())
+            await  dispatch(getContriRequest())
+            if(tab==='payments'){
+                console.log('payout requests......')
+                await dispatch(getPayoutRequest())
+                await dispatch(getPendingTransaction())
+                await dispatch(syncTxDataWithGnosis())
+            }
             if(safeSdk){
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
@@ -180,15 +189,20 @@ export default function Dashboard() {
             await dispatch(getAllBadges(signer,address,community_id[0]?.id))
         }
         dispatch(setLoadingState(false))
-    },[address, dispatch, role, safeSdk, signer])
+    },[address, community_id, dispatch, role, safeSdk, signer, tab])
 
     useEffect(()=>{
-        if(!modalPayment&&!approve_contri.length>0){
+    if(!modalPayment){
         if(role === account_mode && account_index===0 ){
+            console.log('loaded for first time......')
             initialload()
         }else{
             accountSwitch()
         }
+        // else{
+        //     console.log('Loaded for account switch')
+        //     accountSwitch()
+        // }
     }
         
     },[])
@@ -202,21 +216,22 @@ export default function Dashboard() {
         await dispatch(getDaoHash())
         setTab(route)
         if(role === 'ADMIN'){
-        dispatch(setLoadingState(true))
-            if(safeSdk){
-                const nonce = await safeSdk.getNonce()
-                dispatch(set_active_nonce(nonce))
-            }
-        dispatch(setLoadingState(true))
-            await dispatch(getPayoutRequest())
+                if(safeSdk){
+                    const nonce = await safeSdk.getNonce()
+                    dispatch(set_active_nonce(nonce))
+                }
             if(route === 'payments'){
+                console.log('payment route......')
+                await dispatch(getPayoutRequest())
                 await dispatch(syncTxDataWithGnosis())
+                await dispatch(set_payout_filter('PENDING',1))
+            }else{
+                console.log('contribution route......')
+                await dispatch(getPayoutRequest())
+                await dispatch(syncTxDataWithGnosis())
+                await dispatch(getContriRequest())
             }
-            await dispatch(set_payout_filter('PENDING',1))
-            await dispatch(getContriRequest())
-            dispatch(setLoadingState(false))
         }else{
-            dispatch(setLoadingState(true))
             await dispatch(getContriRequest())
             await dispatch(getAllBadges(signer, address,community_id[0]?.id))
         }
@@ -275,7 +290,7 @@ export default function Dashboard() {
 
     const renderLoadingScreen = () => (
         <div className={styles.emptyDiv}>
-            <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
+            <Stack sx={{ width: '50%', color: 'grey.500', display:'flex', alignSelf:'center' }} spacing={2}>
                 <LinearProgress style={{background:'#ECFFB8'}} color="inherit" />
             </Stack>
         </div>
@@ -439,10 +454,6 @@ export default function Dashboard() {
             </div>
         </div>
     )
-
-    const contribution_request = useSelector(x=>x.dao.contribution_request)
-    const payout_request = useSelector(x=>x.dao.payout_filter)
-    const loadingState = useSelector(x=>x.toast.loading_state)
 
     const renderContribution = () => (
         contribution_request.length > 0 ?

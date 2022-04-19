@@ -69,8 +69,11 @@ export default function ContributionCard({item}) {
           }
     }
     
+    const [load, setLoad] = useState(false)
 
     const claimBadges = async() => {
+        if(!load){
+            setLoad(true)
         try {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           await web3Provider.provider.request({
@@ -116,8 +119,10 @@ export default function ContributionCard({item}) {
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: web3.chainid.rinkeby}],
           })
-      }
-      }
+        }
+        }
+        setLoad(false)
+    }
 
     return(
         <div 
@@ -136,9 +141,9 @@ export default function ContributionCard({item}) {
                 <div style={{color:onHover&&'white'}} className={`${textStyles.m_16} ${styles.description}`}>{`${item?.requested_by?.metadata?.name?.toLowerCase()}  •  ${item?.stream?.toLowerCase()}  •  ${item?.time_spent} hrs`}</div>
             </div>
             {role==='ADMIN'?null:
-            <div className={styles.statusContributorContainer}>
+            <div onClick={()=>claimBadges()} className={styles.statusContributorContainer}>
                 <div className={textStyles.m_16} style={{color:getContributionStatus()?.color, textAlign:'start'}}>{getContributionStatus()?.title}</div>
-                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • claim badge</div> }
+                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • {load?'claiming..':'claim badge'}</div> }
             </div>}
             <img className={styles.menuIcon} alt='menu' src={three_dots} />
         </div>

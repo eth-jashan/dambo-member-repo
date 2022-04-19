@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { Tooltip, message } from "antd";
 import 'antd/dist/antd.css'
 import styles from "./style.module.css";
-import { IoMdAdd } from 'react-icons/io'
 import { MdLink } from 'react-icons/md'
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { getContriRequest, getDaoHash, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
+import { getContributorOverview, getContriRequest, getDaoHash, getPayoutRequest, gnosisDetailsofDao, setPayoutFilter, set_active_nonce, set_dao, set_payout_filter, signingPayout, syncTxDataWithGnosis } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
 import logo from '../../assets/drepute_logo.svg'
 import add_white from '../../assets/Icons/add_white.svg'
@@ -18,10 +17,10 @@ import textStyles from '../../commonStyles/textType/styles.module.css'
 import ContributionSideCard from "../../components/SideCard/ContributionSideCard";
 import ProfileModal from "../../components/Modal/ProfileModal";
 import ContributionOverview from "../../components/SideCard/ContributorOverview";
-import chevron_down from '../../assets/Icons/expand_more_black.svg'
 import AccountSwitchModal from "../../components/Modal/AccountSwitchModal";
 import { AiFillCaretDown } from "react-icons/ai";
 import { setLoadingState } from "../../store/actions/toast-action";
+import { getAllBadges, setContributionDetail } from "../../store/actions/contibutor-action";
 
 export default function DashboardLayout({ children, route, signer }) {
 
@@ -39,23 +38,38 @@ export default function DashboardLayout({ children, route, signer }) {
   const [profile_modal, setProfileModal] = useState(false)
   const [switchRoleModal,setSwitchRoleModal] = useState(false)
   const [roleContainerHover, setRoleContainerHover] = useState(false)
+  const address = useSelector(x=>x.auth.address)
+  const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+  const community_id = pocp_dao_info.filter(x=>x.txhash === currentDao?.tx_hash)
   
   const changeAccount = async(item, index) => {
     dispatch(setLoadingState(true))
+    dispatch(setPayment(null))
+    dispatch(setTransaction(null))
     await dispatch(getDaoHash())
     dispatch(resetApprovedRequest())
     dispatch(set_dao(item))
     await dispatch(gnosisDetailsofDao())
-    await  dispatch(getContriRequest())
-    await dispatch(getPayoutRequest())
-    await dispatch(syncTxDataWithGnosis())
-    dispatch(setPayment(null))
-    dispatch(setTransaction(null))
+    
+    if(route === 'contributions'&& role ==='ADMIN'){
+      await  dispatch(getContriRequest())
+      await dispatch(getPayoutRequest())
+      await dispatch(syncTxDataWithGnosis())
+    }else if(role !== 'ADMIN'){
+      dispatch(getContributorOverview())
+      await dispatch(getAllBadges(signer, address,community_id[0]?.id))
+      await dispatch(getContriRequest())
+    }else if(route !== 'contributions'&& role === 'ADMIN'){
+      // await  dispatch(getContriRequest())
+      await dispatch(getPayoutRequest())
+      await dispatch(syncTxDataWithGnosis())
+    }
+
     if(safeSdk){
       const nonce = await safeSdk.getNonce()
       dispatch(set_active_nonce(nonce))
-  }
-    await dispatch(set_payout_filter('PENDING',1))
+    }
+    //await dispatch(set_payout_filter('PENDING',1))
     dispatch(setLoadingState(false))
   }
 
@@ -68,8 +82,6 @@ export default function DashboardLayout({ children, route, signer }) {
     }
   }
 
-  console.log('current dao', account_mode)
-
   const onProfileModal = () => {
     setProfileModal(!profile_modal)
     setSwitchRoleModal(false)
@@ -78,6 +90,12 @@ export default function DashboardLayout({ children, route, signer }) {
   const onSwitchRoleModal = () => {
     setProfileModal(false)
     setSwitchRoleModal(!switchRoleModal)
+  }
+
+  const accountSwitchPress = () => {
+    dispatch(setTransaction(null))
+    dispatch(setContributionDetail(null))
+    setSwitchRoleModal(false)
   }
 
   const headerComponet = () => {
@@ -92,7 +110,7 @@ export default function DashboardLayout({ children, route, signer }) {
             <div style={{color:roleContainerHover?'black':'white'}} className={textStyles.m_14}>{role==='ADMIN'?'Approval':'Contributor'}</div>
             {<AiFillCaretDown color={switchRoleModal||roleContainerHover?'black':'white'} style={{alignSelf:'center'}} size={12} />}
           </div>}
-          {switchRoleModal&&<AccountSwitchModal onChange={()=>setSwitchRoleModal(false)} />}
+          {switchRoleModal&&<AccountSwitchModal signer={signer} route={route} c_id={community_id[0]?.id} onChange={()=>accountSwitchPress()} />}
         </div>
         <div>
           <div onClick={()=>onProfileModal()} className={styles.accountIcon}>
@@ -130,8 +148,6 @@ export default function DashboardLayout({ children, route, signer }) {
     }
   }
   }
-
-  console.log('ffff', currentDao?.uuid, accounts[0])
 
   const text = (item) => <span>{item}</span>;
   return (

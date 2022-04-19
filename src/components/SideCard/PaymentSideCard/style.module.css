@@ -6,6 +6,12 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    /* position: relative; */
+}
+.container::-webkit-scrollbar {
+    display: none;
 }
 .cross{
     height: 1rem;

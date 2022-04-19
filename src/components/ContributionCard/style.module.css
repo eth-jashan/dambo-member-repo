@@ -9,6 +9,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    cursor: pointer;
 }
 .container:hover{
     background-color: #333333;

@@ -32,8 +32,13 @@
     flex-direction: column;
     overflow-y: scroll;
     bottom: 0;
-
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
 }
+.modal::-webkit-scrollbar {
+    display: none;
+}
+
 .greyedText{
     color: #808080;
     text-align: start;

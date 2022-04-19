@@ -5,15 +5,37 @@ import chevron_right from '../../../assets/Icons/chevron_right.svg'
 import approver from '../../../assets/Icons/approver_icon.svg'
 import contributor from '../../../assets/Icons/contributor_icon.svg'
 import { useDispatch, useSelector } from 'react-redux';
-import { switchRole } from '../../../store/actions/dao-action';
+import { getContributorOverview, getContriRequest, getPayoutRequest, set_payout_filter, switchRole, syncTxDataWithGnosis } from '../../../store/actions/dao-action';
+import { getAllBadges } from '../../../store/actions/contibutor-action'
+import { setLoadingState } from '../../../store/actions/toast-action'
 
-const AccountSwitchModal = ({onChange}) => {
+const AccountSwitchModal = ({onChange, route,c_id, signer}) => {
 
     const address = useSelector(x=>x.auth.address)
+    const currentDao = useSelector(x=>x.dao.currentDao)
+    const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
+    const community_id = pocp_dao_info.filter(x=>x.txhash === currentDao?.tx_hash)
     const dispatch = useDispatch()
-    const changeRole = (role) => {
+    const changeRole = async(role) => {
+        dispatch(setLoadingState(true))
         dispatch(switchRole(role))
         onChange()
+        console.log('here..', role, route,community_id[0]?.id)
+        if(route === 'contributions'&& role ==='ADMIN'){
+            await  dispatch(getContriRequest())
+            await dispatch(getPayoutRequest())
+            await dispatch(syncTxDataWithGnosis())
+          }else if(role !== 'ADMIN'){
+            await dispatch(getAllBadges(signer, address,c_id))
+            await dispatch(getContriRequest())
+            dispatch(getContributorOverview())
+          }else if(route !== 'contributions'&& role === 'ADMIN'){
+            // await  dispatch(getContriRequest())
+            await dispatch(getPayoutRequest())
+            await dispatch(syncTxDataWithGnosis())
+            await dispatch(set_payout_filter('PENDING',1))
+        }
+        dispatch(setLoadingState(false))
     }
     
     return(

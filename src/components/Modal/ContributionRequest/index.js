@@ -14,6 +14,7 @@ const ContributionRequestModal = ({setVisibility}) => {
     const [comments, setComments] = useState('')
     const [contributionType, setContributionType] = useState('')
     const [descriptionFocus, setDescriptionFocus] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -26,12 +27,18 @@ const ContributionRequestModal = ({setVisibility}) => {
     }
 
     const onSubmit = async() => {
-        const res = await dispatch(createContributionrequest(title, "DESIGN", link, time, comments))
-        if(res){
-            message.success('Request Submitted Successfully')
-            setVisibility(false)
-        }else{
-            message.error('Try creating again')
+        if(!loading){
+            setLoading(true)
+            if(isValid()){
+                const res = await dispatch(createContributionrequest(title, "DESIGN", link, time, comments))
+                if(res){
+                    message.success('Request Submitted Successfully')
+                    setVisibility(false)
+                }else{
+                    message.error('Try creating again')
+                }
+            }
+            setLoading(false)
         }
     }
 
@@ -113,9 +120,9 @@ const ContributionRequestModal = ({setVisibility}) => {
                     </div>
                 </div>
 
-                <div onClick={isValid()?()=>onSubmit():()=>{}} className={styles.buttonSubmit}>
+                <div onClick={()=>onSubmit()} className={styles.buttonSubmit}>
                     <div className={isValid()?styles.validText:styles.gereyedText}>
-                        Create Request
+                        {loading?"Creating...":'Create Request'}
                     </div>
                     <MdChevronRight color={isValid()?'white':'#B4A8FF'} />
                 </div>

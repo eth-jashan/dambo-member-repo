@@ -60,4 +60,9 @@
   border-radius: 24px 24px 0px 0px;
   padding: 4.16% 2.8% 3.5% 7%;
   text-align: left;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;  
+}
+.modal::-webkit-scrollbar {
+  display: none;
 }

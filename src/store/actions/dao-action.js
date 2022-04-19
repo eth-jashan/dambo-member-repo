@@ -114,6 +114,7 @@ export const getAllDaowithAddress = () => {
               account_mode:res.data.data[0].access_role,
               index:0
             }))
+            return res.data.data[0].access_role
         }else{
           dispatch(daoAction.set_dao_list({
             list:[],
@@ -334,7 +335,7 @@ export const getPayoutRequest = () => {
     const jwt = getState().auth.jwt
     const safe_address = getState().dao.currentDao?.safe_public_address
     const uuid = getState().dao.currentDao?.uuid
-    console.log('uuid', uuid)
+
     try {
       const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
         headers:{
@@ -347,7 +348,7 @@ export const getPayoutRequest = () => {
       let list_of_tx = []
       if(res.data.success){
         //filtering out drepute pending txs from gnosis
-
+        dispatch(daoAction.set_all_payout_request({list:res.data?.data?.payouts}))
         res.data?.data?.payouts.map((item, index)=>{
           pendingTxs.results.map((x,i)=>{
             if(item.gnosis_reference_id === x.safeTxHash){
@@ -358,6 +359,7 @@ export const getPayoutRequest = () => {
 
         let tx = []
         let nonce_inserted = []
+
         //checking rejected tx and updated tx
         list_of_tx.map((item, i)=>{
           pendingTxs.results.map((x)=>{
@@ -526,12 +528,13 @@ export const syncTxDataWithGnosis = () => {
     const jwt = getState().auth.jwt
     const safe_address = getState().dao.currentDao?.safe_public_address
     const uuid = getState().dao.currentDao?.uuid
+    const getAllPayout = getState().dao.all_payout_request
     try {
-      const payouts = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
-        headers:{
-          Authorization:`Bearer ${jwt}`
-        }
-      })
+      // const payouts = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
+      //   headers:{
+      //     Authorization:`Bearer ${jwt}`
+      //   }
+      // })
 
 
       const allTx = await serviceClient.getMultisigTransactions(safe_address)
@@ -541,7 +544,7 @@ export const syncTxDataWithGnosis = () => {
 
       allTx.results.map((item, index)=>{
         
-          payouts.data.data.payouts.map((x, i)=>{
+          getAllPayout.map((x, i)=>{
             if(x.nonce === item.nonce && (x.request_type === "APPROVED"||x.request_type === 'REJECTED') && !x.is_executed){
               if(item.isExecuted){
                 if(item.data === null && item.value === '0'){

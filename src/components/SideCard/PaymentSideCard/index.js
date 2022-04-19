@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import cross from '../../../assets/Icons/cross_white.svg'
 import styles from './style.module.css'
 import textStyle  from "../../../commonStyles/textType/styles.module.css";
@@ -399,15 +399,21 @@ const PaymentSlideCard = ({signer}) =>{
         }
     }
 
+    const [load, setLoad] = useState(false)
+
     const buttonFunction = async(hash) => {
-        if(checkApproval()){
-            // if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
-                await executeTransaction(hash)
-            }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
-                console.log("Payment Already Signed")
-            }else if(!checkApproval()){
-            await  confirmTransaction(hash)
+        if(!load){
+            setLoad(true)
+            if(checkApproval()){
+                // if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
+                    await executeTransaction(hash)
+                }else if(checkApproval() && delegates.length !== currentPayment?.gnosis?.confirmations?.length){
+                    console.log("Payment Already Signed")
+                }else if(!checkApproval()){
+                await  confirmTransaction(hash)
             }
+            setLoad(false)
+        }
     }
 
     console.log(currentPayment)
@@ -437,8 +443,8 @@ const PaymentSlideCard = ({signer}) =>{
                 <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getRejectButton()?.background}} className={styles.actionBtnCnt}>
                 <div style={{color:getRejectButton()?.color}} className={textStyle.ub_16}>{getRejectButton()?.title}</div>
                 </div>:
-                <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getButtonTitle()?.background}} className={styles.actionBtnCnt}>
-                    <div style={{color:getButtonTitle()?.color}} className={textStyle.ub_16}>{getButtonTitle()?.title}</div>
+                <div onClick={async()=>await buttonFunction(currentPayment?.gnosis?.safeTxHash)} style={{background:getButtonTitle()?.background, cursor:'pointer'}} className={styles.actionBtnCnt}>
+                    <div style={{color:getButtonTitle()?.color}} className={textStyle.ub_16}>{!load?getButtonTitle()?.title:'Processing...'}</div>
                 </div>)
                 :null}
             </div>

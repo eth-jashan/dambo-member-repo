@@ -7,7 +7,12 @@
     overflow-y: auto;
     overflow-x: hidden;
     margin-bottom: 200px;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
     /* position: relative; */
+}
+.container::-webkit-scrollbar {
+    display: none;
 }
 
 .cross{

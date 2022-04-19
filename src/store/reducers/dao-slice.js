@@ -28,6 +28,7 @@ const daoSlice = createSlice({
       token_info:[],
       total_amount:0
     },
+    all_payout_request:[],
     pocp_dao_info:[],
     newSafeSetup:{
       owners:[],
@@ -42,6 +43,9 @@ const daoSlice = createSlice({
   reducers: {
     set_allSafe(state, action) {
       state.allSafeList = action.payload.list;
+    },
+    set_all_payout_request(state, action){
+      state.all_payout_request = action.payload.list
     },
     set_safeAdress(state, action) {
       state.newSafeSetup.safeAddress = action.payload.safeAddress;
