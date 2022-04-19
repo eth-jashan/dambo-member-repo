@@ -11,6 +11,7 @@ import {
   getDaoHash,
   getPayoutRequest,
   gnosisDetailsofDao,
+  lastSelectedId,
   setPayoutFilter,
   set_active_nonce,
   set_dao,
@@ -73,6 +74,7 @@ export default function DashboardLayout({ children, route, signer }) {
     await dispatch(getDaoHash());
     dispatch(resetApprovedRequest());
     dispatch(set_dao(item));
+    dispatch(lastSelectedId(item?.dao_details?.uuid))
     await dispatch(gnosisDetailsofDao());
 
     if (route === "contributions" && role === "ADMIN") {

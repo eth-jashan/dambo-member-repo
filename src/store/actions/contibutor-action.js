@@ -88,13 +88,13 @@ export const createContributionrequest = (title, type, link, time, comments) => 
             })
             
             if(res.data.success){
-                console.log('suucessfully created !')
+                //console.log('suucessfully created !')
                 return 1
             }else{
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
 }
@@ -107,7 +107,6 @@ export const setContributionDetail = (item) => {
 
 export const getAllBadges = (signer, address,communityId) => {
     return async (dispatch, getState) => {
-        console.log('community id', communityId)
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const cid = getState().dao.contribution_id
         const query_claimed = POCP_CLAIMED_TOKEN
@@ -145,10 +144,10 @@ export const getAllBadges = (signer, address,communityId) => {
                 
 
             
-            // console.log('unclaimed',cid,unclaimed)
+            // //console.log('unclaimed',cid,unclaimed)
             dispatch(contributorAction.set_badges({claimed:claimed_identifier, unclaimed}))
         } catch (error) {
-            console.log('error: ', error.toString())
+            //console.log('error: ', error.toString())
         }
     }
     // const 

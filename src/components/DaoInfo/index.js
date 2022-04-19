@@ -78,7 +78,7 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
       method: "PUT",
       body: blobData,
     });
-    console.log(result, response.data.uploadURL.split("?")[0])
+    //console.log(result, response.data.uploadURL.split("?")[0])
     // Final URL for the user doesn't need the query string params
       setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }));
       setLoading(false)

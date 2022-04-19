@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setTransaction } from '../../store/actions/transaction-action'
 import { convertTokentoUsd } from '../../utils/conversion'
 import three_dots from "../../assets/Icons/three_dots.svg";
-import { setContributionDetail } from '../../store/actions/contibutor-action'
+import { getAllBadges, setContributionDetail } from '../../store/actions/contibutor-action'
 import { ethers } from 'ethers'
 import { web3 } from '../../constant/web3'
 import { claimPOCPBadges } from '../../utils/POCPutils'
 import { getAuthToken } from '../../store/actions/auth-action'
 import { relayFunction } from '../../utils/relayFunctions'
+import { getContributorOverview } from '../../store/actions/dao-action'
 
-export default function ContributionCard({item}) {
+export default function ContributionCard({item, signer,community_id}) {
     const address = item?.requested_by?.public_address;
     const dispatch = useDispatch()
     const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
@@ -90,30 +91,30 @@ export default function ContributionCard({item}) {
           const interval = setInterval(async()=>{
               if(Date.now() - startTime > 30000){
               clearInterval(interval)
-              console.log('failed to get confirmation')
+              //console.log('failed to get confirmation')
               }
               var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
               const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
               if(reciept?.status){
-              console.log('done', reciept)
+              //console.log('done', reciept)
               clearTimeout(interval)
-              console.log('successfully registered')
+              //console.log('successfully registered')
               await web3Provider.provider.request({
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: web3.chainid.rinkeby}],
               })
               }
-              console.log('again....')
+              //console.log('again....')
           },2000)
           }else{
-          console.log('error in fetching tx hash....')
+          //console.log('error in fetching tx hash....')
               await web3Provider.provider.request({
                   method: 'wallet_switchEthereumChain',
                   params: [{ chainId: web3.chainid.rinkeby}],
               })
           }
       } catch (error) {
-          console.log(error.toString())
+          //console.log(error.toString())
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           await provider.provider.request({
               method: 'wallet_switchEthereumChain',
@@ -122,6 +123,9 @@ export default function ContributionCard({item}) {
         }
         }
         setLoad(false)
+        await dispatch(getAllBadges(signer,address,community_id))
+        await dispatch(getContributorOverview())
+        
     }
 
     return(
@@ -145,7 +149,7 @@ export default function ContributionCard({item}) {
                 <div className={textStyles.m_16} style={{color:getContributionStatus()?.color, textAlign:'start'}}>{getContributionStatus()?.title}</div>
                 {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • {load?'claiming..':'claim badge'}</div> }
             </div>}
-            <img className={styles.menuIcon} alt='menu' src={three_dots} />
+            {/* <img className={styles.menuIcon} alt='menu' src={three_dots} /> */}
         </div>
     )
     

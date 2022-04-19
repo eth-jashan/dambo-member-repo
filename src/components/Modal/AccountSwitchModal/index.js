@@ -20,7 +20,7 @@ const AccountSwitchModal = ({onChange, route,c_id, signer}) => {
         dispatch(setLoadingState(true))
         dispatch(switchRole(role))
         onChange()
-        console.log('here..', role, route,community_id[0]?.id)
+        //console.log('here..', role, route,community_id[0]?.id)
         if(route === 'contributions'&& role ==='ADMIN'){
             await  dispatch(getContriRequest())
             await dispatch(getPayoutRequest())
@@ -28,6 +28,7 @@ const AccountSwitchModal = ({onChange, route,c_id, signer}) => {
           }else if(role !== 'ADMIN'){
             await dispatch(getAllBadges(signer, address,c_id))
             await dispatch(getContriRequest())
+            await dispatch(getAllBadges(signer, address,community_id[0]?.id))
             dispatch(getContributorOverview())
           }else if(route !== 'contributions'&& role === 'ADMIN'){
             // await  dispatch(getContriRequest())

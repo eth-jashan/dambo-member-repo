@@ -7,8 +7,6 @@ import { useSelector } from 'react-redux';
 const GnosisExternalPayment = () => {
 
     const currentDao = useSelector(x=>x.dao.currentDao)
-    
-    console.log('current dao', currentDao)
 
     return(
         <div className={styles.container}>

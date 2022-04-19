@@ -22,7 +22,7 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
         return amount_total.toFixed(2)
     }
 
-    console.log('item....', item)
+    //console.log('item....', item)
 
     return(
             <div className={styles.requestItem}>

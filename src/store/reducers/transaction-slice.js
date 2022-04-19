@@ -28,7 +28,6 @@ const transactionSlice = createSlice({
     set_approved_request(state, action){
       const approve_list = state.approvedContriRequest
       const copyCheck = approve_list.filter(x=>x.contri_detail?.id === action.payload.item?.contri_detail?.id)
-      console.log(current(approve_list), action.payload.item?.contri_detail?.id, copyCheck.length)
       if(copyCheck.length === 0){
       approve_list.push(action.payload.item)
       state.approvedContriRequest = approve_list
@@ -42,7 +41,6 @@ const transactionSlice = createSlice({
       state.initialETHPrice = action.payload.price
     },
     set_reject_modal(state, action){
-      console.log(action.payload.status)
       state.rejectModal = action.payload.status
     }
 }});

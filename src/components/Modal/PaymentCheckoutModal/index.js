@@ -94,7 +94,7 @@ const PaymentCheckoutModal = ({onClose, signer, onPayNow}) => {
                 safeTxHash
             )
         } catch (error) {
-            console.log('error on signing...', error.toString())
+            //console.log('error on signing...', error.toString())
         }
         
         try {
@@ -112,7 +112,7 @@ const PaymentCheckoutModal = ({onClose, signer, onPayNow}) => {
           }))
         // onClose()
         } catch (error) {
-          console.log('error.........', error)
+          //console.log('error.........', error)
         }
         setLoading(false)
         onClose()

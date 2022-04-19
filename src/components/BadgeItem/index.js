@@ -7,14 +7,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setContributionDetail } from '../../store/actions/contibutor-action'
 
 const BadgeItem = ({item}) => {
-    console.log('item', item)
+    //console.log('item', item)
     const [meta, setMeta] = useState()
     const allContribution = useSelector(x=>x.dao.contribution_id)
     const currentDao = useSelector(x=>x.dao.currentDao)
 
     const fetchMetaFromIpfs = useCallback( async() => {
         const res = await getMetaInfo(item?.ipfsMetaUri)
-        console.log('ress', res)
         setMeta(res)
     },[item?.ipfsMetaUri])
 
@@ -32,7 +31,6 @@ const BadgeItem = ({item}) => {
     return(
         <div onClick={()=>onBadgeClick()} onMouseLeave={()=>setHover(false)} onMouseEnter={()=>setHover(true)} style={{padding:'20px', border:'0.5px solid #C4C4C440', display:'flex', alignItems:'center', justifyContent:'center', borderTop:0, background:onHover&&'#292929'}}>
         <div style={{background:onHover?'#292929':'black'}} className={styles.container}>
-            {/* <img alt='badge' src={meta?.image} style={{height:'100%', width:'100%'}} /> */}
                 <div style={{width:'3.75rem', height:'3.8rem', position:'absolute', right:'0.4rem', top:'1.05rem', background:'black',backgroundRepeat: 'no-repeat',backgroundPosition: 'center',backgroundSize: 'cover', backgroundImage: `url(${currentDao?.logo_url?currentDao?.logo_url:"https://s3uploader-s3uploadbucket-q66lac569ais.s3.amazonaws.com/1694805252.jpg"})` }}>
                 <div style={{height:0, width:0, borderBottom:onHover?'16px solid #292929':'16px solid black',borderRight:'16px solid transparent', bottom:0, position:'absolute'}}/>
                 <div style={{height:0, width:0, borderBottom:'20px solid transparent',borderRight:onHover?'20px solid #292929':'20px solid black', top:0, position:'absolute', right:0}}/>
@@ -54,8 +52,8 @@ const BadgeItem = ({item}) => {
                     </div>
 
                     <div style={{marginLeft:'0.5rem'}}>
-                    <div style={{fontWeight:'500', fontSize:'0.75rem', color:'black', fontFamily:'SFMono'}}>{`${item?.approver?.slice(0,5)}...${item?.approver?.slice(-3)}`}</div>
                     <div style={{fontWeight:'500', fontSize:'0.75rem', color:'black', fontFamily:'SFMono'}}>{`${item?.claimer?.slice(0,5)}...${item?.claimer?.slice(-3)}`}</div>
+                    <div style={{fontWeight:'500', fontSize:'0.75rem', color:'black', fontFamily:'SFMono'}}>{`${item?.approver?.slice(0,5)}...${item?.approver?.slice(-3)}`}</div>
                     </div>
 
                 </div>

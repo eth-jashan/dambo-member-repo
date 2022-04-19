@@ -11,11 +11,8 @@ import { getAuthToken } from "../store/actions/auth-action";
 export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
     let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
-    console.log('address',address)
     const nonceBigNumber = await contract.getNonce(address.toString())
-    console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ))
     const chainId = (await contract.provider.getNetwork()).chainId
-    console.log('Chain ID ===>', chainId)
     const nonce = parseInt(nonceBigNumber)
 
     const ForwardRequest = [
@@ -64,9 +61,8 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
         signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
         return {data, signature} 
     } catch (error) {
-        console.log("Error on signing register dao data", error)
+        //console.log("Error on signing register dao data", error)
     }
-    console.log('signature for register dao', signature)
     
 }
 
@@ -76,9 +72,7 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
 
     const nonceBigNumber = await contract.getNonce(address)
-    console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ), address)
     const chainId = (await contract.provider.getNetwork()).chainId
-    console.log('Chain ID ===>', claimers)
     const nonce = parseInt(nonceBigNumber)
 
     const ForwardRequest = [
@@ -128,9 +122,8 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
         signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
         return {data, signature} 
     } catch (error) {
-        console.log("Error on signing register dao data", error)
+        //console.log("Error on signing register dao data", error)
     }
-  console.log('signature for register dao', signature)
     
 }
 
@@ -140,7 +133,6 @@ export const claimPOCPBadges = async(signer, address, id) => {
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
     const nonceBigNumber = await contract.getNonce(address.toString())
     
-    console.log('NONCE ===>', ethers.utils.formatEther( nonceBigNumber ))
     const chainId = (await contract.provider.getNetwork()).chainId
     
     const nonce = parseInt(nonceBigNumber)
@@ -182,9 +174,8 @@ export const claimPOCPBadges = async(signer, address, id) => {
         signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
         return {data, signature} 
     } catch (error) {
-        console.log("Error on signing register dao data", error)
+        //console.log("Error on signing register dao data", error)
     }
-    console.log('signature for register dao', signature)
     
 }
 

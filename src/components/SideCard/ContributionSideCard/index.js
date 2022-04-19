@@ -9,14 +9,14 @@ import textStyle  from "../../../commonStyles/textType/styles.module.css";
 import { approveContriRequest, rejectContriRequest, setTransaction } from '../../../store/actions/transaction-action';
 // import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
 import { convertTokentoUsd } from "../../../utils/conversion";
-import { setContributionDetail } from "../../../store/actions/contibutor-action";
+import { getAllBadges, setContributionDetail } from "../../../store/actions/contibutor-action";
 import POCPBadge from "../../POCPBadge";
 import { useSafeSdk } from "../../../hooks";
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import moment from "moment";
 import { claimPOCPBadges } from "../../../utils/POCPutils";
 import { getAuthToken } from "../../../store/actions/auth-action";
-import { relayFunction } from "../../../utils/relayFunctions";
+import { relayFunction, updatePocpApproval, updatePocpClaim } from "../../../utils/relayFunctions";
 import { ethers } from "ethers";
 import { web3 } from "../../../constant/web3";
 import POCPProxy from '../../../smartContract/POCP_Contracts/POCP.json'
@@ -32,9 +32,14 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
   )
   const currentDao = useSelector(x=>x.dao.currentDao)
   const address = currentTransaction?.requested_by?.public_address;
+  const jwt = useSelector(x=>x.auth.jwt)
   const [txInfo, setTxInfo] = useState([])
   const [safeInfo, setSafeInfo] = useState()
   const dispatch = useDispatch();
+  const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info);
+  const community_id = pocp_dao_info.filter(
+    (x) => x.txhash === currentDao?.tx_hash
+  );
   const getEmoji = () => {
     if (currentTransaction?.stream === "DESIGN") {
       return "🎨";
@@ -46,11 +51,11 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
   const getTransactionInfo = useCallback(async() => {
     let tx
     if(currentTransaction?.status!=='REQUESTED'&& currentTransaction?.status!=='REJECTED'){ 
-      console.log('here', currentTransaction)
+      //console.log('here', currentTransaction)
       tx  = await serviceClient.getTransaction(currentTransaction?.gnosis_reference_id)
     }
     const safeInfo = await serviceClient.getSafeInfo(currentDao?.safe_public_address)
-    console.log('transaction', currentTransaction?.isClaimed)
+    //console.log('transaction', currentTransaction?.isClaimed)
     setTxInfo(tx)
     setSafeInfo(safeInfo)
     
@@ -72,7 +77,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
     }
   }
 
-  console.log('total', currentTransaction, isAdmin, txInfo)
+  //console.log('total', currentTransaction, isAdmin, txInfo)
 
     const onContributionCrossPress = () => {
       dispatch(setTransaction(null))
@@ -154,7 +159,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
     }
 
     const getSignerName = (address) => {
-      console.log(currentDao?.signers[0].public_address, address.toString())
+      //console.log(currentDao?.signers[0].public_address, address.toString())
       return currentDao?.signers?.filter(x=>x.public_address === address)[0]?.metadata?.name
   }
 
@@ -259,7 +264,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
     
     const isApprovedToken = () => {
       const token = unclaimed.filter(x=>x.identifier === currentTransaction?.id.toString())
-      console.log('is approved', token, currentTransaction, unclaimed[0])
+      //console.log('is approved', token, currentTransaction, unclaimed[0])
       if(token.length>0){
         return {status:true, token:token}
       }else{
@@ -283,46 +288,47 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
             const token = await dispatch(getAuthToken())
             const tx_hash = await relayFunction(token,3,data,signature)
             if(tx_hash){
+            await updatePocpClaim(jwt,tx_hash,[parseInt(isApprovedToken().token[0].id)])
             const startTime = Date.now()
             const interval = setInterval(async()=>{
                 if(Date.now() - startTime > 30000){
                 clearInterval(interval)
-                console.log('failed to get confirmation')
+                //console.log('failed to get confirmation')
                 }
                 var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
                 const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                 if(reciept?.status){
-                console.log('done', reciept)
+                //console.log('done', reciept)
                 clearTimeout(interval)
-                console.log('successfully registered')
+                //console.log('successfully registered')
                 await web3Provider.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.chainid.rinkeby}],
                 })
                 }
-                console.log('again....')
+                //console.log('again....')
             },2000)
             }else{
-            console.log('error in fetching tx hash....')
+            //console.log('error in fetching tx hash....')
                 await web3Provider.provider.request({
                     method: 'wallet_switchEthereumChain',
                     params: [{ chainId: web3.chainid.rinkeby}],
                 })
             }
         } catch (error) {
-            console.log(error.toString())
+            //console.log(error.toString())
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.chainid.rinkeby}],
             })
           }
-
         setLoad(false)
-        onContributionCrossPress()
+        await dispatch(getAllBadges(signer,address,community_id[0]?.id))
       }
+      onContributionCrossPress()
     }
-
+    //console.log('cuurent', currentTransaction)
     return(
         <div className={styles.container}>
             <img onClick={()=>onContributionCrossPress()} src={cross} alt='cross' className={styles.cross} />
@@ -346,8 +352,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
                     }
                 }
             >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                {/* {currentTransaction?} */}
             </Typography.Paragraph>
             </div>:
             <POCPBadge 
@@ -379,7 +384,7 @@ const ContributionSideCard = ({signer, isAdmin = true}) => {
               </div>
 
               <div onClick={()=>claimBadges()}  className={styles.payNow}>
-                <div className={`${textStyle.ub_16}`}>{load?'Claim Badge':'Claiming....'}</div>
+                <div className={`${textStyle.ub_16}`}>{!load?'Claim Badge':'Claiming....'}</div>
               </div>
             </div>}
         </div>

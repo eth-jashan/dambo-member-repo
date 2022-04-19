@@ -37,7 +37,6 @@ const gnosisSlice = createSlice({
       state.safeAddress = action.payload.safeAddress
     },
     set_dainInfo(state, action){
-      console.log("redux===>", action.payload.logo, action.payload.discord)
       state.newSafeSetup.dao_email = action.payload.email
       state.newSafeSetup.dao_name = action.payload.name
       state.newSafeSetup.dao_discord = action.payload.discord

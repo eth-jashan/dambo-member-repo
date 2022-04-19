@@ -99,10 +99,10 @@ const ConnectWallet = ({ isAdmin }) =>{
         }
       }
       } catch (error) {
-        console.log('error on signing....', error)
+        //console.log('error on signing....', error)
       }
     // }else{
-      // console.log('change chain id')
+      // //console.log('change chain id')
         // await web3Provider.provider.request({
         //   method: 'wallet_switchEthereumChain',
         //   params: [{ chainId: '0x4'}],
@@ -183,7 +183,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         //doesnot token and chain is 4
         setAuth(false)
         dispatch(setLoggedIn(false))
-        console.log('no jwt....')
+        //console.log('no jwt....')
         authWithWallet(newAddress)
       }
       else{
@@ -200,7 +200,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     });
 
     provider.on("accountsChanged",async () => {
-      console.log(`account changed!.........`);
+      //console.log(`account changed!.........`);
       dispatch(setLoggedIn(false))
       navigate('/')
     });

@@ -51,7 +51,7 @@ export default function useBalance(provider, address, pollTime = 0) {
   usePoller(
     async () => {
       if (provider && address && pollTime > 0) {
-        if (DEBUG) console.log("polling!", address);
+        if (DEBUG) //console.log("polling!", address);
         pollBalance();
       }
     },

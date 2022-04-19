@@ -7,7 +7,6 @@ import { getAuthToken, getJwt, signout } from "../../store/actions/auth-action";
 import { IoMdAdd, AiOutlineCaretDown } from "react-icons/all";
 import {
   createPayout,
-  createVoucher,
   getAllDaowithAddress,
   getContributorOverview,
   getContriRequest,
@@ -139,14 +138,14 @@ export default function Dashboard() {
     window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", () => {
       if (address && jwt) {
-        console.log("on back!!!");
+        //console.log("on back!!!");
         window.history.pushState(null, document.title, window.location.href);
       }
     });
   }, [address, jwt]);
 
   async function onInit() {
-    await window.ethereum.enable();
+    // await window.ethereum.enable();
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
@@ -158,21 +157,22 @@ export default function Dashboard() {
     dispatch(setLoadingState(true));
     const account = await onInit();
     await dispatch(getDaoHash());
+    //console.log('account', account)
     if (address === ethers.utils.getAddress(account)) {
       const jwtIfo = await dispatch(getJwt(address));
       if (jwtIfo) {
         const account_role = await dispatch(getAllDaowithAddress());
         await dispatch(gnosisDetailsofDao());
-        console.log("load", account_role);
+        //console.log("load", account_role);
         if (account_role === "ADMIN") {
           dispatch(setPayment(null));
           dispatch(setTransaction(null));
           await dispatch(getContriRequest());
-          console.log("payout request.....");
+          //console.log("payout request.....");
           // await dispatch(getPayoutRequest())
           // await dispatch(getPendingTransaction())
           // await dispatch(syncTxDataWithGnosis())
-          // console.log('payout request.....ended')
+          // //console.log('payout request.....ended')
           // get active nonce
           if (safeSdk) {
             const nonce = await safeSdk.getNonce();
@@ -180,7 +180,7 @@ export default function Dashboard() {
           }
         } else {
           dispatch(setLoadingState(true));
-          console.log("fetch when contributor....");
+          //console.log("fetch when contributor....");
           await dispatch(getContriRequest());
           await dispatch(getContributorOverview());
           await dispatch(getAllBadges(signer, address, community_id[0]?.id));
@@ -204,12 +204,12 @@ export default function Dashboard() {
     await dispatch(getDaoHash());
     const account_role = await dispatch(getAllDaowithAddress());
     if (account_role === "ADMIN") {
-      console.log("admin......account changed");
+      //console.log("admin......account changed");
       dispatch(setPayment(null));
       dispatch(setTransaction(null));
       await dispatch(getContriRequest());
       if (tab === "payments") {
-        console.log("payout requests......");
+        //console.log("payout requests......");
         await dispatch(getPayoutRequest());
         await dispatch(getPendingTransaction());
         await dispatch(syncTxDataWithGnosis());
@@ -219,7 +219,7 @@ export default function Dashboard() {
         dispatch(set_active_nonce(nonce));
       }
     } else {
-      console.log("fetch when contributor....Contributo");
+      //console.log("fetch when contributor....Contributo");
       await dispatch(getContriRequest());
       await dispatch(getContributorOverview());
       await dispatch(getAllBadges(signer, address, community_id[0]?.id));
@@ -230,13 +230,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (!modalPayment) {
       if (role === account_mode && account_index === 0) {
-        console.log("loaded for first time......");
+        //console.log("loaded for first time......");
         initialLoad();
       } else {
         accountSwitch();
       }
       // else{
-      //     console.log('Loaded for account switch')
+      //     //console.log('Loaded for account switch')
       //     accountSwitch()
       // }
     }
@@ -256,12 +256,12 @@ export default function Dashboard() {
         dispatch(set_active_nonce(nonce));
       }
       if (route === "payments") {
-        console.log("payment route......");
+        //console.log("payment route......");
         await dispatch(getPayoutRequest());
         await dispatch(syncTxDataWithGnosis());
         await dispatch(set_payout_filter("PENDING", 1));
       } else {
-        console.log("contribution route......");
+        //console.log("contribution route......");
         await dispatch(getPayoutRequest());
         await dispatch(syncTxDataWithGnosis());
         await dispatch(getContriRequest());
@@ -472,7 +472,7 @@ export default function Dashboard() {
     try {
       safeSignature = await safeSdk.signTransactionHash(safeTxHash);
     } catch (error) {
-      console.log("error on signing...", error.toString());
+      //console.log("error on signing...", error.toString());
     }
 
     try {
@@ -492,7 +492,7 @@ export default function Dashboard() {
       );
       // onClose()
     } catch (error) {
-      console.log("error.........", error);
+      //console.log("error.........", error);
     }
     setPaymentLoading(false);
     // onClose()
@@ -566,10 +566,10 @@ export default function Dashboard() {
 
   const renderContribution = () =>
     contribution_request.length > 0 ? (
-      <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
+      <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           {contribution_request.map((item, index) => (
-            <ContributionCard item={item} />
+            <ContributionCard community_id={community_id[0]?.id} signer={signer} item={item} />
           ))}
         </div>
       </div>
@@ -579,10 +579,10 @@ export default function Dashboard() {
 
   const renderContributorContribution = () =>
     contribution_request.length > 0 ? (
-      <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
+      <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           {contribution_request.map((item, index) => (
-            <ContributionCard item={item} />
+            <ContributionCard community_id={community_id[0]?.id} signer={signer} item={item} />
           ))}
         </div>
       </div>

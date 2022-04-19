@@ -13,7 +13,7 @@ export default function  WalletPicker({signer}) {
   
   const address = useSelector(x=>x.auth.address);
   const {ensName} = useLookupAddress(signer,address)
-  // console.log('ens nmae', en)
+  // //console.log('ens nmae', en)
   const isAdmin = useSelector(x=>x.auth.isAdmin);
   const dispatch = useDispatch()
   const navigate = useNavigate()

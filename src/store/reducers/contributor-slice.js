@@ -18,7 +18,6 @@ const contributorSlice = createSlice({
       state.discord_auth = action.payload.status;
     },
     set_contribution_detail(state, action){
-      console.log('redux', action.payload.item)
       state.contribution_detail = action.payload.item;
     },
     set_badges(state, action){

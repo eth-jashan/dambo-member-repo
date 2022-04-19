@@ -98,7 +98,6 @@ export const approveContriRequest =  (payout, isExternal = false, feedback) => {
           id:currentTransaction.id,
           feedback
         }
-        console.log("Contribution appproval api body", JSON.stringify(data))
         try {
             const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,data,{
                 headers:{
@@ -112,13 +111,13 @@ export const approveContriRequest =  (payout, isExternal = false, feedback) => {
                     key:contri_filter,
                     number:contri_filter_key
                 }))
-                console.log('successfuly confirmed')
+                //console.log('successfully confirmed')
                 return 1
             }else{
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
     }
@@ -146,7 +145,7 @@ export const rejectContriRequest =  (id) => {
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
 }

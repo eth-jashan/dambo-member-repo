@@ -13,7 +13,6 @@ export const relayFunction = async(token, functionType, request, signature) => {
         signature: signature,
         callback_api:'https://staging.api.drepute.xyz/eth/callback'
     }
-    console.log('relayer', token, JSON.stringify(data))
     try {
         const res = await axios.post(`https://staging.api.drepute.xyz:5001${routes.pocp.relay}`,data,{
             headers: {
@@ -24,7 +23,7 @@ export const relayFunction = async(token, functionType, request, signature) => {
       return res.data.data.hash
         
     } catch (error) {
-        console.log('relay api error', error.toString())
+        //console.log('relay api error', error.toString())
     }
 }
 
@@ -34,12 +33,11 @@ export const uplaodApproveMetaDataUpload = async(approveContri) => {
     }
     try {
         const res = await axios.post('https://staging.api.drepute.xyz:3001/upload?',data)
-        console.log(res)
         if(res){
             return 1
         }
     } catch (error) {
-        console.log('error on uploading', error.toString())
+        //console.log('error on uploading', error.toString())
     }
 }
 
@@ -57,21 +55,23 @@ export const updatePocpRegister = async(jwt,tx_hash, dao_uuid) => {
             }
           )
           if(res.data.success){
-            console.log( res.data.data.dao_uuid)
+            return 1
           }else{
             return 0
           }
     } catch (error) {
-        console.log('error in registering.....', error)    
+        //console.log('error in registering.....', error)    
     }
 }
 
-export const updatePocpClaim = async(jwt,tx_hash, dao_uuid) => {
+export const updatePocpApproval = async(jwt,approval_tx_hash, contribution_ids) => {
 
-    const data = {tx_hash, dao_uuid}
+    const data = {approval_tx_hash, contribution_ids}
+
+    // //console.log('tx_hash...', data)
       
     try {
-          const res = await axios.post(`${api.drepute.dev.BASE_URL}/update/pocp`,data,
+          const res = await axios.post(`${api.drepute.dev.BASE_URL}/contrib/update/pocp`,data,
             {
               headers:{
                 Authorization:`Bearer ${jwt}`
@@ -79,13 +79,37 @@ export const updatePocpClaim = async(jwt,tx_hash, dao_uuid) => {
             }
           )
           if(res.data.success){
-            console.log( res.data.data.dao_uuid)
+            return 1
           }else{
             return 0
           }
     } catch (error) {
-        console.log('error in registering.....', error)    
+        //console.log('error in registering.....', error)    
     }
+}
+
+export const updatePocpClaim = async(jwt,claim_tx_hash, contribution_ids) => {
+
+  const data = {claim_tx_hash, contribution_ids}
+
+  // //console.log('tx_hash...', data)
+    
+  try {
+        const res = await axios.post(`${api.drepute.dev.BASE_URL}/contrib/update/pocp`,data,
+          {
+            headers:{
+              Authorization:`Bearer ${jwt}`
+            }
+          }
+        )
+        if(res.data.success){
+          return 1
+        }else{
+          return 0
+        }
+  } catch (error) {
+      //console.log('error in registering.....', error)    
+  }
 }
 
 const buildQuery = (cid) => {
@@ -96,7 +120,6 @@ const buildQuery = (cid) => {
   })
   let queryString = cid_and_array.toString()
   queryString = queryString.replace(/,/g, '&')
-  console.log('query', queryString)
   return queryString
 }
 
@@ -104,35 +127,38 @@ export const getIpfsUrl = async(jwt, dao_uuid, cid) => {
   
   try {
     const query = buildQuery(cid)
-    console.log('query====', query)
     const res = await axios.get(`${api.drepute.dev.BASE_URL}/contrib/get/ipfs?${query}&dao_uuid=${dao_uuid}`,
     {
       headers:{
         Authorization:`Bearer ${jwt}`
       }
     })
-    console.log('ress....', res.data.data)
     if(res.data?.data?.contributions?.length>0){
       let cid = []
       let url = []
+      let status = true
       res.data?.data?.contributions?.map((item, index)=>{
-        cid.push(item?.id.toString())
-        url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
+        if(item?.ipfs_url === null){
+          status = false
+        }else{
+          cid.push(item?.id.toString())
+          url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
+        }
       })
-      return {cid, url}
+      //console.log('status...', status)
+      return {cid, url, status}
     }else{
-      return false
+      return {cid, url:[], status:false}
     }
   } catch (error) {
-    console.log('error',error.toString())
-    return false
+    //console.log('error', error.toString())
+    return {cid, url:[], status:false}
   }
 }
 
 export const getMetaInfo = async(url) => {
   const res = await axios.get(url)
   if(res.status){
-    console.log('resss', res.data)
     return res.data
   }
 }

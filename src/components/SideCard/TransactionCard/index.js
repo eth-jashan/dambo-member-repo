@@ -22,6 +22,8 @@ const TransactionCard = ({signer}) => {
   const getEmoji = () => {
     if (currentTransaction?.stream === "DESIGN") {
       return "🎨";
+    }else{
+      return "🎨";
     }
   };
 
@@ -74,7 +76,7 @@ const TransactionCard = ({signer}) => {
       }else{
       message.error('Please Add Amount')
       }
-      console.log('paydetail', payDetail)
+      //console.log('paydetail', payDetail)
     }
 
     
@@ -120,8 +122,7 @@ const TransactionCard = ({signer}) => {
                     }
                 }
             >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                {currentTransaction?.description}
             </Typography.Paragraph>
 
           <div className={styles.amountScroll}>

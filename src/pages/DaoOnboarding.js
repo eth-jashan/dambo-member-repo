@@ -49,7 +49,7 @@ export default function Onboarding() {
         
         if (accounts.length === 0) {
           window.history.pushState(null, document.title, window.location.href);
-          console.log("on back!!!", document.title, window.history);
+          //console.log("on back!!!", document.title, window.history);
         } else {
             window.history.pushState(null, document.title, "/dashboard");
             window.location.reload("true")
@@ -64,12 +64,12 @@ export default function Onboarding() {
 
   const deploySafe = useCallback(
     async (owners) => {
-      console.log("deployingggg");
+      //console.log("deployingggg");
       if (!safeFactory) return;
       setDeploying(true);
       const safeAccountConfig = { owners, threshold };
       let safe;
-      console.log("deployingggg");
+      //console.log("deployingggg");
       try {
         safe = await safeFactory.deploySafe(safeAccountConfig);
         message.success("A safe is successfully created !");
@@ -84,7 +84,7 @@ export default function Onboarding() {
       dispatch(addSafeAddress(newSafeAddress));
       setDeploying(true);
       const {dao_uuid, name} = await dispatch(registerDao());
-        console.log('owners...', owners)
+        //console.log('owners...', owners)
 
         if (dao_uuid) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -103,27 +103,27 @@ export default function Onboarding() {
               const interval = setInterval(async()=>{
                 if(Date.now() - startTime > 30000){
                   clearInterval(interval)
-                  console.log('failed to get confirmation')
+                  //console.log('failed to get confirmation')
                 }
                 var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
                 const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                 if(reciept?.status){
-                  console.log('done', reciept)
+                  //console.log('done', reciept)
                   clearTimeout(interval)
-                  console.log('successfully registered')
+                  //console.log('successfully registered')
                 await provider.provider.request({
                   method: 'wallet_switchEthereumChain',
                   params: [{ chainId: web3.chainid.rinkeby}],
                 })
                 navigate(`/dashboard`)
                 }
-                console.log('again....')
+                //console.log('again....')
               },2000)
             }else{
-              console.log('error in fetching tx hash....')
+              //console.log('error in fetching tx hash....')
             }
           } catch (error) {
-              console.log(error.toString())
+              //console.log(error.toString())
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
@@ -165,7 +165,7 @@ export default function Onboarding() {
             }
           })
         }
-        console.log('ownersss', owner)
+        //console.log('ownersss', owner)
         if (dao_uuid) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           try {
@@ -183,27 +183,27 @@ export default function Onboarding() {
               const interval = setInterval(async()=>{
                 if(Date.now() - startTime > 30000){
                   clearInterval(interval)
-                  console.log('failed to get confirmation')
+                  //console.log('failed to get confirmation')
                 }
                 var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
                 const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                 if(reciept?.status){
-                  console.log('done', reciept)
+                  //console.log('done', reciept)
                   clearTimeout(interval)
-                  console.log('successfully registered')
+                  //console.log('successfully registered')
                 await provider.provider.request({
                   method: 'wallet_switchEthereumChain',
                   params: [{ chainId: web3.chainid.rinkeby}],
                 })
                 navigate(`/dashboard`)
                 }
-                console.log('again....')
+                //console.log('again....')
               },2000)
             }else{
-              console.log('error in fetching tx hash....')
+              //console.log('error in fetching tx hash....')
             }
           } catch (error) {
-              console.log(error.toString())
+              //console.log(error.toString())
               const provider = new ethers.providers.Web3Provider(window.ethereum);
               await provider.provider.request({
                 method: 'wallet_switchEthereumChain',
@@ -222,10 +222,10 @@ export default function Onboarding() {
             });
             await deploySafe(owner);
           } catch (error) {
-            console.log("error.... on deploying", error);
+            //console.log("error.... on deploying", error);
           }
         } catch (error) {
-          console.log("error.......", error);
+          //console.log("error.......", error);
         }
       }
     } else setCurrentStep(currentStep + 1);
