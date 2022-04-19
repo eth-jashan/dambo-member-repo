@@ -133,11 +133,19 @@ export default function DashboardLayout({ children, route, signer }) {
   const headerComponet = () => {
     return (
       <div className={styles.header}>
-        <div
-          style={{ color: "white", textAlign: "start" }}
-          className={textStyles.ub_14}
-        >
-          {currentDao?.name}
+        <div className={styles.safe_info}>
+          <div
+            style={{ color: "white", textAlign: "start" }}
+            className={textStyles.ub_14}
+          >
+            {currentDao?.name}
+          </div>
+          <div
+            style={{ color: "white", textAlign: "start", marginLeft:'0.5rem' }}
+            className={textStyles.m_14}
+          >
+            {currentDao?.safe_public_address}
+          </div>
         </div>
         <div className={styles.profileContainer}>
           <div>

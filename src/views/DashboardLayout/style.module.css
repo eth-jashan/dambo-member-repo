@@ -9,6 +9,12 @@
     flex-direction: row;
     justify-content: space-between;
 }
+.safe_info{
+    flex-direction: row;
+    display: flex;
+    
+}
+
 .headerText{
     font-family: "TelegrafBolder";
     font-style: normal;
