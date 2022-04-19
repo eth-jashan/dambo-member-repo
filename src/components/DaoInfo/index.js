@@ -13,15 +13,20 @@ import Lottie from "react-lottie";
 import api from "../../constant/api";
 import axios from "axios";
 
-import textStyles from '../../commonStyles/textType/styles.module.css'
+import textStyles from "../../commonStyles/textType/styles.module.css";
 import { registerDaoToPocp } from "../../utils/POCPutils";
 
-const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) => {
+const DaoInfo = ({
+  increaseStep,
+  decreaseStep,
+  deploying,
+  hasMultiSignWallet,
+}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [discord, setDiscord] = useState("");
-  const [image, setImage] = useState()
-  const [loading, setLoading] = useState(false)
+  const [image, setImage] = useState();
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const defaultOptions = {
@@ -33,11 +38,10 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
     },
   };
 
-  
-  const onSubmit = async() => {
+  const onSubmit = async () => {
     dispatch(addDaoInfo(name, email, discord, image?.url));
     increaseStep();
-  }
+  };
   const createImage = (file) => {
     let reader = new FileReader();
     reader.onload = (e) => {
@@ -47,28 +51,28 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
       const imageObj = {
         url: false,
         image: e.target.result,
-        preview:URL.createObjectURL(file),
+        preview: URL.createObjectURL(file),
       };
-      setImage(imageObj)
+      setImage(imageObj);
+      uploadImage(imageObj);
     };
     reader.readAsDataURL(file);
   };
 
-  const onFileChange = async(e) => {
+  const onFileChange = async (e) => {
     let files = e.target.files || e.dataTransfer.files;
     if (!files.length) return;
     createImage(files[0]);
   };
 
-
-  const uploadImage = async () => {
-    setLoading(true)
+  const uploadImage = async (imageObj) => {
+    setLoading(true);
     const response = await axios({
       method: "GET",
       url: api.s3Uplaod.url,
     });
     let binary;
-    binary = atob(image.image.split(",")[1]);
+    binary = atob(imageObj.image.split(",")[1]);
     let array = [];
     for (var i = 0; i < binary.length; i++) {
       array.push(binary.charCodeAt(i));
@@ -80,21 +84,23 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
     });
     //console.log(result, response.data.uploadURL.split("?")[0])
     // Final URL for the user doesn't need the query string params
-      setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }));
-      setLoading(false)
+    setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }));
+    setLoading(false);
   };
 
   const renderUploadOption = () => (
     <div className={styles.uploadContainer}>
-      <div onClick={()=>setImage()} className={styles.retry}>
-        <img src={retry} alt='retry'/>
+      <div onClick={() => setImage()} className={styles.retry}>
+        <img src={retry} alt="retry" />
       </div>
-      <div onClick={()=>uploadImage()} className={styles.upload}>
-        <img src={upload} alt='upload'/>
-        <div style={{color:'white'}} className={textStyles.m_16}>upload</div>
-      </div>
+      {/* <div onClick={() => uploadImage()} className={styles.upload}>
+        <img src={upload} alt="upload" />
+        <div style={{ color: "white" }} className={textStyles.m_16}>
+          upload
+        </div>
+      </div> */}
     </div>
-  )
+  );
 
   return (
     <div className={styles.layout}>
@@ -162,29 +168,70 @@ const DaoInfo = ({ increaseStep, decreaseStep, deploying, hasMultiSignWallet }) 
                     </div>
                   </div>
                 </div>
-                  <div style={{ flexGrow: 100, display:'flex', alignItems:'center', flexDirection:'column',position:'relative' }}>
-                      {image?<img alt='logo' src={image?.preview} style={{width:'15rem', height:'15rem'}} />:      
-                      <div className={styles.picContainer}>
+                <div
+                  style={{
+                    flexGrow: 100,
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    position: "relative",
+                  }}
+                >
+                  {image ? (
+                    <img
+                      alt="logo"
+                      src={image?.preview}
+                      style={{ width: "15rem", height: "15rem" }}
+                    />
+                  ) : (
+                    <div className={styles.picContainer}>
                       <label className={styles.label} htmlFor="upload-button">
                         <div className={styles.icon_uplaod}>
-                          <img alt='file' src={upload_file} className={styles.upload_file} />
+                          <img
+                            alt="file"
+                            src={upload_file}
+                            className={styles.upload_file}
+                          />
                         </div>
-                        <input accept='image/png, image/gif, image/jpeg' type="file" id="upload-button" style={{ display: 'none' }} onChange={onFileChange} />
-                        <div style={{alignSelf:'center'}} className={`${textStyles.m_16}`}>Click here to upload a file</div>
-                        <div style={{alignSelf:'center', textAlign:'center', marginTop:'0.5rem', color:'#00000050'}} className={`${textStyles.m_14}`}>PNG, JPG, GIF up to 10MB (recommended size: 400px x 400px)</div>
+                        <input
+                          accept="image/png, image/gif, image/jpeg"
+                          type="file"
+                          id="upload-button"
+                          style={{ display: "none" }}
+                          onChange={onFileChange}
+                        />
+                        <div
+                          style={{ alignSelf: "center" }}
+                          className={`${textStyles.m_16}`}
+                        >
+                          Click here to upload a file
+                        </div>
+                        <div
+                          style={{
+                            alignSelf: "center",
+                            textAlign: "center",
+                            marginTop: "0.5rem",
+                            color: "#00000050",
+                          }}
+                          className={`${textStyles.m_14}`}
+                        >
+                          PNG, JPG, GIF up to 10MB (recommended size: 400px x
+                          400px)
+                        </div>
                       </label>
-                      </div>}
+                    </div>
+                  )}
 
-                      {image&&renderUploadOption()}
-                  </div>
+                  {image && renderUploadOption()}
+                </div>
               </div>
             </div>
           </div>
           <div className={styles.nextBtn}>
             <NextButton
-              text={hasMultiSignWallet?"Register Dao":"Add Owners"}
+              text={hasMultiSignWallet ? "Register Dao" : "Add Owners"}
               increaseStep={onSubmit}
-              isDisabled={name === "" || deploying||loading}
+              isDisabled={name === "" || deploying || loading}
             />
           </div>
         </>
