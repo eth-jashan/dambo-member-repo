@@ -46,7 +46,7 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
                             {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  {`${item?.contri_detail?.requested_by?.public_address?.slice(0,4)}...${item?.contri_detail?.requested_by?.public_address?.slice(-3)}`}
                         </div>
                         <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
-                            Jashan has been doing the phenominal boi, keep it up GG.
+                            {/* Jashan has been doing the phenominal boi, keep it up GG. */}
                         </Typography.Paragraph>
                     </div>
                     <div>
