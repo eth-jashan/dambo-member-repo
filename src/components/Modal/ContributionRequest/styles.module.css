@@ -1,97 +1,146 @@
-.container{
-    display: flex;
-    flex-direction: column;
+.container {
+  display: flex;
+  flex-direction: column;
 }
 
-.backdrop{
-    background-color: rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding-left: 6%;
-    display: flex;
-    align-items: center;
+.backdrop {
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-left: 6%;
+  display: flex;
+  align-items: center;
 }
-.opacity{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #000000;
-    opacity: 0.5;
-}
-
-.rowInput{
-    flex-direction: row;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    width: 100%;
+.opacity {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000000;
+  opacity: 0.5;
 }
 
-.multiInput{
-    margin-top: 1rem;
-    width: 100%;
+.rowInput {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
-.modal{
-    width: 44vw;
-    background: white;
-    min-height: 80.33%;
-    background: #FFFFFF;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06), 0px 0px 20px rgba(0, 0, 0, 0.12);
-    border-radius: 1.25rem;
-    padding: 2.5rem 2rem 2rem 2.5rem ;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-}
-.cross{
-    width: 1.125rem;
-    height: 1.125rem;
-    margin-bottom: 2.5rem;
-    /* align-self: flex-start; */
-}
-.heading{
-    font-family:'TelegrafMedium';
-    font-style: normal;
-    font-weight: normal;
-    font-size: 3rem;
-    line-height: 3rem;
-    text-align: start;
-    margin-bottom: 3rem;
+.numberInput {
+  /* padding: 1rem; */
+  width: 100%;
+  border: 1px solid #eeeef0;
+  border-radius: 0.5rem;
+  color: black;
+  padding: 1rem;
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  outline: none;
 }
 
-.buttonSubmit{
-    width: 50.11%;
-    padding: 0.625rem 1rem 0.625rem 1.5rem;
-    background: #6852FF;
-    margin-top: 3.438rem;
-    flex-direction: row;
-    justify-content: space-between;
-    display: flex;
-    border-radius: 3rem;
-    /* border-radius: ; */
+.timeDark {
+  background-color: rgb(225, 220, 255);
+}
+.selectDark {
+  background-color: rgb(225, 220, 255);
+  border-radius: 0.5rem;
 }
 
-.gereyedText{
-    font-family: 'TelegrafBolder';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 1.313rem;
-    line-height: 1.75rem;
-    color: #B4A8FF;
+.multiInput {
+  margin-top: 1rem;
+  width: 100%;
+  position: relative;
 }
-.validText{
-    font-family: 'TelegrafBolder';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 1.313rem;
-    line-height: 1.75rem;
-    color: white;
+
+.modal {
+  width: 44vw;
+  background: white;
+  min-height: 80.33%;
+  background: #ffffff;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06),
+    0px 0px 20px rgba(0, 0, 0, 0.12);
+  border-radius: 1.25rem;
+  padding: 2.5rem 2rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cross {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-bottom: 2.5rem;
+  /* align-self: flex-start; */
+}
+.heading {
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 3rem;
+  line-height: 3rem;
+  text-align: start;
+  margin-bottom: 3rem;
+}
+
+.buttonSubmit {
+  width: 50.11%;
+  padding: 0.625rem 1rem 0.625rem 1.5rem;
+  background: #6852ff;
+  margin-top: 3.438rem;
+  flex-direction: row;
+  justify-content: space-between;
+  display: flex;
+  border-radius: 3rem;
+  align-items: center;
+  /* border-radius: ; */
+}
+
+.gereyedText {
+  font-family: "TelegrafBolder";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.313rem;
+  line-height: 1.75rem;
+  color: #b4a8ff;
+}
+.validText {
+  font-family: "TelegrafBolder";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.313rem;
+  line-height: 1.75rem;
+  color: white;
+}
+
+.textArea {
+  width: 100%;
+  border-radius: 0.5rem;
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: black;
+  outline: none;
+  padding: 1rem;
+  height: 4rem;
+  border: 0;
+  background: transparent;
+}
+.textArea::placeholder {
+  font-family: "TelegrafMedium";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #808080;
 }

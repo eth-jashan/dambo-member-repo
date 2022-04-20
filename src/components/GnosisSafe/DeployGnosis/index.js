@@ -51,22 +51,22 @@ const DeployGnosisButton = () => {
     },[])
 
     const proposeSafeTransaction = useCallback(async (transaction) => {
-      console.log('transaction proposinggg 2......')
+      //console.log('transaction proposinggg 2......')
       if (!safeSdk || !serviceClient) return
       let safeTransaction
         try {
-          console.log("Transaction.....",transaction)
+          //console.log("Transaction.....",transaction)
           safeTransaction = await safeSdk.createTransaction(transaction)
-          console.log('transaction created......', safeTransaction)
+          //console.log('transaction created......', safeTransaction)
         } catch (error) {
           console.error(error)
           return
         }
-      console.log('SAFE TX', safeTransaction.data)
+      //console.log('SAFE TX', safeTransaction.data)
       const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-      console.log('HASH', safeTxHash)
+      //console.log('HASH', safeTxHash)
       const safeSignature = await safeSdk.signTransactionHash(safeTxHash)
-      console.log('Safe Sign', safeSignature)
+      //console.log('Safe Sign', safeSignature)
       try {
        const res =  await serviceClient.proposeTransaction(
         safeAddress,
@@ -74,13 +74,13 @@ const DeployGnosisButton = () => {
         safeTxHash,
         safeSignature
       )
-      console.log('transaction proposed==========>', res)
+      //console.log('transaction proposed==========>', res)
       } catch (error) {
-        console.log('error', error)
+        //console.log('error', error)
       }
     }, [safeSdk, safeAddress])
 
-    console.log('transaction==========>',address, transaction)
+    //console.log('transaction==========>',address, transaction)
 
     const signTransaction = async () => {
       // if (selector !== '' && params.length > 0) {
@@ -132,12 +132,12 @@ const DeployGnosisButton = () => {
         value: ethers.utils.parseEther(value?value.toString():"0.001").toString(),
       }]
 
-      console.log('transaction proposinggg', partialTx)
+      //console.log('transaction proposinggg', partialTx)
       try{
         await proposeSafeTransaction(partialTx)
-        // console.log('transaction created', 13)
+        // //console.log('transaction created', 13)
       }catch(e){
-        console.log("🛑 Error Proposing Transaction",e)
+        //console.log("🛑 Error Proposing Transaction",e)
         notification.open({
           message: "🛑 Error Proposing Transaction",
           description: (
@@ -164,12 +164,12 @@ const DeployGnosisButton = () => {
     }, [safeSdk])
 
     const deploySafe = useCallback(async (owners, threshold) => {
-        console.log('deployingggg')
+        //console.log('deployingggg')
         if (!safeFactory) return
         setDeploying(true)
         const safeAccountConfig = { owners, threshold }
         let safe
-        console.log('deployingggg')
+        //console.log('deployingggg')
         try {
           safe = await safeFactory.deploySafe(safeAccountConfig)
         } catch (error) {
@@ -177,7 +177,7 @@ const DeployGnosisButton = () => {
           setDeploying(false)
           return
         }
-        console.log('deployedddd', safe)
+        //console.log('deployedddd', safe)
         const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
         setSafeAddress(newSafeAddress)
       }, [safeFactory])
@@ -188,28 +188,28 @@ const DeployGnosisButton = () => {
           try{
             if(safeSdk){
               const nonce = await safeSdk.getNonce()
-              console.log('current nonce=====>',nonce)
+              //console.log('current nonce=====>',nonce)
               const owners = await safeSdk.getOwners()
               const threshold = await safeSdk.getThreshold()
               setOwners(owners)
               setThreshold(threshold)
-              console.log("owners",owners,"threshold",threshold)
+              //console.log("owners",owners,"threshold",threshold)
             }
-            console.log("CHECKING TRANSACTIONS....",safeAddress)
+            //console.log("CHECKING TRANSACTIONS....",safeAddress)
             const transactions = await serviceClient.getPendingTransactions(safeAddress)
-            console.log("Pending transactions:", transactions)
+            //console.log("Pending transactions:", transactions)
             setTransactions(transactions.results)
           }catch(e){
-            console.log("ERROR POLLING FROM SAFE:",e)
+            //console.log("ERROR POLLING FROM SAFE:",e)
           }
         }
       },3333);
 
       const executeSafeTransaction = useCallback(async (transaction) => {
-        console.log('started transaction.......', transaction, safeSdk)
+        //console.log('started transaction.......', transaction, safeSdk)
   
         if (!safeSdk) return
-        console.log( transaction)
+        //console.log( transaction)
         const safeTransactionData = {
           to: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
           safeTxHash: '0xe1190d731bf83d0ac22dd1dd47246b6df66e954eb85f18a324377476783025b8',
@@ -223,7 +223,7 @@ const DeployGnosisButton = () => {
           refundReceiver: '0x0000000000000000000000000000000000000000',
           nonce: 18
         }
-        console.log('started transaction.......')
+        //console.log('started transaction.......')
         const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
         transaction.confirmations.forEach(confirmation => {
           const signature = new EthSignSignature(confirmation.owner, confirmation.signature)
@@ -232,13 +232,13 @@ const DeployGnosisButton = () => {
         let executeTxResponse
         try {
           executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-          console.log('done transaction.......')
+          //console.log('done transaction.......')
         } catch(error) {
           console.error(error)
           return
         }
         const receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
-        console.log('Transaction reciept......', receipt)
+        //console.log('Transaction reciept......', receipt)
       }, [safeSdk])
 
       const renderSigners = () => (
@@ -250,7 +250,7 @@ const DeployGnosisButton = () => {
         ))
       ))
 
-      console.log('safe balance', safeBalance?.toString())
+      //console.log('safe balance', safeBalance?.toString())
       const onTapSignin = async() => {
         alert('connect start ====>', address)
      }

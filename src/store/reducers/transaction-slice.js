@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const transactionSlice = createSlice({
   name: "transaction",
@@ -26,8 +26,12 @@ const transactionSlice = createSlice({
       state.pendingTransaction = action.payload.list
     },
     set_approved_request(state, action){
-      const newRequestList = state.approvedContriRequest.concat(action.payload.item)
-      state.approvedContriRequest = newRequestList
+      const approve_list = state.approvedContriRequest
+      const copyCheck = approve_list.filter(x=>x.contri_detail?.id === action.payload.item?.contri_detail?.id)
+      if(copyCheck.length === 0){
+      approve_list.push(action.payload.item)
+      state.approvedContriRequest = approve_list
+    }
     },
     set_reject_request(state, action){
       const newRequestList = state.approvedContriRequest.filter(x=>x.contri_detail?.id !== action.payload.id)
@@ -37,7 +41,6 @@ const transactionSlice = createSlice({
       state.initialETHPrice = action.payload.price
     },
     set_reject_modal(state, action){
-      console.log(action.payload.status)
       state.rejectModal = action.payload.status
     }
 }});

@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 
 const lookupAddress = async (provider, address) => {
   if (address && utils.isAddress(address)) {
-    // console.log(`looking up ${address}`)
+    // //console.log(`looking up ${address}`)
     try {
       // Accuracy of reverse resolution is not enforced.
       // We then manually ensure that the reported ens name resolves to address

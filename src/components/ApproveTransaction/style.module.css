@@ -13,7 +13,7 @@
 
 .greyedHeading {
   color: rgba(0, 0, 0, 0.5);
-  width: 90%;
+  width: 100%;
   margin-bottom: 5.50%;
 }
 
@@ -39,6 +39,7 @@
   font-weight: normal;
   font-size: 3.313rem;
   line-height: 3.5rem;
+  cursor: pointer;
 }
 
 .peopleDiv > p {

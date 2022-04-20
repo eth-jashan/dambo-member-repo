@@ -48,7 +48,7 @@ export const getPendingTransaction = () => {
     }
 }
 
-export const approveContriRequest =  (payout, isExternal = false) => {
+export const approveContriRequest =  (payout, isExternal = false, feedback) => {
     return  async (dispatch, getState) => {
         
         const jwt = getState().auth.jwt
@@ -62,7 +62,6 @@ export const approveContriRequest =  (payout, isExternal = false) => {
         }
         else{
         dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
-        console.log('payout', payout)
         payout.map((item, index)=>{
             if(!item?.token_type){
                 newPayout.push({
@@ -95,12 +94,12 @@ export const approveContriRequest =  (payout, isExternal = false) => {
 
         const data = {
           status:"APPROVED",
-          tokens:newPayout
-
+          tokens:newPayout,
+          id:currentTransaction.id,
+          feedback
         }
-        console.log("Contribution appproval api body", JSON.stringify(data))
         try {
-            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${currentTransaction.id}`,data,{
+            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,data,{
                 headers:{
                     Authorization:`Bearer ${jwt}`
                 }
@@ -112,13 +111,13 @@ export const approveContriRequest =  (payout, isExternal = false) => {
                     key:contri_filter,
                     number:contri_filter_key
                 }))
-                console.log('successfuly confirmed')
+                //console.log('successfully confirmed')
                 return 1
             }else{
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
     }
@@ -146,7 +145,7 @@ export const rejectContriRequest =  (id) => {
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
 }

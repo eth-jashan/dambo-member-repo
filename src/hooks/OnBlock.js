@@ -14,7 +14,7 @@ export default function useOnBlock(provider, fn, args) {
   useEffect(() => {
     if (fn && provider) {
       const listener = blockNumber => {
-        if (DEBUG) console.log(blockNumber, fn, args, provider.listeners());
+        if (DEBUG) //console.log(blockNumber, fn, args, provider.listeners());
 
         if (args && args.length > 0) {
           savedCallback.current(...args);

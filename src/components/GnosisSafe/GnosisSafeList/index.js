@@ -3,20 +3,19 @@ import React, { useCallback, useEffect } from 'react';
 import styles from './style.module.css'
 import { MdOutlineAdd } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux';
-import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/gnosis-action';
 import { useNavigate } from 'react-router';
 import chevron_right from '../../../assets/Icons/chevron_right.svg'
 import plus from '../../../assets/Icons/plus_black.svg'
 import textStyles from '../../../commonStyles/textType/styles.module.css'
+import { addSafeAddress, getAllSafeFromAddress } from '../../../store/actions/dao-action';
 
 const GnosisSafeList = (props) => {
 
     const setCurrentStep = () => {
         props.setStep(2)
     }
-    let safeList = useSelector(x=>x.gnosis.allSafeList)
+    let safeList = useSelector(x=>x.dao.allSafeList)
     safeList = safeList?.filter(x=>x.name === '')
-    // safeList = []
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const setGnosisWallet = (x) => {
@@ -33,7 +32,7 @@ const GnosisSafeList = (props) => {
         try {
             dispatch(getAllSafeFromAddress(address))
         } catch (error) {
-            console.log('error on safe fetch.......', error)
+            //console.log('error on safe fetch.......', error)
         }
     },[address, dispatch])
 

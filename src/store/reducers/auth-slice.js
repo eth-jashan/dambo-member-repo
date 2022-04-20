@@ -14,7 +14,8 @@ const authSlice = createSlice({
     role:null,
     community_roles:[],
     contributorName:'',
-    isAdmin:true
+    isAdmin:true,
+    lastSelection:[]
   },
   reducers: {
     set_web3(state, action) {
@@ -62,6 +63,25 @@ const authSlice = createSlice({
       state.community_roles= [];
       state.contributorName ='';
       state.isAdmin=true
+    },
+    set_last_selection(state, action){
+      if(state.lastSelection){
+        const lastSelection = state.lastSelection
+        let isInclude = lastSelection.filter(x=>x.address===action.payload.address)
+        if(isInclude.length>0){
+          let newSelection = isInclude.filter(x=>x.address !== action.payload.address)
+          newSelection.push({address:action.payload.address, dao_uuid:action.payload.dao_uuid})
+          //console.log('new selection', newSelection)
+          state.lastSelection = newSelection
+        }else{
+          lastSelection.push({address:action.payload.address, dao_uuid:action.payload.dao_uuid})
+          //console.log('new selection', lastSelection)
+          state.lastSelection = lastSelection
+        }
+      }else{
+        //console.log('initial', action.payload.address, action.payload.dao_uuid)
+        state.lastSelection = [{address:action.payload.address, dao_uuid:action.payload.dao_uuid}]
+      }
     }
 }});
 

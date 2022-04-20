@@ -17,7 +17,7 @@ export default function NextButton({ increaseStep, text, isDisabled, isContribut
   };
   
   return (
-    <div onClick={!isDisabled ? increaseStep : () => {}} className={!isDisabled ? styles.btnCtn : styles.btnCtnGreyed}> 
+    <div style={{cursor:'pointer'}} onClick={!isDisabled ? increaseStep : () => {}} className={!isDisabled ? styles.btnCtn : styles.btnCtnGreyed}> 
       {/* { !loader? */}
         <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between', width:'100%'}}>
           <div className={styles.titleContainer}>

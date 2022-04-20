@@ -6,7 +6,6 @@ import { INFURA_ID, NETWORKS } from "../../constants";
 import { useUserSigner } from "../../hooks";
 import { useSelector, useDispatch } from 'react-redux'
 import { authWithSign, getJwt, setAddress, setAdminStatus, setLoggedIn, signout } from "../../store/actions/auth-action";
-
 import styles from './style.module.css'
 import metamaskIcon from '../../assets/Icons/metamask.svg'
 import { Divider, Alert, message } from "antd";
@@ -67,7 +66,7 @@ const ConnectWallet = ({ isAdmin }) =>{
     const signer = web3Provider.getSigner()
     const chainId = await signer.getChainId()
   
-    if(chainId === 4){
+    // if(chainId === 4){
       try {
       const res =  await dispatch(authWithSign(address, signer))
       if(res){
@@ -100,13 +99,17 @@ const ConnectWallet = ({ isAdmin }) =>{
         }
       }
       } catch (error) {
-        console.log('error on signing....', error)
+        //console.log('error on signing....', error)
       }
-    }else{
-      console.log('change chain id')
-      message.error('change chain to rinkeby.....')
-    }
-    setAuth(false)
+    // }else{
+      // //console.log('change chain id')
+        // await web3Provider.provider.request({
+        //   method: 'wallet_switchEthereumChain',
+        //   params: [{ chainId: '0x4'}],
+        // });
+      
+    // }
+    // setAuth(false)
     // navigate('/dashboard')
   },[dispatch, isAdmin, navigate, uuid])
 
@@ -180,7 +183,7 @@ const ConnectWallet = ({ isAdmin }) =>{
         //doesnot token and chain is 4
         setAuth(false)
         dispatch(setLoggedIn(false))
-        console.log('no jwt....')
+        //console.log('no jwt....')
         authWithWallet(newAddress)
       }
       else{
@@ -192,12 +195,12 @@ const ConnectWallet = ({ isAdmin }) =>{
       }
 
     provider.on("chainChanged", async(chainId) => {
-      dispatch(setLoggedIn(false))
-      navigate('/')
+      // dispatch(setLoggedIn(false))
+      // navigate('/')
     });
 
     provider.on("accountsChanged",async () => {
-      console.log(`account changed!.........`);
+      //console.log(`account changed!.........`);
       dispatch(setLoggedIn(false))
       navigate('/')
     });

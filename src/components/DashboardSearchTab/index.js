@@ -36,6 +36,7 @@ const DashboardSearchTab = ({route}) => {
             dispatch(set_contri_filter('APPROVED'), 2)
             setContriFilter(2)
         }else if(key === '4'){
+            dispatch(set_contri_filter('PAID'), 4)
         }
     };
 
@@ -95,9 +96,9 @@ const DashboardSearchTab = ({route}) => {
           </Menu.Item>
         </Menu>
       );
-    
+      const loadingState = useSelector(x=>x.toast.loading_state)
       const renderSearchBar = () => (
-          <div className={styles.searchContainer}>
+            <div className={styles.searchContainer}>
               <input placeholder='Search for requests' />
               <div style={{display:'flex', flexDirection:'row', height:'100%', alignItems:'center'}}>
                 <img onClick={()=>setSearch(false)} src={crossSvg} alt='cross' className={styles.crossIcon} />
@@ -107,14 +108,23 @@ const DashboardSearchTab = ({route}) => {
           </div>
         )
 
+        const renderLoader = () => (
+            <div style={{flexDirection:'row', display:'flex'}}>
+                <div style={{width:'8.75rem', height:'1.25rem', background:'gray',borderRadius:'1.25rem',marginRight:'8px'}}>
+
+                </div>
+                <div style={{height:'1.25rem', width:'1.25rem', borderRadius:'1.25rem', background:'gray'}} />
+            </div>
+        )
+
     return(
         
         <div className={styles.container}>
-            <Dropdown  overlay={route==='contributions'?contriMenu:payoutMenu}>
+            {!loadingState?<Dropdown  overlay={route==='contributions'?contriMenu:payoutMenu}>
             <div className={`${textStyles.m_16} ${styles.text}`}>
                 {route==='contributions'?`${contribution_request?.length} ${contri_filter[contri_filter_key]}`:`${payout_filter[payout_filter_key]}`}
             </div>
-            </Dropdown>
+            </Dropdown>:renderLoader()}
             <div style={{display:'flex', flexDirection:'row'}}>
                 {!search?
                 <div onClick={()=>setSearch(true)} className={styles.icon}>
@@ -125,7 +135,7 @@ const DashboardSearchTab = ({route}) => {
                 <div className={`${styles.icon} ${filterShow ? styles.filterOpen:""}`} onClick={() => setFilterShow(true)}>
                 <img src={filter} alt='cross' className={`${styles.searchIcon} ${filterShow ? styles.filterOpen:""}`} />
                 </div>
-                <FilterModal onClose={() => setFilterShow(false)} show={filterShow} />
+                <FilterModal isContribution={route==='contributions'} onClose={() => setFilterShow(false)} show={filterShow} />
                 </div>
             </div>
         </div>

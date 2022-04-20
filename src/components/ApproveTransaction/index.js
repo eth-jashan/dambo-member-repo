@@ -8,7 +8,7 @@ export default function ApproveTransaction({
   selectedIndex,
   setSelectedIndex,
 }) {
-  const owners = useSelector(x=>x.gnosis.newSafeSetup.owners)
+  const owners = useSelector(x=>x.dao.newSafeSetup.owners)
   return (
     <div className={styles.wrapper}>
       <div className={styles.heading}>

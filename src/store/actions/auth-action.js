@@ -4,30 +4,40 @@ import routes from "../../constant/routes";
 import { authActions } from "../reducers/auth-slice";
 import { contributorAction } from "../reducers/contributor-slice";
 
+export const getAuthToken = () => {
+  return async (dispatch, getState)=>{
+    const jwt = getState().auth.jwt
+    const res = await axios.get('https://staging.api.drepute.xyz/auth/fetch_api_token',{
+      headers: {
+        Authorization:`Bearer ${jwt}`
+      }
+    })
+    if(res.data.success){
+      return res.data.data.data.token
+    }
+  }
+}
+
 export const authWithSign = (address, signer) => {
   return async (dispatch, getState) => {
-    console.log('signin start')
     try {
       const responseNonce = await axios.get(`${api.drepute.dev.BASE_URL}${routes.auth.getNonce}?addr=${address}`)
       const signature = await signer.signMessage(`Signing in to drepute.xyz with nonce ${responseNonce.data.data.nonce}`)
-      console.log('address signed', signature)
       try {
         const data = {addr:address, sig:signature}
-        console.log('sign body', data)
         const responseSignature = await axios.post(`${api.drepute.dev.BASE_URL}${routes.auth.getSignature}`,data)
-        console.log('sign response', responseSignature.data)
         if(responseSignature.data.success){
           dispatch(authActions.set_signing({jwt:responseSignature.data.data.token}))
           localStorage.setItem(address, JSON.stringify({jwt:responseSignature.data.data.token, time:new Date()}))
           return 1
         }
       } catch (error) {
-        console.log('error on signing api', error)
+        //console.log('error on signing api', error)
         return 0
       }
       
     } catch (error) {
-      console.log('error on nonce api', error)
+      //console.log('error on nonce api', error)
       return 0
     }  
     }
@@ -42,13 +52,11 @@ export const getJwt = (address) => {
       let diffInMilliseconds = Math.abs(currentTime - createdTime);
       const hours = diffInMilliseconds/36e5
       if(hours<= 0.1){
-        console.log('availabe !!!!', jwtInfo.jwt)
         dispatch(authActions.set_signing({jwt:jwtInfo.jwt}))
         return 1
     }
     return 0
     }else{
-      console.log('not availabe !!!!')
       dispatch(authActions.set_signing({jwt:false}))
       return 0
     }
@@ -71,7 +79,7 @@ export const retrieveAddress = () => {
 
 export const setAddress = (address, signer) => {
   return (dispatch) => {
-      // console.log('setting new address.....', address)
+      // //console.log('setting new address.....', address)
       localStorage.setItem('current_signer',signer)
       dispatch(
         authActions.set_address({address})
@@ -81,7 +89,7 @@ export const setAddress = (address, signer) => {
 
 export const setLoggedIn = (status) => {
   return (dispatch) => {
-      console.log('changing status.....')
+      //console.log('changing status.....')
       dispatch(
         authActions.set_loggedIn({status})
       );
@@ -98,7 +106,7 @@ export const setContriInfo = (name, role) => {
 
 export const setAdminStatus = (status) => {
   return (dispatch) => {
-      // console.log('changing status.....', name, role)
+      // //console.log('changing status.....', name, role)
       dispatch(
         authActions.set_admin({status})
       );

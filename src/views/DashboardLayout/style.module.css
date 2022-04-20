@@ -5,7 +5,16 @@
     border-top: 0;
     border-right: 0;
     border-left: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
+.safe_info{
+    flex-direction: row;
+    display: flex;
+    
+}
+
 .headerText{
     font-family: "TelegrafBolder";
     font-style: normal;
@@ -40,6 +49,12 @@
     display: flex;
     flex-direction: column;
     overflow-y:scroll;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    /* position: relative; */
+}
+.accountsLayout::-webkit-scrollbar {
+    display: none;
 }
 .accountsLayout::-webkit-scrollbar {
     display: none;
@@ -106,6 +121,12 @@
     /* background: red; */
     /* justify-content: space-around; */
     /* background: red; */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    /* position: relative; */
+}
+.adminStats::-webkit-scrollbar {
+    display: none;
 }
 .copyLink{
     width: 100%;
@@ -135,4 +156,42 @@
 .addIcon{
     height: 1.5rem;
     width: 1.5rem;
+}
+
+.roleSwitchContainer{
+    width: 7.875rem;
+    padding: 0.375rem 0.5rem 0.375rem 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    display: flex;
+    background: #5D5C5D;
+    border-radius: 1rem;
+    align-items: center;
+}
+.roleSwitchContainer:hover{
+    background-color: white;
+}
+.accountContainer>div{
+    color:white;
+}
+
+.chevron{
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
+.accountIcon{
+    height: 2rem;
+    width: 2rem;
+    background-color:#5D5C5D;
+    margin-left: 0.5rem;
+    border-radius: 2rem;
+}
+.accountIcon:hover{
+    background-color: white;
+}
+
+.profileContainer{
+    flex-direction: row;
+    display: flex;
 }

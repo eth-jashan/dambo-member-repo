@@ -5,7 +5,10 @@ const contributorSlice = createSlice({
   initialState: {
     invite_code:null,
     discord_auth:false,
-    contributionRequests:[]
+    contributionRequests:[],
+    contribution_detail:null,
+    unclaimed:[],
+    claimed:[]
   },
   reducers: {
     set_invite_code(state, action){
@@ -14,6 +17,13 @@ const contributorSlice = createSlice({
     set_discord(state, action){
       state.discord_auth = action.payload.status;
     },
+    set_contribution_detail(state, action){
+      state.contribution_detail = action.payload.item;
+    },
+    set_badges(state, action){
+      state.unclaimed = action.payload.unclaimed
+      state.claimed = action.payload.claimed
+    }
 }});
 
 export const contributorAction = contributorSlice.actions;

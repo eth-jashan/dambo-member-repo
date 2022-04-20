@@ -1,8 +1,13 @@
 import axios from "axios"
+import { ethers } from "ethers"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
+import { web3 } from "../../constant/web3"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
+import POCPProxy from '../../smartContract/POCP_Contracts/POCP.json'
+import { POCP_APPROVED_TOKEN, POCP_CLAIMED_TOKEN } from "../../utils/subgraphQuery"
+import {createClient} from 'urql'
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
@@ -34,8 +39,9 @@ export const getRole = (uuid) => {
             if(res.data.data.role === 'NO_ROLE'){
                return false 
             }else{
-                return true
+                return res.data.data.role
             }
+            
         }else{
             return false
         }
@@ -82,13 +88,67 @@ export const createContributionrequest = (title, type, link, time, comments) => 
             })
             
             if(res.data.success){
-                console.log('suucessfully created !')
+                //console.log('suucessfully created !')
                 return 1
             }else{
                 return 0
             }
         } catch (error) {
-            console.log('error....', error)
+            //console.log('error....', error)
         }
     }
 }
+
+export const setContributionDetail = (item) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_contribution_detail({item}))
+    }
+}
+
+export const getAllBadges = (signer, address,communityId) => {
+    return async (dispatch, getState) => {
+        // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+        const cid = getState().dao.contribution_id
+        const query_claimed = POCP_CLAIMED_TOKEN
+        const query_approved = POCP_APPROVED_TOKEN
+
+        const client = createClient({
+            url:api.subgraph.url
+        })
+
+        try {
+            let unclaimed = []
+            const resApproved = await client.query(query_approved).toPromise()
+            const resClaimed = await client.query(query_claimed).toPromise()
+            const claimed = resClaimed.data?.pocpTokens.filter(x=>ethers.utils.hexlify(x.claimer) === ethers.utils.hexlify(address)&&x?.community?.id === communityId)
+            const allApproved = resApproved?.data?.approvedTokens.filter(x=>x?.community?.id === communityId)
+            const claimed_identifier  = []
+            
+            //filtering out current unclaimed token
+                allApproved.map((x,i)=>{
+                    let isClaimed = claimed.filter(y=>y.id === x?.id)
+                    if(isClaimed.length===0){
+                        cid.map((y, index)=>{
+                            if(y.id.toString() === x.identifier){
+                                unclaimed.push(x)
+                            }
+                        })
+                    }
+                    claimed.filter((z)=>{
+                        if(x.id === z.id){
+                            claimed_identifier.push({...z, identifier:x?.identifier})
+                        }
+                    })
+                }) 
+
+                
+
+            
+            // //console.log('unclaimed',cid,unclaimed)
+            dispatch(contributorAction.set_badges({claimed:claimed_identifier, unclaimed}))
+        } catch (error) {
+            //console.log('error: ', error.toString())
+        }
+    }
+    // const 
+} 

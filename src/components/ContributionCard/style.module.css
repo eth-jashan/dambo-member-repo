@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    /* background: red; */
+    cursor: pointer;
 }
 .container:hover{
     background-color: #333333;
@@ -17,7 +17,7 @@
     border:0
 }
 .title{
-    color: white;
+    color: white;      
     text-align: start;
     max-lines: 1;
 }
@@ -29,18 +29,28 @@
 .description{
     color: #C2C2C2;
     text-align: start;
-    /* margin-right: 1.25rem; */
 }
 .description:hover{
     color: white;
 }
 
 .descriptionContainer{
-    width: 32%;
+    width: 35%;
+    display: flex;
+    flex-direction: row;
 }
 
 .menuIcon{
     height: 1.5rem;
     width: 1.5rem;
-    /* margin-left: 2.5rem; */
+}
+
+.statusContainer{
+    width: 10%;
+}
+
+.statusContributorContainer{
+    width: 20%;
+    flex-direction: row;
+    display: flex;
 }

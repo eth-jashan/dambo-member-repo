@@ -10,20 +10,32 @@ body {
 @font-face {
   font-family: "TelegrafMedium";
   src: local("TelegrafMedium"),
-  url("./assets/fonts/PPTelegraf-Medium.otf") format("opentype");
+    url("./assets/fonts/PPTelegraf-Medium.otf") format("opentype");
   font-weight: normal;
 }
 @font-face {
   font-family: "TelegrafBold";
   src: local("TelegrafBold"),
-  url("./assets/fonts/Telegraf-Bold.otf") format("opentype");
+    url("./assets/fonts/Telegraf-Bold.otf") format("opentype");
   font-weight: bold;
 }
 @font-face {
   font-family: "TelegrafBolder";
   src: local("TelegrafBolder"),
-  url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
+    url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
   font-weight: bolder;
+}
+@font-face {
+  font-family: "ArrayBold";
+  src: local("ArrayBold"),
+    url("./assets/fonts/Array-Bold.otf") format("opentype");
+  font-weight: bold;
+}
+@font-face {
+  font-family: "SFMono";
+  src: local("SFMono"),
+    url("./assets/fonts/SF-Mono-Medium.otf") format("opentype");
+  font-weight: bold;
 }
 
 code {
@@ -33,4 +45,23 @@ code {
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) #7a7a7a;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #7a7a7a;
+  margin: 1rem 0;
+  border-radius: 1rem;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  /* border: 3px solid #7a7a7a; */
 }

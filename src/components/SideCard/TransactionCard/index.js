@@ -1,17 +1,15 @@
-import { style } from "dom-helpers";
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Typography } from "antd";
+import { Input, message, Typography } from "antd";
 import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all";
-import cross from "../../assets/Icons/cross_white.svg";
-import delete_icon from '../../assets/Icons/delete_icon.svg'
+import cross from '../../../assets/Icons/cross_white.svg'
+import delete_icon from '../../../assets/Icons/delete_icon.svg'
 import styles from "./style.module.css";
-import textStyle  from "../../commonStyles/textType/styles.module.css";
-import AmountInput from '../InputComponent/AmountInput';
-import { approveContriRequest, rejectContriRequest, setTransaction } from '../../store/actions/transaction-action';
-import { getAllDaowithAddress, getContriRequest } from '../../store/actions/dao-action';
-import { convertTokentoUsd } from "../../utils/conversion";
-import { TokenInput } from "../InputComponent/TokenInput";
+import textStyle  from "../../../commonStyles/textType/styles.module.css";
+import { approveContriRequest, rejectContriRequest, setTransaction } from '../../../store/actions/transaction-action';
+import { getAllDaowithAddress, getContriRequest } from '../../../store/actions/dao-action';
+import { convertTokentoUsd } from "../../../utils/conversion";
+import { TokenInput } from "../../InputComponent/TokenInput";
 
 
 const TransactionCard = ({signer}) => {
@@ -24,11 +22,14 @@ const TransactionCard = ({signer}) => {
   const getEmoji = () => {
     if (currentTransaction?.stream === "DESIGN") {
       return "🎨";
+    }else{
+      return "🎨";
     }
   };
 
   const ETHprice = useSelector(x=>x.transaction.initialETHPrice)
   const [feedBackShow, setFeedBackSow] = useState(false)
+  const [feedback, setFeedback] = useState('')
   const [payDetail, setPayDetail] = useState([{
         amount:'',
         token_type:null,
@@ -69,8 +70,13 @@ const TransactionCard = ({signer}) => {
       dispatch(setTransaction(null))
     }
     const onApproveTransaction = async() => {
-      dispatch(approveContriRequest(payDetail))
+      if(payDetail[0].amount!==0 && payDetail[0].amount!=='' && payDetail[0].amount!=='0'){
+      dispatch(approveContriRequest(payDetail, false, feedback))
       dispatch(setTransaction(null))
+      }else{
+      message.error('Please Add Amount')
+      }
+      //console.log('paydetail', payDetail)
     }
 
     
@@ -87,6 +93,8 @@ const TransactionCard = ({signer}) => {
             <Input.TextArea
                 placeholder='Write your feedback here'
                 className={styles.textArea}
+                value={feedback}
+                onChange={(e)=>setFeedback(e.target.value)}
             />
           }
         </div>
@@ -102,7 +110,7 @@ const TransactionCard = ({signer}) => {
             {`${currentTransaction?.title}`}
             </span>
             <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${currentTransaction?.requested_by?.metadata?.name} . (${address.slice(0,5)}...${address.slice(-3)})`}</div>
-            <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${'Design  • '} ${currentTransaction?.time_spent} hrs`}</div>
+            <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${currentTransaction?.stream.toLowerCase()} ${currentTransaction?.time_spent} hrs`}</div>
 
             <Typography.Paragraph
                 className={`${styles.description} ${textStyle.m_16}`}
@@ -114,8 +122,7 @@ const TransactionCard = ({signer}) => {
                     }
                 }
             >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                {currentTransaction?.description}
             </Typography.Paragraph>
 
           <div className={styles.amountScroll}>
@@ -129,7 +136,7 @@ const TransactionCard = ({signer}) => {
             ))}
           </div>
 
-          <div onClick={token_available.length>1?() => addToken():()=>{}} className={styles.addToken}>
+          <div onClick={token_available?.length>1?() => addToken():()=>{}} className={styles.addToken}>
             <div className={`${textStyle.m_16}`}>Add another token</div>
             <IoAddOutline color="#808080" className={styles.add} />
           </div>

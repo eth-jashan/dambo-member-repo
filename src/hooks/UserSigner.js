@@ -5,14 +5,14 @@ const useUserSigner = (injectedProvider, localProvider) => {
 
   useMemo(() => {
     if (injectedProvider) {
-      console.log("🦊 Using injected provider");
-      console.log(injectedProvider.getSigner());
+      //console.log("🦊 Using injected provider");
+      //console.log(injectedProvider.getSigner());
       const injectedSigner = injectedProvider._isProvider ? injectedProvider.getSigner() : injectedProvider;
       setSigner(injectedSigner);
-      console.log(injectedSigner);
+      //console.log(injectedSigner);
     }
     else {
-      console.log('no provider found')
+      //console.log('no provider found')
     }
   }, [injectedProvider]);
 
