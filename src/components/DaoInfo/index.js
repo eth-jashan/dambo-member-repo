@@ -265,7 +265,7 @@ const DaoInfo = ({
                             text={
                                 hasMultiSignWallet
                                     ? "Register Dao"
-                                    : "Add Owners"
+                                    : "Create Multisig"
                             }
                             increaseStep={onSubmit}
                             isDisabled={name === "" || deploying || loading}
