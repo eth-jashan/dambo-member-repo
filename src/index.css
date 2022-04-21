@@ -1,67 +1,67 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 @font-face {
-  font-family: "TelegrafMedium";
-  src: local("TelegrafMedium"),
-    url("./assets/fonts/PPTelegraf-Medium.otf") format("opentype");
-  font-weight: normal;
+    font-family: "TelegrafMedium";
+    src: local("TelegrafMedium"),
+        url("./assets/fonts/PPTelegraf-Medium.otf") format("opentype");
+    font-weight: normal;
 }
 @font-face {
-  font-family: "TelegrafBold";
-  src: local("TelegrafBold"),
-    url("./assets/fonts/Telegraf-Bold.otf") format("opentype");
-  font-weight: bold;
+    font-family: "TelegrafBold";
+    src: local("TelegrafBold"),
+        url("./assets/fonts/Telegraf-Bold.otf") format("opentype");
+    font-weight: bold;
 }
 @font-face {
-  font-family: "TelegrafBolder";
-  src: local("TelegrafBolder"),
-    url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
-  font-weight: bolder;
+    font-family: "TelegrafBolder";
+    src: local("TelegrafBolder"),
+        url("./assets/fonts/Telegraf-UltraBold.otf") format("opentype");
+    font-weight: bolder;
 }
 @font-face {
-  font-family: "ArrayBold";
-  src: local("ArrayBold"),
-    url("./assets/fonts/Array-Bold.otf") format("opentype");
-  font-weight: bold;
+    font-family: "ArrayBold";
+    src: local("ArrayBold"),
+        url("./assets/fonts/Array-Bold.otf") format("opentype");
+    font-weight: bold;
 }
 @font-face {
-  font-family: "SFMono";
-  src: local("SFMono"),
-    url("./assets/fonts/SF-Mono-Medium.otf") format("opentype");
-  font-weight: bold;
+    font-family: "SFMono";
+    src: local("SFMono"),
+        url("./assets/fonts/SF-Mono-Medium.otf") format("opentype");
+    font-weight: bold;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
 }
 
 * {
-  box-sizing: border-box;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.4) #7a7a7a;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.4) #7a7a7a;
 }
 
 /* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #7a7a7a;
-  margin: 1rem 0;
-  border-radius: 1rem;
+    background: #7a7a7a;
+    margin: 1rem 0;
+    border-radius: 1rem;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 20px;
-  /* border: 3px solid #7a7a7a; */
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    /* border: 3px solid #7a7a7a; */
 }

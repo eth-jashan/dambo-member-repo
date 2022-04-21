@@ -1,4 +1,4 @@
-.layout{
+.layout {
     width: 100%;
     height: 100%;
     display: flex;
@@ -6,53 +6,53 @@
     justify-content: space-between;
     /* background: red; */
 }
-.heading{
-    font-family:'TelegrafBolder';
+.heading {
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 3.313rem;
     line-height: 3.5rem;
 }
-.form{
+.form {
     margin-top: 9.12%;
 }
-.inputText{
-    border: 1px solid #EEEEF0;
+.inputText {
+    border: 1px solid #eeeef0;
     box-sizing: border-box;
     border-radius: 0.5rem;
     width: 60%;
     color: black;
     padding: 1rem;
-    background-color: #E1DCFF;
-    font-family: 'TelegrafMedium';
+    background-color: #e1dcff;
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.inputText:focus{
+.inputText:focus {
     /* border: 1px solid #6852FF; */
     outline: none;
     color: black;
 }
 
-.input{
-    border: 1px solid #EEEEF0;
+.input {
+    border: 1px solid #eeeef0;
     box-sizing: border-box;
     border-radius: 8px;
     width: 60%;
     color: black;
     padding: 1rem;
-    color: #6852FF;
-    font-family: 'TelegrafMedium';
+    color: #6852ff;
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
 
-.input::placeholder{
-    font-family: 'TelegrafMedium';
+.input::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -60,28 +60,28 @@
     color: #000000;
     opacity: 0.4;
 }
-.input:focus{
-    border: 1px solid #6852FF;
+.input:focus {
+    border: 1px solid #6852ff;
     outline: none;
     color: black;
 }
 
-.nextBtn{
+.nextBtn {
     width: 100%;
     justify-content: flex-end;
     margin-top: 4rem;
 }
 
-.helperText{
-    font-family: 'TelegrafMedium';
+.helperText {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
     margin-bottom: 0.5rem;
 }
-.helperTextSec{
-    font-family: 'TelegrafMedium';
+.helperTextSec {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -89,8 +89,8 @@
     margin-top: 3.305%;
     margin-bottom: 0.5rem;
 }
-.photoContainer{
-    border:1px solid #EBEBEB;
+.photoContainer {
+    border: 1px solid #ebebeb;
     width: 15rem;
     height: 15rem;
     border-radius: 5%;
@@ -99,40 +99,40 @@
     justify-content: center;
     align-items: center;
 }
-.uploadIcon{
+.uploadIcon {
     height: 3.25rem;
     border-radius: 3.25rem;
     width: 3.25rem;
-    background: #EBEBEB;
+    background: #ebebeb;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 0.625rem;
 }
-.uploadText{
-    font-family: 'TelegrafMedium';
+.uploadText {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
-    font-size: .9rem;
+    font-size: 0.9rem;
     line-height: 1.1rem;
     /* margin-bottom: 0.5rem; */
     color: #c9c5c5 !important;
 }
-.divTextUpload{
+.divTextUpload {
     line-height: 1.1rem;
 }
-.uploadIconCont{
+.uploadIconCont {
     padding-left: 0.625rem;
     padding-right: 0.625rem;
     padding-bottom: 0.625rem;
     display: flex;
     justify-content: center;
 }
-.divTextUpload *{
+.divTextUpload * {
     color: #c9c5c5;
 }
 
-.uploadContainer{
+.uploadContainer {
     width: 60%;
     flex-direction: row;
     display: flex;
@@ -142,65 +142,65 @@
     position: absolute;
 }
 
-.picContainer{
+.picContainer {
     width: 15rem;
     height: 15rem;
-    border: 1px solid #EEEEF0;
+    border: 1px solid #eeeef0;
     border-radius: 0.75rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.retry{
+.retry {
     width: 2rem;
     height: 2rem;
     border-radius: 2rem;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12), 0px 3px 6px rgba(0, 0, 0, 0.08);
     display: flex;
     align-self: center;
     justify-content: center;
     align-items: center;
 }
-.retry>img{
+.retry > img {
     width: 1rem;
     height: 1.25rem;
 }
 
-.upload{
+.upload {
     width: 6.5rem;
     padding: 4px 12px;
     border-radius: 1rem;
-    background-color: #6852FF;
+    background-color: #6852ff;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12), 0px 3px 6px rgba(0, 0, 0, 0.08);
 }
-.upload>img{
+.upload > img {
     height: 1rem;
     width: 1rem;
 }
 
-.upload_file{
+.upload_file {
     height: 1.375rem;
     width: 1.667rem;
 }
 
-.icon_uplaod{
+.icon_uplaod {
     height: 3.5rem;
     width: 3.5rem;
     border-radius: 3.5rem;
-    background: #EBEBEB;
+    background: #ebebeb;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
 }
 
-.label{
+.label {
     width: 100%;
     display: flex;
     align-items: center;

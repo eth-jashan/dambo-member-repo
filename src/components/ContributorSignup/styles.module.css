@@ -1,4 +1,4 @@
-.layout{
+.layout {
     width: 100%;
     height: 100%;
     display: flex;
@@ -6,40 +6,40 @@
     justify-content: space-between;
     /* background: red; */
 }
-.heading{
-    font-family: 'TelegrafBolder';
+.heading {
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 3.375rem;
     line-height: 3.5rem;
     /* margin-bottom: 96px; */
 }
-.inputText{
-    border: 1px solid #EEEEF0;
+.inputText {
+    border: 1px solid #eeeef0;
     width: 60%;
     color: black;
     padding: 1rem;
-    font-family: 'TelegrafMedium';
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     border-radius: 0.5rem;
     font-size: 1rem;
     line-height: 1.5rem;
     color: black;
-    background: #E1DCFF;
+    background: #e1dcff;
 }
-.inputText:focus{
+.inputText:focus {
     outline: none;
     color: black;
 }
 
-.input{
-    border: 1px solid #EEEEF0;
+.input {
+    border: 1px solid #eeeef0;
     width: 60%;
     color: black;
     padding: 1rem;
-    color: #6852FF;
-    font-family: 'TelegrafMedium';
+    color: #6852ff;
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     border-radius: 0.5rem;
@@ -47,8 +47,8 @@
     line-height: 1.5rem;
 }
 
-.input::placeholder{
-    font-family: 'TelegrafMedium';
+.input::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -56,36 +56,35 @@
     color: #000000;
     opacity: 0.4;
 }
-.input:focus{
-    border: 1px solid #6852FF;
+.input:focus {
+    border: 1px solid #6852ff;
     outline: none;
     color: black;
 }
 
-.nextBtn{
+.nextBtn {
     width: 100%;
     justify-content: flex-end;
 }
 
-
-.helperText{
-    font-family: 'TelegrafMedium';
+.helperText {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.helperTextSec{
-    font-family: 'TelegrafMedium';
+.helperTextSec {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
     /* margin-top: 1.5rem; */
 }
-.greyHeading{
+.greyHeading {
     color: rgba(0, 0, 0, 0.5);
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 3.375rem;

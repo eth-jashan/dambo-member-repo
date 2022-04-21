@@ -1,12 +1,20 @@
-
-import { ethers } from "ethers";
-import { web3 } from "../constant/web3";
-import Forwarder from '../smartContract/POCP_Contracts/minimalForwarder.json'
-import POCPProxy from '../smartContract/POCP_Contracts/POCP.json'
+import { ethers } from "ethers"
+import { web3 } from "../constant/web3"
+import Forwarder from "../smartContract/POCP_Contracts/minimalForwarder.json"
+import POCPProxy from "../smartContract/POCP_Contracts/POCP.json"
 
 //signing function for registering dao
-export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
-    let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
+export const registerDaoToPocp = async (
+    signer,
+    name,
+    ownerAddress,
+    address
+) => {
+    let contract = new ethers.Contract(
+        web3.POCP_Forwarder,
+        Forwarder.abi,
+        signer
+    )
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
     const nonceBigNumber = await contract.getNonce(address.toString())
     const chainId = (await contract.provider.getNetwork()).chainId
@@ -19,25 +27,25 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
         { name: "gas", type: "uint256" },
         { name: "nonce", type: "uint256" },
         { name: "data", type: "bytes" },
-    ];
+    ]
 
     const EIP712Domain = [
         { name: "name", type: "string" },
         { name: "version", type: "string" },
         { name: "chainId", type: "uint256" },
         { name: "verifyingContract", type: "address" },
-    ];
+    ]
 
     const typeSigningObject = {
         types: {
-          ForwardRequest,
-        //   EIP712Domain
+            ForwardRequest,
+            //   EIP712Domain
         },
         domain: {
-          name: "MinimalForwarder",
-          version: "0.0.1",
-          chainId,
-          verifyingContract:contract.address,
+            name: "MinimalForwarder",
+            version: "0.0.1",
+            chainId,
+            verifyingContract: contract.address,
         },
         primaryType: "ForwardRequest",
     }
@@ -46,27 +54,41 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
         from: ownerAddress[0],
         to: pocpProxy.address,
         nonce,
-        value:0,
-        gas:1e6,
+        value: 0,
+        gas: 1e6,
         data: pocpProxy.interface.encodeFunctionData("register", [
             name,
-            ownerAddress
+            ownerAddress,
         ]),
     }
     let signature
     try {
-        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
-        return {data, signature} 
+        signature = await signer._signTypedData(
+            typeSigningObject.domain,
+            typeSigningObject.types,
+            data
+        )
+        return { data, signature }
     } catch (error) {
         //console.log("Error on signing register dao data", error)
     }
-    
 }
 
 //signing function for approving badge
-export const approvePOCPBadge = async(signer, communityId, address, claimers, cids, url) => {
+export const approvePOCPBadge = async (
+    signer,
+    communityId,
+    address,
+    claimers,
+    cids,
+    url
+) => {
     // console.log('approver', communityId, address, claimers, cids, url)
-    let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
+    let contract = new ethers.Contract(
+        web3.POCP_Forwarder,
+        Forwarder.abi,
+        signer
+    )
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
 
     const nonceBigNumber = await contract.getNonce(address)
@@ -80,25 +102,25 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
         { name: "gas", type: "uint256" },
         { name: "nonce", type: "uint256" },
         { name: "data", type: "bytes" },
-    ];
+    ]
 
     const EIP712Domain = [
         { name: "name", type: "string" },
         { name: "version", type: "string" },
         { name: "chainId", type: "uint256" },
         { name: "verifyingContract", type: "address" },
-    ];
+    ]
 
     const typeSigningObject = {
         types: {
-          ForwardRequest,
-        //   EIP712Domain
+            ForwardRequest,
+            //   EIP712Domain
         },
         domain: {
-          name: "MinimalForwarder",
-          version: "0.0.1",
-          chainId,
-          verifyingContract:contract.address,
+            name: "MinimalForwarder",
+            version: "0.0.1",
+            chainId,
+            verifyingContract: contract.address,
         },
         primaryType: "ForwardRequest",
     }
@@ -106,33 +128,40 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
         from: address,
         to: pocpProxy.address,
         nonce,
-        value:0,
-        gas:1e6,
+        value: 0,
+        gas: 1e6,
         data: pocpProxy.interface.encodeFunctionData("approveBadge", [
             communityId,
             claimers,
             url,
-            cids
-        ])
+            cids,
+        ]),
     }
     let signature
     try {
-        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
-        return {data, signature} 
+        signature = await signer._signTypedData(
+            typeSigningObject.domain,
+            typeSigningObject.types,
+            data
+        )
+        return { data, signature }
     } catch (error) {
         console.log("Error on signing approve contri  data", error)
     }
-    
 }
 
 //signing function for claiming badges
-export const claimPOCPBadges = async(signer, address, id) => {
-    let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
+export const claimPOCPBadges = async (signer, address, id) => {
+    let contract = new ethers.Contract(
+        web3.POCP_Forwarder,
+        Forwarder.abi,
+        signer
+    )
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
     const nonceBigNumber = await contract.getNonce(address.toString())
-    
+
     const chainId = (await contract.provider.getNetwork()).chainId
-    
+
     const nonce = parseInt(nonceBigNumber)
 
     const ForwardRequest = [
@@ -142,17 +171,17 @@ export const claimPOCPBadges = async(signer, address, id) => {
         { name: "gas", type: "uint256" },
         { name: "nonce", type: "uint256" },
         { name: "data", type: "bytes" },
-    ];
+    ]
 
     const typeSigningObject = {
         types: {
-          ForwardRequest,
+            ForwardRequest,
         },
         domain: {
-          name: "MinimalForwarder",
-          version: "0.0.1",
-          chainId,
-          verifyingContract:contract.address,
+            name: "MinimalForwarder",
+            version: "0.0.1",
+            chainId,
+            verifyingContract: contract.address,
         },
         primaryType: "ForwardRequest",
     }
@@ -161,19 +190,19 @@ export const claimPOCPBadges = async(signer, address, id) => {
         from: address,
         to: pocpProxy.address,
         nonce,
-        value:0,
-        gas:1e6,
-        data: pocpProxy.interface.encodeFunctionData("claim", [
-            id,
-        ])
+        value: 0,
+        gas: 1e6,
+        data: pocpProxy.interface.encodeFunctionData("claim", [id]),
     }
     let signature
     try {
-        signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);  
-        return {data, signature} 
+        signature = await signer._signTypedData(
+            typeSigningObject.domain,
+            typeSigningObject.types,
+            data
+        )
+        return { data, signature }
     } catch (error) {
         //console.log("Error on signing register dao data", error)
     }
-    
 }
-

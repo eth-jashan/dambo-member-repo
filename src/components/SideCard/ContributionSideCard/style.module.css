@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     height: 100%;
     padding: 2rem 1.5rem 100px 1.5rem;
@@ -7,7 +7,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     margin-bottom: 200px;
-    -ms-overflow-style: none; 
+    -ms-overflow-style: none;
     scrollbar-width: none;
     /* position: relative; */
 }
@@ -15,15 +15,13 @@
     display: none;
 }
 
-.cross{
+.cross {
     height: 1rem;
     width: 1rem;
     margin-bottom: 3.13rem;
 }
 
-
-
-.title{
+.title {
     color: white;
     text-align: start;
     width: 70%;
@@ -31,40 +29,38 @@
     /* max-lines: 2; */
 }
 
-.ownerInfo{
+.ownerInfo {
     color: white;
     text-align: start;
     margin-top: 1.5rem;
 }
 
-.timeInfo{
+.timeInfo {
     text-align: start;
     margin-bottom: 1.5rem;
     color: #737373;
 }
 
-.description{
+.description {
     color: #737373;
     text-align: start;
     margin-bottom: 1.5rem;
 }
 
-.add{
+.add {
     color: #808080;
     height: 0.875rem;
     width: 0.875rem;
 }
 
-
-
-.tokenDiv{
-    width: '100%';
+.tokenDiv {
+    width: "100%";
     padding: 0.75rem 1rem;
-    background-color: #ECFFB830;
+    background-color: #ecffb830;
     border-radius: 0.5rem;
 }
 
-.divider{
+.divider {
     width: 100%;
     height: 1px;
     /* background-color:red; */
@@ -73,46 +69,44 @@
     margin-bottom: 1.5rem;
 }
 
-.tokenHeader{
+.tokenHeader {
     width: 100%;
     flex-direction: row;
     display: flex;
 }
 
-
-.connectorContainer{
+.connectorContainer {
     /* width: 10%; */
     /* background: red; */
-    margin-right: 0.75rem ;
+    margin-right: 0.75rem;
 }
 
-.headerTimeline_created{
+.headerTimeline_created {
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
 
-.singleTimeline_signer{
+.singleTimeline_signer {
     /* display: flex;
     flex-direction: row; */
     width: 100%;
     /* background-color: red; */
 }
 
-.singleHeaderContainer_signer{
+.singleHeaderContainer_signer {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.headerTimeline_signer{
+.headerTimeline_signer {
     display: flex;
     /* justify-content: space-between; */
     width: 80%;
 }
 
-
-.childrenTimeline_signer{
+.childrenTimeline_signer {
     width: 100%;
     border-left: 1px solid #666666;
     margin-left: 3px;
@@ -121,35 +115,34 @@
     padding-bottom: 1rem;
 }
 
-.payNow{
+.payNow {
     padding: 0.5rem 1.25rem 0.5rem 1.25rem;
     background: white;
     border-radius: 1.5rem;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     display: flex;
     align-self: center;
     cursor: pointer;
-    
 }
-.payNow:hover{
-    background-color: #E1DCFF;
+.payNow:hover {
+    background-color: #e1dcff;
 }
-.payNow>div{
-    color: #6852FF;
+.payNow > div {
+    color: #6852ff;
 }
-.delete{
+.delete {
     height: 1rem;
     width: 1rem;
     /* margin-bottom: 3.13rem; */
 }
 
-.singleAddress{
+.singleAddress {
     display: flex;
     flex-direction: row;
 }
 
-.deletContainer{
+.deletContainer {
     height: 2.5rem;
     border-radius: 2.25rem;
     width: 2.5rem;
@@ -159,11 +152,10 @@
     justify-content: center;
     /* margin-top: 0.625rem; */
     /* position: absolute;*/
-    bottom: 1.25rem; 
-    
+    bottom: 1.25rem;
 }
 
-.claim_container{
+.claim_container {
     position: absolute;
     bottom: 0rem;
     padding: 1rem 1.5rem 1.5rem 1.5rem;

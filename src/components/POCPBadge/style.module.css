@@ -1,4 +1,4 @@
-.container{
+.container {
     /* border-radius: 0.5rem; */
     /* margin-top: 1.875rem; */
     min-height: 17.688rem;
@@ -10,49 +10,49 @@
     align-self: center;
 }
 
-.streamTitle{
-    color: #95F2FE;
+.streamTitle {
+    color: #95f2fe;
     font-size: 2rem;
     line-height: 1.75rem;
     text-align: start;
-    font-family: 'ArrayBold';
+    font-family: "ArrayBold";
 }
 
-.daoInfoContainer{
+.daoInfoContainer {
     display: flex;
     flex-direction: row;
     width: 100%;
 }
 
-.daoTitle{
-    color: #FF0087;
+.daoTitle {
+    color: #ff0087;
     font-size: 1.75rem;
     line-height: 1.75rem;
-    font-family: 'ArrayBold';
+    font-family: "ArrayBold";
     text-align: start;
 }
 
-.daoProfile{
+.daoProfile {
     height: 3rem;
     width: 3rem;
     border-radius: 0.5rem;
 }
 
-.upperContainer{
+.upperContainer {
     width: 100%;
     margin-bottom: 0.875rem;
     padding: 1.25rem;
 }
 
-.bottomContainer{
+.bottomContainer {
     width: 100%;
-    background-color: #FFFFFF30;
+    background-color: #ffffff30;
     padding: 1.25rem;
     border-bottom-left-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
 }
 
-.title{
+.title {
     font-family: monospace;
     color: white;
     font-size: 1.125rem;
@@ -60,15 +60,15 @@
     font-weight: 400;
     line-height: 24px;
 }
-.to{
+.to {
     font-family: monospace;
-    color: #FFFFFF30;
+    color: #ffffff30;
     font-size: 1.125rem;
     font-style: normal;
     font-weight: 400;
     line-height: 24px;
 }
-.triangle_bottomright{
+.triangle_bottomright {
     width: 0;
     height: 0;
     border-bottom: 60px solid black;
@@ -78,9 +78,8 @@
     position: absolute;
 }
 
-.rectangle{
+.rectangle {
     height: 10px;
     width: 40%;
-    background-color:#FFFFFF30;
+    background-color: #ffffff30;
 }
-

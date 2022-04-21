@@ -1,63 +1,63 @@
-.analyticContainer{
-    width:100%; 
-    padding:20px; 
-    justify-content: space-between; 
-    display:flex
+.analyticContainer {
+    width: 100%;
+    padding: 20px;
+    justify-content: space-between;
+    display: flex;
 }
 
-.container{ 
-    display:flex; 
-    justify-content:space-between; 
-    flex-direction: column; 
-    height:90vh
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 90vh;
 }
 
-.heading{
-    font-family: monospace; 
-    color:white; 
-    align-self:center; 
-    font-size:14px
+.heading {
+    font-family: monospace;
+    color: white;
+    align-self: center;
+    font-size: 14px;
 }
 
-.helperText{
-    font-family:monospace; 
-    margin-left:12px; 
-    color:#FFFFFF; 
-    align-self:center; 
-    font-size:12px; 
-    opacity:0.64; 
-    text-decoration: underline
+.helperText {
+    font-family: monospace;
+    margin-left: 12px;
+    color: #ffffff;
+    align-self: center;
+    font-size: 12px;
+    opacity: 0.64;
+    text-decoration: underline;
 }
 
-.CardCompContainer{
-    display:flex; 
-    flex-direction:column
+.CardCompContainer {
+    display: flex;
+    flex-direction: column;
 }
 
-.cardTitle{ 
-    color: white; 
-    font-family:monospace;
-    font-size:28px; 
-    text-align:center
+.cardTitle {
+    color: white;
+    font-family: monospace;
+    font-size: 28px;
+    text-align: center;
 }
 
-.cardDesc{ 
-    color: #9FFFBA; 
-    font-family:monospace; 
-    font-size:12px 
+.cardDesc {
+    color: #9fffba;
+    font-family: monospace;
+    font-size: 12px;
 }
 
-.socialText{ 
-    color: white; 
-    font-family:monospace;
-    font-size:12px; 
-    margin-left:12px; 
-    align-self: center 
+.socialText {
+    color: white;
+    font-family: monospace;
+    font-size: 12px;
+    margin-left: 12px;
+    align-self: center;
 }
 
-.socialContainer{
-    padding:10px; 
-    display:flex; 
-    justify-content:flex-start; 
-    border:1px solid #21212B
+.socialContainer {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    border: 1px solid #21212b;
 }

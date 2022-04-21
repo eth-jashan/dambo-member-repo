@@ -1,4 +1,4 @@
-.container{
+.container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -6,39 +6,39 @@
     margin-bottom: 0.75rem;
 }
 
-.selectContainer{
+.selectContainer {
     width: 30%;
     height: 100%;
 }
 
-.inputContainer{
+.inputContainer {
     width: 70%;
     height: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    border: 1px solid #EEEEF0 ;
+    border: 1px solid #eeeef0;
     border-radius: 0rem 0.5rem 0.5rem 0rem;
     padding-right: 1rem;
 }
 
-.inputContainerDark{
+.inputContainerDark {
     width: 70%;
     height: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    border: 1px solid #A1AE7E ;
+    border: 1px solid #a1ae7e;
     border-radius: 0rem 0.5rem 0.5rem 0rem;
     padding-right: 1rem;
-    background-color: #ECFFB8;
+    background-color: #ecffb8;
 }
 
-.amountInputDark{
+.amountInputDark {
     width: 70%;
-    background-color: #ECFFB8;
-    border:0 ;
-    font-family: 'TelegrafBolder';
+    background-color: #ecffb8;
+    border: 0;
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -46,27 +46,25 @@
     padding-left: 1rem;
     height: 100%;
 }
-.amountInputDark::placeholder{
-    font-family: 'TelegrafMedium';
+.amountInputDark::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.amountInputDark:focus{
-    border: 1px #6852FF solid ;
-    border: 0rem ;
+.amountInputDark:focus {
+    border: 1px #6852ff solid;
+    border: 0rem;
     outline: none;
-    background-color: #D2E4A6;
-
+    background-color: #d2e4a6;
 }
 
-
-.amountInput{
+.amountInput {
     width: 70%;
     /* background-color: white; */
-    border:0 ;
-    font-family: 'TelegrafBolder';
+    border: 0;
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -74,17 +72,16 @@
     padding-left: 1rem;
     height: 100%;
 }
-.amountInput::placeholder{
-    font-family: 'TelegrafMedium';
+.amountInput::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.amountInput:focus{
-    border: 1px #6852FF solid ;
-    border: 0rem ;
+.amountInput:focus {
+    border: 1px #6852ff solid;
+    border: 0rem;
     outline: none;
     /* background-color: #E1DCFF; */
-
 }
