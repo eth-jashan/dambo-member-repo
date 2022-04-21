@@ -1,6 +1,6 @@
-.header{
-    width: '100%';
-    border: 1px solid #21212B;
+.header {
+    width: "100%";
+    border: 1px solid #21212b;
     padding: 1.2rem 1.125rem 1rem 2.75rem;
     border-top: 0;
     border-right: 0;
@@ -9,31 +9,30 @@
     flex-direction: row;
     justify-content: space-between;
 }
-.safe_info{
+.safe_info {
     flex-direction: row;
     display: flex;
-    
 }
 
-.headerText{
+.headerText {
     font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.5rem;
-    color: #FFFFFF;
+    color: #ffffff;
     text-align: start;
 }
 
-.layoutContainer{
-    display:flex; 
-    flex-direction:row; 
-    width:100%;
-    height:100%;
+.layoutContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
     padding: 0rem 0rem 0rem 2rem;
 }
 
-.layout{
+.layout {
     width: 100vw;
     height: 100vh;
     background: black;
@@ -41,15 +40,15 @@
     flex-direction: row;
 }
 
-.accountsLayout{
+.accountsLayout {
     width: 3.5rem;
     background: #333232;
     height: 100%;
     align-items: center;
     display: flex;
     flex-direction: column;
-    overflow-y:scroll;
-    -ms-overflow-style: none; 
+    overflow-y: scroll;
+    -ms-overflow-style: none;
     scrollbar-width: none;
     /* position: relative; */
 }
@@ -58,60 +57,60 @@
 }
 .accountsLayout::-webkit-scrollbar {
     display: none;
-  }
-  
-  /* Hide scrollbar for IE, Edge and Firefox */
-.accountsLayout {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
 }
 
-.children{
+/* Hide scrollbar for IE, Edge and Firefox */
+.accountsLayout {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.children {
     height: 100%;
     width: 100%;
     overflow: hidden;
     padding-right: 3rem;
 }
 
-.logoContainer{
+.logoContainer {
     /* padding: 0.625rem; */
     margin-top: 0.625rem;
     margin-bottom: 1.125rem;
     background: #333232;
 }
 
-.addContainer{
+.addContainer {
     padding-left: 0.625rem;
     padding-right: 0.625rem;
     padding-bottom: 0.625rem;
     /* position: fixed; */
 }
 
-.accountContainer{
+.accountContainer {
     margin-bottom: 0.75rem;
 }
 
-.selectedAccount{
-    border-left: 4px solid #FFFFFF;
+.selectedAccount {
+    border-left: 4px solid #ffffff;
     align-items: center;
     justify-content: center;
     /* padding-left: 0.625rem; */
     padding-right: 0.625rem;
     padding-top: 0.625rem;
 }
-.addButton{
-    height:2.25rem;
-    border-radius:2.25rem; 
-    width: 2.25rem; 
-    background: #5D5C5D;
+.addButton {
+    height: 2.25rem;
+    border-radius: 2.25rem;
+    width: 2.25rem;
+    background: #5d5c5d;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 0.625rem;
 }
-.adminStats{
+.adminStats {
     width: 34%;
-    border: 1px solid #21212B;
+    border: 1px solid #21212b;
     border-top: 0;
     border-bottom: 0;
     /* display: flex;
@@ -121,16 +120,16 @@
     /* background: red; */
     /* justify-content: space-around; */
     /* background: red; */
-    -ms-overflow-style: none; 
+    -ms-overflow-style: none;
     scrollbar-width: none;
     /* position: relative; */
 }
 .adminStats::-webkit-scrollbar {
     display: none;
 }
-.copyLink{
+.copyLink {
     width: 100%;
-    border: 1px solid #21212B;
+    border: 1px solid #21212b;
     padding: 1.5rem 0rem 1.5rem 1.25rem;
     display: flex;
     flex-direction: row;
@@ -138,60 +137,60 @@
     /* position: absolute;
     bottom: 0; */
 }
-.copyLinkdiv{
-    font-family: 'TelegrafMedium';
+.copyLinkdiv {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.25rem;
-    color: #FFFFFF;
+    color: #ffffff;
     margin-left: 0.75rem;
 }
-.childrenLayout{
-    width:100%; 
-    height:100%;
-    overflow:hidden
+.childrenLayout {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-.addIcon{
+.addIcon {
     height: 1.5rem;
     width: 1.5rem;
 }
 
-.roleSwitchContainer{
+.roleSwitchContainer {
     width: 7.875rem;
     padding: 0.375rem 0.5rem 0.375rem 1rem;
     flex-direction: row;
     justify-content: space-between;
     display: flex;
-    background: #5D5C5D;
+    background: #5d5c5d;
     border-radius: 1rem;
     align-items: center;
 }
-.roleSwitchContainer:hover{
+.roleSwitchContainer:hover {
     background-color: white;
 }
-.accountContainer>div{
-    color:white;
+.accountContainer > div {
+    color: white;
 }
 
-.chevron{
+.chevron {
     height: 1.25rem;
     width: 1.25rem;
 }
 
-.accountIcon{
+.accountIcon {
     height: 2rem;
     width: 2rem;
-    background-color:#5D5C5D;
+    background-color: #5d5c5d;
     margin-left: 0.5rem;
     border-radius: 2rem;
 }
-.accountIcon:hover{
+.accountIcon:hover {
     background-color: white;
 }
 
-.profileContainer{
+.profileContainer {
     flex-direction: row;
     display: flex;
 }

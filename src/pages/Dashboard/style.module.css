@@ -1,10 +1,10 @@
-.tabContainer{
-    border:1px solid #21212B; 
+.tabContainer {
+    border: 1px solid #21212b;
     border-right: 0;
     border-left: 0;
     border-top: 0;
-    width:100%; 
-    padding: 3.5rem 0 1.5rem 0.75rem ;
+    width: 100%;
+    padding: 3.5rem 0 1.5rem 0.75rem;
     flex-direction: row;
     display: flex;
     justify-content: space-between;
@@ -12,12 +12,12 @@
     align-items: center;
 }
 
-.routeContainer{
+.routeContainer {
     display: flex;
     flex-direction: row;
 }
 
-.addPaymentContainer{
+.addPaymentContainer {
     height: 2.5rem;
     width: 2.5rem;
     border-radius: 2.5rem;
@@ -26,39 +26,39 @@
     justify-content: center;
 }
 
-.addPaymentContainer>img{
+.addPaymentContainer > img {
     height: 1.5rem;
     width: 1.5rem;
 }
 
-.addPaymentContainer:hover{
+.addPaymentContainer:hover {
     background-color: white;
 }
 
-.selectionTab{
-    color: #A2A2A3;
+.selectionTab {
+    color: #a2a2a3;
     text-align: start;
     cursor: pointer;
 }
-.selectionTab:hover{
+.selectionTab:hover {
     color: white;
 }
-.selected{
-    color: #FFFFFF;
+.selected {
+    color: #ffffff;
     text-align: start;
     /* cursor: none; */
 }
 .heading {
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 3.375rem;
     line-height: 3.5rem;
-    color: #FFFFFF;
+    color: #ffffff;
     text-align: start;
 }
- 
-.emptyDiv{
+
+.emptyDiv {
     width: 100%;
     height: 100%;
     padding: 2.25rem;
@@ -69,36 +69,36 @@
 }
 
 .greyedHeading {
-    color: #A2A2A3;
+    color: #a2a2a3;
     text-align: start;
 }
-.dashView{
+.dashView {
     height: 100%;
     display: flex;
     flex: 1;
     flex-direction: column;
     /* padding: 1rem; */
 }
-.button{
-    padding: 0.5rem 1.25rem ;
-    background-color: #6852FF;
+.button {
+    padding: 0.5rem 1.25rem;
+    background-color: #6852ff;
     margin-top: 6%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.button>div{
-    font-family: 'TelegrafBolder';
+.button > div {
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.5rem;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
-.paymentButton{
-    padding: 0.5rem 1.25rem ;
-    background-color: #FFFFFF;
+.paymentButton {
+    padding: 0.5rem 1.25rem;
+    background-color: #ffffff;
     min-width: 18rem;
     /* margin-top: 6%; */
     position: absolute;
@@ -107,21 +107,21 @@
     align-self: center;
     align-items: center;
 }
-.paymentButton>div{
-    font-family: 'TelegrafMedium';
+.paymentButton > div {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1.25rem;
     line-height: 1.75rem;
-    color: #6852FF;
+    color: #6852ff;
     text-align: start;
 }
 
-.payBtnCnt{
+.payBtnCnt {
     position: absolute;
     bottom: 1.5rem;
     min-width: 35%;
-    background: #6852FF;
+    background: #6852ff;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.25rem;
     padding: 0.5rem 1.25rem;
@@ -131,19 +131,19 @@
     cursor: pointer;
 }
 
-.whiteText{
-    color: #FFFFFF;
+.whiteText {
+    color: #ffffff;
     margin-right: 0.625rem;
 }
 
-.payBtnChild{
+.payBtnChild {
     width: 50%;
     flex-direction: row;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.payBtnLeft{
+.payBtnLeft {
     width: 50%;
     flex-direction: row;
     display: flex;
@@ -151,11 +151,11 @@
     justify-content: space-between;
     align-items: center;
 }
-.border{
-    border-left: 1px solid #8C7CFF;
+.border {
+    border-left: 1px solid #8c7cff;
 }
 
-.payNow{
+.payNow {
     width: 30%;
     height: 100%;
     right: 0;
@@ -163,7 +163,7 @@
     background: white;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.25rem;
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
@@ -171,15 +171,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6852FF;
+    color: #6852ff;
     cursor: pointer;
 }
 
-.toastContainer{
+.toastContainer {
     position: absolute;
     bottom: 1.5rem;
     min-width: 26%;
-    background: #1D7F60;
+    background: #1d7f60;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 0.5rem;
     display: flex;
@@ -187,11 +187,11 @@
     justify-content: space-between;
 }
 
-.toastLeft{
+.toastLeft {
     padding: 0.5rem 0rem 0.5rem 1rem;
 }
 
-.toastRight{
+.toastRight {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     border-left: #626262 1px solid;

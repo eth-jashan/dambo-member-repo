@@ -12,19 +12,19 @@
     font-size: 16px;
     line-height: 24px;
   } */
-.headerCnt{
-  width: 72vw;
-  display: flex;
-  flex-direction:row;
-  padding: 1rem;
-  justify-content: space-between;
-  align-items: center;
+.headerCnt {
+    width: 72vw;
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
 }
-.headerName{
-  font-family: 'TelegrafBolder';
-  font-style: normal;
-  font-weight: bold;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  color: azure;
+.headerName {
+    font-family: "TelegrafBolder";
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: azure;
 }

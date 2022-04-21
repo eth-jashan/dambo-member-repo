@@ -1,12 +1,10 @@
-import React from 'react'
-import styles from './style.modules.css'
+import React from "react"
+import styles from "./style.modules.css"
 
 const DashboardHeader = () => {
-    return(
+    return (
         <div className={styles.header}>
-            <div className={styles.headerText}>
-                Chain Runner DAO
-            </div>
+            <div className={styles.headerText}>Chain Runner DAO</div>
         </div>
     )
 }

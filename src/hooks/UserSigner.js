@@ -1,22 +1,23 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"
 
 const useUserSigner = (injectedProvider, localProvider) => {
-  const [signer, setSigner] = useState();
+    const [signer, setSigner] = useState()
 
-  useMemo(() => {
-    if (injectedProvider) {
-      //console.log("🦊 Using injected provider");
-      //console.log(injectedProvider.getSigner());
-      const injectedSigner = injectedProvider._isProvider ? injectedProvider.getSigner() : injectedProvider;
-      setSigner(injectedSigner);
-      //console.log(injectedSigner);
-    }
-    else {
-      //console.log('no provider found')
-    }
-  }, [injectedProvider]);
+    useMemo(() => {
+        if (injectedProvider) {
+            //console.log("🦊 Using injected provider");
+            //console.log(injectedProvider.getSigner());
+            const injectedSigner = injectedProvider._isProvider
+                ? injectedProvider.getSigner()
+                : injectedProvider
+            setSigner(injectedSigner)
+            //console.log(injectedSigner);
+        } else {
+            //console.log('no provider found')
+        }
+    }, [injectedProvider])
 
-  return signer;
-};
+    return signer
+}
 
-export default useUserSigner;
+export default useUserSigner

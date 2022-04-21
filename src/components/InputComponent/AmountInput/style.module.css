@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     margin-bottom: 0.75rem;
     flex-direction: row;
@@ -7,33 +7,32 @@
     align-self: center;
 }
 
-.amountInput{
+.amountInput {
     width: 100%;
-    background-color: #ECFFB8;
-    border: 0rem ;
+    background-color: #ecffb8;
+    border: 0rem;
     border-radius: 0rem 0.5rem 0.5rem 0rem;
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
     padding-left: 1rem;
 }
-.amountInput::placeholder{
-    font-family: 'TelegrafMedium';
+.amountInput::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.amountInput:focus{
+.amountInput:focus {
     /* border: 1px #ECFFB8 solid ; */
-    border: 0rem ;
+    border: 0rem;
     outline: none;
-    background-color: #D3E5A6;
-
+    background-color: #d3e5a6;
 }
 
-.usdAmount{
-    color: #6A7253;
+.usdAmount {
+    color: #6a7253;
 }

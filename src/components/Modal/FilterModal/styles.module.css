@@ -1,38 +1,37 @@
 .filterContainer {
-  color: white;
-  /* position: fixed; */
-  display: flex;
-  justify-content: flex-end;
-  top: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  
+    color: white;
+    /* position: fixed; */
+    display: flex;
+    justify-content: flex-end;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 .filterContent {
     min-width: 20rem;
     /* min-height: 18.3rem; */
-  background: #1f1f1f;
-  position: absolute;
-  border-radius: 2%;
+    background: #1f1f1f;
+    position: absolute;
+    border-radius: 2%;
 }
 .listContainer {
-    width:100%;
+    width: 100%;
     min-height: 90%;
     justify-content: space-between;
-  display: flex;
-  /* padding: 1rem; */
-  font-size: 1rem;
-  line-height: 2.5rem;
+    display: flex;
+    /* padding: 1rem; */
+    font-size: 1rem;
+    line-height: 2.5rem;
 }
-.filterHeading{
+.filterHeading {
     text-align: left;
     opacity: 0.5;
 }
 .checkListContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: baseline;
-  cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    cursor: pointer;
 }
 
 .oneCheckcontainer {
@@ -46,16 +45,16 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
-  
-  .oneCheckcontainer input {
+}
+
+.oneCheckcontainer input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
-  }
-  .checkmark {
+}
+.checkmark {
     position: absolute;
     top: 0.6rem;
     left: 0;
@@ -63,26 +62,26 @@
     width: 1rem;
     border: 1px solid white;
     /* background-color: #eee; */
-  }
-  
-  .oneCheckcontainer:hover input ~ .checkmark {
+}
+
+.oneCheckcontainer:hover input ~ .checkmark {
     background-color: #ccc;
-  }
-  
-  .oneCheckcontainer input:checked ~ .checkmark {
-    background-color: #FFFFFF;
-  }
-  
-  .checkmark:after {
+}
+
+.oneCheckcontainer input:checked ~ .checkmark {
+    background-color: #ffffff;
+}
+
+.checkmark:after {
     content: "";
     position: absolute;
     display: none;
-  }
-  .oneCheckcontainer input:checked ~ .checkmark:after {
+}
+.oneCheckcontainer input:checked ~ .checkmark:after {
     display: block;
-  }
-  
-  .oneCheckcontainer .checkmark:after {
+}
+
+.oneCheckcontainer .checkmark:after {
     left: 0.3rem;
     top: -0.3rem;
     width: 0.5rem;
@@ -92,12 +91,11 @@
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
-  }
+}
 
+/* radio button css */
 
-  /* radio button css */
-
-  .oneRadioContainer {
+.oneRadioContainer {
     display: block;
     position: relative;
     padding-left: 2rem;
@@ -108,60 +106,60 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
-  .oneRadioContainer input {
+}
+.oneRadioContainer input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
-  }
-  .radiomark {
+}
+.radiomark {
     position: absolute;
     top: 0.5rem;
     left: 0;
     height: 1.25rem;
     width: 1.25rem;
     /* background-color: #eee; */
-    border:1px solid #FFFFFF;
+    border: 1px solid #ffffff;
     border-radius: 50%;
-  }
-  
-  .oneRadioContainer:hover input ~ .radiomark {
+}
+
+.oneRadioContainer:hover input ~ .radiomark {
     background-color: #ccc;
-  }
-  .oneRadioContainer input:checked ~ .radiomark {
-    background-color: #FFFFFF;
-  }
-  .radiomark:after {
+}
+.oneRadioContainer input:checked ~ .radiomark {
+    background-color: #ffffff;
+}
+.radiomark:after {
     content: "";
     position: absolute;
     display: none;
-  }
-  .oneRadioContainer input:checked ~ .radiomark:after {
+}
+.oneRadioContainer input:checked ~ .radiomark:after {
     display: block;
-  }
-  .oneRadioContainer .radiomark:after {
-       top: 9px;
-      left: 9px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: white;
-  }
+}
+.oneRadioContainer .radiomark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
 
-.bottom{
+.bottom {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem .5rem .5rem 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
     font-size: 1rem;
-    border-top:1px solid rgba(255, 255, 255, 0.12) ;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     align-items: center;
 }
-.approveButton{
+.approveButton {
     width: 50%;
-    cursor:crosshair;
+    cursor: crosshair;
     background: rgba(255, 255, 255, 0.2);
     /* opacity: .2; */
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0,0,0,0.16);
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     color: white;
     padding: 0rem 5px;
     font-weight: 800;
@@ -169,6 +167,6 @@
     border-radius: 6px;
 }
 
-.clearbutton{
-  text-decoration: underline;
+.clearbutton {
+    text-decoration: underline;
 }

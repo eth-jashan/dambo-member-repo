@@ -1,4 +1,4 @@
-.backdrop{
+.backdrop {
     background-color: rgba(0, 0, 0, 0.1);
     width: 100%;
     padding-left: 6%;
@@ -6,18 +6,19 @@
     justify-content: flex-end;
     height: 100%;
 }
-.header{
+.header {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
 }
 
-.modal{
+.modal {
     width: 27vw;
     background: white;
     min-height: 60vh;
-    background: #FFFFFF;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06), 0px 0px 20px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06),
+        0px 0px 20px rgba(0, 0, 0, 0.12);
     border-radius: 0.5rem;
     max-height: 70vh;
     display: flex;
@@ -25,27 +26,26 @@
     overflow-y: scroll;
     padding: 1.5rem 1.125rem 1.5rem 1.25rem;
     position: absolute;
-    -ms-overflow-style: none; 
+    -ms-overflow-style: none;
     scrollbar-width: none;
 }
 .modal::-webkit-scrollbar {
     display: none;
 }
 
-.greyedText{
+.greyedText {
     color: #808080;
     text-align: start;
 }
-.usdText{
+.usdText {
     color: #808080;
 }
-.alignText{
+.alignText {
     text-align: start;
     width: 60%;
-
 }
 
-.requestItem{
+.requestItem {
     width: 100%;
     padding: 1.5rem;
     border-bottom: 1px solid #e0e0ee;
@@ -53,23 +53,23 @@
     flex-direction: column;
 }
 
-.cancel{
+.cancel {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 1rem;
-    background-color: #EFEFEF;
+    background-color: #efefef;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
 }
-.cancel:hover{
+.cancel:hover {
     width: 9rem;
-    position:absolute;
+    position: absolute;
     justify-content: space-between;
     padding: 0.25rem 0.5rem 0.25rem 0.375rem;
 }
-.infoContainer{
+.infoContainer {
     /* position: static; */
     padding-left: 5.6%;
     flex-direction: row;
@@ -77,7 +77,7 @@
     width: 100%;
     justify-content: space-between;
 }
-.tokenDiv{
+.tokenDiv {
     min-width: 9.375rem;
     /* background: red; */
     flex-direction: row;
@@ -85,21 +85,21 @@
     justify-content: space-between;
 }
 
-.payBtn{
+.payBtn {
     padding: 0.5rem 1.875rem 0.5rem 1.875rem;
-    background: #6852FF;
+    background: #6852ff;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.25rem;
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.5rem;
-    color: #FFFFFF;
+    color: #ffffff;
     min-width: 40%;
 }
 
-.btnCnt{
+.btnCnt {
     position: absolute;
     bottom: 2rem;
     width: 36vw;
@@ -108,14 +108,14 @@
     justify-content: center;
 }
 
-.cross{
+.cross {
     height: 0.875rem;
     width: 0.875rem;
     margin-bottom: 1.563rem;
 }
 
-.addToken{
-    border: 1px solid #EEEEF0 ;
+.addToken {
+    border: 1px solid #eeeef0;
     border-left: 0rem;
     border-right: 0rem;
     padding: 1rem;
@@ -127,28 +127,28 @@
     cursor: pointer;
 }
 
-.plus{
+.plus {
     width: 0.785rem;
     height: 0.875rem;
 }
 
-.inputContainer{
+.inputContainer {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    border: 1px solid #EEEEF0 ;
+    border: 1px solid #eeeef0;
     border-radius: 0.5rem;
     padding: 0.75rem 0rem 0.75rem 1rem;
 }
 
-.amountInput{
+.amountInput {
     width: 70%;
     background-color: white;
-    border:0 ;
+    border: 0;
     /* border-radius: 0rem 0.5rem 0.5rem 0rem; */
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -156,24 +156,23 @@
     padding-left: 1rem;
     height: 100%;
 }
-.amountInput::placeholder{
-    font-family: 'TelegrafMedium';
+.amountInput::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
 }
-.amountInput:focus{
-    border: 1px #6852FF solid ;
-    border: 0rem ;
+.amountInput:focus {
+    border: 1px #6852ff solid;
+    border: 0rem;
     outline: none;
     /* background-color: #E1DCFF; */
-
 }
 
-.buttonContainer{
-    width: 100%;    
-    background: #6852FF;
+.buttonContainer {
+    width: 100%;
+    background: #6852ff;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.5rem;
     padding: 0.5rem 2.125rem 0.5rem 2.125rem;
@@ -184,11 +183,11 @@
     margin-top: 2.5rem;
 }
 
-.textArea{
+.textArea {
     width: 100%;
     border-radius: 0.5rem;
     /* background-color: #7A7A7A; */
-    font-family:'TelegrafMedium';
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 0.875rem;
@@ -197,17 +196,17 @@
     outline: none;
     padding: 1rem;
     height: 100%;
-    border:1px solid #e0e0ee;
+    border: 1px solid #e0e0ee;
 }
-.textArea::placeholder{
-    font-family:'TelegrafMedium';
+.textArea::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 0.875rem;
     line-height: 1.25rem;
     color: #808080;
 }
-.textArea:focus{
+.textArea:focus {
     outline: none;
-    border: 1px solid #6852FF;
+    border: 1px solid #6852ff;
 }

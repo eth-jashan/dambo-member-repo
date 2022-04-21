@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     border: 1px solid #292929;
     padding: 0.5rem 0rem 0.5rem 0.75rem;
@@ -11,34 +11,34 @@
     justify-content: space-between;
 }
 
-.text{
+.text {
     color: #808080;
     text-align: start;
 }
-.text:hover{
+.text:hover {
     color: white;
     text-align: start;
 }
 
-.whiterText{
+.whiterText {
     color: white;
     text-align: start;
 }
-.whiterText:hover{
-    font-family: 'TelegrafBolder';
+.whiterText:hover {
+    font-family: "TelegrafBolder";
     font-size: 1rem;
     line-height: 1.5rem;
     color: white;
     text-align: start;
 }
-.menuContainer{
+.menuContainer {
     margin-bottom: 0.5rem;
 }
-.menuContainer:hover{
-    background-color: #4C4C4C;
+.menuContainer:hover {
+    background-color: #4c4c4c;
 }
-.menu{
-    font-family: 'TelegrafMedium';
+.menu {
+    font-family: "TelegrafMedium";
     font-size: 1rem;
     line-height: 1.5rem;
     color: white;
@@ -46,15 +46,15 @@
     width: 100%;
     height: 100%;
 }
-.menuContainer>div{
-    font-family: 'TelegrafMedium';
+.menuContainer > div {
+    font-family: "TelegrafMedium";
     font-size: 1rem;
     line-height: 1.5rem;
     color: white;
     text-align: start;
 }
-.menu:hover{
-    font-family: 'TelegrafBolder';
+.menu:hover {
+    font-family: "TelegrafBolder";
     font-size: 1rem;
     line-height: 1.5rem;
     color: white;
@@ -63,7 +63,7 @@
 /* .icon:hover{
 
 } */
-.icon{
+.icon {
     height: 2.5rem;
     width: 2.5rem;
     display: flex;
@@ -71,43 +71,43 @@
     justify-content: center;
     border-radius: 1.25rem;
 }
-.icon:hover{
+.icon:hover {
     background: #333333;
 }
-.filterOpen{
+.filterOpen {
     background: #333333;
 }
 
-.searchContainer{
+.searchContainer {
     min-width: 17.313rem;
     border-radius: 1.25rem;
-    background-color:#4F4F4F;
+    background-color: #4f4f4f;
     justify-content: space-between;
     flex-direction: row;
     display: flex;
     align-items: center;
     padding-right: 0.5rem;
 }
-.searchContainer>input{
-    font-family: 'TelegrafMedium';
+.searchContainer > input {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
     line-height: 1.5rem;
     width: 70%;
-    color:white;
-    background-color:#4F4F4F;
+    color: white;
+    background-color: #4f4f4f;
     border-top-left-radius: 1.25rem;
     border-bottom-left-radius: 1.25rem;
     outline: none;
     border: 0;
     padding-left: 1rem;
 }
-.searchContainer>input:focus{
+.searchContainer > input:focus {
     outline: none;
 }
-.searchContainer>input::placeholder{
-    font-family: 'TelegrafMedium';
+.searchContainer > input::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -115,12 +115,12 @@
     color: #999999;
 }
 
-.crossIcon{
+.crossIcon {
     height: 0.75rem;
     width: 0.75rem;
 }
 
-.searchIcon{
+.searchIcon {
     height: 1.125rem;
     width: 1.125rem;
     color: white;

@@ -1,15 +1,15 @@
-.inputContainer{
+.inputContainer {
     width: 100%;
     display: flex;
     flex-direction: row;
 }
-.textInput{
+.textInput {
     /* padding: 1rem; */
-    border: 1px solid #EEEEF0;
+    border: 1px solid #eeeef0;
     border-radius: 0.5rem;
     color: black;
     padding: 1rem;
-    font-family: 'TelegrafMedium';
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;
@@ -17,12 +17,12 @@
     outline: none;
 }
 
-.textInput:focus{
-    border: 1px solid #6852FF;
+.textInput:focus {
+    border: 1px solid #6852ff;
 }
 
-.textInput::placeholder{
-    font-family: 'TelegrafMedium';
+.textInput::placeholder {
+    font-family: "TelegrafMedium";
     font-style: normal;
     font-weight: normal;
     font-size: 1rem;

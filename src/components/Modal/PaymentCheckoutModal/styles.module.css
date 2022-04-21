@@ -1,4 +1,4 @@
-.backdrop{
+.backdrop {
     background-color: rgba(0, 0, 0, 0.1);
     position: absolute;
     bottom: 1.5rem;
@@ -9,7 +9,7 @@
     display: flex;
     align-items: flex-end;
 }
-.header{
+.header {
     padding: 1.5rem 2rem 1.5rem 1.5rem;
     display: flex;
     flex-direction: row;
@@ -20,39 +20,39 @@
     position: sticky;
 }
 
-.modal{
+.modal {
     width: 36vw;
     background: white;
     min-height: 60vh;
-    background: #FFFFFF;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06), 0px 0px 20px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06),
+        0px 0px 20px rgba(0, 0, 0, 0.12);
     border-radius: 1.25rem;
     max-height: 84vh;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
     bottom: 0;
-    -ms-overflow-style: none; 
+    -ms-overflow-style: none;
     scrollbar-width: none;
 }
 .modal::-webkit-scrollbar {
     display: none;
 }
 
-.greyedText{
+.greyedText {
     color: #808080;
     text-align: start;
 }
-.usdText{
+.usdText {
     color: #808080;
 }
-.alignText{
+.alignText {
     text-align: start;
     width: 60%;
-
 }
 
-.requestItem{
+.requestItem {
     width: 100%;
     padding: 1.5rem;
     border-bottom: 1px solid #e0e0ee;
@@ -60,52 +60,52 @@
     flex-direction: column;
 }
 
-.cancel{
+.cancel {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 1rem;
-    background-color: #EFEFEF;
+    background-color: #efefef;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
 }
-.cancel:hover{
+.cancel:hover {
     width: 9rem;
-    position:absolute;
+    position: absolute;
     justify-content: space-between;
     padding: 0.25rem 0.5rem 0.25rem 0.375rem;
 }
-.infoContainer{
+.infoContainer {
     padding-left: 5.6%;
     flex-direction: row;
     display: flex;
     width: 100%;
     justify-content: space-between;
 }
-.tokenDiv{
+.tokenDiv {
     min-width: 9.375rem;
     flex-direction: row;
     display: flex;
     justify-content: flex-end;
 }
 
-.payBtn{
+.payBtn {
     padding: 0.5rem 1.875rem 0.5rem 1.875rem;
-    background: #6852FF;
+    background: #6852ff;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.16);
     border-radius: 1.25rem;
-    font-family: 'TelegrafBolder';
+    font-family: "TelegrafBolder";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.5rem;
-    color: #FFFFFF;
+    color: #ffffff;
     min-width: 40%;
     cursor: pointer;
 }
 
-.btnCnt{
+.btnCnt {
     position: absolute;
     bottom: 2rem;
     width: 36vw;
@@ -114,12 +114,12 @@
     justify-content: center;
 }
 
-.cross{
+.cross {
     height: 0.75rem;
     width: 0.75rem;
 }
 
-.chevron{
+.chevron {
     height: 1.5rem;
     width: 1.5rem;
 }

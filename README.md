@@ -16,4 +16,4 @@ You will also see any lint errors in the console.
 
 ## TODOs
 
-Before running this application, check out the TODOs in `src/App.js` to add provider options! 
+Before running this application, check out the TODOs in `src/App.js` to add provider options!

@@ -1,68 +1,68 @@
 .layout {
-  height: 100vh;
-  position: relative;
-  display: flex;
-  width: 100vw;
-  background-color: #000;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    width: 100vw;
+    background-color: #000;
 }
 
 .layoutImage {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  top: 0;
-  right: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
 }
 
 .content {
-  width: 100%;
-  /* position: absolute; */
-  bottom: 0;
+    width: 100%;
+    /* position: absolute; */
+    bottom: 0;
 }
 
 .nav {
-  text-align: left;
-  margin-left: 15%;
-  padding-top: 1.5rem;
-  font-size: 16px;
+    text-align: left;
+    margin-left: 15%;
+    padding-top: 1.5rem;
+    font-size: 16px;
 }
 .nav > span {
-  color: #fff;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
+    color: #fff;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
 }
 
 .backImg {
-  height: 1.5rem;
-  width: 1.5rem;
-  margin-bottom: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .modal {
-  overflow-y: auto;
-  width: 70vw;
-  height: 86vh;
-  background-color: #fff;
-  position: absolute;
-  bottom: 0;
-  left: 15vw;
-  align-self: center;
-  /* flex-direction: row;
+    overflow-y: auto;
+    width: 70vw;
+    height: 86vh;
+    background-color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 15vw;
+    align-self: center;
+    /* flex-direction: row;
   display: flex; */
-  background: #ffffff;
-  border: 1px solid #eeeef0;
-  box-sizing: border-box;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08),
-    0px 0px 20px rgba(0, 0, 0, 0.12);
-  border-radius: 24px 24px 0px 0px;
-  padding: 4.16% 2.8% 2.5% 7%;
-  text-align: left;
-  -ms-overflow-style: none; 
-  scrollbar-width: none;  
+    background: #ffffff;
+    border: 1px solid #eeeef0;
+    box-sizing: border-box;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08),
+        0px 0px 20px rgba(0, 0, 0, 0.12);
+    border-radius: 24px 24px 0px 0px;
+    padding: 4.16% 2.8% 2.5% 7%;
+    text-align: left;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 .modal::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
