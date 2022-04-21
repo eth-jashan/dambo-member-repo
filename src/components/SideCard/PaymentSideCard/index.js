@@ -766,7 +766,7 @@ const PaymentSlideCard = ({ signer }) => {
                 delegates.length !==
                     currentPayment?.gnosis?.confirmations?.length
             ) {
-                console.log("Payment Already Signed")
+                // console.log("Payment Already Signed")
             } else if (!checkApproval()) {
                 await confirmTransaction(hash)
             }

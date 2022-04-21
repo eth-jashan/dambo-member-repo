@@ -636,7 +636,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 20000) {
                         clearInterval(interval)
-                        console.log("failed to get confirmation")
+                        // console.log("failed to get confirmation")
                     }
                     // console.log('tx_hash', tx_hash)
                     var customHttpProvider =
