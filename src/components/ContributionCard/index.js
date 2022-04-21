@@ -1,20 +1,65 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styles from './style.module.css'
 import textStyles from '../../commonStyles/textType/styles.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTransaction } from '../../store/actions/transaction-action'
 import { convertTokentoUsd } from '../../utils/conversion'
-import three_dots from "../../assets/Icons/three_dots.svg";
-import { getAllBadges, setContributionDetail } from '../../store/actions/contibutor-action'
+import approved_badge from "../../assets/Icons/approved_badge.svg";
+import approved_badge_hover from "../../assets/Icons/approvedBadge_hover.svg";
+import { getAllBadges, setBadgesAfterClaim, setClaimLoading, setContributionDetail } from '../../store/actions/contibutor-action'
 import { ethers } from 'ethers'
 import { web3 } from '../../constant/web3'
 import { claimPOCPBadges } from '../../utils/POCPutils'
 import { getAuthToken } from '../../store/actions/auth-action'
-import { relayFunction } from '../../utils/relayFunctions'
-import { getContributorOverview } from '../../store/actions/dao-action'
+import { relayFunction, updatePocpClaim } from '../../utils/relayFunctions'
+import { claimUpdate, getContributorOverview, syncAllBadges } from '../../store/actions/dao-action'
 
 export default function ContributionCard({item, signer,community_id}) {
     const address = item?.requested_by?.public_address;
+    const all_approved_badge = useSelector(x=>x.dao.all_approved_badge).filter(x=>x.community.id === community_id)
+    const all_claimed_badge = useSelector(x=>x.dao.all_claimed_badge).filter(x=>x.community_id === community_id)
+    const claim_loading = useSelector(x=>x.contributor.claim_loading)
+    const jwt = useSelector(x=>x.auth.jwt)
+
+    const checkClaimApprovedSuccess = () => {
+        const isTxSuccess =  all_approved_badge.filter(x=>x.identifier === item?.id.toString() )
+        if((item?.approved_tx && isTxSuccess.length===1)||isTxSuccess.length === 1){
+            return true
+        }else{
+            return false
+        }
+    }
+
+    const getApproveCheck = useCallback( async() => {
+        if(item?.approved_tx){
+          var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
+          const reciept = await customHttpProvider.getTransactionReceipt(item?.approved_tx)
+          if(reciept.status){
+            return true
+          }else{
+            return false
+          }
+        }else{
+          return false
+        }
+    },[item?.approved_tx])
+
+    const [approvedBadge, setApprovedBadge] = useState(false)
+    const [claimBadge, setClaimBadge] = useState(false)
+
+  const getBadgeStatus = useCallback(async() => {
+    //console.log('transaction', currentTransaction?.isClaimed)
+    const approval = await getApproveCheck()
+    // const claim_status = await getClaimCheck()
+    setApprovedBadge(approval)
+    // setClaimBadge(claim_status)
+    
+  },[getApproveCheck])
+
+  useEffect(()=>{
+    getBadgeStatus()
+  },[getBadgeStatus])
+
     const dispatch = useDispatch()
     const contri_filter_key = useSelector(x=>x.dao.contri_filter_key)
     const role = useSelector(x=>x.dao.role)
@@ -24,7 +69,7 @@ export default function ContributionCard({item, signer,community_id}) {
             if(ethPrice && contri_filter_key !== 0 ){
                 dispatch(setTransaction(item, ethPrice))
             }else if (contri_filter_key === 0){
-                dispatch(setTransaction(item, ethPrice))
+                dispatch(setTransaction(item, ethPrice, checkClaimApprovedSuccess()))
             }
         }else{
             dispatch(setContributionDetail(item))
@@ -45,6 +90,7 @@ export default function ContributionCard({item, signer,community_id}) {
             return {color:'#808080', title:'paid'}
         }
     }
+    const claimed = useSelector(x=>x.contributor.claimed)
     const unclaimed = useSelector(x=>x.contributor.unclaimed)
     const isApprovedToken = () => {
         const token = unclaimed.filter(x=>x.identifier === item?.id.toString())
@@ -75,6 +121,7 @@ export default function ContributionCard({item, signer,community_id}) {
     const claimBadges = async() => {
         if(!load){
             setLoad(true)
+            dispatch(setClaimLoading(true, item?.id))
         try {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           await web3Provider.provider.request({
@@ -87,31 +134,30 @@ export default function ContributionCard({item, signer,community_id}) {
           const token = await dispatch(getAuthToken())
           const tx_hash = await relayFunction(token,3,data,signature)
           if(tx_hash){
+        await updatePocpClaim(jwt,tx_hash,[item?.id])
           const startTime = Date.now()
           const interval = setInterval(async()=>{
               if(Date.now() - startTime > 30000){
               clearInterval(interval)
-              //console.log('failed to get confirmation')
               }
               var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
               const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
               if(reciept?.status){
-              //console.log('done', reciept)
               clearTimeout(interval)
-              //console.log('successfully registered')
+              dispatch(claimUpdate(item?.id))
               await web3Provider.provider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: web3.chainid.rinkeby}],
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.chainid.rinkeby}],
               })
               }
-              //console.log('again....')
+              dispatch(setClaimLoading(false, item?.id))
           },2000)
           }else{
-          //console.log('error in fetching tx hash....')
-              await web3Provider.provider.request({
+                await web3Provider.provider.request({
                   method: 'wallet_switchEthereumChain',
                   params: [{ chainId: web3.chainid.rinkeby}],
               })
+              dispatch(setClaimLoading(false, item?.id))
           }
       } catch (error) {
           //console.log(error.toString())
@@ -120,14 +166,17 @@ export default function ContributionCard({item, signer,community_id}) {
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: web3.chainid.rinkeby}],
           })
+          dispatch(setClaimLoading(false, item?.id))
         }
         }
+        await dispatch(syncAllBadges())
         setLoad(false)
-        await dispatch(getAllBadges(signer,address,community_id))
-        await dispatch(getContributorOverview())
+        dispatch(getAllBadges(signer,address,community_id))
+        dispatch(setTransaction(null))
+        dispatch(setContributionDetail(null))
         
     }
-
+    console.log('status..',claim_loading)
     return(
         <div 
             onMouseEnter={()=>setOnHover(true)} 
@@ -144,12 +193,13 @@ export default function ContributionCard({item, signer,community_id}) {
             <div className={styles.descriptionContainer}>
                 <div style={{color:onHover&&'white'}} className={`${textStyles.m_16} ${styles.description}`}>{`${item?.requested_by?.metadata?.name?.toLowerCase()}  •  ${item?.stream?.toLowerCase()}  •  ${item?.time_spent} hrs`}</div>
             </div>
-            {role==='ADMIN'?null:
-            <div onClick={()=>claimBadges()} className={styles.statusContributorContainer}>
+            {role==='ADMIN'?
+                null 
+            :<div className={styles.statusContributorContainer}>
                 <div className={textStyles.m_16} style={{color:getContributionStatus()?.color, textAlign:'start'}}>{getContributionStatus()?.title}</div>
-                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div style={{color:'#ECFFB8'}} className={textStyles.m_16}> • {load?'claiming..':'claim badge'}</div> }
+                {item?.status==='APPROVED'&&item?.payout_status==='PAID'&&isApprovedToken()?.status&&<div onClick={async()=>await claimBadges()} style={{color:'#ECFFB8'}} className={textStyles.m_16}> • {claim_loading.status&&claim_loading?.id === item?.id?'claiming..':'claim badge'}</div> }
             </div>}
-            {/* <img className={styles.menuIcon} alt='menu' src={three_dots} /> */}
+            {role==='ADMIN'&& ((checkClaimApprovedSuccess()|| approvedBadge)&&item?.status==='APPROVED'&&item?.payout_status==='PAID'?(onHover?<img className={styles.menuIcon} alt='menu' src={approved_badge} />:<img className={styles.menuIcon} alt='menu' src={approved_badge_hover} />):<div className={styles.menuIcon}/>)}
         </div>
     )
     

@@ -3,6 +3,7 @@ import api from "../../constant/api";
 import routes from "../../constant/routes";
 import { authActions } from "../reducers/auth-slice";
 import { contributorAction } from "../reducers/contributor-slice";
+import apiClient from "../../utils/api_client";
 
 export const getAuthToken = () => {
   return async (dispatch, getState)=>{
@@ -21,11 +22,11 @@ export const getAuthToken = () => {
 export const authWithSign = (address, signer) => {
   return async (dispatch, getState) => {
     try {
-      const responseNonce = await axios.get(`${api.drepute.dev.BASE_URL}${routes.auth.getNonce}?addr=${address}`)
+      const responseNonce = await apiClient.get(`${api.drepute.dev.BASE_URL}${routes.auth.getNonce}?addr=${address}`)
       const signature = await signer.signMessage(`Signing in to drepute.xyz with nonce ${responseNonce.data.data.nonce}`)
       try {
         const data = {addr:address, sig:signature}
-        const responseSignature = await axios.post(`${api.drepute.dev.BASE_URL}${routes.auth.getSignature}`,data)
+        const responseSignature = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.auth.getSignature}`,data)
         if(responseSignature.data.success){
           dispatch(authActions.set_signing({jwt:responseSignature.data.data.token}))
           localStorage.setItem(address, JSON.stringify({jwt:responseSignature.data.data.token, time:new Date()}))
@@ -51,7 +52,7 @@ export const getJwt = (address) => {
       const createdTime = new Date(jwtInfo.time)
       let diffInMilliseconds = Math.abs(currentTime - createdTime);
       const hours = diffInMilliseconds/36e5
-      if(hours<= 0.1){
+      if(hours<= 2){
         dispatch(authActions.set_signing({jwt:jwtInfo.jwt}))
         return 1
     }
@@ -125,7 +126,7 @@ export const getCommunityRole = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}/${routes.dao.getCommunityRole}`,{
+      const res = await apiClient.get(`${api.drepute.dev.BASE_URL}/${routes.dao.getCommunityRole}`,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -159,7 +160,7 @@ export const joinContributor = (id) => {
     }
 
     try {
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.joinContributor}/${id}`,data,{
+      const res = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.dao.joinContributor}/${id}`,data,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }

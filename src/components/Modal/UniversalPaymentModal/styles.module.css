@@ -119,12 +119,12 @@
     border-left: 0rem;
     border-right: 0rem;
     padding: 1rem;
-    /* margin-top: ; */
     flex-direction: row;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 0rem;
+    cursor: pointer;
 }
 
 .plus{

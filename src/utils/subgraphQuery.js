@@ -27,7 +27,7 @@ export const COMMUNITY_HASH = `
 
 export const POCP_APPROVED_TOKEN = `
 {
-  approvedTokens(first:100) {
+  approvedTokens(first:1000) {
     id
     community {
       id
@@ -39,7 +39,7 @@ export const POCP_APPROVED_TOKEN = `
 
 export const POCP_COMMUNTIES_TX_HASH = `
 {
-  communities(first:100){
+  communities(first:1000){
     id
     txhash
   }

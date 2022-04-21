@@ -22,7 +22,8 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
         return amount_total.toFixed(2)
     }
 
-    //console.log('item....', item)
+    console.log('item....', item)
+    
 
     return(
             <div className={styles.requestItem}>
@@ -46,7 +47,7 @@ const RequestItem = ({item, tokenItem, approved_request}) => {
                             {item?.contri_detail?.requested_by?.metadata?.name?.split(' ')[0]}  •  {`${item?.contri_detail?.requested_by?.public_address?.slice(0,4)}...${item?.contri_detail?.requested_by?.public_address?.slice(-3)}`}
                         </div>
                         <Typography.Paragraph ellipsis={{rows:2}} className={`${textStyles.m_16} ${styles.greyedText}`}>
-                            {/* Jashan has been doing the phenominal boi, keep it up GG. */}
+                            {item?.feedback || item?.contri_detail?.feedback}
                         </Typography.Paragraph>
                     </div>
                     <div>

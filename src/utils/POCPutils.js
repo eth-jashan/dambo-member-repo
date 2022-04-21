@@ -1,11 +1,8 @@
-import axios from "axios";
+
 import { ethers } from "ethers";
-import { useSelector } from "react-redux";
-import Web3 from "web3";
 import { web3 } from "../constant/web3";
 import Forwarder from '../smartContract/POCP_Contracts/minimalForwarder.json'
 import POCPProxy from '../smartContract/POCP_Contracts/POCP.json'
-import { getAuthToken } from "../store/actions/auth-action";
 
 //signing function for registering dao
 export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
@@ -68,6 +65,7 @@ export const registerDaoToPocp = async(signer, name, ownerAddress, address) => {
 
 //signing function for approving badge
 export const approvePOCPBadge = async(signer, communityId, address, claimers, cids, url) => {
+    // console.log('approver', communityId, address, claimers, cids, url)
     let contract = new ethers.Contract(web3.POCP_Forwarder, Forwarder.abi, signer)
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
 
@@ -122,7 +120,7 @@ export const approvePOCPBadge = async(signer, communityId, address, claimers, ci
         signature = await signer._signTypedData(typeSigningObject.domain, typeSigningObject.types,data);
         return {data, signature} 
     } catch (error) {
-        //console.log("Error on signing register dao data", error)
+        console.log("Error on signing approve contri  data", error)
     }
     
 }
