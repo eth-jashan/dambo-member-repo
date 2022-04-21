@@ -132,9 +132,9 @@ const ConnectWallet = ({ isAdmin }) => {
             await web3Provider.provider.disconnect()
             dispatch(signout())
         }
-        setTimeout(() => {
-            window.location.reload()
-        }, 1)
+        // setTimeout(() => {
+        //     window.location.reload()
+        // }, 1)
     }, [dispatch, web3Provider])
 
     const alertBanner = () => (
