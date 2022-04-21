@@ -86,7 +86,7 @@ export const registerDao = () => {
                 return 0
             }
         } catch (error) {
-            console.log("error in registering.....", error)
+            // console.log("error in registering.....", error)
         }
     }
 }
@@ -106,7 +106,7 @@ export const getAllDaowithAddress = () => {
                     },
                 }
             )
-            console.log(`total daos of`, res.data.data.length)
+            // console.log(`total daos of`, res.data.data.length)
 
             if (res.data.data.length > 0) {
                 dispatch(
@@ -114,7 +114,7 @@ export const getAllDaowithAddress = () => {
                         list: res.data.data,
                     })
                 )
-                console.log("selection address", address, lastSelected)
+                // console.log("selection address", address, lastSelected)
                 let selectionIndex = 0
 
                 if (lastSelected) {
@@ -127,10 +127,10 @@ export const getAllDaowithAddress = () => {
                             item?.dao_details?.uuid ===
                                 isLastSelection[0]?.dao_uuid
                         ) {
-                            console.log("last remember there")
+                            // console.log("last remember there")
                             selectionIndex = index
                         } else {
-                            console.log("last remember not there")
+                            // console.log("last remember not there")
                         }
                     })
                 }
@@ -269,7 +269,7 @@ export const set_contri_filter = (filter_key, number) => {
                 // return 0
             }
         } catch (error) {
-            console.log("error...", error)
+            // console.log("error...", error)
             dispatch(
                 daoAction.set_contri_list({
                     list: [],
@@ -319,7 +319,7 @@ export const gnosisDetailsofDao = () => {
                 })
             )
         } catch (error) {
-            console.log("error", error)
+            // console.log("error", error)
             dispatch(
                 daoAction.set_gnosis_details({
                     details: null,
@@ -431,10 +431,10 @@ export const getContriRequest = () => {
                     )
                     return 1
                 } else {
-                    console.log(
-                        "pending contributor",
-                        res.data?.data?.contributions
-                    )
+                    // console.log(
+                    //     "pending contributor",
+                    //     res.data?.data?.contributions
+                    // )
                     dispatch(
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
@@ -459,7 +459,7 @@ export const getContriRequest = () => {
                 return 0
             }
         } catch (error) {
-            console.log("error...", error)
+            // console.log("error...", error)
             dispatch(
                 daoAction.set_contri_list({
                     list: [],

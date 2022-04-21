@@ -91,9 +91,9 @@ export const approvePOCPBadge = async (
     )
     let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
 
-    const nonceBigNumber = await contract.getNonce(address)
-    const chainId = (await contract.provider.getNetwork()).chainId
-    const nonce = parseInt(nonceBigNumber)
+  const nonceBigNumber = await contract.getNonce(address);
+  const chainId = (await contract.provider.getNetwork()).chainId;
+  const nonce = parseInt(nonceBigNumber);
 
     const ForwardRequest = [
         { name: "from", type: "address" },

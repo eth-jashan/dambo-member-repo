@@ -536,7 +536,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     const [load, setLoad] = useState(false)
 
     const claimBadges = async () => {
-        if (!load) {
+        if (!claim_loading.status) {
             setLoad(true)
             dispatch(setClaimLoading(true, currentTransaction?.id))
             try {
@@ -583,7 +583,6 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             )
                             dispatch(claimUpdate(currentTransaction?.id))
                             onContributionCrossPress()
-                            // await dispatch(getContriRequest())
                             await web3Provider.provider.request({
                                 method: "wallet_switchEthereumChain",
                                 params: [{ chainId: web3.chainid.rinkeby }],
@@ -637,7 +636,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 20000) {
                         clearInterval(interval)
-                        console.log("failed to get confirmation")
+                        // console.log("failed to get confirmation")
                     }
                     // console.log('tx_hash', tx_hash)
                     var customHttpProvider =

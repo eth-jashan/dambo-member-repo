@@ -54,7 +54,6 @@ import { getAllBadges } from "../../store/actions/contibutor-action"
 import { LinearProgress, Stack } from "@mui/material"
 import Web3 from "web3"
 import ERC20_ABI from "../../smartContract/erc20.json"
-import RegisterPOCPBanner from "../../components/Alert/RegisteToPOCP"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -612,7 +611,6 @@ export default function Dashboard() {
         contribution_request.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
-                    <RegisterPOCPBanner />
                     {contribution_request.map((item, index) => (
                         <ContributionCard
                             community_id={community_id[0]?.id}
