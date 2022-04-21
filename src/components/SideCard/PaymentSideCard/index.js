@@ -89,99 +89,6 @@ const PaymentSlideCard = ({ signer }) => {
     dispatch(setRejectModal(true));
   };
 
-//   const executeSafeTransaction = async (hash, c_id, to) => {
-//     const transaction = await serviceClient.getTransaction(hash);
-//     const safeTransactionData = {
-//       to: transaction.to,
-//       safeTxHash: transaction.safeTxHash,
-//       value: transaction.value,
-//       data: transaction.data || "0x",
-//       operation: transaction.operation,
-//       safeTxGas: transaction.safeTxGas,
-//       baseGas: transaction.baseGas,
-//       gasPrice: transaction.gasPrice,
-//       gasToken: transaction.gasToken,
-//       refundReceiver: transaction.refundReceiver,
-//       nonce: transaction.nonce,
-//     };
-//     if (!safeSdk) return;
-//     // console.log( transaction)
-
-//     const safeTransaction = await safeSdk.createTransaction(
-//       safeTransactionData
-//     );
-
-//     transaction.confirmations.forEach((confirmation) => {
-//       const signature = new EthSignSignature(
-//         confirmation.owner,
-//         confirmation.signature
-//       );
-//       safeTransaction.addSignature(signature);
-//     });
-
-//     let executeTxResponse;
-//     try {
-//       executeTxResponse = await safeSdk.executeTransaction(safeTransaction);
-//       console.log("done transaction.......");
-//     } catch (error) {
-//       console.error(error);
-//       return;
-//     }
-//     executeTxResponse.transactionResponse &&
-//       (await executeTxResponse.transactionResponse.wait());
-//     dispatch(
-//       setPayoutToast("EXECUTED", {
-//         item: 0,
-//         value: getTotalAmount(),
-//       })
-//     );
-//     // if(receipt){
-//     const { cid, url } = await getIpfsUrl(jwt, currentDao?.uuid, c_id);
-//     if (cid?.length > 0) {
-//       const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-//       try {
-//         await web3Provider.provider.request({
-//           method: "wallet_switchEthereumChain",
-//           params: [{ chainId: web3.chainid.polygon }],
-//         });
-//         const provider = new ethers.providers.Web3Provider(window.ethereum);
-//         const signer = provider.getSigner();
-//         console.log("community id....", community_id[0].id);
-//         const { data, signature } = await approvePOCPBadge(
-//           signer,
-//           parseInt(community_id[0].id),
-//           address,
-//           to,
-//           cid,
-//           url
-//         );
-//         const token = await dispatch(getAuthToken());
-//         const tx_hash = await relayFunction(token, 5, data, signature);
-//         if (tx_hash) {
-//           const startTime = Date.now();
-//           const interval = setInterval(async () => {
-//             if (Date.now() - startTime > 30000) {
-//               clearInterval(interval);
-//               console.log("failed to get confirmation");
-//             }
-//             console.log("tx_hash", tx_hash);
-//             var customHttpProvider = new ethers.providers.JsonRpcProvider(
-//               web3.infura
-//             );
-//             const reciept = await customHttpProvider.getTransactionReceipt(
-//               tx_hash
-//             );
-
-//             if (reciept?.status) {
-//               console.log("done", reciept);
-//               clearTimeout(interval);
-//               console.log("successfully registered");
-//               await provider.provider.request({
-//                 method: "wallet_switchEthereumChain",
-//                 params: [{ chainId: web3.chainid.rinkeby }],
-//               });
-//             }
-
     const [approveTitle, setApproveTitle] = useState(false)
 
     const executeSafeTransaction = async (hash,c_id, to) => {
@@ -226,17 +133,17 @@ const PaymentSlideCard = ({ signer }) => {
           await syncExecuteData(currentPayment?.metaInfo?.id,hash,'APPROVED',jwt, currentDao?.uuid)
             setApproveTitle('Approving Badge...')
             const {cid, url, status} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
-            //console.log('ipfs', url, cid, status)
+            // console.log('ipfs...', url, cid, status)
                 if(!status){
                     const startTime = Date.now()
                     const interval = setInterval(async()=>{
                         if(Date.now() - startTime > 10000){
                         clearInterval(interval)
-                        //console.log('failed to get ipfs url')
+                        console.log('failed to get ipfs url')
                         }
                         const {cid, url, status} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
-                        //console.log('status', status)
-                        //console.log('ipfs', url, cid, status)
+                        // console.log('status', status)
+                        // console.log('ipfs', url, cid, status)
                         if(status){
                             //console.log('ipfs', url, cid, status)
                         clearTimeout(interval)
@@ -255,6 +162,7 @@ const PaymentSlideCard = ({ signer }) => {
                                 const token = await dispatch(getAuthToken())
                                 const tx_hash = await relayFunction(token,5,data,signature)
                                 if(tx_hash){
+                                await updatePocpApproval(jwt,tx_hash,cid)
                                 const startTime = Date.now()
                                 const interval = setInterval(async()=>{
                                     if(Date.now() - startTime > 10000){
@@ -268,19 +176,15 @@ const PaymentSlideCard = ({ signer }) => {
                                     if(reciept?.status){
                                         setApproveTitle('Confirmed Badge...')
                                         clearTimeout(interval)
-                                        //console.log('successfully registered')
-                                        await updatePocpApproval(jwt,tx_hash,cid)
-                                        // if(res){
-                                            await provider.provider.request({
+                                        setPayoutToast('APPROVED_BADGE')
+                                          await provider.provider.request({
                                             method: 'wallet_switchEthereumChain',
                                             params: [{ chainId: web3.chainid.rinkeby}],
-                                            })
+                                          })
                                         // }
                                     }
-                                    //console.log('again....')
                                 },2000)
                                 }else{
-                                //console.log('error in fetching tx hash....')
                                     await provider.provider.request({
                                         method: 'wallet_switchEthereumChain',
                                         params: [{ chainId: web3.chainid.rinkeby}],
@@ -314,6 +218,7 @@ const PaymentSlideCard = ({ signer }) => {
                             const token = await dispatch(getAuthToken())
                             const tx_hash = await relayFunction(token,5,data,signature)
                             if(tx_hash){
+                            await updatePocpApproval(jwt,tx_hash,cid)
                             const startTime = Date.now()
                             const interval = setInterval(async()=>{
                                 if(Date.now() - startTime > 10000){
@@ -326,6 +231,7 @@ const PaymentSlideCard = ({ signer }) => {
                                 
                                 if(reciept?.status){
                                     clearTimeout(interval)
+                                    setPayoutToast('APPROVED_BADGE')
                                     await updatePocpApproval(jwt,tx_hash,cid)
                                     //console.log('successfully registered')
                                     await provider.provider.request({
@@ -385,7 +291,7 @@ const PaymentSlideCard = ({ signer }) => {
 //   }
 
   const getSignerName = (address) => {
-    console.log(currentDao?.signers[0].public_address, address.toString());
+    // console.log(currentDao?.signers[0].public_address, address.toString());
     return currentDao?.signers?.filter((x) => x.public_address === address)[0]
       ?.metadata?.name;
   };
@@ -446,7 +352,6 @@ const PaymentSlideCard = ({ signer }) => {
                 </div>
                 <div style={{ color: "gray" }} className={textStyle.m_16}>
                   {moment(currentPayment?.gnosis?.submissionDate)
-                    .startOf("hour")
                     .fromNow()}
                 </div>
               </div>

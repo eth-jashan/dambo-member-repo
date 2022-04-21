@@ -7,6 +7,7 @@ import { Input, message, Progress, InputNumber } from "antd";
 import { useDispatch } from "react-redux";
 import { createContributionrequest } from "../../../store/actions/contibutor-action";
 import Select from "react-select";
+import { getContriRequest } from "../../../store/actions/dao-action";
 
 const ContributionRequestModal = ({ setVisibility }) => {
   const [title, setTile] = useState("");
@@ -54,6 +55,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
         } else {
           message.error("Try creating again");
         }
+        await dispatch(getContriRequest())
       }
       setLoading(false);
     }

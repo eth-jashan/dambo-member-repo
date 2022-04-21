@@ -10,6 +10,7 @@ import {
   addOwners,
   addSafeAddress,
   addThreshold,
+  lastSelectedId,
   registerDao,
 } from "../store/actions/dao-action";
 // import { useHistory } from "react-router-dom";
@@ -84,7 +85,8 @@ export default function Onboarding() {
       dispatch(addSafeAddress(newSafeAddress));
       setDeploying(true);
       const {dao_uuid, name} = await dispatch(registerDao());
-        //console.log('owners...', owners)
+      dispatch(lastSelectedId(dao_uuid))
+        // console.log('owners...', owners)
 
         if (dao_uuid) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -131,7 +133,7 @@ export default function Onboarding() {
               })
           }
         } else {
-          navigate(`/onboard/dao`);
+          navigate(`/`);
         }
     },
     [address, dispatch, navigate, safeFactory, threshold]

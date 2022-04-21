@@ -6,18 +6,28 @@ import copy_black from "../../../assets/Icons/copy_black.svg";
 import chevron_right from '../../../assets/Icons/chevron_right.svg'
 import email from '../../../assets/Icons/email_black.svg'
 import setting from '../../../assets/Icons/settings_black.svg'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { signout } from '../../../store/actions/auth-action';
 
 const ProfileModal = () => {
 
     const address = useSelector(x=>x.auth.address)
-    
+    const dispatch = useDispatch()
+
+    async function copyTextToClipboard() {
+        if ('clipboard' in navigator) {
+          return await navigator.clipboard.writeText(address);
+        } else {
+          return document.execCommand('copy', true, address);
+        }
+      }
+
     return(
         
         <div className={styles.modal}>
             {/* <img src={CrossSvg} className={styles.cross} alt='cross' /> */}
 
-            <div className={styles.disconnectDiv} style={{marginTop:'1.5rem'}}>
+            <div onClick={()=>dispatch(signout())} className={styles.disconnectDiv} style={{marginTop:'1.5rem'}}>
                 <div>
                     <div className={styles.dot}/>
                     <div>
@@ -25,7 +35,7 @@ const ProfileModal = () => {
                         <div style={{textDecoration:'underline'}} className={textStyles.m_14}>disconnect</div>
                     </div>
                 </div>
-                <img src={copy_black} className={styles.copy} alt='cross' />
+                <img onClick={async()=>await copyTextToClipboard()} src={copy_black} className={styles.copy} alt='cross' />
             </div>
 
             <div className={styles.divider}/>

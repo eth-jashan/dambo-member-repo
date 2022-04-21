@@ -1,6 +1,5 @@
 import React from 'react'
 import styles from './style.module.css'
-// import Hexagon from 'react-hexagon'
 import pocp_bg from '../../assets/POCP_background.svg'
 
 const POCPBadge = ({dao_name, title, to, from, date, doa_url}) => {

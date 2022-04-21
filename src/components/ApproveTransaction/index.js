@@ -8,14 +8,14 @@ export default function ApproveTransaction({
   selectedIndex,
   setSelectedIndex,
 }) {
-  const owners = useSelector(x=>x.dao.newSafeSetup.owners)
+  const owners = useSelector((x) => x.dao.newSafeSetup.owners);
   return (
     <div className={styles.wrapper}>
-      <div className={styles.heading}>
-      Add vault owners
-      </div>
+      <div className={styles.heading}>Add vault owners</div>
       <div className={`${styles.heading} ${styles.greyedHeading}`}>
-      have more than one owner to<br/>maximize security
+        have more than one owner to
+        <br />
+        maximize security
       </div>
       <div className={styles.peopleContainer}>
         {Array(owners.length)

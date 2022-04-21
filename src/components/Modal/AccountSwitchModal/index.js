@@ -5,7 +5,7 @@ import chevron_right from '../../../assets/Icons/chevron_right.svg'
 import approver from '../../../assets/Icons/approver_icon.svg'
 import contributor from '../../../assets/Icons/contributor_icon.svg'
 import { useDispatch, useSelector } from 'react-redux';
-import { getContributorOverview, getContriRequest, getPayoutRequest, set_payout_filter, switchRole, syncTxDataWithGnosis } from '../../../store/actions/dao-action';
+import { getContributorOverview, getContriRequest, getDaoHash, getPayoutRequest, set_payout_filter, switchRole, syncAllBadges, syncTxDataWithGnosis } from '../../../store/actions/dao-action';
 import { getAllBadges } from '../../../store/actions/contibutor-action'
 import { setLoadingState } from '../../../store/actions/toast-action'
 
@@ -20,7 +20,12 @@ const AccountSwitchModal = ({onChange, route,c_id, signer}) => {
         dispatch(setLoadingState(true))
         dispatch(switchRole(role))
         onChange()
-        //console.log('here..', role, route,community_id[0]?.id)
+        // await Promise.all([
+           await  dispatch(getDaoHash())
+            await dispatch(syncAllBadges())
+        // ])
+        dispatch(getContributorOverview())
+        dispatch(getAllBadges(signer, address, community_id[0]?.id))
         if(route === 'contributions'&& role ==='ADMIN'){
             await  dispatch(getContriRequest())
             await dispatch(getPayoutRequest())
