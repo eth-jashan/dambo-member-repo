@@ -97,8 +97,6 @@ export default function Onboarding() {
             setDeploying(true)
             const { dao_uuid, name } = await dispatch(registerDao())
             dispatch(lastSelectedId(dao_uuid))
-            // console.log('owners...', owners)
-
             if (dao_uuid) {
                 const web3Provider = new ethers.providers.Web3Provider(
                     window.ethereum
@@ -151,10 +149,10 @@ export default function Onboarding() {
                                 })
                                 navigate(`/dashboard`)
                             }
-                            //console.log('again....')
+                            console.log('again....')
                         }, 2000)
                     } else {
-                        //console.log('error in fetching tx hash....')
+                        console.log('error in fetching tx hash....')
                     }
                 } catch (error) {
                     //console.log(error.toString())

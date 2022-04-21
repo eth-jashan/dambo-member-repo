@@ -446,4 +446,7 @@ const ConnectWallet = ({ isAdmin }) => {
     return isAdmin ? daoWallet() : contributorWallet()
 }
 
-export default ConnectWallet
+  return isAdmin ? daoWallet() : contributorWallet();
+};
+
+export default ConnectWallet;
