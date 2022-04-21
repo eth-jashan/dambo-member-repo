@@ -64,7 +64,6 @@ export default function Dashboard() {
     const [uniPayHover, setUniPayHover] = useState(false)
 
     const payout_toast = useSelector((x) => x.toast.payout)
-    const initial_setup = useSelector((x) => x.dao.initial_setup)
     const account_mode = useSelector((x) => x.dao.account_mode)
     const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()

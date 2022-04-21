@@ -12,11 +12,8 @@ import {
     getPayoutRequest,
     gnosisDetailsofDao,
     lastSelectedId,
-    setPayoutFilter,
     set_active_nonce,
     set_dao,
-    set_payout_filter,
-    signingPayout,
     syncAllBadges,
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
@@ -269,16 +266,19 @@ export default function DashboardLayout({ children, route, signer }) {
                                 onClick={() => changeAccount(item, index)}
                                 style={{
                                     height: "2.25rem",
-                                    borderRadius: !item?.dao_details?.logo_url
-                                        ? 0
-                                        : "2.25rem",
                                     width: "100%",
                                     background: "transparent",
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "center",
+                                    position: "relative",
+                                    cursor: "pointer",
                                 }}
                             >
+                                {currentDao?.uuid ===
+                                    item.dao_details?.uuid && (
+                                    <div className={styles.selectedDao}></div>
+                                )}
                                 {/* {currentDao?.uuid === item?.dao_details?.uuid?<div style={{height:'100%', width:'4px', background:'white', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem', marginRight:'8px'}}/>:<div style={{height:'100%', width:'4px', background:'transparent', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem',marginRight:'8px'}}/>} */}
                                 {item?.dao_details?.logo_url ? (
                                     <img
@@ -289,6 +289,7 @@ export default function DashboardLayout({ children, route, signer }) {
                                             borderRadius: "2.25rem",
                                             background: "black",
                                             width: "2.25rem",
+                                            margin: "0 auto",
                                         }}
                                     />
                                 ) : (
@@ -301,6 +302,7 @@ export default function DashboardLayout({ children, route, signer }) {
                                             display: "flex",
                                             justifyContent: "center",
                                             alignItems: "center",
+                                            margin: "0 auto",
                                         }}
                                     />
                                 )}
