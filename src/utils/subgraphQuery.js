@@ -1,7 +1,7 @@
 export const POCP_CLAIMED_TOKEN = `
 query{
     pocpTokens(
-      first:100 
+      first:1000 
       orderBy: id 
       orderDirection:desc
     ) {
@@ -18,7 +18,7 @@ query{
 
 export const COMMUNITY_HASH = `
   {
-    communities(first:100){
+    communities(first:1000){
       id
       txhash
     }

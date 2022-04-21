@@ -233,7 +233,7 @@ export default function Onboarding() {
                         if (tx_hash) {
                             const startTime = Date.now()
                             const interval = setInterval(async () => {
-                                if (Date.now() - startTime > 30000) {
+                                if (Date.now() - startTime > 20000) {
                                     clearInterval(interval)
                                     //console.log('failed to get confirmation')
                                 }

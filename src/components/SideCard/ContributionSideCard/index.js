@@ -536,7 +536,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     const [load, setLoad] = useState(false)
 
     const claimBadges = async () => {
-        if (!load) {
+        if (!claim_loading.status) {
             setLoad(true)
             dispatch(setClaimLoading(true, currentTransaction?.id))
             try {
@@ -583,7 +583,6 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             )
                             dispatch(claimUpdate(currentTransaction?.id))
                             onContributionCrossPress()
-                            // await dispatch(getContriRequest())
                             await web3Provider.provider.request({
                                 method: "wallet_switchEthereumChain",
                                 params: [{ chainId: web3.chainid.rinkeby }],
