@@ -29,6 +29,8 @@ const daoSlice = createSlice({
       total_amount: 0,
     },
     all_payout_request: [],
+    all_claimed_badge:[],
+    all_approved_badge:[],
     pocp_dao_info: [],
     newSafeSetup: {
       owners: [],
@@ -118,6 +120,13 @@ const daoSlice = createSlice({
     set_execute_payment_loading(state, action) {
       state.executePaymentLoading = action.payload.loading;
     },
+    set_pocp_badges(state, action){
+      state.all_claimed_badge = action.payload.claimed;
+      state.all_approved_badge = action.payload.allApproved
+    },
+    set_after_claim(state,action){
+      state.contribution_request = action.payload.list
+    }
   },
 });
 

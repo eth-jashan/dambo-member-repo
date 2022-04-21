@@ -15,8 +15,8 @@ import {
   getPayoutRequest,
   gnosisDetailsofDao,
   set_active_nonce,
-  set_initial_setup,
   set_payout_filter,
+  syncAllBadges,
   syncTxDataWithGnosis,
 } from "../../store/actions/dao-action";
 import DashboardLayout from "../../views/DashboardLayout";
@@ -54,6 +54,7 @@ import { getAllBadges } from "../../store/actions/contibutor-action";
 import { LinearProgress, Stack } from "@mui/material";
 import Web3 from "web3";
 import ERC20_ABI from "../../smartContract/erc20.json";
+import RegisterPOCPBanner from "../../components/Alert/RegisteToPOCP";
 
 const serviceClient = new SafeServiceClient(
   "https://safe-transaction.rinkeby.gnosis.io/"
@@ -156,13 +157,16 @@ export default function Dashboard() {
   const initialLoad = useCallback(async () => {
     dispatch(setLoadingState(true));
     const account = await onInit();
+    // await Promise.all([
     await dispatch(getDaoHash());
+    await dispatch(syncAllBadges());
     //console.log('account', account)
     if (address === ethers.utils.getAddress(account)) {
       const jwtIfo = await dispatch(getJwt(address));
       if (jwtIfo) {
         const account_role = await dispatch(getAllDaowithAddress());
         await dispatch(gnosisDetailsofDao());
+        dispatch(getAllBadges(signer, address, community_id[0]?.id));
         //console.log("load", account_role);
         if (account_role === "ADMIN") {
           dispatch(setPayment(null));
@@ -188,7 +192,7 @@ export default function Dashboard() {
         }
       } else {
         dispatch(setLoadingState(false));
-        message.info("Token expired");
+        // message.info("Token expired");
         navigate("/");
       }
     } else {
@@ -235,10 +239,6 @@ export default function Dashboard() {
       } else {
         accountSwitch();
       }
-      // else{
-      //     //console.log('Loaded for account switch')
-      //     accountSwitch()
-      // }
     }
   }, []);
 
@@ -248,7 +248,12 @@ export default function Dashboard() {
 
   const onRouteChange = async (route) => {
     dispatch(setLoadingState(true));
+    // await Promise.all(
+    // [
     await dispatch(getDaoHash());
+    await dispatch(getAllBadges(signer, address, community_id[0]?.id));
+    // ]
+    // )
     setTab(route);
     if (role === "ADMIN") {
       if (safeSdk) {
@@ -256,7 +261,7 @@ export default function Dashboard() {
         dispatch(set_active_nonce(nonce));
       }
       if (route === "payments") {
-        //console.log("payment route......");
+        console.log("payment route......", route);
         await dispatch(getPayoutRequest());
         await dispatch(syncTxDataWithGnosis());
         await dispatch(set_payout_filter("PENDING", 1));
@@ -267,8 +272,11 @@ export default function Dashboard() {
         await dispatch(getContriRequest());
       }
     } else {
+      dispatch(getContributorOverview());
+      dispatch(getAllBadges(signer, address, community_id[0]?.id));
       await dispatch(getContriRequest());
-      await dispatch(getAllBadges(signer, address, community_id[0]?.id));
+      // dispatch(getContributorOverview())
+      // dispatch(getAllBadges(signer, address, community_id[0]?.id));
     }
     dispatch(setPayment(null));
     dispatch(setTransaction(null));
@@ -543,6 +551,10 @@ export default function Dashboard() {
       };
     } else if (payout_toast === "REJECTED") {
       return { title: `Payment rejected  •  ${600}$`, background: "#4D4D4D" };
+    } else if (payout_toast === "APPROVED_BADGE") {
+      return { title: `Approved Badge`, background: "#4D4D4D" };
+    } else if (payout_toast === "CLAIMED_BADGE") {
+      return { title: `Claimed Badge`, background: "#4D4D4D" };
     }
   };
 
@@ -568,8 +580,13 @@ export default function Dashboard() {
     contribution_request.length > 0 ? (
       <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
+          <RegisterPOCPBanner />
           {contribution_request.map((item, index) => (
-            <ContributionCard community_id={community_id[0]?.id} signer={signer} item={item} />
+            <ContributionCard
+              community_id={community_id[0]?.id}
+              signer={signer}
+              item={item}
+            />
           ))}
         </div>
       </div>
@@ -582,7 +599,11 @@ export default function Dashboard() {
       <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
           {contribution_request.map((item, index) => (
-            <ContributionCard community_id={community_id[0]?.id} signer={signer} item={item} />
+            <ContributionCard
+              community_id={community_id[0]?.id}
+              signer={signer}
+              item={item}
+            />
           ))}
         </div>
       </div>
@@ -605,12 +626,15 @@ export default function Dashboard() {
       ))}
     </div>
   );
+  const nonce = useSelector((x) => x.dao.active_nonce);
 
   const renderPayment = () =>
     payout_request.length > 0 ? (
       <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
         <div style={{ width: "100%", marginBottom: "100px" }}>
-          <GnosisExternalPayment />
+          {nonce !== payout_request[0]?.gnosis?.nonce && (
+            <GnosisExternalPayment />
+          )}
           {payout_request.map((item, index) => (
             <PaymentCard gnosis={pending_txs} signer={signer} item={item} />
           ))}

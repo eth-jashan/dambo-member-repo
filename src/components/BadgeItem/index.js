@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styles from './style.module.css'
-// import Hexagon from 'react-hexagon'
 import pocp_bg from '../../assets/POCP_background.svg'
 import { getMetaInfo } from '../../utils/relayFunctions'
 import { useDispatch, useSelector } from 'react-redux'

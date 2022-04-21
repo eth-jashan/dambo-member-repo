@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import edit_active from "../../assets/Icons/edit_active.svg";
-
 import edit_inactive from "../../assets/Icons/edit_inactive.svg";
 import edit_hover from "../../assets/Icons/edit_hover.svg";
 import three_dots from "../../assets/Icons/three_dots.svg";
@@ -13,7 +12,7 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import { useSafeSdk } from "../../hooks";
 import { message } from 'antd';
 import { EthSignSignature } from '../../utils/EthSignSignature';
-import { executePayout, getPayoutRequest, set_active_nonce, set_payout_filter, signingPayout, syncExecuteData, syncTxDataWithGnosis,setLoading } from '../../store/actions/dao-action';
+import { getPayoutRequest, set_active_nonce, set_payout_filter, syncExecuteData, syncTxDataWithGnosis,setLoading } from '../../store/actions/dao-action';
 import moment from 'moment';
 import { setPayoutToast } from '../../store/actions/toast-action';
 import { getIpfsUrl, relayFunction, updatePocpApproval, updatePocpRegister, uplaodApproveMetaDataUpload } from '../../utils/relayFunctions';
@@ -39,7 +38,7 @@ export default function PaymentCard({item, signer}) {
     const pocp_dao_info = useSelector(x=>x.dao.pocp_dao_info)
     const community_id = pocp_dao_info.filter(x=>x.txhash === currentDao?.tx_hash)
     const executePaymentLoading = useSelector((x) => x.dao.executePaymentLoading);
-    console.log('communit id', community_id, pocp_dao_info, currentDao)
+    // console.log('communit id', community_id, pocp_dao_info, currentDao)
 
     const getPayoutTotal = (payout) => {
         const usd_amount = []
@@ -79,7 +78,7 @@ export default function PaymentCard({item, signer}) {
         x.tokens.map((x, i)=>{
             tokens.push(`${x?.amount} ${x?.details?.symbol}`)
         })
-        console.log(tokens)
+        // console.log(tokens)
         tokens = tokens.slice(0,2)?.toString()
 
         return(
@@ -136,7 +135,7 @@ export default function PaymentCard({item, signer}) {
             </div>
             <div className={styles.addressContainer}>
                 <div className={styles.bundleInfo}>
-                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>{moment(item?.gnosis?.submissionDate).startOf('hour').fromNow()}</div>
+                    <div className={`${textStyles.m_16} ${styles.whiterText}`}>{moment(item?.gnosis?.submissionDate).fromNow()}</div>
                         
                     <div style={{flexDirection:'row', display:'flex', alignItems:'center'}}>
                         <div style={{background: onHover && '#5C5C5C'}} className={styles.signerInfo}>
@@ -216,7 +215,6 @@ export default function PaymentCard({item, signer}) {
             nonce: transaction.nonce
         }
         if (!safeSdk) return
-        // console.log( transaction)
         
         const safeTransaction = await safeSdk.createTransaction(safeTransactionData)
         
@@ -229,7 +227,7 @@ export default function PaymentCard({item, signer}) {
         let executeTxResponse
         try {
           executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-          console.log('done transaction.......')
+          //console.log('done transaction.......')
         } catch(error) {
           console.error(error)
           return
@@ -240,25 +238,23 @@ export default function PaymentCard({item, signer}) {
             value:getTotalAmount()
           }))
           await syncExecuteData(item?.metaInfo?.id,hash,'APPROVED',jwt, currentDao?.uuid)
-            // await dispatch(getPayoutRequest())
-            // await dispatch(syncTxDataWithGnosis())
             setApproveTitle('Approving Badge...')
             const {cid, url, status} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
-            console.log('ipfs', url, cid, status)
+            // console.log('ipfs...', url, cid, status)
                 if(!status){
                     const startTime = Date.now()
                     const interval = setInterval(async()=>{
                         if(Date.now() - startTime > 10000){
                         clearInterval(interval)
-                        console.log('failed to get ipfs url')
+                        // console.log('failed to get ipfs url')
                         }
                         const {cid, url, status} = await getIpfsUrl(jwt,currentDao?.uuid,c_id)
-                        console.log('status', status)
-                        console.log('ipfs', url, cid, status)
+                        // console.log('status', status)
+                        // console.log('ipfs', url, cid, status)
                         if(status){
-                            console.log('ipfs', url, cid, status)
+                            //console.log('ipfs', url, cid, status)
                         clearTimeout(interval)
-                        console.log('successfully registered')
+                        //console.log('successfully registered')
                         if(cid?.length>0){
                             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
                             try {
@@ -273,39 +269,36 @@ export default function PaymentCard({item, signer}) {
                                 const token = await dispatch(getAuthToken())
                                 const tx_hash = await relayFunction(token,5,data,signature)
                                 if(tx_hash){
+                                await updatePocpApproval(jwt,tx_hash,cid)
                                 const startTime = Date.now()
                                 const interval = setInterval(async()=>{
                                     if(Date.now() - startTime > 10000){
                                     clearInterval(interval)
-                                    console.log('failed to get confirmation')
+                                    //console.log('failed to get confirmation')
                                     await updatePocpApproval(jwt,tx_hash,cid)
                                     }
                                     var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
                                     const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                                     
                                     if(reciept?.status){
+                                        setPayoutToast('APPROVED_BADGE')
                                         setApproveTitle('Confirmed Badge...')
                                         clearTimeout(interval)
-                                        console.log('successfully registered')
-                                        await updatePocpApproval(jwt,tx_hash,cid)
-                                        // if(res){
-                                            await provider.provider.request({
+                                          await provider.provider.request({
                                             method: 'wallet_switchEthereumChain',
                                             params: [{ chainId: web3.chainid.rinkeby}],
-                                            })
+                                          })
                                         // }
                                     }
-                                    console.log('again....')
                                 },2000)
                                 }else{
-                                console.log('error in fetching tx hash....')
                                     await provider.provider.request({
                                         method: 'wallet_switchEthereumChain',
                                         params: [{ chainId: web3.chainid.rinkeby}],
                                     })
                                 }
                             } catch (error) {
-                                console.log(error.toString())
+                                //console.log(error.toString())
                                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                                 await provider.provider.request({
                                     method: 'wallet_switchEthereumChain',
@@ -314,7 +307,7 @@ export default function PaymentCard({item, signer}) {
                             }
                         }
                         }
-                        console.log('again....')
+                        //console.log('again....')
                     },3000)
 
                 }else{
@@ -332,37 +325,39 @@ export default function PaymentCard({item, signer}) {
                             const token = await dispatch(getAuthToken())
                             const tx_hash = await relayFunction(token,5,data,signature)
                             if(tx_hash){
+                            await updatePocpApproval(jwt,tx_hash,cid)
                             const startTime = Date.now()
                             const interval = setInterval(async()=>{
                                 if(Date.now() - startTime > 10000){
                                 clearInterval(interval)
-                                console.log('failed to get confirmation')
+                                //console.log('failed to get confirmation')
                                 }
-                                console.log('tx_hash', tx_hash)
+                                //console.log('tx_hash', tx_hash)
                                 var customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura);
                                 const reciept = await customHttpProvider.getTransactionReceipt(tx_hash)
                                 
                                 if(reciept?.status){
                                     clearTimeout(interval)
+                                    setPayoutToast('APPROVED_BADGE')
                                     await updatePocpApproval(jwt,tx_hash,cid)
-                                    console.log('successfully registered')
+                                    //console.log('successfully registered')
                                     await provider.provider.request({
                                     method: 'wallet_switchEthereumChain',
                                     params: [{ chainId: web3.chainid.rinkeby}],
                                     })
                                 }
 
-                                console.log('again....')
+                                //console.log('again....')
                             },2000)
                             }else{
-                            console.log('error in fetching tx hash....')
+                            //console.log('error in fetching tx hash....')
                                 await provider.provider.request({
                                     method: 'wallet_switchEthereumChain',
                                     params: [{ chainId: web3.chainid.rinkeby}],
                                 })
                             }
                         } catch (error) {
-                            console.log(error.toString())
+                            //console.log(error.toString())
                             const provider = new ethers.providers.Web3Provider(window.ethereum);
                             await provider.provider.request({
                                 method: 'wallet_switchEthereumChain',
@@ -373,7 +368,6 @@ export default function PaymentCard({item, signer}) {
                 }
                 await dispatch(getPayoutRequest())
                 await dispatch(set_payout_filter('PENDING',1))
-                // await dispatch()
                 setApproveTitle(false)
                 dispatch(setPayment(null))
             }
@@ -396,8 +390,6 @@ export default function PaymentCard({item, signer}) {
             return {title:'Payment Rejected', color:'#FF6262', background:'#331414'}
         }
     }
-
-    console.log('status button', isReject , delegates.length , item?.gnosis?.confirmations?.length, checkApproval(), item?.status)
 
     const uploadApproveMetatoIpfs = async() => {
         let metaInfo = []
@@ -431,11 +423,11 @@ export default function PaymentCard({item, signer}) {
             const res =  await uploadApproveMetatoIpfs()
             if(res.status){
                 await executeSafeTransaction(res?.cid, res?.to)
-                console.log('success')
+                // console.log('success')
             }
-            console.log('success')            
+            // console.log('success')            
         } catch (error) {
-            console.log('error', error.toString())
+            // console.log('error', error.toString())
         }
     }
 
@@ -445,7 +437,7 @@ export default function PaymentCard({item, signer}) {
             if(delegates.length === item?.gnosis?.confirmations?.length){
                 await executeFunction()
             }else if (checkApproval()){
-                console.log('Already Signed !!!')
+                // console.log('Already Signed !!!')
             }else if (!checkApproval() && onHover){
                 await confirmTransaction(tranx)
             }

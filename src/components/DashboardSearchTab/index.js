@@ -18,10 +18,11 @@ const DashboardSearchTab = ({route}) => {
     const [contriFilter, setContriFilter] = useState(1)
     const [search, setSearch] = useState(false)
     const [filterShow, setFilterShow] = useState(false)
+    const role = useSelector(x=>x.dao.role)
     
     const contri_filter = ['All requests', 'Active requests', 'Approved requests', 'Paid requests' ]
     const payout_filter = ['All requests','Pending Payment Request', 'Approved requests','Paid requests','Rejected requests' ]
-
+    const claim_filter = ['Unclaimed Badges','Claimed Badges']
     const [payoutFilter, setPayoutFilter] = useState(1)
     
     const dispatch = useDispatch()
@@ -96,6 +97,18 @@ const DashboardSearchTab = ({route}) => {
           </Menu.Item>
         </Menu>
       );
+      
+      const claimMenu = (
+        <Menu  style={{borderRadius:'8px',width:'15.813rem', background:'#1F1F1F', paddingTop:'1rem', paddingBottom:'1rem'}} onClick={payoutOnClick}>
+          <Menu.Item className={styles.menuContainer} key="1">
+          <div className={styles.menu}>Unclaimed Badges</div>
+          </Menu.Item>
+          <Menu.Item className={styles.menuContainer} key="2">
+          <div className={styles.menu}>Claimed Badges Request</div>  
+          </Menu.Item>
+        </Menu>
+      );
+
       const loadingState = useSelector(x=>x.toast.loading_state)
       const renderSearchBar = () => (
             <div className={styles.searchContainer}>
@@ -120,9 +133,9 @@ const DashboardSearchTab = ({route}) => {
     return(
         
         <div className={styles.container}>
-            {!loadingState?<Dropdown  overlay={route==='contributions'?contriMenu:payoutMenu}>
+            {!loadingState?<Dropdown  overlay={route==='contributions'?contriMenu:(route==='payments'&&role==='ADMIN'?payoutMenu:claimMenu)}>
             <div className={`${textStyles.m_16} ${styles.text}`}>
-                {route==='contributions'?`${contribution_request?.length} ${contri_filter[contri_filter_key]}`:`${payout_filter[payout_filter_key]}`}
+                {route==='contributions'?`${contribution_request?.length} ${contri_filter[contri_filter_key]}`:`${role==='ADMIN'?payout_filter[payout_filter_key]:claim_filter[payout_filter_key]}`}
             </div>
             </Dropdown>:renderLoader()}
             <div style={{display:'flex', flexDirection:'row'}}>
@@ -135,7 +148,7 @@ const DashboardSearchTab = ({route}) => {
                 <div className={`${styles.icon} ${filterShow ? styles.filterOpen:""}`} onClick={() => setFilterShow(true)}>
                 <img src={filter} alt='cross' className={`${styles.searchIcon} ${filterShow ? styles.filterOpen:""}`} />
                 </div>
-                <FilterModal isContribution={route==='contributions'} onClose={() => setFilterShow(false)} show={filterShow} />
+                {/* <FilterModal isContribution={route==='contributions'} onClose={() => setFilterShow(false)} show={filterShow} /> */}
                 </div>
             </div>
         </div>

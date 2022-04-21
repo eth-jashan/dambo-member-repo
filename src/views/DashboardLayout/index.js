@@ -17,6 +17,7 @@ import {
   set_dao,
   set_payout_filter,
   signingPayout,
+  syncAllBadges,
   syncTxDataWithGnosis,
 } from "../../store/actions/dao-action";
 import { links } from "../../constant/links";
@@ -71,20 +72,22 @@ export default function DashboardLayout({ children, route, signer }) {
     dispatch(setLoadingState(true));
     dispatch(setPayment(null));
     dispatch(setTransaction(null));
-    await dispatch(getDaoHash());
+    // await Promise.all([
+      await dispatch(getDaoHash())
+      await dispatch(syncAllBadges())
+      
     dispatch(resetApprovedRequest());
     dispatch(set_dao(item));
     dispatch(lastSelectedId(item?.dao_details?.uuid))
     await dispatch(gnosisDetailsofDao());
-
+    await dispatch(getContriRequest());
     if (route === "contributions" && role === "ADMIN") {
-      await dispatch(getContriRequest());
       await dispatch(getPayoutRequest());
       await dispatch(syncTxDataWithGnosis());
     } else if (role !== "ADMIN") {
+      // await dispatch(getContriRequest());
       dispatch(getContributorOverview());
-      await dispatch(getAllBadges(signer, address, community_id[0]?.id));
-      await dispatch(getContriRequest());
+      dispatch(getAllBadges(signer, address, community_id[0]?.id));
     } else if (route !== "contributions" && role === "ADMIN") {
       // await  dispatch(getContriRequest())
       await dispatch(getPayoutRequest());

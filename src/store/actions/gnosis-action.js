@@ -2,7 +2,8 @@ import api from "../../constant/api";
 import routes from "../../constant/routes";
 import { gnosisAction } from "../reducers/gnosis-slice";
 import SafeServiceClient from '@gnosis.pm/safe-service-client';
-import axios from "axios";
+// import axios from "axios";
+import apiClient from '../../utils/api_client'
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
@@ -10,7 +11,7 @@ export const getAddressMembership = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
+      const res = await apiClient.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }

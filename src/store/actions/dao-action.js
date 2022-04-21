@@ -1,9 +1,11 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import { createClient } from "@urql/core"
-import axios from "axios"
+// import axios from "axios"
+import apiClient from '../../utils/api_client'
+import { ethers } from "ethers"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
-import { POCP_COMMUNTIES_TX_HASH } from "../../utils/subgraphQuery"
+import { POCP_APPROVED_TOKEN, POCP_CLAIMED_TOKEN, POCP_COMMUNTIES_TX_HASH } from "../../utils/subgraphQuery"
 import { authActions } from "../reducers/auth-slice"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
@@ -71,7 +73,7 @@ export const registerDao = () => {
     }
     
     try {
-        const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
+        const res = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,data,
           {
             headers:{
               Authorization:`Bearer ${jwt}`
@@ -98,7 +100,7 @@ export const getAllDaowithAddress = () => {
       const lastSelected = getState().auth.lastSelection
     
       try {
-        const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
+        const res = await apiClient.get(`${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,{
           headers:{
             Authorization:`Bearer ${jwt}`
           }
@@ -125,7 +127,7 @@ export const getAllDaowithAddress = () => {
             }
             
 
-            console.log('selection index', selectionIndex)
+            // console.log('selection index', selectionIndex)
 
             dispatch(daoAction.set_current_dao({
               dao:res.data.data[selectionIndex].dao_details,
@@ -170,7 +172,7 @@ export const set_contri_filter = (filter_key, number) => {
     const uuid = getState().dao.currentDao?.uuid
     const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
     try {
-      const res = await axios.get(url,{
+      const res = await apiClient.get(url,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -295,16 +297,18 @@ export const getContriRequest = () => {
   return async (dispatch, getState) => {
     const jwt = getState().auth.jwt
     const uuid = getState().dao.currentDao?.uuid
+    const all_claimed_badge = getState().dao.all_claimed_badge
+    const all_approved_badge = getState().dao.all_approved_badge
     dispatch(tranactionAction.reset_approved_request())
     const url = getState().dao.role === 'ADMIN'?`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`:`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
     try {
-      const res = await axios.get(url,{
+      const res = await apiClient.get(url,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
       })
       if(res.data.success){
-        //Approved Request without gnosis
+        //Approved Request without creating payout
         let cid = []
         res?.data?.data?.contributions?.map((item, index) => {
           let payout = []
@@ -328,12 +332,21 @@ export const getContriRequest = () => {
         })
 
         dispatch(daoAction.set_contribution_id({cid}))
-        
-        dispatch(daoAction.set_contri_list({
-          list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),
-          number:1
-        }))
-        return 1
+        if(getState().dao.role === 'ADMIN'){
+          dispatch(daoAction.set_contri_list({
+            list:res.data?.data?.contributions.filter(x=>x.payout_status === null && x.status!=='REJECTED'&& x.tokens.length===0),
+            number:1
+          }))
+          return 1
+        }else{
+          
+          console.log('pending contributor', res.data?.data?.contributions)
+          dispatch(daoAction.set_contri_list({
+            list:res.data?.data?.contributions.filter(x=>(x.payout_status === null || x.payout_status === 'REQUESTED' || x.payout_status === "PAID") && x.status!=='REJECTED' && !x.claimed_tx),
+            number:1
+          }))
+
+      }
       }else{
         dispatch(daoAction.set_contri_list({
           list:[],
@@ -363,7 +376,7 @@ export const getPayoutRequest = () => {
     const uuid = getState().dao.currentDao?.uuid
 
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
+      const res = await apiClient.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -435,7 +448,7 @@ export const getPayoutRequest = () => {
           }
   
           try {
-            await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
+            await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
               headers:{
                 Authorization:`Bearer ${jwt}`
               }
@@ -462,7 +475,7 @@ export const set_payout_filter = (filter_key, number) => {
     const safe_address = getState().dao.currentDao?.safe_public_address
     const uuid = getState().dao.currentDao?.uuid
     try {
-      const res = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
+      const res = await apiClient.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -554,9 +567,9 @@ export const syncExecuteData = async(id, safeTxHash,status, jwt, uuid) => {
       status
     }]
   }
-  console.log('updated data...', data)
+  // console.log('updated data...', data)
   try {
-    await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
+    await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
       headers:{
         Authorization:`Bearer ${jwt}`
       }
@@ -625,7 +638,7 @@ export const syncTxDataWithGnosis = (payout) => {
         }
 
         try {
-          await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
+          await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,data,{
             headers:{
               Authorization:`Bearer ${jwt}`
             }
@@ -681,7 +694,7 @@ export const createPayout = (tranxid, nonce, isExternal= false) => {
       nonce:nonce
     }
 
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,isExternal?data_external:data,{
+      const res = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,isExternal?data_external:data,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -741,7 +754,7 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
       description:description
     }
 
-      const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.externalPayout}`,data,{
+      const res = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.externalPayout}`,data,{
         headers:{
           Authorization:`Bearer ${jwt}`
         }
@@ -851,7 +864,7 @@ export const getAllSafeFromAddress = (address) => {
     daos = daos.toString()
     daos = daos.replace(/,/g, '&')
     const jwt = getState().auth.jwt
-    const res = await axios.get(`${api.drepute.dev.BASE_URL}/${routes.dao.getOurSafes}?${daos}`,
+    const res = await apiClient.get(`${api.drepute.dev.BASE_URL}/${routes.dao.getOurSafes}?${daos}`,
     {
       headers:{
         Authorization:`Bearer ${jwt}`
@@ -870,6 +883,7 @@ export const setLoading = (loading) => {
   };
 };
 
+
 export const getDaoHash = () => {
   return async (dispatch, getState) => {
       const query_communtiy = POCP_COMMUNTIES_TX_HASH
@@ -887,3 +901,40 @@ export const getDaoHash = () => {
   }
   // const 
 }
+
+export const claimUpdate = (id) => {
+  return (dispatch, getState) => {
+    const currentList = getState().dao.contribution_request
+      dispatch(daoAction.set_after_claim({
+        list:currentList.filter(x=>x.id !== id)
+      }))
+  }
+}
+
+export const syncAllBadges = () => {
+  return async (dispatch, getState) => {
+      const query_claimed = POCP_CLAIMED_TOKEN
+      const query_approved = POCP_APPROVED_TOKEN
+
+      const client = createClient({
+        url:api.subgraph.url
+      })    
+
+      try {
+        const resApproved = await client.query(query_approved).toPromise()
+        const resClaimed = await client.query(query_claimed).toPromise()
+        const claimed = resClaimed.data?.pocpTokens
+        const allApproved = resApproved?.data?.approvedTokens
+        dispatch(daoAction.set_pocp_badges({claimed, allApproved}))
+
+      } catch (error) {
+        console.log('error', error.toString())
+
+      }
+        
+  
+  }
+  // const 
+}
+
+

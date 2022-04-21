@@ -8,7 +8,11 @@ const contributorSlice = createSlice({
     contributionRequests:[],
     contribution_detail:null,
     unclaimed:[],
-    claimed:[]
+    claimed:[],
+    claim_loading:{
+      status:false,
+      id:null
+    }
   },
   reducers: {
     set_invite_code(state, action){
@@ -23,6 +27,10 @@ const contributorSlice = createSlice({
     set_badges(state, action){
       state.unclaimed = action.payload.unclaimed
       state.claimed = action.payload.claimed
+    },
+    set_claim_loading(state,action){
+      state.claim_loading.status = action.payload.status
+      state.claim_loading.id = action.payload.id
     }
 }});
 

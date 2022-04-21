@@ -1,19 +1,17 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import { notification } from "antd"
-import axios from "axios"
-import { ethers } from "ethers"
+// import axios from "axios"
+import apiClient from '../../utils/api_client'
 import api from "../../constant/api"
 import routes from "../../constant/routes"
-import { convertTokentoUsd } from "../../utils/conversion"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 // import { gnosisAction } from "../reducers/gnosis-slice"
 
 const serviceClient = new SafeServiceClient('https://safe-transaction.rinkeby.gnosis.io/')
 
-export const setTransaction = (item, ethPrice) => {
+export const setTransaction = (item, ethPrice, isPOCPApproved=false) => {
     return (dispatch) => {
-        dispatch(tranactionAction.set_current_transaction({data:item, price:ethPrice}))
+        dispatch(tranactionAction.set_current_transaction({data:item, price:ethPrice, isPOCPApproved}))
     }
 }
 
@@ -61,7 +59,7 @@ export const approveContriRequest =  (payout, isExternal = false, feedback) => {
             dispatch(tranactionAction.set_approved_request({item:{contri_detail:{}, payout}}))
         }
         else{
-        dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout}}))
+        dispatch(tranactionAction.set_approved_request({item:{contri_detail:currentTransaction, payout, feedback}}))
         payout.map((item, index)=>{
             if(!item?.token_type){
                 newPayout.push({
@@ -99,7 +97,7 @@ export const approveContriRequest =  (payout, isExternal = false, feedback) => {
           feedback
         }
         try {
-            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,data,{
+            const res = await apiClient.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,data,{
                 headers:{
                     Authorization:`Bearer ${jwt}`
                 }
@@ -133,7 +131,7 @@ export const rejectContriRequest =  (id) => {
           tokens:[]
         }
         try {
-            const res = await axios.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${id}`,data,{
+            const res = await api.post(`${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${id}`,data,{
                 headers:{
                     Authorization:`Bearer ${jwt}`
                 }

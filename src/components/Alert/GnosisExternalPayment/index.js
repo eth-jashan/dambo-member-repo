@@ -12,8 +12,8 @@ const GnosisExternalPayment = () => {
         <div className={styles.container}>
             <img src={warning} alt='waring' className={styles.warning} />
             <div>
-                {/* <div style={{color:'#FFC664', textAlign:'start'}} className={textStyles.ub_16}>Transaction pending on Gnosis,</div> 
-                <div style={{color:'#FFC664', textAlign:'start'}} className={textStyles.m_16}>Execute it first to execute pending payments.<a href={`https://gnosis-safe.io/app/rin:${currentDao?.safe_public_address}/balances`} style={{textDecoration:'underline',color:'#FFC664'}}> Go to Gnosis</a></div> */}
+                <div style={{color:'#FFC664', textAlign:'start'}} className={textStyles.ub_16}>Transaction pending on Gnosis,</div> 
+                <div style={{color:'#FFC664', textAlign:'start'}} className={textStyles.m_16}>Execute it first to execute pending payments.<a href={`https://gnosis-safe.io/app/rin:${currentDao?.safe_public_address}/balances`} style={{textDecoration:'underline',color:'#FFC664'}}> Go to Gnosis</a></div>
             </div>
         </div>
     )

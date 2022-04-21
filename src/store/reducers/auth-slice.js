@@ -71,11 +71,9 @@ const authSlice = createSlice({
         if(isInclude.length>0){
           let newSelection = isInclude.filter(x=>x.address !== action.payload.address)
           newSelection.push({address:action.payload.address, dao_uuid:action.payload.dao_uuid})
-          //console.log('new selection', newSelection)
           state.lastSelection = newSelection
         }else{
           lastSelection.push({address:action.payload.address, dao_uuid:action.payload.dao_uuid})
-          //console.log('new selection', lastSelection)
           state.lastSelection = lastSelection
         }
       }else{
