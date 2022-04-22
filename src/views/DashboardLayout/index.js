@@ -257,7 +257,10 @@ export default function DashboardLayout({ children, route, signer }) {
                 </div>
 
                 {accounts.map((item, index) => (
-                    <div className={styles.accountContainer}>
+                    <div
+                        className={styles.accountContainer}
+                        key={item.dao_details?.uuid}
+                    >
                         <Tooltip
                             placement="right"
                             title={() => text(item?.dao_details?.name)}

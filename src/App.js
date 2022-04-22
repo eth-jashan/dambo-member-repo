@@ -16,6 +16,8 @@ import { INFURA_ID } from "./constants"
 import WalletConnectProvider from "@walletconnect/web3-provider"
 import Web3Modal from "web3modal"
 import ContributorSignupFallback from "./pages/ContributorSignupFallback"
+import * as dayjs from "dayjs"
+import * as relativeTimePlugin from "dayjs/plugin/relativeTime"
 
 const providerOptions = {
     walletconnect: {
@@ -46,6 +48,7 @@ function App() {
     const address = useSelector((x) => x.auth.address)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    dayjs.extend(relativeTimePlugin)
 
     const loadWeb3Modal = useCallback(async () => {
         const provider = await web3Modal.connect()

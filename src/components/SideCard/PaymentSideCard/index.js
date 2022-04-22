@@ -4,13 +4,9 @@ import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
 import { ethers } from "ethers"
-import moment from "moment"
 import {
-    executePayout,
     getPayoutRequest,
-    rejectPayout,
     set_payout_filter,
-    signingPayout,
     syncTxDataWithGnosis,
     setLoading,
     syncExecuteData,
@@ -35,6 +31,7 @@ import { web3 } from "../../../constant/web3"
 import { approvePOCPBadge } from "../../../utils/POCPutils"
 import { getAuthToken } from "../../../store/actions/auth-action"
 import Loader from "../../Loader"
+import * as dayjs from "dayjs"
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
 )
@@ -448,7 +445,7 @@ const PaymentSlideCard = ({ signer }) => {
                             style={{ color: "gray" }}
                             className={textStyle.m_16}
                         >
-                            {moment(
+                            {dayjs(
                                 currentPayment?.gnosis?.submissionDate
                             ).fromNow()}
                         </div>
@@ -696,7 +693,7 @@ const PaymentSlideCard = ({ signer }) => {
                 contri_title: x?.title,
                 signer: address,
                 claimer: x?.requested_by?.public_address,
-                date_of_approve: moment().format("D MMM YYYY"),
+                date_of_approve: dayjs().format("D MMM YYYY"),
                 id: x?.id,
                 dao_logo_url:
                     currentDao?.logo_url ||
@@ -795,7 +792,7 @@ const PaymentSlideCard = ({ signer }) => {
                 style={{ marginBottom: "2.5rem" }}
                 className={`${textStyle.m_23} ${styles.greyishText}`}
             >
-                {moment(currentPayment?.gnosis?.submissionDate).format(
+                {dayjs(currentPayment?.gnosis?.submissionDate).format(
                     "h:mm a , Do MMM['] YY"
                 )}
             </div>
