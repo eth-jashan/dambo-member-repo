@@ -80,7 +80,7 @@ const PaymentSlideCard = ({ signer }) => {
         } catch (error) {
             console.error(error)
             message.error("Error on signing payment")
-            return
+            
         }
     }
 
@@ -124,7 +124,7 @@ const PaymentSlideCard = ({ signer }) => {
             executeTxResponse = await safeSdk.executeTransaction(
                 safeTransaction
             )
-            //console.log('done transaction.......')
+            // console.log('done transaction.......')
         } catch (error) {
             console.error(error)
             return
@@ -166,9 +166,9 @@ const PaymentSlideCard = ({ signer }) => {
                 // console.log('status', status)
                 // console.log('ipfs', url, cid, status)
                 if (status) {
-                    //console.log('ipfs', url, cid, status)
+                    // console.log('ipfs', url, cid, status)
                     clearTimeout(interval)
-                    //console.log('successfully registered')
+                    // console.log('successfully registered')
                     if (cid?.length > 0) {
                         const web3Provider = new ethers.providers.Web3Provider(
                             window.ethereum
@@ -204,14 +204,14 @@ const PaymentSlideCard = ({ signer }) => {
                                 const interval = setInterval(async () => {
                                     if (Date.now() - startTime > 10000) {
                                         clearInterval(interval)
-                                        //console.log('failed to get confirmation')
+                                        // console.log('failed to get confirmation')
                                         await updatePocpApproval(
                                             jwt,
                                             tx_hash,
                                             cid
                                         )
                                     }
-                                    var customHttpProvider =
+                                    const customHttpProvider =
                                         new ethers.providers.JsonRpcProvider(
                                             web3.infura
                                         )
@@ -243,7 +243,7 @@ const PaymentSlideCard = ({ signer }) => {
                                 })
                             }
                         } catch (error) {
-                            //console.log(error.toString())
+                            // console.log(error.toString())
                             const provider = new ethers.providers.Web3Provider(
                                 window.ethereum
                             )
@@ -254,7 +254,7 @@ const PaymentSlideCard = ({ signer }) => {
                         }
                     }
                 }
-                //console.log('again....')
+                // console.log('again....')
             }, 3000)
         } else {
             if (cid?.length > 0) {
@@ -291,10 +291,10 @@ const PaymentSlideCard = ({ signer }) => {
                         const interval = setInterval(async () => {
                             if (Date.now() - startTime > 10000) {
                                 clearInterval(interval)
-                                //console.log('failed to get confirmation')
+                                // console.log('failed to get confirmation')
                             }
-                            //console.log('tx_hash', tx_hash)
-                            var customHttpProvider =
+                            // console.log('tx_hash', tx_hash)
+                            const customHttpProvider =
                                 new ethers.providers.JsonRpcProvider(
                                     web3.infura
                                 )
@@ -307,24 +307,24 @@ const PaymentSlideCard = ({ signer }) => {
                                 clearTimeout(interval)
                                 setPayoutToast("APPROVED_BADGE")
                                 await updatePocpApproval(jwt, tx_hash, cid)
-                                //console.log('successfully registered')
+                                // console.log('successfully registered')
                                 await provider.provider.request({
                                     method: "wallet_switchEthereumChain",
                                     params: [{ chainId: web3.chainid.rinkeby }],
                                 })
                             }
 
-                            //console.log('again....')
+                            // console.log('again....')
                         }, 2000)
                     } else {
-                        //console.log('error in fetching tx hash....')
+                        // console.log('error in fetching tx hash....')
                         await provider.provider.request({
                             method: "wallet_switchEthereumChain",
                             params: [{ chainId: web3.chainid.rinkeby }],
                         })
                     }
                 } catch (error) {
-                    //console.log(error.toString())
+                    // console.log(error.toString())
                     const provider = new ethers.providers.Web3Provider(
                         window.ethereum
                     )
@@ -375,7 +375,7 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const checkApproval = () => {
-        let confirm = []
+        const confirm = []
         currentPayment.gnosis?.confirmations?.map((item, index) => {
             confirm.push(ethers.utils.getAddress(item.owner))
         })
@@ -684,9 +684,9 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const uploadApproveMetatoIpfs = async () => {
-        let metaInfo = []
-        let cid = []
-        let to = []
+        const metaInfo = []
+        const cid = []
+        const to = []
         currentPayment?.metaInfo?.contributions.map((x, index) => {
             metaInfo.push({
                 dao_name: currentDao?.name,

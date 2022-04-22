@@ -48,7 +48,7 @@ export default function Account({
     blockExplorer,
 }) {
     const modalButtons = []
-    //console.log(web3Modal.cachedProvider, address);
+    // console.log(web3Modal.cachedProvider, address);
     if (web3Modal) {
         if (web3Modal.cachedProvider) {
             modalButtons.push(

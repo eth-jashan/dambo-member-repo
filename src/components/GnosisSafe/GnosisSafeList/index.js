@@ -1,4 +1,4 @@
-import { Divider, Typography, List, Button } from "antd"
+import { Typography } from "antd"
 import React, { useCallback, useEffect } from "react"
 import styles from "./style.module.css"
 import { MdOutlineAdd } from "react-icons/md"
@@ -34,7 +34,7 @@ const GnosisSafeList = (props) => {
         try {
             dispatch(getAllSafeFromAddress(address))
         } catch (error) {
-            //console.log('error on safe fetch.......', error)
+            // console.log('error on safe fetch.......', error)
         }
     }, [address, dispatch])
 

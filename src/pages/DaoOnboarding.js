@@ -7,7 +7,6 @@ import GnosisSafeList from "../components/GnosisSafe/GnosisSafeList"
 import DaoInfo from "../components/DaoInfo"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    addOwners,
     addSafeAddress,
     addThreshold,
     lastSelectedId,
@@ -15,16 +14,13 @@ import {
 } from "../store/actions/dao-action"
 // import { useHistory } from "react-router-dom";
 import { useSafeSdk } from "../hooks"
-import { ethers, providers } from "ethers"
+import { ethers } from "ethers"
 import { useNavigate } from "react-router"
 import { message } from "antd"
 import {
-    approvePOCPBadge,
-    claimPOCPBadges,
     registerDaoToPocp,
 } from "../utils/POCPutils"
 import {
-    pollingTransaction,
     relayFunction,
     updatePocpRegister,
 } from "../utils/relayFunctions"
@@ -61,7 +57,7 @@ export default function Onboarding() {
                         document.title,
                         window.location.href
                     )
-                    //console.log("on back!!!", document.title, window.history);
+                    // console.log("on back!!!", document.title, window.history);
                 } else {
                     window.history.pushState(null, document.title, "/dashboard")
                     window.location.reload("true")
@@ -76,12 +72,12 @@ export default function Onboarding() {
 
     const deploySafe = useCallback(
         async (owners) => {
-            //console.log("deployingggg");
+            // console.log("deployingggg");
             if (!safeFactory) return
             setDeploying(true)
             const safeAccountConfig = { owners, threshold }
             let safe
-            //console.log("deployingggg");
+            // console.log("deployingggg");
             try {
                 safe = await safeFactory.deploySafe(safeAccountConfig)
                 message.success("A safe is successfully created !")
@@ -129,9 +125,9 @@ export default function Onboarding() {
                         const interval = setInterval(async () => {
                             if (Date.now() - startTime > 30000) {
                                 clearInterval(interval)
-                                //console.log('failed to get confirmation')
+                                // console.log('failed to get confirmation')
                             }
-                            var customHttpProvider =
+                            const customHttpProvider =
                                 new ethers.providers.JsonRpcProvider(
                                     web3.infura
                                 )
@@ -140,9 +136,9 @@ export default function Onboarding() {
                                     tx_hash
                                 )
                             if (reciept?.status) {
-                                //console.log('done', reciept)
+                                // console.log('done', reciept)
                                 clearTimeout(interval)
-                                //console.log('successfully registered')
+                                // console.log('successfully registered')
                                 await provider.provider.request({
                                     method: "wallet_switchEthereumChain",
                                     params: [{ chainId: web3.chainid.rinkeby }],
@@ -155,7 +151,7 @@ export default function Onboarding() {
                         console.log('error in fetching tx hash....')
                     }
                 } catch (error) {
-                    //console.log(error.toString())
+                    // console.log(error.toString())
                     const provider = new ethers.providers.Web3Provider(
                         window.ethereum
                     )
@@ -194,7 +190,7 @@ export default function Onboarding() {
         } else if (currentStep === 4) {
             if (hasMultiSignWallet) {
                 const { dao_uuid, name, owners } = await dispatch(registerDao())
-                let owner = [address]
+                const owner = [address]
                 if (owners.length > 1) {
                     owners.map((x, i) => {
                         if (x?.address !== address) {
@@ -202,7 +198,7 @@ export default function Onboarding() {
                         }
                     })
                 }
-                //console.log('ownersss', owner)
+                // console.log('ownersss', owner)
                 if (dao_uuid) {
                     const web3Provider = new ethers.providers.Web3Provider(
                         window.ethereum
@@ -235,9 +231,9 @@ export default function Onboarding() {
                             const interval = setInterval(async () => {
                                 if (Date.now() - startTime > 20000) {
                                     clearInterval(interval)
-                                    //console.log('failed to get confirmation')
+                                    // console.log('failed to get confirmation')
                                 }
-                                var customHttpProvider =
+                                const customHttpProvider =
                                     new ethers.providers.JsonRpcProvider(
                                         web3.infura
                                     )
@@ -246,9 +242,9 @@ export default function Onboarding() {
                                         tx_hash
                                     )
                                 if (reciept?.status) {
-                                    //console.log('done', reciept)
+                                    // console.log('done', reciept)
                                     clearTimeout(interval)
-                                    //console.log('successfully registered')
+                                    // console.log('successfully registered')
                                     await provider.provider.request({
                                         method: "wallet_switchEthereumChain",
                                         params: [
@@ -257,13 +253,13 @@ export default function Onboarding() {
                                     })
                                     navigate(`/dashboard`)
                                 }
-                                //console.log('again....')
+                                // console.log('again....')
                             }, 2000)
                         } else {
-                            //console.log('error in fetching tx hash....')
+                            // console.log('error in fetching tx hash....')
                         }
                     } catch (error) {
-                        //console.log(error.toString())
+                        // console.log(error.toString())
                         const provider = new ethers.providers.Web3Provider(
                             window.ethereum
                         )
@@ -284,10 +280,10 @@ export default function Onboarding() {
                         })
                         await deploySafe(owner)
                     } catch (error) {
-                        //console.log("error.... on deploying", error);
+                        // console.log("error.... on deploying", error);
                     }
                 } catch (error) {
-                    //console.log("error.......", error);
+                    // console.log("error.......", error);
                 }
             }
         } else setCurrentStep(currentStep + 1)

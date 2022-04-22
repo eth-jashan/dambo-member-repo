@@ -44,7 +44,9 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "lint": "eslint . --ext .js,.jsx,.css",
+        "lint-and-fix": "eslint . --ext .js,.jsx,.css --fix"
     },
     "eslintConfig": {
         "extends": [
@@ -65,6 +67,15 @@
         ]
     },
     "devDependencies": {
+        "eslint": "^8.13.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-n": "^15.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-react": "^7.29.4",
+        "eslint-plugin-unused-imports": "^2.0.0",
         "prettier": "2.6.2"
     }
 }

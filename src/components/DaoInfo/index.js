@@ -7,14 +7,12 @@ import NextButton from "../NextButton"
 import styles from "./styles.module.css"
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json"
 import retry from "../../assets/Icons/retry.svg"
-import upload from "../../assets/Icons/upload.svg"
 import upload_file from "../../assets/Icons/upload_file.svg"
 import Lottie from "react-lottie"
 import api from "../../constant/api"
 import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { registerDaoToPocp } from "../../utils/POCPutils"
 
 const DaoInfo = ({
     increaseStep,
@@ -43,7 +41,7 @@ const DaoInfo = ({
         increaseStep()
     }
     const createImage = (file) => {
-        let reader = new FileReader()
+        const reader = new FileReader()
         reader.onload = (e) => {
             // if (e.target.result.length > MAX_IMAGE_SIZE) {
             //   return alert("Image is loo large.");
@@ -60,7 +58,7 @@ const DaoInfo = ({
     }
 
     const onFileChange = async (e) => {
-        let files = e.target.files || e.dataTransfer.files
+        const files = e.target.files || e.dataTransfer.files
         if (!files.length) return
         createImage(files[0])
     }
@@ -73,16 +71,16 @@ const DaoInfo = ({
         })
         let binary
         binary = atob(imageObj.image.split(",")[1])
-        let array = []
-        for (var i = 0; i < binary.length; i++) {
+        const array = []
+        for (let i = 0; i < binary.length; i++) {
             array.push(binary.charCodeAt(i))
         }
-        let blobData = new Blob([new Uint8Array(array)], { type: "image/jpeg" })
+        const blobData = new Blob([new Uint8Array(array)], { type: "image/jpeg" })
         const result = await fetch(response.data.uploadURL, {
             method: "PUT",
             body: blobData,
         })
-        //console.log(result, response.data.uploadURL.split("?")[0])
+        // console.log(result, response.data.uploadURL.split("?")[0])
         // Final URL for the user doesn't need the query string params
         setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }))
         setLoading(false)

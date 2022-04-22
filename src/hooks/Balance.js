@@ -52,7 +52,7 @@ export default function useBalance(provider, address, pollTime = 0) {
         async () => {
             if (provider && address && pollTime > 0) {
                 if (DEBUG)
-                    //console.log("polling!", address);
+                    // console.log("polling!", address);
                     pollBalance()
             }
         },

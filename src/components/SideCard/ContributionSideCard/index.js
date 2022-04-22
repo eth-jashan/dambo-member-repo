@@ -65,7 +65,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
 
     const getApproveCheck = async () => {
         if (currentTransaction?.approved_tx) {
-            var customHttpProvider = new ethers.providers.JsonRpcProvider(
+            const customHttpProvider = new ethers.providers.JsonRpcProvider(
                 web3.infura
             )
             const reciept = await customHttpProvider.getTransactionReceipt(
@@ -83,7 +83,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
 
     const getClaimCheck = async () => {
         if (currentTransaction?.claimed_tx) {
-            var customHttpProvider = new ethers.providers.JsonRpcProvider(
+            const customHttpProvider = new ethers.providers.JsonRpcProvider(
                 web3.infura
             )
             const reciept = await customHttpProvider.getTransactionReceipt(
@@ -108,7 +108,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             currentTransaction?.status !== "REQUESTED" &&
             currentTransaction?.status !== "REJECTED"
         ) {
-            //console.log('here', currentTransaction)
+            // console.log('here', currentTransaction)
             tx = await serviceClient.getTransaction(
                 currentTransaction?.gnosis_reference_id
             )
@@ -116,7 +116,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
         const safeInfo = await serviceClient.getSafeInfo(
             currentDao?.safe_public_address
         )
-        //console.log('transaction', currentTransaction?.isClaimed)
+        // console.log('transaction', currentTransaction?.isClaimed)
         const approval = await getApproveCheck()
         const claim_status = await getClaimCheck()
         setApprovedBadge(approval)
@@ -296,7 +296,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     }
 
     const getSignerName = (address) => {
-        //console.log(currentDao?.signers[0].public_address, address.toString())
+        // console.log(currentDao?.signers[0].public_address, address.toString())
         return currentDao?.signers?.filter(
             (x) => x.public_address === address
         )[0]?.metadata?.name
@@ -526,7 +526,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             (x) => x.identifier === currentTransaction?.id.toString()
         )
         if (token.length > 0) {
-            return { status: true, token: token }
+            return { status: true, token }
         } else {
             return { status: false, token: [] }
         }
@@ -568,7 +568,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                                 setClaimLoading(false, currentTransaction?.id)
                             )
                         }
-                        var customHttpProvider =
+                        const customHttpProvider =
                             new ethers.providers.JsonRpcProvider(web3.infura)
                         const reciept =
                             await customHttpProvider.getTransactionReceipt(
@@ -595,7 +595,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                     dispatch(setClaimLoading(false, currentTransaction?.id))
                 }
             } catch (error) {
-                //console.log(error.toString())
+                // console.log(error.toString())
                 const provider = new ethers.providers.Web3Provider(
                     window.ethereum
                 )
@@ -637,7 +637,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                         // console.log("failed to get confirmation")
                     }
                     // console.log('tx_hash', tx_hash)
-                    var customHttpProvider =
+                    const customHttpProvider =
                         new ethers.providers.JsonRpcProvider(web3.infura)
                     const reciept =
                         await customHttpProvider.getTransactionReceipt(tx_hash)
@@ -654,7 +654,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                     // console.log('again....')
                 }, 2000)
             } else {
-                //console.log('error in fetching tx hash....')
+                // console.log('error in fetching tx hash....')
                 await provider.provider.request({
                     method: "wallet_switchEthereumChain",
                     params: [{ chainId: web3.chainid.rinkeby }],

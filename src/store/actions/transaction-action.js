@@ -65,7 +65,7 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
         const contri_filter_key = getState().dao.contri_filter_key
         const contri_filter = getState().dao.contri_filter
 
-        let newPayout = []
+        const newPayout = []
         if (isExternal) {
             dispatch(
                 tranactionAction.set_approved_request({
@@ -130,7 +130,7 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
                     }
                 )
                 if (res.data.success) {
-                    let contri_request =
+                    const contri_request =
                         getState().dao.contribution_request.filter(
                             (x) => x.id !== currentTransaction.id
                         )
@@ -141,13 +141,13 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
                             number: contri_filter_key,
                         })
                     )
-                    //console.log('successfully confirmed')
+                    // console.log('successfully confirmed')
                     return 1
                 } else {
                     return 0
                 }
             } catch (error) {
-                //console.log('error....', error)
+                // console.log('error....', error)
             }
         }
     }
@@ -178,7 +178,7 @@ export const rejectContriRequest = (id) => {
                 return 0
             }
         } catch (error) {
-            //console.log('error....', error)
+            // console.log('error....', error)
         }
     }
 }

@@ -9,7 +9,7 @@ export default function GnosisSafe({ userSigner, userAddress }) {
     const { safeSdk, safeFactory } = useSafeSdk(userSigner, safeAddress)
     const [owners, setOwners] = useState([userAddress])
     const [threshhold, setThreshhold] = useState(1)
-    //console.log(userAddress)
+    // console.log(userAddress)
 
     const OWNERS = [
         "0x34aA3F359A9D614239015126635CE7732c18fDF3",
@@ -35,7 +35,7 @@ export default function GnosisSafe({ userSigner, userAddress }) {
         [safeFactory]
     )
 
-    //console.log('safeAddress', safeAddress);
+    // console.log('safeAddress', safeAddress);
 
     return (
         <div style={{ padding: 32 }}>

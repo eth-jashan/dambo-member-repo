@@ -1,4 +1,4 @@
-import { message, Typography } from "antd"
+import { message } from "antd"
 import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import NextButton from "../NextButton"
@@ -26,7 +26,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
             await dispatch(getCommunityRole())
             // await dispatch(getDao())
         } catch (error) {
-            //console.log('error in fetching role.....')
+            // console.log('error in fetching role.....')
         }
     }, [dispatch])
 
@@ -45,7 +45,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
             }
         } catch (error) {
             message.error("Error on Joining")
-            //console.log('error on joining...', error)
+            // console.log('error on joining...', error)
         }
     }
 

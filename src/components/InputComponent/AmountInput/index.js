@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import Select from "react-select"
 import styles from "./style.module.css"
 import { AiFillCaretDown } from "react-icons/all"
-import textStyles from "../../../commonStyles/textType/styles.module.css"
 import { useSelector } from "react-redux"
 
 const { Option } = Select

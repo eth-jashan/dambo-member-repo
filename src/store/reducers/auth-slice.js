@@ -26,7 +26,7 @@ const authSlice = createSlice({
         },
         set_address(state, action) {
             state.address = action.payload.address
-            //state.signer = action.payload.signer;
+            // state.signer = action.payload.signer;
         },
         set_signing(state, action) {
             state.jwt = action.payload.jwt
@@ -67,11 +67,11 @@ const authSlice = createSlice({
         set_last_selection(state, action) {
             if (state.lastSelection) {
                 const lastSelection = state.lastSelection
-                let isInclude = lastSelection.filter(
+                const isInclude = lastSelection.filter(
                     (x) => x.address === action.payload.address
                 )
                 if (isInclude.length > 0) {
-                    let newSelection = isInclude.filter(
+                    const newSelection = isInclude.filter(
                         (x) => x.address !== action.payload.address
                     )
                     newSelection.push({
@@ -87,7 +87,7 @@ const authSlice = createSlice({
                     state.lastSelection = lastSelection
                 }
             } else {
-                //console.log('initial', action.payload.address, action.payload.dao_uuid)
+                // console.log('initial', action.payload.address, action.payload.dao_uuid)
                 state.lastSelection = [
                     {
                         address: action.payload.address,

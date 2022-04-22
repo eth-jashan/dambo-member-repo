@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react"
+import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Input, message, Typography } from "antd"
-import { IoAddOutline, GoChevronUp, RiDeleteBin7Fill } from "react-icons/all"
+import { IoAddOutline, GoChevronUp } from "react-icons/all"
 import cross from "../../../assets/Icons/cross_white.svg"
 import delete_icon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
@@ -11,10 +11,8 @@ import {
     rejectContriRequest,
     setTransaction,
 } from "../../../store/actions/transaction-action"
-import {
-    getAllDaowithAddress,
-    getContriRequest,
-} from "../../../store/actions/dao-action"
+
+
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { TokenInput } from "../../InputComponent/TokenInput"
 
@@ -86,7 +84,7 @@ const TransactionCard = ({ signer }) => {
         } else {
             message.error("Please Add Amount")
         }
-        //console.log('paydetail', payDetail)
+        // console.log('paydetail', payDetail)
     }
 
     const feedBackContainer = () => (

@@ -1,6 +1,5 @@
 import React from "react"
 import WalletPicker from "../../components/WalletPicker"
-import { Row, Col, Typography } from "antd"
 import { useSelector } from "react-redux"
 import styles from "./style.module.css"
 

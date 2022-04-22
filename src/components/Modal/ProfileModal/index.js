@@ -1,7 +1,6 @@
 import React from "react"
 import styles from "./style.module.css"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
-import CrossSvg from "../../..//assets/Icons/cross.svg"
 import copy_black from "../../../assets/Icons/copy_black.svg"
 import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import email from "../../../assets/Icons/email_black.svg"

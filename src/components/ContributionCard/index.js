@@ -8,7 +8,6 @@ import approved_badge from "../../assets/Icons/approved_badge.svg"
 import approved_badge_hover from "../../assets/Icons/approvedBadge_hover.svg"
 import {
     getAllBadges,
-    setBadgesAfterClaim,
     setClaimLoading,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
@@ -19,7 +18,6 @@ import { getAuthToken } from "../../store/actions/auth-action"
 import { relayFunction, updatePocpClaim } from "../../utils/relayFunctions"
 import {
     claimUpdate,
-    getContributorOverview,
     syncAllBadges,
 } from "../../store/actions/dao-action"
 
@@ -50,7 +48,7 @@ export default function ContributionCard({ item, signer, community_id }) {
 
     const getApproveCheck = useCallback(async () => {
         if (item?.approved_tx) {
-            var customHttpProvider = new ethers.providers.JsonRpcProvider(
+            const customHttpProvider = new ethers.providers.JsonRpcProvider(
                 web3.infura
             )
             const reciept = await customHttpProvider.getTransactionReceipt(
@@ -70,7 +68,7 @@ export default function ContributionCard({ item, signer, community_id }) {
     const [claimBadge, setClaimBadge] = useState(false)
 
     const getBadgeStatus = useCallback(async () => {
-        //console.log('transaction', currentTransaction?.isClaimed)
+        // console.log('transaction', currentTransaction?.isClaimed)
         const approval = await getApproveCheck()
         // const claim_status = await getClaimCheck()
         setApprovedBadge(approval)
@@ -123,7 +121,7 @@ export default function ContributionCard({ item, signer, community_id }) {
             (x) => x.identifier === item?.id.toString()
         )
         if (token.length > 0) {
-            return { status: true, token: token }
+            return { status: true, token }
         } else {
             return { status: false, token: [] }
         }
@@ -177,7 +175,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                         if (Date.now() - startTime > 30000) {
                             clearInterval(interval)
                         }
-                        var customHttpProvider =
+                        const customHttpProvider =
                             new ethers.providers.JsonRpcProvider(web3.infura)
                         const reciept =
                             await customHttpProvider.getTransactionReceipt(
@@ -201,7 +199,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                     dispatch(setClaimLoading(false, item?.id))
                 }
             } catch (error) {
-                //console.log(error.toString())
+                // console.log(error.toString())
                 const provider = new ethers.providers.Web3Provider(
                     window.ethereum
                 )

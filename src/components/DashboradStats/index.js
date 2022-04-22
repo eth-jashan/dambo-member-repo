@@ -1,5 +1,5 @@
 import React from "react"
-import { Typography, Row, Col, Card } from "antd"
+import { Row, Col, Card } from "antd"
 import { FaDiscord } from "react-icons/fa"
 import { CgWebsite } from "react-icons/cg"
 import "antd/dist/antd.css"

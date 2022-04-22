@@ -1,5 +1,4 @@
 import React from "react"
-import pocp_bg from "../../assets/POCP_background.svg"
 
 const HtmlBadge = () => {
     return (

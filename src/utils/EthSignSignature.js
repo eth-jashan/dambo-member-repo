@@ -3,9 +3,11 @@ export class EthSignSignature {
         this.signer = signer
         this.data = signature
     }
+
     staticPart() {
         return this.data
     }
+
     dynamicPart() {
         return ""
     }

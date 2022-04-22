@@ -20,7 +20,7 @@ const FilterModal = ({ show, onClose, isContribution }) => {
     const [time, setTime] = useState("")
 
     const handleCheckVerticles = (event) => {
-        var updatedList = [...checkedVerticles]
+        let updatedList = [...checkedVerticles]
         if (event.target.checked) {
             updatedList = [...checkedVerticles, event.target.value]
         } else {
@@ -74,14 +74,17 @@ const FilterModal = ({ show, onClose, isContribution }) => {
                         <div className={styles.filterHeading}>Verticals</div>
                         <div className={styles.checkListContainer}>
                             {checkList.map((item, index) => (
-                                <label class={styles.oneCheckcontainer}>
+                                <label
+                                    className={styles.oneCheckcontainer}
+                                    key={index}
+                                >
                                     {item}
                                     <input
                                         type="checkbox"
                                         value={item}
                                         onChange={handleCheckVerticles}
                                     />
-                                    <span class={styles.checkmark}></span>
+                                    <span className={styles.checkmark}></span>
                                 </label>
                             ))}
                         </div>
@@ -99,7 +102,7 @@ const FilterModal = ({ show, onClose, isContribution }) => {
                         >
                             {radioList.map((item, index) => (
                                 <label
-                                    class={styles.oneRadioContainer}
+                                    className={styles.oneRadioContainer}
                                     key={item.key}
                                 >
                                     {item.value}
@@ -109,7 +112,7 @@ const FilterModal = ({ show, onClose, isContribution }) => {
                                         checked={time === item.key}
                                         name="time"
                                     />
-                                    <span class={styles.radiomark}></span>
+                                    <span className={styles.radiomark}></span>
                                 </label>
                             ))}
                         </div>

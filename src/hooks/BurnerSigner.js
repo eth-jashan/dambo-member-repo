@@ -13,20 +13,20 @@ export default function useBurnerSigner(provider) {
             setStoredValue(value)
             window.localStorage.setItem(key, value)
         } catch (error) {
-            //console.log(error);
+            // console.log(error);
         }
     }
 
     useEffect(() => {
         const storedKey = window.localStorage.getItem(key)
         if (!storedKey) {
-            //console.log("generating a new key");
+            // console.log("generating a new key");
             const _newWallet = ethers.Wallet.createRandom()
-            //console.log('here', _newWallet)
+            // console.log('here', _newWallet)
             const _newKey = _newWallet.privateKey
             setValue(_newKey)
         } else {
-            //console.log('else heree')
+            // console.log('else heree')
             setValue(storedKey)
         }
     }, [])

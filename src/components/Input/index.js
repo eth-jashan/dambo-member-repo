@@ -41,8 +41,8 @@ const InputText = ({
                 onBlur={() => setOnFocus(false)}
                 disabled={disabled}
                 style={{
-                    width: width,
-                    height: multi ? multi : null,
+                    width,
+                    height: multi || null,
                     background: backGroundStatus(),
                 }}
             />

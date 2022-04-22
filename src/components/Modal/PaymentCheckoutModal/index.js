@@ -32,7 +32,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
     const proposeSafeTransaction = async () => {
         setLoading(true)
 
-        let transaction_obj = []
+        const transaction_obj = []
 
         if (approved_request.length > 0) {
             approved_request.map((item, index) => {
@@ -51,7 +51,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        var web3Client = new Web3(
+                        const web3Client = new Web3(
                             new Web3.providers.HttpProvider(
                                 "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
                             )
@@ -89,9 +89,9 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
             const nextNonce = await getNonceForCreation(
                 currentDao?.safe_public_address
             )
-            nonce = nextNonce ? nextNonce : activeNounce
+            nonce = nextNonce || activeNounce
             safeTransaction = await safeSdk.createTransaction(transaction_obj, {
-                nonce: nonce,
+                nonce,
             })
         } catch (error) {
             console.error("errorrrr", error)
@@ -104,7 +104,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         try {
             safeSignature = await safeSdk.signTransactionHash(safeTxHash)
         } catch (error) {
-            //console.log('error on signing...', error.toString())
+            // console.log('error on signing...', error.toString())
         }
 
         try {
@@ -124,7 +124,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
             )
             // onClose()
         } catch (error) {
-            //console.log('error.........', error)
+            // console.log('error.........', error)
         }
         setLoading(false)
         onClose()
