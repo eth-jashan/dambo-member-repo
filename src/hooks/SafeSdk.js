@@ -32,7 +32,7 @@ const useSafeSdk = (userSigner, safeAddress) => {
         */
                 const safeSdk = await Safe.create({
                     ethAdapter,
-                    safeAddress /*, contractNetworks*/,
+                    safeAddress /*, contractNetworks */,
                 })
                 if (isCurrent) {
                     setSafeSdk(safeSdk)

@@ -106,7 +106,7 @@ const ConnectWallet = ({ isAdmin }) => {
                     }
                 }
             } catch (error) {
-                //console.log('error on signing....', error)
+                // console.log('error on signing....', error)
             }
             // }else{
             // //console.log('change chain id')
@@ -127,7 +127,7 @@ const ConnectWallet = ({ isAdmin }) => {
         if (
             web3Provider &&
             web3Provider.provider &&
-            typeof web3Provider.provider.disconnect == "function"
+            typeof web3Provider.provider.disconnect === "function"
         ) {
             await web3Provider.provider.disconnect()
             dispatch(signout())
@@ -159,7 +159,7 @@ const ConnectWallet = ({ isAdmin }) => {
         dispatch(setAddress(newAddress, signer))
         const res = dispatch(getJwt(newAddress))
         if (res && chainid === 4) {
-            //has token and chain is 4
+            // has token and chain is 4
             dispatch(setLoggedIn(true))
             if (isAdmin) {
                 const res = await dispatch(getAddressMembership())
@@ -188,13 +188,13 @@ const ConnectWallet = ({ isAdmin }) => {
                 // navigate(`/onboard/contributor/${uuid}`)
             }
         } else if (!res && chainid === 4) {
-            //doesnot token and chain is 4
+            // doesnot token and chain is 4
             setAuth(false)
             dispatch(setLoggedIn(false))
-            //console.log('no jwt....')
+            // console.log('no jwt....')
             authWithWallet(newAddress)
         } else {
-            //chain is wrong
+            // chain is wrong
             setAuth(false)
             dispatch(setLoggedIn(false))
             alert("change chain id......")
@@ -207,7 +207,7 @@ const ConnectWallet = ({ isAdmin }) => {
         })
 
         provider.on("accountsChanged", async () => {
-            //console.log(`account changed!.........`);
+            // console.log(`account changed!.........`);
             dispatch(setLoggedIn(false))
             navigate("/")
         })

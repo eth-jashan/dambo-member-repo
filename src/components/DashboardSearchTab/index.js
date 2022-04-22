@@ -11,7 +11,6 @@ import {
     set_contri_filter,
     set_payout_filter,
 } from "../../store/actions/dao-action"
-import FilterModal from "../Modal/FilterModal"
 
 const DashboardSearchTab = ({ route }) => {
     const contribution_request = useSelector((x) => x.dao.contribution_request)

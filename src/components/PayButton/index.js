@@ -3,7 +3,6 @@ import styles from "./style.modules.css"
 import { AiOutlineCaretDown } from "react-icons/all"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { useSelector } from "react-redux"
 
 const Paybutton = () => {
     return (

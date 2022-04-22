@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useState } from "react"
 
 import styles from "./styles.module.css"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
@@ -8,18 +8,15 @@ import { ethers } from "ethers"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    approveContriRequest,
     resetApprovedRequest,
 } from "../../../store/actions/transaction-action"
 import ERC20_ABI from "../../../smartContract/erc20.json"
 import Web3 from "web3"
 import {
     createExternalPayment,
-    createPayout,
     getNonceForCreation,
 } from "../../../store/actions/dao-action"
 import cross from "../../../assets/Icons/cross.svg"
-import { setPayoutToast } from "../../../store/actions/toast-action"
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { TokenInput } from "../../InputComponent/TokenInput"
 
@@ -54,7 +51,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
         {
             amount: "",
             token_type: null,
-            address: address,
+            address,
             usd_amount: ETHprice,
         },
     ])
@@ -66,7 +63,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                 amount: "",
                 token_type: null,
                 usd_amount: usdCoversion,
-                address: address,
+                address,
             }
             setPayDetail([...payDetail, newDetail])
         }
@@ -87,8 +84,8 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
     }
 
     const proposeSafeTransaction = async () => {
-        let transaction_obj = []
-        //console.log('pay detail', payDetail)
+        const transaction_obj = []
+        // console.log('pay detail', payDetail)
         setLoading(true)
 
         if (payDetail.length > 0) {
@@ -103,7 +100,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                         operation: 0,
                     })
                 } else if (item?.token_type?.token?.symbol) {
-                    var web3Client = new Web3(
+                    const web3Client = new Web3(
                         new Web3.providers.HttpProvider(
                             "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
                         )
@@ -129,7 +126,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             })
         }
 
-        //console.log(transaction_obj)
+        // console.log(transaction_obj)
 
         if (!safeSdk || !serviceClient) return
         let safeTransaction
@@ -139,9 +136,9 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             const nextNonce = await getNonceForCreation(
                 currentDao?.safe_public_address
             )
-            nonce = nextNonce ? nextNonce : activeNounce
+            nonce = nextNonce || activeNounce
             safeTransaction = await safeSdk.createTransaction(transaction_obj, {
-                nonce: nonce,
+                nonce,
             })
         } catch (error) {
             console.error("errorrrr", error)
@@ -165,7 +162,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                 safeTxHash,
                 safeSignature
             )
-            //console.log(currentDao, safeTxHash)
+            // console.log(currentDao, safeTxHash)
             dispatch(createExternalPayment(safeTxHash, nonce, payDetail))
             dispatch(resetApprovedRequest())
             // dispatch(setPayoutToast('ACCEPTED_CONTRI',{
@@ -174,7 +171,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             //   }))
             setLoading(false)
         } catch (error) {
-            //console.log('error.........', error)
+            // console.log('error.........', error)
             setLoading(false)
         }
     }

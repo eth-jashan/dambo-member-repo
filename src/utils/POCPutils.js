@@ -3,19 +3,19 @@ import { web3 } from "../constant/web3"
 import Forwarder from "../smartContract/POCP_Contracts/minimalForwarder.json"
 import POCPProxy from "../smartContract/POCP_Contracts/POCP.json"
 
-//signing function for registering dao
+// signing function for registering dao
 export const registerDaoToPocp = async (
     signer,
     name,
     ownerAddress,
     address
 ) => {
-    let contract = new ethers.Contract(
+    const contract = new ethers.Contract(
         web3.POCP_Forwarder,
         Forwarder.abi,
         signer
     )
-    let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+    const pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
     const nonceBigNumber = await contract.getNonce(address.toString())
     const chainId = (await contract.provider.getNetwork()).chainId
     const nonce = parseInt(nonceBigNumber)
@@ -70,11 +70,11 @@ export const registerDaoToPocp = async (
         )
         return { data, signature }
     } catch (error) {
-        //console.log("Error on signing register dao data", error)
+        // console.log("Error on signing register dao data", error)
     }
 }
 
-//signing function for approving badge
+// signing function for approving badge
 export const approvePOCPBadge = async (
     signer,
     communityId,
@@ -84,12 +84,12 @@ export const approvePOCPBadge = async (
     url
 ) => {
     // console.log('approver', communityId, address, claimers, cids, url)
-    let contract = new ethers.Contract(
+    const contract = new ethers.Contract(
         web3.POCP_Forwarder,
         Forwarder.abi,
         signer
     )
-    let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+    const pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
 
   const nonceBigNumber = await contract.getNonce(address);
   const chainId = (await contract.provider.getNetwork()).chainId;
@@ -150,14 +150,14 @@ export const approvePOCPBadge = async (
     }
 }
 
-//signing function for claiming badges
+// signing function for claiming badges
 export const claimPOCPBadges = async (signer, address, id) => {
-    let contract = new ethers.Contract(
+    const contract = new ethers.Contract(
         web3.POCP_Forwarder,
         Forwarder.abi,
         signer
     )
-    let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
+    const pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
     const nonceBigNumber = await contract.getNonce(address.toString())
 
     const chainId = (await contract.provider.getNetwork()).chainId
@@ -203,6 +203,6 @@ export const claimPOCPBadges = async (signer, address, id) => {
         )
         return { data, signature }
     } catch (error) {
-        //console.log("Error on signing register dao data", error)
+        // console.log("Error on signing register dao data", error)
     }
 }

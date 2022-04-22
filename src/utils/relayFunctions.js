@@ -1,9 +1,6 @@
 import axios from "axios"
-import { ethers } from "ethers"
-import Web3 from "web3"
 import api from "../constant/api"
 import routes from "../constant/routes"
-import { web3 } from "../constant/web3"
 
 export const relayFunction = async (
     token,
@@ -14,7 +11,7 @@ export const relayFunction = async (
     const data = {
         function: functionType,
         request_data: request,
-        signature: signature,
+        signature,
         callback_api: "https://staging.api.drepute.xyz/eth/callback",
     }
     try {
@@ -30,7 +27,7 @@ export const relayFunction = async (
 
         return res.data.data.hash
     } catch (error) {
-        //console.log('relay api error', error.toString())
+        // console.log('relay api error', error.toString())
     }
 }
 
@@ -47,7 +44,7 @@ export const uplaodApproveMetaDataUpload = async (approveContri) => {
             return 1
         }
     } catch (error) {
-        //console.log('error on uploading', error.toString())
+        // console.log('error on uploading', error.toString())
     }
 }
 
@@ -70,7 +67,7 @@ export const updatePocpRegister = async (jwt, tx_hash, dao_uuid) => {
             return 0
         }
     } catch (error) {
-        //console.log('error in registering.....', error)
+        // console.log('error in registering.....', error)
     }
 }
 
@@ -99,7 +96,7 @@ export const updatePocpApproval = async (
             return 0
         }
     } catch (error) {
-        //console.log('error in registering.....', error)
+        // console.log('error in registering.....', error)
     }
 }
 
@@ -124,12 +121,12 @@ export const updatePocpClaim = async (jwt, claim_tx_hash, contribution_ids) => {
             return 0
         }
     } catch (error) {
-        //console.log('error in registering.....', error)
+        // console.log('error in registering.....', error)
     }
 }
 
 const buildQuery = (cid) => {
-    let cid_and_array = []
+    const cid_and_array = []
 
     cid?.map((x, i) => {
         cid_and_array.push(`cid=${x}`.toString())
@@ -151,8 +148,8 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
             }
         )
         if (res.data?.data?.contributions?.length > 0) {
-            let cid = []
-            let url = []
+            const cid = []
+            const url = []
             let status = true
             res.data?.data?.contributions?.map((item, index) => {
                 if (item?.ipfs_url === null) {
@@ -162,13 +159,13 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
                     url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
                 }
             })
-            //console.log('status...', status)
+            // console.log('status...', status)
             return { cid, url, status }
         } else {
             return { cid, url: [], status: false }
         }
     } catch (error) {
-        //console.log('error', error.toString())
+        // console.log('error', error.toString())
         return { cid, url: [], status: false }
     }
 }

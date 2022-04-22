@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { useSelector } from "react-redux"
 import NextButton from "../NextButton"
 import styles from "./style.module.css"
@@ -39,7 +39,7 @@ export default function ApproveTransaction({
                 <NextButton
                     text="Add DAO details"
                     increaseStep={increaseStep}
-                    isDisabled={selectedIndex >= 0 ? false : true}
+                    isDisabled={!(selectedIndex >= 0)}
                 />
             </div>
         </div>

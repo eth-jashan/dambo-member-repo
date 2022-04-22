@@ -1,8 +1,6 @@
-import React, { useCallback, useState } from "react"
+import React, { useState } from "react"
 import edit_active from "../../assets/Icons/edit_active.svg"
-import edit_inactive from "../../assets/Icons/edit_inactive.svg"
 import edit_hover from "../../assets/Icons/edit_hover.svg"
-import three_dots from "../../assets/Icons/three_dots.svg"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -17,7 +15,6 @@ import { message } from "antd"
 import { EthSignSignature } from "../../utils/EthSignSignature"
 import {
     getPayoutRequest,
-    set_active_nonce,
     set_payout_filter,
     syncExecuteData,
     syncTxDataWithGnosis,
@@ -29,14 +26,12 @@ import {
     getIpfsUrl,
     relayFunction,
     updatePocpApproval,
-    updatePocpRegister,
     uplaodApproveMetaDataUpload,
 } from "../../utils/relayFunctions"
 import { approvePOCPBadge } from "../../utils/POCPutils"
 import { getAuthToken } from "../../store/actions/auth-action"
 import { web3 } from "../../constant/web3"
 // import { isRejected } from '@reduxjs/toolkit';
-import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -87,7 +82,7 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const checkApproval = () => {
-        let confirm = []
+        const confirm = []
         item.gnosis?.confirmations.map((item, index) => {
             confirm.push(ethers.utils.getAddress(item.owner))
         })
@@ -158,7 +153,7 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const bundleTitle = () => {
-        let tokenSymbol = []
+        const tokenSymbol = []
 
         item?.metaInfo?.contributions?.map((item, index) => {
             item.tokens?.map((y, index) => {
@@ -339,7 +334,7 @@ export default function PaymentCard({ item, signer }) {
             executeTxResponse = await safeSdk.executeTransaction(
                 safeTransaction
             )
-            //console.log('done transaction.......')
+            // console.log('done transaction.......')
         } catch (error) {
             console.error(error)
             return
@@ -381,9 +376,9 @@ export default function PaymentCard({ item, signer }) {
                 // console.log('status', status)
                 // console.log('ipfs', url, cid, status)
                 if (status) {
-                    //console.log('ipfs', url, cid, status)
+                    // console.log('ipfs', url, cid, status)
                     clearTimeout(interval)
-                    //console.log('successfully registered')
+                    // console.log('successfully registered')
                     if (cid?.length > 0) {
                         const web3Provider = new ethers.providers.Web3Provider(
                             window.ethereum
@@ -419,14 +414,14 @@ export default function PaymentCard({ item, signer }) {
                                 const interval = setInterval(async () => {
                                     if (Date.now() - startTime > 10000) {
                                         clearInterval(interval)
-                                        //console.log('failed to get confirmation')
+                                        // console.log('failed to get confirmation')
                                         await updatePocpApproval(
                                             jwt,
                                             tx_hash,
                                             cid
                                         )
                                     }
-                                    var customHttpProvider =
+                                    const customHttpProvider =
                                         new ethers.providers.JsonRpcProvider(
                                             web3.infura
                                         )
@@ -458,7 +453,7 @@ export default function PaymentCard({ item, signer }) {
                                 })
                             }
                         } catch (error) {
-                            //console.log(error.toString())
+                            // console.log(error.toString())
                             const provider = new ethers.providers.Web3Provider(
                                 window.ethereum
                             )
@@ -469,7 +464,7 @@ export default function PaymentCard({ item, signer }) {
                         }
                     }
                 }
-                //console.log('again....')
+                // console.log('again....')
             }, 3000)
         } else {
             if (cid?.length > 0) {
@@ -506,10 +501,10 @@ export default function PaymentCard({ item, signer }) {
                         const interval = setInterval(async () => {
                             if (Date.now() - startTime > 10000) {
                                 clearInterval(interval)
-                                //console.log('failed to get confirmation')
+                                // console.log('failed to get confirmation')
                             }
-                            //console.log('tx_hash', tx_hash)
-                            var customHttpProvider =
+                            // console.log('tx_hash', tx_hash)
+                            const customHttpProvider =
                                 new ethers.providers.JsonRpcProvider(
                                     web3.infura
                                 )
@@ -522,24 +517,24 @@ export default function PaymentCard({ item, signer }) {
                                 clearTimeout(interval)
                                 setPayoutToast("APPROVED_BADGE")
                                 await updatePocpApproval(jwt, tx_hash, cid)
-                                //console.log('successfully registered')
+                                // console.log('successfully registered')
                                 await provider.provider.request({
                                     method: "wallet_switchEthereumChain",
                                     params: [{ chainId: web3.chainid.rinkeby }],
                                 })
                             }
 
-                            //console.log('again....')
+                            // console.log('again....')
                         }, 2000)
                     } else {
-                        //console.log('error in fetching tx hash....')
+                        // console.log('error in fetching tx hash....')
                         await provider.provider.request({
                             method: "wallet_switchEthereumChain",
                             params: [{ chainId: web3.chainid.rinkeby }],
                         })
                     }
                 } catch (error) {
-                    //console.log(error.toString())
+                    // console.log(error.toString())
                     const provider = new ethers.providers.Web3Provider(
                         window.ethereum
                     )
@@ -613,9 +608,9 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const uploadApproveMetatoIpfs = async () => {
-        let metaInfo = []
-        let cid = []
-        let to = []
+        const metaInfo = []
+        const cid = []
+        const to = []
         item?.metaInfo?.contributions.map((x, index) => {
             metaInfo.push({
                 dao_name: currentDao?.name,
@@ -723,11 +718,9 @@ export default function PaymentCard({ item, signer }) {
                                     }}
                                     className={textStyles.ub_14}
                                 >
-                                    {approveTitle
-                                        ? approveTitle
-                                        : !executePaymentLoading
+                                    {approveTitle || (!executePaymentLoading
                                         ? getButtonProperty()?.title
-                                        : "Processing..."}
+                                        : "Processing...")}
                                 </div>
                             </div>
                         )}

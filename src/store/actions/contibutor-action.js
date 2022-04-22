@@ -2,15 +2,10 @@
 import { ethers } from "ethers"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
-import { web3 } from "../../constant/web3"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
-import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
-import {
-    POCP_APPROVED_TOKEN,
-    POCP_CLAIMED_TOKEN,
-} from "../../utils/subgraphQuery"
-import { createClient } from "urql"
+
+
 import apiClient from "../../utils/api_client"
 
 export const set_invite_id = (id) => {
@@ -103,13 +98,13 @@ export const createContributionrequest = (
             )
 
             if (res.data.success) {
-                //console.log('suucessfully created !')
+                // console.log('suucessfully created !')
                 return 1
             } else {
                 return 0
             }
         } catch (error) {
-            //console.log('error....', error)
+            // console.log('error....', error)
         }
     }
 }
@@ -145,9 +140,9 @@ export const getAllBadges = (signer, address, communityId) => {
         const claimed_identifier = []
         const unclaimed = []
 
-        //filtering out current unclaimed token
+        // filtering out current unclaimed token
         allApproved.map((x, i) => {
-            let isClaimed = claimed.filter((y) => y.id === x?.id)
+            const isClaimed = claimed.filter((y) => y.id === x?.id)
             if (isClaimed.length === 0) {
                 cid.map((y, index) => {
                     if (y.id.toString() === x.identifier) {
@@ -161,7 +156,7 @@ export const getAllBadges = (signer, address, communityId) => {
                 }
             })
         })
-        //console.log('unclaimed',cid,unclaimed)
+        // console.log('unclaimed',cid,unclaimed)
         dispatch(
             contributorAction.set_badges({
                 claimed: claimed_identifier,

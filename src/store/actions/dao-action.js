@@ -2,7 +2,6 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import { createClient } from "@urql/core"
 // import axios from "axios"
 import apiClient from "../../utils/api_client"
-import { ethers } from "ethers"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
 import {
@@ -249,7 +248,7 @@ export const set_contri_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_contribution_filter({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: [],
                         })
                     )
@@ -262,7 +261,7 @@ export const set_contri_filter = (filter_key, number) => {
                 dispatch(
                     daoAction.set_contribution_filter({
                         key: filter_key,
-                        number: number,
+                        number,
                         list: [],
                     })
                 )
@@ -274,7 +273,7 @@ export const set_contri_filter = (filter_key, number) => {
                 daoAction.set_contri_list({
                     list: [],
                     key: filter_key,
-                    number: number,
+                    number,
                 })
             )
             return 0
@@ -347,7 +346,7 @@ export const set_dao = (dao, index) => {
                 role: dao.access_role,
                 community_role: dao.community_role,
                 account_mode: dao.access_role,
-                index: index,
+                index,
             })
         )
         gnosisDetailsofDao()
@@ -382,10 +381,10 @@ export const getContriRequest = () => {
                 },
             })
             if (res.data.success) {
-                //Approved Request without creating payout
-                let cid = []
+                // Approved Request without creating payout
+                const cid = []
                 res?.data?.data?.contributions?.map((item, index) => {
-                    let payout = []
+                    const payout = []
                     cid.push(item)
                     if (
                         item?.tokens?.length > 0 &&
@@ -408,7 +407,7 @@ export const getContriRequest = () => {
                                 tranactionAction.set_approved_request({
                                     item: {
                                         contri_detail: item,
-                                        payout: payout,
+                                        payout,
                                     },
                                 })
                             )
@@ -493,9 +492,9 @@ export const getPayoutRequest = () => {
                 safe_address
             )
 
-            let list_of_tx = []
+            const list_of_tx = []
             if (res.data.success) {
-                //filtering out drepute pending txs from gnosis
+                // filtering out drepute pending txs from gnosis
                 dispatch(
                     daoAction.set_all_payout_request({
                         list: res.data?.data?.payouts,
@@ -509,10 +508,10 @@ export const getPayoutRequest = () => {
                     })
                 })
 
-                let tx = []
-                let nonce_inserted = []
+                const tx = []
+                const nonce_inserted = []
 
-                //checking rejected tx and updated tx
+                // checking rejected tx and updated tx
                 list_of_tx.map((item, i) => {
                     pendingTxs.results.map((x) => {
                         if (item.gnosis.nonce === x.nonce) {
@@ -525,7 +524,7 @@ export const getPayoutRequest = () => {
                                     })
                                     nonce_inserted.push(x.nonce)
                                 } else {
-                                    let same_nonce = tx.filter(
+                                    const same_nonce = tx.filter(
                                         (y) => y.gnosis.nonce === x.nonce
                                     )
 
@@ -619,9 +618,9 @@ export const set_payout_filter = (filter_key, number) => {
                 safe_address
             )
 
-            let list_of_tx = []
+            const list_of_tx = []
             if (res.data.success) {
-                //filtering out drepute txs from gnosis
+                // filtering out drepute txs from gnosis
                 res.data?.data?.payouts.map((item, index) => {
                     pendingTxs.results.map((x, i) => {
                         if (
@@ -642,7 +641,7 @@ export const set_payout_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_filter_list({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: pending_txs,
                         })
                     )
@@ -652,7 +651,7 @@ export const set_payout_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_filter_list({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: all_payout,
                         })
                     )
@@ -664,7 +663,7 @@ export const set_payout_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_filter_list({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: pending,
                         })
                     )
@@ -676,7 +675,7 @@ export const set_payout_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_filter_list({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: pending,
                         })
                     )
@@ -684,7 +683,7 @@ export const set_payout_filter = (filter_key, number) => {
                     dispatch(
                         daoAction.set_filter_list({
                             key: filter_key,
-                            number: number,
+                            number,
                             list: list_of_tx,
                         })
                     )
@@ -694,7 +693,7 @@ export const set_payout_filter = (filter_key, number) => {
                     daoAction.set_filter_list({
                         list: [],
                         key: filter_key,
-                        number: number,
+                        number,
                     })
                 )
                 return 0
@@ -705,7 +704,7 @@ export const set_payout_filter = (filter_key, number) => {
                 daoAction.set_filter_list({
                     list: [],
                     key: filter_key,
-                    number: number,
+                    number,
                 })
             )
             return 0
@@ -759,7 +758,7 @@ export const syncTxDataWithGnosis = (payout) => {
             )
             const updatedTX = []
 
-            let nonce_inserted = []
+            const nonce_inserted = []
 
             allTx.results.map((item, index) => {
                 getAllPayout.map((x, i) => {
@@ -771,7 +770,7 @@ export const syncTxDataWithGnosis = (payout) => {
                     ) {
                         if (item.isExecuted) {
                             if (item.data === null && item.value === "0") {
-                                //Rejected with isExecuted
+                                // Rejected with isExecuted
                                 if (!nonce_inserted.includes(item.nonce)) {
                                     nonce_inserted.push(item.nonce)
                                     updatedTX.push({
@@ -782,7 +781,7 @@ export const syncTxDataWithGnosis = (payout) => {
                                     })
                                 }
                             } else {
-                                //Approved with isExecuted
+                                // Approved with isExecuted
                                 if (!nonce_inserted.includes(item.nonce)) {
                                     nonce_inserted.push(item.nonce)
                                     updatedTX.push({
@@ -842,7 +841,7 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
         const uuid = getState().dao.currentDao?.uuid
         const transaction = getState().transaction.approvedContriRequest
 
-        let contri_array = []
+        const contri_array = []
 
         transaction.map((item, index) => {
             contri_array.push(item?.contri_detail?.id)
@@ -852,12 +851,12 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
             contributions: contri_array,
             gnosis_reference_id: tranxid,
             dao_uuid: uuid,
-            nonce: nonce,
+            nonce,
         }
         const data_external = {
             gnosis_reference_id: tranxid,
             dao_uuid: uuid,
-            nonce: nonce,
+            nonce,
         }
 
         const res = await apiClient.post(
@@ -883,7 +882,7 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
         const uuid = getState().dao.currentDao?.uuid
         const transaction = getState().transaction.approvedContriRequest
 
-        let newPayout = []
+        const newPayout = []
 
         payout.map((item, index) => {
             if (!item?.token_type) {
@@ -919,9 +918,9 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
         const data = {
             gnosis_reference_id: tranxid,
             dao_uuid: uuid,
-            nonce: nonce,
+            nonce,
             tokens: newPayout,
-            description: description,
+            description,
         }
 
         const res = await apiClient.post(
@@ -947,7 +946,7 @@ export const set_initial_setup = (status) => {
     }
 }
 
-//create a voucher
+// create a voucher
 
 export const filterRequests = (time, verticals, isContribution) => {
     return (dispatch, getState) => {
@@ -980,7 +979,7 @@ export const filterRequests = (time, verticals, isContribution) => {
                 new_array_contrib_time = contribution_request
             }
         }
-        let new_array_contrib_veritcal = []
+        const new_array_contrib_veritcal = []
         if (verticals.length > 0) {
             verticals.map((x, i) => {
                 new_array_contrib_time.map((y, i) => {
@@ -1013,8 +1012,8 @@ export const switchRole = (role) => {
 export const getContributorOverview = () => {
     return (dispatch, getState) => {
         const all_contribution = getState().dao.contribution_id
-        let all_paid_contribution = []
-        let type_of_token = []
+        const all_paid_contribution = []
+        const type_of_token = []
         let token_info = []
         let totalAmount = 0
         all_contribution.map((item, index) => {
@@ -1022,13 +1021,13 @@ export const getContributorOverview = () => {
                 all_paid_contribution.push(item.id)
                 item?.tokens?.map((y, i) => {
                     if (type_of_token?.includes(y?.details?.symbol)) {
-                        let token = token_info.filter(
+                        const token = token_info.filter(
                             (x) => x.symbol === y?.details?.symbol
                         )
                         token[0].value =
                             token[0].value + y?.amount * y?.usd_amount
                         token[0].amount = token[0].amount + y?.amount
-                        let new_token_list = token_info.filter(
+                        const new_token_list = token_info.filter(
                             (x) => x.symbol !== y?.details?.symbol
                         )
                         new_token_list.push(token[0])

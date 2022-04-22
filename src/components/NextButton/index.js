@@ -1,9 +1,7 @@
 import React from "react"
 import styles from "./style.module.css"
-import { BsArrowRightShort } from "react-icons/bs"
 import rightArrow from "../../assets/Icons/right_arrow_white.svg"
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json"
-import Lottie from "react-lottie"
 
 export default function NextButton({
     increaseStep,

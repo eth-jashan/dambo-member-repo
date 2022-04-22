@@ -23,7 +23,7 @@ export default function AddOwners({
         {
             id: uuidv4(),
             name: "",
-            address: address,
+            address,
         },
     ])
     const [threshold, setThreshold] = useState(0)
@@ -32,7 +32,7 @@ export default function AddOwners({
     const [loading, setLoading] = useState(false)
 
     const getSafeOwners = useCallback(async () => {
-        let ownerObj = []
+        const ownerObj = []
         const safeInfo = await serviceClient.getSafeInfo(safeAddress)
         if (safeInfo.owners) {
             safeInfo.owners.map((item, index) => {
@@ -92,7 +92,6 @@ export default function AddOwners({
             }
             if (!owner.address) {
                 isValid = false
-                return
             }
         })
         return isValid

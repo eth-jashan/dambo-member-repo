@@ -53,11 +53,11 @@ export const authWithSign = (address, signer) => {
                     return 1
                 }
             } catch (error) {
-                //console.log('error on signing api', error)
+                // console.log('error on signing api', error)
                 return 0
             }
         } catch (error) {
-            //console.log('error on nonce api', error)
+            // console.log('error on nonce api', error)
             return 0
         }
     }
@@ -69,7 +69,7 @@ export const getJwt = (address) => {
         if (jwtInfo?.jwt) {
             const currentTime = new Date()
             const createdTime = new Date(jwtInfo.time)
-            let diffInMilliseconds = Math.abs(currentTime - createdTime)
+            const diffInMilliseconds = Math.abs(currentTime - createdTime)
             const hours = diffInMilliseconds / 36e5
             if (hours <= 2) {
                 dispatch(authActions.set_signing({ jwt: jwtInfo.jwt }))
@@ -104,7 +104,7 @@ export const setAddress = (address, signer) => {
 
 export const setLoggedIn = (status) => {
     return (dispatch) => {
-        //console.log('changing status.....')
+        // console.log('changing status.....')
         dispatch(authActions.set_loggedIn({ status }))
     }
 }
@@ -141,7 +141,7 @@ export const getCommunityRole = () => {
                 }
             )
             if (res.data.success) {
-                let roles = []
+                const roles = []
                 res.data.data.map((item, index) => {
                     roles.push({ value: item, label: item })
                 })
