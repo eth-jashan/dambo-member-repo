@@ -10,6 +10,7 @@ const InputText = ({
     disabled = false,
     multi,
     textLabel,
+    onBlur,
 }) => {
     const [onFocus, setOnFocus] = useState()
 
@@ -34,7 +35,10 @@ const InputText = ({
                 placeholder={placeholder}
                 className={styles.textInput}
                 onFocus={() => setOnFocus(true)}
-                onBlur={() => setOnFocus(false)}
+                onBlur={(e) => {
+                    setOnFocus(false)
+                    onBlur(e)
+                }}
                 disabled={disabled}
                 style={{
                     width: width,
