@@ -15,7 +15,6 @@ import {
 } from "../../../store/actions/contibutor-action"
 import POCPBadge from "../../POCPBadge"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import moment from "moment"
 import { approvePOCPBadge, claimPOCPBadges } from "../../../utils/POCPutils"
 import { getAuthToken } from "../../../store/actions/auth-action"
 import {
@@ -31,6 +30,7 @@ import {
     syncAllBadges,
 } from "../../../store/actions/dao-action"
 import { setPayoutToast } from "../../../store/actions/toast-action"
+import * as dayjs from "dayjs"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -333,7 +333,6 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                         >
                             {isAdmin ? "Created" : getStatusProperty()?.title}
                         </div>
-                        {/* <div style={{color:'gray'}} className={textStyle.m_16}>{moment(currentPayment?.gnosis?.submissionDate).startOf('hour').fromNow()}</div> */}
                     </div>
                 </div>
 
@@ -743,7 +742,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             ? currentDao?.logo_url
                             : "https://s3uploader-s3uploadbucket-q66lac569ais.s3.amazonaws.com/1694805252.jpg"
                     }
-                    date={`${moment().format("D MMM YYYY")}`}
+                    date={`${dayjs().format("D MMM YYYY")}`}
                     title={currentTransaction?.title}
                     from={`${txInfo?.executor?.slice(
                         0,

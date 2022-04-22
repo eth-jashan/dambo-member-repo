@@ -4,7 +4,7 @@ import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
 import ContributorOnbording from "./pages/ContributorOnboarding"
 import AuthWallet from "./pages/AuthWallet"
-import "./App.css"
+import "./App.scss"
 import { useDispatch, useSelector } from "react-redux"
 import DiscordFallback from "./pages/DiscordFallback"
 import {
@@ -16,6 +16,8 @@ import { INFURA_ID } from "./constants"
 import WalletConnectProvider from "@walletconnect/web3-provider"
 import Web3Modal from "web3modal"
 import ContributorSignupFallback from "./pages/ContributorSignupFallback"
+import * as dayjs from "dayjs"
+import * as relativeTimePlugin from "dayjs/plugin/relativeTime"
 
 const providerOptions = {
     walletconnect: {
@@ -41,11 +43,10 @@ const web3Modal = new Web3Modal({
 })
 
 function App() {
-    const loggedIn = useSelector((x) => x.auth.loggedIn)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
-    const address = useSelector((x) => x.auth.address)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    dayjs.extend(relativeTimePlugin)
 
     const loadWeb3Modal = useCallback(async () => {
         const provider = await web3Modal.connect()

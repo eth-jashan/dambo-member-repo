@@ -20,7 +20,7 @@ import {
     syncTxDataWithGnosis,
     setLoading,
 } from "../../store/actions/dao-action"
-import moment from "moment"
+import dayjs from "dayjs"
 import { setPayoutToast } from "../../store/actions/toast-action"
 import {
     getIpfsUrl,
@@ -31,7 +31,6 @@ import {
 import { approvePOCPBadge } from "../../utils/POCPutils"
 import { getAuthToken } from "../../store/actions/auth-action"
 import { web3 } from "../../constant/web3"
-// import { isRejected } from '@reduxjs/toolkit';
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -214,7 +213,7 @@ export default function PaymentCard({ item, signer }) {
                         <div
                             className={`${textStyles.m_16} ${styles.whiterText}`}
                         >
-                            {moment(item?.gnosis?.submissionDate).fromNow()}
+                            {dayjs(item?.gnosis?.submissionDate).fromNow()}
                         </div>
 
                         <div
@@ -617,7 +616,7 @@ export default function PaymentCard({ item, signer }) {
                 contri_title: x?.title,
                 signer: address,
                 claimer: x?.requested_by?.public_address,
-                date_of_approve: moment().format("D MMM YYYY"),
+                date_of_approve: dayjs().format("D MMM YYYY"),
                 id: x?.id,
                 dao_logo_url:
                     currentDao?.logo_url ||

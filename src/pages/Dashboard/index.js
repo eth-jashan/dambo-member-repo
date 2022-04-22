@@ -613,6 +613,7 @@ export default function Dashboard() {
                             community_id={community_id[0]?.id}
                             signer={signer}
                             item={item}
+                            key={index}
                         />
                     ))}
                 </div>
@@ -630,6 +631,7 @@ export default function Dashboard() {
                             community_id={community_id[0]?.id}
                             signer={signer}
                             item={item}
+                            key={index}
                         />
                     ))}
                 </div>
@@ -649,7 +651,7 @@ export default function Dashboard() {
             }}
         >
             {dataSource.map((x, i) => (
-                <BadgeItem item={x} />
+                <BadgeItem item={x} key={i} />
             ))}
         </div>
     )
@@ -667,6 +669,7 @@ export default function Dashboard() {
                             gnosis={pending_txs}
                             signer={signer}
                             item={item}
+                            key={index}
                         />
                     ))}
                 </div>
