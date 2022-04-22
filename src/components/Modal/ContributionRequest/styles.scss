@@ -1,0 +1,250 @@
+.contribution-request-container {
+    &.backdrop {
+        background-color: rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding-left: 6%;
+        display: flex;
+        align-items: center;
+    }
+    .modal {
+        width: 44vw;
+        background: white;
+        min-height: 80.33%;
+        background: #ffffff;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.06),
+            0px 0px 20px rgba(0, 0, 0, 0.12);
+        border-radius: 1.25rem;
+        padding: 2.5rem 2rem 2rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .contribution-body {
+        display: flex;
+        align-items: start;
+        flex-direction: column;
+        width: 100%;
+
+        .contribution-title-input-wrapper {
+            width: 100%;
+            input {
+                width: 100%;
+            }
+        }
+
+        .rowInput {
+            flex-direction: row;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            .contribution-time-input-wrapper,
+            .external-link-input-wrapper {
+                width: 48%;
+            }
+
+            .contribution-time-input-wrapper {
+                .numberInput {
+                    width: 100%;
+                    border: 1px solid #eeeef0;
+                    border-radius: 0.5rem;
+                    color: black;
+                    padding: 1rem;
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                    outline: none;
+                }
+                .ant-input-number-focused {
+                    border: 1px solid #6852ff;
+                    box-shadow: none;
+                }
+
+                .ant-input-number:hover {
+                    border: 1px solid #eeeef0;
+                }
+                .ant-input-number:hover.ant-input-number-focused {
+                    border: 1px solid #6852ff;
+                }
+
+                .ant-input-number:focus {
+                    border: 1px solid #6852ff;
+                }
+                .ant-input-number-handler-wrap {
+                    display: none;
+                }
+
+                .ant-input-number-input {
+                    height: auto;
+                }
+
+                .ant-input-number-input::placeholder {
+                    color: #999;
+                    padding: 0;
+                }
+            }
+            .external-link-input-wrapper {
+                input {
+                    width: 100%;
+                }
+                &.external-link-error {
+                    input {
+                        border: 1px solid red;
+                        background-color: #fff;
+                    }
+                }
+            }
+        }
+
+        .contribution-type-input-wrapper {
+            width: 100%;
+            .select-input {
+                .select__control {
+                    width: 100%;
+                    border-radius: 0.5rem;
+                    padding: 0.5rem;
+                    background-color: transparent;
+                    border: 1px solid #eeeef0;
+                    &.select__control--is-focused,
+                    &.select__control--menu-is-open {
+                        border: 1px solid #6852ff;
+                    }
+                    .select__placeholder {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 16px;
+                        line-height: 24px;
+                        text-align: left;
+                    }
+                    .select__single-value {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 16px;
+                        line-height: 24px;
+                        width: 100%;
+                        color: black;
+                        text-align: left;
+                    }
+                }
+                .select__menu {
+                    width: 100%;
+                    .select__option {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 1rem;
+                        line-height: 1.1rem;
+                        width: 100%;
+                        color: black;
+                        text-align: left;
+                    }
+                }
+            }
+        }
+
+        .text-area-wrapper {
+            height: 7.25rem;
+            width: 100%;
+            margin-top: 1rem;
+            position: relative;
+            border: 1px solid #eeeef0;
+            border-radius: 0.5rem;
+            background: white;
+        }
+        .text-area-focused {
+            border: 1px solid #6852ff;
+        }
+        .text-area-dark {
+            background: #e1dcff;
+        }
+        .timeDark {
+            background-color: rgb(225, 220, 255);
+        }
+
+        .selectDark {
+            background-color: rgb(225, 220, 255);
+            border-radius: 0.5rem;
+        }
+
+        .cross {
+            width: 1.125rem;
+            height: 1.125rem;
+            margin-bottom: 2.5rem;
+            cursor: pointer;
+            /* align-self: flex-start; */
+        }
+        .heading {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: normal;
+            font-size: 3rem;
+            line-height: 3rem;
+            text-align: start;
+            margin-bottom: 3rem;
+        }
+    }
+
+    .buttonSubmit {
+        width: 50.11%;
+        padding: 0.625rem 1rem 0.625rem 1.5rem;
+        background: #6852ff;
+        margin-top: 3.438rem;
+        flex-direction: row;
+        justify-content: space-between;
+        display: flex;
+        border-radius: 3rem;
+        align-items: center;
+        cursor: pointer;
+        /* border-radius: ; */
+    }
+
+    .greyedText {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1.313rem;
+        line-height: 1.75rem;
+        color: #b4a8ff;
+    }
+    .validText {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1.313rem;
+        line-height: 1.75rem;
+        color: white;
+    }
+
+    .textArea {
+        width: 100%;
+        border-radius: 0.5rem;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: black;
+        outline: none;
+        padding: 1rem;
+        height: 4rem;
+        border: 0;
+        background: transparent;
+    }
+    .textArea::placeholder {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: #808080;
+    }
+}

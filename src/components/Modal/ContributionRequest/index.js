@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import styles from "./styles.module.css"
+import "./styles.scss"
 import { MdChevronRight } from "react-icons/all"
 import cross from "../../../assets/Icons/cross.svg"
 import InputText from "../../InputComponent/Input"
@@ -19,6 +19,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
     const [loading, setLoading] = useState(false)
     const [focusOnTime, setFocusOnTime] = useState(false)
     const [focusOnSelect, setFocusOnSelect] = useState(false)
+    const [linkError, setLinkError] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -61,169 +62,89 @@ const ContributionRequestModal = ({ setVisibility }) => {
         }
     }
 
-    const textAreaProperty = () => {
-        if (descriptionFocus) {
-            return { background: "white", border: "1px solid #6852FF" }
-        } else if (!descriptionFocus && comments.length > 0) {
-            return { background: "#E1DCFF", border: "1px solid #EEEEF0" }
-        } else if (!descriptionFocus && comments.length === 0) {
-            return { background: "white", border: "1px solid #EEEEF0" }
-        }
-    }
-
-    const colourStyles = {
-        control: (styles, state) => {
-            return {
-                ...styles,
-                width: "100%",
-                borderRadius: "0.5rem",
-                padding: "0.5rem",
-                backgroundColor: "transparent",
-                border:
-                    state.menuIsOpen || state.isFocused
-                        ? "1px solid #6852FF"
-                        : "1px solid #eeeef0",
-            }
-        },
-        option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-            //   const color = chroma(data.color);
-            return {
-                ...styles,
-                fontFamily: "TelegrafMedium",
-                fontStyle: "normal",
-                fontWeight: "normal",
-                fontSize: "1rem",
-                lineHeight: "1.1rem",
-                width: "100%",
-                color: "black",
-                textAlign: "left",
-            }
-        },
-        dropdownIndicator: (styles, state) => ({
-            ...styles,
-            color: state.menuIsOpen || state.isFocused ? "#6852FF" : "#e0e0e0",
-        }),
-        menu: (styles) => ({ ...styles, width: "100%" }),
-        input: (styles, { data, isDisabled, isFocused, isSelected }) => {
-            return {
-                ...styles,
-                fontFamily: "TelegrafMedium",
-                fontStyle: "normal",
-                fontWeight: "normal",
-                fontSize: "16px",
-                lineHeight: "24px",
-                textAlign: "left",
-            }
-        },
-        placeholder: (styles) => ({
-            ...styles,
-            fontFamily: "TelegrafMedium",
-            fontStyle: "normal",
-            fontWeight: "normal",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "left",
-        }),
-        singleValue: (styles, { data }) => ({
-            ...styles,
-            fontFamily: "TelegrafMedium",
-            fontStyle: "normal",
-            fontWeight: "normal",
-            fontSize: "16px",
-            lineHeight: "24px",
-            width: "100%",
-            color: "black",
-            textAlign: "left",
-        }),
-    }
-
     const contributionTypeOptions = [
         { value: "DESIGN", label: "DESIGN" },
         { value: "CODEBASE", label: "CODEBASE" },
         { value: "CONTENT", label: "CONTENT" },
     ]
 
-    //   const contributionTypeOptions = ['DESIGN', 'CODEBASE', 'DUMMY', 'CONTENT']
-    // console.log("contributionType", contributionType);
+    const handleLinkBlur = () => {
+        let urlExpression =
+            /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
+        let regex = new RegExp(urlExpression)
+        if (link.length > 0 && !link.match(regex)) {
+            setLinkError(true)
+        } else {
+            setLinkError(false)
+        }
+    }
+
     return (
-        <div className={styles.backdrop}>
-            <div className={styles.modal}>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "start",
-                        flexDirection: "column",
-                        width: "100%",
-                    }}
-                >
+        <div className="backdrop contribution-request-container">
+            <div className="modal">
+                <div className="contribution-body">
                     <img
                         onClick={() => setVisibility(false)}
                         alt="cross"
                         src={cross}
-                        className={styles.cross}
+                        className="cross"
                     />
-                    <div className={`${styles.heading}`}>
+                    <div className="heading">
                         New contribution
                         <br /> request
                     </div>
 
-                    <div style={{ width: "100%" }}>
+                    <div className="contribution-title-input-wrapper">
                         <InputText
                             placeholder="Contribution Title"
                             onChange={(e) => setTile(e.target.value)}
                             value={title}
-                            width={"100%"}
                         />
                     </div>
 
-                    <div className={styles.rowInput}>
-                        <div style={{ width: "48%" }}>
+                    <div className="rowInput">
+                        <div className="contribution-time-input-wrapper">
                             <InputNumber
                                 placeholder="Time Spent(in hours)"
                                 onChange={(value) => setTime(value)}
                                 value={time}
-                                width={"100%"}
                                 min={0}
                                 onFocus={() => setFocusOnTime(true)}
                                 onBlur={() => setFocusOnTime(false)}
-                                className={`${styles.numberInput} ${
-                                    !focusOnTime && time ? styles.timeDark : ""
+                                className={`numberInput ${
+                                    !focusOnTime && time ? "timeDark" : ""
                                 }`}
                             />
                         </div>
-                        <div style={{ width: "48%" }}>
+                        <div
+                            className={`external-link-input-wrapper ${
+                                linkError ? "external-link-error" : ""
+                            }`}
+                        >
                             <InputText
                                 placeholder="External Link"
                                 onChange={(e) => setLink(e.target.value)}
                                 value={link}
-                                width={"100%"}
+                                onBlur={handleLinkBlur}
                             />
                         </div>
                     </div>
 
-                    <div style={{ width: "100%" }}>
-                        {/* <InputText
-              placeholder="Contribution Type"
-              onChange={(e) => setContributionType(e.target.value)}
-              value={contributionType}
-              width={"100%"}
-            /> */}
+                    <div className="contribution-type-input-wrapper">
                         <div>
                             <Select
-                                // components={{Option: CustomOption}}
                                 classNamePrefix="select"
                                 closeMenuOnSelect
                                 onChange={setContributionType}
-                                styles={colourStyles}
                                 isSearchable={false}
                                 name="color"
                                 options={contributionTypeOptions}
                                 placeholder="Contribution Type"
                                 onFocus={() => setFocusOnSelect(true)}
                                 onBlur={() => setFocusOnSelect(false)}
-                                className={`basic-single ${
+                                className={`select-input ${
                                     !focusOnSelect && contributionType?.value
-                                        ? styles.selectDark
+                                        ? "selectDark"
                                         : ""
                                 }`}
                             />
@@ -231,19 +152,17 @@ const ContributionRequestModal = ({ setVisibility }) => {
                     </div>
 
                     <div
-                        style={{
-                            height: "7.25rem",
-                            width: "100%",
-                            marginTop: "1rem",
-                            position: "relative",
-                            border: textAreaProperty()?.border,
-                            borderRadius: "0.5rem",
-                            background: textAreaProperty()?.background,
-                        }}
+                        className={`text-area-wrapper ${
+                            descriptionFocus ? "text-area-focused" : ""
+                        } ${
+                            !descriptionFocus && comments?.length > 0
+                                ? "text-area-dark"
+                                : ""
+                        }`}
                     >
                         <Input.TextArea
                             placeholder="Write your feedback here"
-                            className={styles.textArea}
+                            className="textArea"
                             onFocus={() => setDescriptionFocus(true)}
                             onBlur={() => setDescriptionFocus(false)}
                             autoSize={{ maxRows: 3 }}
@@ -269,20 +188,13 @@ const ContributionRequestModal = ({ setVisibility }) => {
                     </div>
                 </div>
 
-                <div onClick={() => onSubmit()} className={styles.buttonSubmit}>
-                    <div
-                        className={
-                            isValid() ? styles.validText : styles.gereyedText
-                        }
-                    >
+                <div onClick={() => onSubmit()} className="buttonSubmit">
+                    <div className={isValid() ? "validText" : "greyedText"}>
                         {loading ? "Creating..." : "Create Request"}
                     </div>
                     <MdChevronRight color={isValid() ? "white" : "#B4A8FF"} />
                 </div>
-
-                {/* </div> */}
             </div>
-            {/* <div className={styles.opacity}/> */}
         </div>
     )
 }

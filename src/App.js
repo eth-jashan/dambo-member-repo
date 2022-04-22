@@ -4,7 +4,7 @@ import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
 import ContributorOnbording from "./pages/ContributorOnboarding"
 import AuthWallet from "./pages/AuthWallet"
-import "./App.css"
+import "./App.scss"
 import { useDispatch, useSelector } from "react-redux"
 import DiscordFallback from "./pages/DiscordFallback"
 import {
@@ -41,9 +41,7 @@ const web3Modal = new Web3Modal({
 })
 
 function App() {
-    const loggedIn = useSelector((x) => x.auth.loggedIn)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
-    const address = useSelector((x) => x.auth.address)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
