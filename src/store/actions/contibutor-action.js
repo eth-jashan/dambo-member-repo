@@ -5,7 +5,6 @@ import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 
-
 import apiClient from "../../utils/api_client"
 
 export const set_invite_id = (id) => {
@@ -115,14 +114,39 @@ export const setContributionDetail = (item) => {
     }
 }
 
-export const setBadgesAfterClaim = (claim, unclaim) => {
+export const setBadgesAfterClaim = (
+    claimer,
+    approver,
+    ipfs,
+    tokenId,
+    communityId
+) => {
     return (dispatch, getState) => {
-        dispatch(contributorAction.set_badges({ claimed: claim, unclaim }))
+        const claimedToken = getState().contributor.claimed
+        const unClaimedToken = getState().contributor.unclaimed
+        const newClaimed = claimedToken.concat([
+            {
+                id: tokenId,
+                approver,
+                claimer,
+                ipfsMetaUri: ipfs,
+                community: communityId,
+            },
+        ])
+
+        dispatch(
+            contributorAction.set_badges({
+                claimed: newClaimed,
+                unclaimed: unClaimedToken.filter(
+                    (x) => x.id !== tokenId.toString()
+                ),
+            })
+        )
     }
 }
 
 export const getAllBadges = (signer, address, communityId) => {
-    return async (dispatch, getState) => {
+    return (dispatch, getState) => {
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const all_claimed_badge = getState().dao.all_claimed_badge
         const all_approved_badge = getState().dao.all_approved_badge

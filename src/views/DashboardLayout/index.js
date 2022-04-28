@@ -40,7 +40,12 @@ import {
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
 
-export default function DashboardLayout({ children, route, signer }) {
+export default function DashboardLayout({
+    children,
+    route,
+    signer,
+    modalBackdrop,
+}) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const currentTransaction = useSelector(
@@ -64,6 +69,29 @@ export default function DashboardLayout({ children, route, signer }) {
     const community_id = pocp_dao_info.filter(
         (x) => x.txhash === currentDao?.tx_hash
     )
+
+    const currentUser = currentDao?.signers.filter(
+        (x) => x.public_address === address
+    )
+
+    const getInitialForAccount = () => {
+        if (currentUser) {
+            const nameArray = currentUser[0]?.metadata?.name?.split(" ")
+            if (nameArray?.length > 1) {
+                return {
+                    first: nameArray[0].charAt(0)?.toUpperCase(),
+                    last: nameArray[1].charAt(1)?.toUpperCase(),
+                }
+            } else {
+                return {
+                    first: nameArray
+                        ? nameArray[0]?.charAt(0)?.toUpperCase()
+                        : "",
+                    last: "",
+                }
+            }
+        }
+    }
 
     const changeAccount = async (item, index) => {
         dispatch(setLoadingState(true))
@@ -121,6 +149,7 @@ export default function DashboardLayout({ children, route, signer }) {
 
     const onSwitchRoleModal = () => {
         setProfileModal(false)
+        modalBackdrop(!switchRoleModal)
         setSwitchRoleModal(!switchRoleModal)
     }
 
@@ -207,7 +236,18 @@ export default function DashboardLayout({ children, route, signer }) {
                         <div
                             onClick={() => onProfileModal()}
                             className={styles.accountIcon}
-                        ></div>
+                        >
+                            <div
+                                className={`${textStyles.m_14} ${textStyles.m_14} ${styles.initialText}`}
+                            >
+                                {getInitialForAccount()?.first}
+                            </div>
+                            <div
+                                className={`${textStyles.m_14} ${textStyles.m_14} ${styles.initialText}`}
+                            >
+                                {getInitialForAccount()?.last}
+                            </div>
+                        </div>
                         {profile_modal && <ProfileModal />}
                     </div>
                 </div>
@@ -242,6 +282,11 @@ export default function DashboardLayout({ children, route, signer }) {
                 return <ContributionOverview />
             }
         }
+    }
+
+    const onBackDropPress = () => {
+        setSwitchRoleModal(false)
+        setProfileModal(false)
     }
 
     const text = (item) => <span>{item}</span>
@@ -282,7 +327,7 @@ export default function DashboardLayout({ children, route, signer }) {
                                     item.dao_details?.uuid && (
                                     <div className={styles.selectedDao}></div>
                                 )}
-                                {/* {currentDao?.uuid === item?.dao_details?.uuid?<div style={{height:'100%', width:'4px', background:'white', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem', marginRight:'8px'}}/>:<div style={{height:'100%', width:'4px', background:'transparent', borderTopRightRadius:'8rem',borderBottomRightRadius:'8rem',marginRight:'8px'}}/>} */}
+
                                 {item?.dao_details?.logo_url ? (
                                     <img
                                         src={item?.dao_details?.logo_url}
@@ -328,6 +373,12 @@ export default function DashboardLayout({ children, route, signer }) {
             </div>
 
             <div className={styles.childrenLayout}>
+                {(switchRoleModal || profile_modal) && (
+                    <div
+                        onClick={() => onBackDropPress()}
+                        className={styles.backdrop}
+                    />
+                )}
                 {headerComponet()}
                 <div className={styles.layoutContainer}>
                     <div className={styles.children}>{children}</div>

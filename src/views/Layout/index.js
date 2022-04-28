@@ -11,6 +11,7 @@ export default function Layout({
     currentStep,
     contributorWallet,
     signer,
+    deploying,
 }) {
     const checkRoute = () => {
         if (currentStep > 1 && currentStep <= 4) {
@@ -38,7 +39,7 @@ export default function Layout({
                 <OnboardingHeader signer={signer} />
                 {!contributorWallet && (
                     <div className={styles.modal}>
-                        {!contributorWallet && checkRoute() ? (
+                        {!contributorWallet && checkRoute() && !deploying ? (
                             <img
                                 className={styles.backImg}
                                 onClick={decreaseStep}
@@ -48,7 +49,6 @@ export default function Layout({
                         ) : (
                             <div className={styles.backImg} />
                         )}
-                        {/* <div> */}
                         {children}
                     </div>
                 )}

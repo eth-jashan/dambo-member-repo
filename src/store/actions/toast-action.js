@@ -16,3 +16,9 @@ export const setLoadingState = (loading) => {
         dispatch(toastAction.set_loading_state({ loading }))
     }
 }
+
+export const setPocpAction = (status) => {
+    return (dispatch) => {
+        dispatch(toastAction.set_pocp_action({ status }))
+    }
+}

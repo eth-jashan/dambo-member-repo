@@ -18,7 +18,7 @@ const Paybutton = () => {
                     2,500$
                 </div>
 
-                <div className={styles.payNow}>Pay Now</div>
+                <div className={styles.payNow}>Sign and Pay Now</div>
             </div>
         </div>
     )

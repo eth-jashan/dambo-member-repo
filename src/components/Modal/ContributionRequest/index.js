@@ -105,7 +105,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                     <div className="rowInput">
                         <div className="contribution-time-input-wrapper">
                             <InputNumber
-                                placeholder="Time Spent(in hours)"
+                                placeholder="Time Spent (in hours)"
                                 onChange={(value) => setTime(value)}
                                 value={time}
                                 min={0}

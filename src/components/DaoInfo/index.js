@@ -14,12 +14,7 @@ import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
 
-const DaoInfo = ({
-    increaseStep,
-    decreaseStep,
-    deploying,
-    hasMultiSignWallet,
-}) => {
+const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [discord, setDiscord] = useState("")
@@ -75,12 +70,13 @@ const DaoInfo = ({
         for (let i = 0; i < binary.length; i++) {
             array.push(binary.charCodeAt(i))
         }
-        const blobData = new Blob([new Uint8Array(array)], { type: "image/jpeg" })
-        const result = await fetch(response.data.uploadURL, {
+        const blobData = new Blob([new Uint8Array(array)], {
+            type: "image/jpeg",
+        })
+        await fetch(response.data.uploadURL, {
             method: "PUT",
             body: blobData,
         })
-        // console.log(result, response.data.uploadURL.split("?")[0])
         // Final URL for the user doesn't need the query string params
         setImage((x) => ({ ...x, url: response.data.uploadURL.split("?")[0] }))
         setLoading(false)
@@ -91,23 +87,29 @@ const DaoInfo = ({
             <div onClick={() => setImage()} className={styles.retry}>
                 <img src={retry} alt="retry" />
             </div>
-            {/* <div onClick={() => uploadImage()} className={styles.upload}>
-        <img src={upload} alt="upload" />
-        <div style={{ color: "white" }} className={textStyles.m_16}>
-          upload
         </div>
-      </div> */}
+    )
+
+    const GnosisLoader = () => (
+        <div className={styles.loaderLayout}>
+            <div className={`${textStyles.ub_53} ${styles.textAlign}`}>
+                Creating safe
+            </div>
+            <div className={`${textStyles.ub_53} ${styles.textAlign}`}>
+                might take upto a min
+            </div>
+            <Lottie
+                options={defaultOptions}
+                style={{ height: "40%", width: "100%" }}
+                className={styles.layoutImage}
+            />
         </div>
     )
 
     return (
         <div className={styles.layout}>
             {deploying ? (
-                <Lottie
-                    options={defaultOptions}
-                    style={{ height: "100%", width: "100%" }}
-                    className={styles.layoutImage}
-                />
+                <GnosisLoader />
             ) : (
                 <>
                     <div>

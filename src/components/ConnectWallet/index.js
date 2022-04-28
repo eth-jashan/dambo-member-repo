@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { ethers, providers } from "ethers"
-import Web3Modal from "web3modal"
-import WalletConnectProvider from "@walletconnect/web3-provider"
-import { INFURA_ID, NETWORKS } from "../../constants"
-import { useUserSigner } from "../../hooks"
+import { ethers } from "ethers"
 import { useSelector, useDispatch } from "react-redux"
 import {
     authWithSign,
@@ -24,118 +20,59 @@ import { getAddressMembership } from "../../store/actions/gnosis-action"
 import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
 import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
-
 import textStyles from "../../commonStyles/textType/styles.module.css"
-
-const targetNetwork = NETWORKS.rinkeby
-const localProviderUrl = targetNetwork.rpcUrl
-const localProvider = new ethers.providers.StaticJsonRpcProvider(
-    localProviderUrl
-)
-
-const providerOptions = {
-    walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-            bridge: "https://polygon.bridge.walletconnect.org",
-            infuraId: INFURA_ID,
-            rpc: {
-                1: `https://mainnet.infura.io/v3/${INFURA_ID}`, // mainnet // For more WalletConnect providers: https://docs.walletconnect.org/quick-start/dapps/web3-provider#required
-                100: "https://dai.poa.network", // xDai
-            },
-        },
-    },
-}
-
-const web3Modal = new Web3Modal({
-    network: "mainnet", // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
-    cacheProvider: true, // optional
-    theme: "light", // optional. Change to "dark" for a dark theme.
-    providerOptions: {
-        providerOptions,
-    },
-})
+import { web3 } from "../../constant/web3"
 
 const ConnectWallet = ({ isAdmin }) => {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
-    const web3Provider = useSelector((x) => x.auth.web3Provider)
-    const userSigner = useUserSigner(web3Provider, localProvider)
     const uuid = useSelector((x) => x.contributor.invite_code)
     const [auth, setAuth] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const authWithWallet = useCallback(
-        async (address) => {
+        async (address, chainId, signer) => {
             setAuth(true)
-            const provider = await web3Modal.connect()
-            const web3Provider = new providers.Web3Provider(provider)
-            const signer = web3Provider.getSigner()
-            const chainId = await signer.getChainId()
-
-            // if(chainId === 4){
-            try {
-                const res = await dispatch(authWithSign(address, signer))
-                if (res) {
-                    dispatch(setLoggedIn(true))
-                    if (isAdmin) {
-                        const res = await dispatch(getAddressMembership())
-                        if (res) {
-                            setAuth(false)
-                            navigate(`/dashboard`)
+            if (chainId === web3.chainid.connectionChainID) {
+                try {
+                    const res = await dispatch(authWithSign(address, signer))
+                    if (res) {
+                        dispatch(setLoggedIn(true))
+                        if (isAdmin) {
+                            const res = await dispatch(getAddressMembership())
+                            if (res) {
+                                setAuth(false)
+                                navigate(`/dashboard`)
+                            } else {
+                                setAuth(false)
+                                navigate("/onboard/dao")
+                            }
                         } else {
                             setAuth(false)
-                            navigate("/onboard/dao")
-                        }
-                    } else {
-                        setAuth(false)
-                        if (!isAdmin) {
-                            try {
-                                const res = await dispatch(getRole(uuid))
-                                if (res) {
-                                    message.success("Already a member")
-                                    dispatch(setAdminStatus(true))
-                                    navigate(`/dashboard`)
-                                } else {
+                            if (!isAdmin) {
+                                try {
+                                    const res = await dispatch(getRole(uuid))
+                                    if (res) {
+                                        message.success("Already a member")
+                                        dispatch(setAdminStatus(true))
+                                        navigate(`/dashboard`)
+                                    }
+                                } catch (error) {
+                                    // message.error('Error on getting role')
                                 }
-                            } catch (error) {
-                                // message.error('Error on getting role')
                             }
                         }
                     }
+                } catch (error) {
+                    // console.log('error on signing....', error)
                 }
-            } catch (error) {
-                // console.log('error on signing....', error)
+            } else {
+                //console.log('change chain id')
             }
-            // }else{
-            // //console.log('change chain id')
-            // await web3Provider.provider.request({
-            //   method: 'wallet_switchEthereumChain',
-            //   params: [{ chainId: '0x4'}],
-            // });
-
-            // }
-            // setAuth(false)
-            // navigate('/dashboard')
         },
         [dispatch, isAdmin, navigate, uuid]
     )
-
-    const logoutOfWeb3Modal = useCallback(async () => {
-        await web3Modal.clearCachedProvider()
-        if (
-            web3Provider &&
-            web3Provider.provider &&
-            typeof web3Provider.provider.disconnect === "function"
-        ) {
-            await web3Provider.provider.disconnect()
-            dispatch(signout())
-        }
-        // setTimeout(() => {
-        //     window.location.reload()
-        // }, 1)
-    }, [dispatch, web3Provider])
 
     const alertBanner = () => (
         <Alert
@@ -151,94 +88,64 @@ const ConnectWallet = ({ isAdmin }) => {
 
     const loadWeb3Modal = useCallback(async () => {
         setAuth(true)
-        const provider = await web3Modal.connect()
-        const web3Provider = new providers.Web3Provider(provider)
-        const signer = web3Provider.getSigner()
-        const newAddress = await signer.getAddress()
-        const chainid = await signer.getChainId()
-        dispatch(setAddress(newAddress, signer))
-        const res = dispatch(getJwt(newAddress))
-        if (res && chainid === 4) {
-            // has token and chain is 4
-            dispatch(setLoggedIn(true))
-            if (isAdmin) {
-                const res = await dispatch(getAddressMembership())
-                if (res) {
-                    setAuth(false)
-                    navigate(`/dashboard`)
+        try {
+            const accounts = await window.ethereum.request({
+                method: "eth_requestAccounts",
+            })
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signer = await provider.getSigner()
+            const chainId = await signer.getChainId()
+            const newAddress = await signer.getAddress()
+            dispatch(setAddress(newAddress))
+            //check jwt validity
+            const res = dispatch(getJwt(newAddress))
+
+            if (res && chainId === web3.chainid.connectionChainID) {
+                // has token and chain is selected for rinkeby
+
+                dispatch(setLoggedIn(true))
+                if (isAdmin) {
+                    //checkes whether has dao membership or not
+                    const res = await dispatch(getAddressMembership())
+                    if (res) {
+                        setAuth(false)
+                        navigate(`/dashboard`)
+                    } else {
+                        setAuth(false)
+                        navigate("/onboard/dao")
+                    }
                 } else {
                     setAuth(false)
-                    navigate("/onboard/dao")
-                }
-            } else {
-                setAuth(false)
-                if (!isAdmin) {
-                    try {
-                        const res = await dispatch(getRole(uuid))
-                        if (res) {
-                            message.success("Already a member")
-                            dispatch(setAdminStatus(true))
-                            navigate(`/dashboard`)
-                        } else {
+                    if (!isAdmin) {
+                        try {
+                            const res = await dispatch(getRole(uuid))
+                            if (res) {
+                                message.success("Already a member")
+                                dispatch(setAdminStatus(true))
+                                navigate(`/dashboard`)
+                            }
+                        } catch (error) {
+                            message.error("Error on getting role")
                         }
-                    } catch (error) {
-                        // message.error('Error on getting role')
                     }
                 }
-                // navigate(`/onboard/contributor/${uuid}`)
+            } else if (!res && chainId === web3.chainid.connectionChainID) {
+                // doesnot have valid token and chain is selected one
+                setAuth(false)
+                dispatch(setLoggedIn(false))
+                await authWithWallet(newAddress, chainId, signer)
+            } else {
+                // chain is wrong
+                setAuth(false)
+                dispatch(setLoggedIn(false))
+                alert("change chain id......")
+                alertBanner()
             }
-        } else if (!res && chainid === 4) {
-            // doesnot token and chain is 4
-            setAuth(false)
-            dispatch(setLoggedIn(false))
-            // console.log('no jwt....')
-            authWithWallet(newAddress)
-        } else {
-            // chain is wrong
-            setAuth(false)
-            dispatch(setLoggedIn(false))
-            alert("change chain id......")
-            alertBanner()
+        } catch (error) {
+            console.log("Error on connecting: ", error)
         }
-
-        provider.on("chainChanged", async (chainId) => {
-            // dispatch(setLoggedIn(false))
-            // navigate('/')
-        })
-
-        provider.on("accountsChanged", async () => {
-            // console.log(`account changed!.........`);
-            dispatch(setLoggedIn(false))
-            navigate("/")
-        })
-
-        // Subscribe to session disconnection
-        provider.on("disconnect", (code, reason) => {
-            logoutOfWeb3Modal()
-        })
-        setAuth(false)
-    }, [authWithWallet, dispatch, isAdmin, logoutOfWeb3Modal, navigate, uuid])
-
-    useEffect(() => {
-        async function getAddress() {
-            if (userSigner) {
-                const newAddress = await userSigner.getAddress()
-                dispatch(setAddress(newAddress, userSigner))
-                // increaseStep()
-            }
-        }
-        getAddress()
-    }, [dispatch, userSigner])
-
-    const initialLoad = useCallback(async () => {
-        if (web3Modal.cachedProvider) {
-            await loadWeb3Modal()
-        }
-    }, [loadWeb3Modal])
-
-    // useEffect(() => {
-    // initialLoad()
-    // },[initialLoad])
+    }, [authWithWallet, dispatch, isAdmin, navigate, uuid])
 
     const connectWallet = () => (
         <div className={styles.walletCnt}>
@@ -259,6 +166,13 @@ const ConnectWallet = ({ isAdmin }) => {
             />
         </div>
     )
+
+    const authenticateWallet = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner()
+        const chainId = await signer.getChainId()
+        await authWithWallet(address, chainId, signer)
+    }
 
     const authWallet = () => (
         <div className={styles.walletCntAuth}>
@@ -295,7 +209,7 @@ const ConnectWallet = ({ isAdmin }) => {
                     onClick={
                         auth
                             ? () => {}
-                            : async () => await authWithWallet(address)
+                            : async () => await authenticateWallet(address)
                     }
                     className={styles.authBtn}
                 >
@@ -446,5 +360,4 @@ const ConnectWallet = ({ isAdmin }) => {
     return isAdmin ? daoWallet() : contributorWallet()
 }
 
-
-export default ConnectWallet;
+export default ConnectWallet

@@ -5,20 +5,17 @@ import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 import apiClient from "../../utils/api_client"
 
-export const getAuthToken = () => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        const res = await axios.get(
-            "https://staging.api.drepute.xyz/auth/fetch_api_token",
-            {
-                headers: {
-                    Authorization: `Bearer ${jwt}`,
-                },
-            }
-        )
-        if (res.data.success) {
-            return res.data.data.data.token
+export const getAuthToken = async (jwt) => {
+    const res = await axios.get(
+        "https://staging.api.drepute.xyz/auth/fetch_api_token",
+        {
+            headers: {
+                Authorization: `Bearer ${jwt}`,
+            },
         }
+    )
+    if (res.data.success) {
+        return res.data.data.data.token
     }
 }
 
@@ -94,10 +91,10 @@ export const retrieveAddress = () => {
     }
 }
 
-export const setAddress = (address, signer) => {
+export const setAddress = (address) => {
     return (dispatch) => {
         // //console.log('setting new address.....', address)
-        localStorage.setItem("current_signer", signer)
+        // localStorage.setItem("current_signer", signer)
         dispatch(authActions.set_address({ address }))
     }
 }

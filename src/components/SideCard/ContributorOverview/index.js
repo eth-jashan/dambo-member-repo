@@ -24,6 +24,7 @@ const ContributionOverview = () => {
             {contributionOverview.token_info.length > 0 &&
                 contributionOverview.token_info?.map((x, i) => (
                     <div
+                        key={i}
                         style={{ marginTop: "1.5rem" }}
                         className={styles.flex_totalPayout}
                     >

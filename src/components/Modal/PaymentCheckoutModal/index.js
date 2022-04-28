@@ -8,7 +8,7 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import { useDispatch, useSelector } from "react-redux"
 import { resetApprovedRequest } from "../../../store/actions/transaction-action"
 import ERC20_ABI from "../../../smartContract/erc20.json"
-import Web3 from "web3"
+
 import {
     createPayout,
     getNonceForCreation,
@@ -51,15 +51,21 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        const web3Client = new Web3(
-                            new Web3.providers.HttpProvider(
-                                "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
-                            )
-                        )
-                        const coin = new web3Client.eth.Contract(
-                            ERC20_ABI,
+                        // const web3Client = new Web3(
+                        //     new Web3.providers.HttpProvider(
+                        //         "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
+                        //     )
+                        // )
+                        // const coin = new web3Client.eth.Contract(
+                        //     ERC20_ABI,
+                        //     item?.token_type?.tokenAddress ||
+                        //         item?.token_type?.token?.address
+                        // )
+                        const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address
+                                item?.token_type?.token?.address,
+                            ERC20_ABI,
+                            signer
                         )
                         const amount =
                             parseFloat(item?.amount) * 1000000000000000000

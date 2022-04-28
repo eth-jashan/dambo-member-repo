@@ -4,6 +4,7 @@ export const web3 = {
     chainid: {
         polygon: "0x13881",
         rinkeby: "0x4",
+        connectionChainID: 4,
     },
     gnosis: {
         rinkeby: "https://safe-transaction.rinkeby.gnosis.io",

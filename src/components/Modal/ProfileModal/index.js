@@ -7,6 +7,8 @@ import email from "../../../assets/Icons/email_black.svg"
 import setting from "../../../assets/Icons/settings_black.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { signout } from "../../../store/actions/auth-action"
+import { message } from "antd"
+import { useNavigate } from "react-router"
 
 const ProfileModal = () => {
     const address = useSelector((x) => x.auth.address)
@@ -14,18 +16,23 @@ const ProfileModal = () => {
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
+            message.success("Address coppied")
             return await navigator.clipboard.writeText(address)
         } else {
             return document.execCommand("copy", true, address)
         }
     }
 
+    const navigate = useNavigate()
+
+    const onDisconnect = () => {
+        dispatch(signout())
+        navigate("/")
+    }
+
     return (
         <div className={styles.modal}>
-            {/* <img src={CrossSvg} className={styles.cross} alt='cross' /> */}
-
             <div
-                onClick={() => dispatch(signout())}
                 className={styles.disconnectDiv}
                 style={{ marginTop: "1.5rem" }}
             >
@@ -34,8 +41,8 @@ const ProfileModal = () => {
                     <div>
                         <div className={textStyles.m_14}>0X4jh...4h3</div>
                         <div
-                            style={{ textDecoration: "underline" }}
-                            className={textStyles.m_14}
+                            onClick={() => onDisconnect()}
+                            className={`${textStyles.m_14} ${styles.disconnect}`}
                         >
                             disconnect
                         </div>

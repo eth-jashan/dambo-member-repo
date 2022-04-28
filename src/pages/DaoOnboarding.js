@@ -10,22 +10,14 @@ import {
     addSafeAddress,
     addThreshold,
     lastSelectedId,
+    pocpRegirationInfo,
     registerDao,
 } from "../store/actions/dao-action"
-// import { useHistory } from "react-router-dom";
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
 import { useNavigate } from "react-router"
 import { message } from "antd"
-import {
-    registerDaoToPocp,
-} from "../utils/POCPutils"
-import {
-    relayFunction,
-    updatePocpRegister,
-} from "../utils/relayFunctions"
-import { getAuthToken } from "../store/actions/auth-action"
-import { web3 } from "../constant/web3"
+import POCPSignup from "../components/POCPSignup"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(1)
@@ -35,7 +27,6 @@ export default function Onboarding() {
     const [signer, setSigner] = useState()
     const [safeAddress, setSafeAddress] = useState()
     const { safeFactory } = useSafeSdk(signer, safeAddress)
-    const [gnosisLoad, setGnosisLoad] = useState(false)
 
     const owners = useSelector((x) => x.dao.newSafeSetup.owners)
     const threshold = useSelector((x) => x.dao.newSafeSetup.threshold)
@@ -57,7 +48,6 @@ export default function Onboarding() {
                         document.title,
                         window.location.href
                     )
-                    // console.log("on back!!!", document.title, window.history);
                 } else {
                     window.history.pushState(null, document.title, "/dashboard")
                     window.location.reload("true")
@@ -72,12 +62,10 @@ export default function Onboarding() {
 
     const deploySafe = useCallback(
         async (owners) => {
-            // console.log("deployingggg");
             if (!safeFactory) return
             setDeploying(true)
             const safeAccountConfig = { owners, threshold }
             let safe
-            // console.log("deployingggg");
             try {
                 safe = await safeFactory.deploySafe(safeAccountConfig)
                 message.success("A safe is successfully created !")
@@ -94,72 +82,10 @@ export default function Onboarding() {
             const { dao_uuid, name } = await dispatch(registerDao())
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
-                const web3Provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                try {
-                    await web3Provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.polygon }],
-                    })
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const signer = provider.getSigner()
-                    const { data, signature } = await registerDaoToPocp(
-                        signer,
-                        name,
-                        owners,
-                        address
-                    )
-                    const token = await dispatch(getAuthToken())
-                    const tx_hash = await relayFunction(
-                        token,
-                        0,
-                        data,
-                        signature
-                    )
-                    await updatePocpRegister(jwt, tx_hash, dao_uuid)
-                    if (tx_hash) {
-                        const startTime = Date.now()
-                        const interval = setInterval(async () => {
-                            if (Date.now() - startTime > 30000) {
-                                clearInterval(interval)
-                                // console.log('failed to get confirmation')
-                            }
-                            const customHttpProvider =
-                                new ethers.providers.JsonRpcProvider(
-                                    web3.infura
-                                )
-                            const reciept =
-                                await customHttpProvider.getTransactionReceipt(
-                                    tx_hash
-                                )
-                            if (reciept?.status) {
-                                // console.log('done', reciept)
-                                clearTimeout(interval)
-                                // console.log('successfully registered')
-                                await provider.provider.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: web3.chainid.rinkeby }],
-                                })
-                                navigate(`/dashboard`)
-                            }
-                            console.log('again....')
-                        }, 2000)
-                    } else {
-                        console.log('error in fetching tx hash....')
-                    }
-                } catch (error) {
-                    // console.log(error.toString())
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    await provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
-                }
+                // await processDaoToPOCP(name, owners, address, dao_uuid, jwt)
+                // navigate("/dashboard")
+                dispatch(pocpRegirationInfo(dao_uuid, name, owners))
+                setCurrentStep(currentStep + 1)
             } else {
                 navigate(`/`)
             }
@@ -198,76 +124,11 @@ export default function Onboarding() {
                         }
                     })
                 }
-                // console.log('ownersss', owner)
+                dispatch(lastSelectedId(dao_uuid))
                 if (dao_uuid) {
-                    const web3Provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    try {
-                        await web3Provider.provider.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: web3.chainid.polygon }],
-                        })
-                        const provider = new ethers.providers.Web3Provider(
-                            window.ethereum
-                        )
-                        const signer = provider.getSigner()
-                        const { data, signature } = await registerDaoToPocp(
-                            signer,
-                            name,
-                            owner,
-                            address
-                        )
-                        const token = await dispatch(getAuthToken())
-                        const tx_hash = await relayFunction(
-                            token,
-                            0,
-                            data,
-                            signature
-                        )
-                        await updatePocpRegister(jwt, tx_hash, dao_uuid)
-                        if (tx_hash) {
-                            const startTime = Date.now()
-                            const interval = setInterval(async () => {
-                                if (Date.now() - startTime > 20000) {
-                                    clearInterval(interval)
-                                    // console.log('failed to get confirmation')
-                                }
-                                const customHttpProvider =
-                                    new ethers.providers.JsonRpcProvider(
-                                        web3.infura
-                                    )
-                                const reciept =
-                                    await customHttpProvider.getTransactionReceipt(
-                                        tx_hash
-                                    )
-                                if (reciept?.status) {
-                                    // console.log('done', reciept)
-                                    clearTimeout(interval)
-                                    // console.log('successfully registered')
-                                    await provider.provider.request({
-                                        method: "wallet_switchEthereumChain",
-                                        params: [
-                                            { chainId: web3.chainid.rinkeby },
-                                        ],
-                                    })
-                                    navigate(`/dashboard`)
-                                }
-                                // console.log('again....')
-                            }, 2000)
-                        } else {
-                            // console.log('error in fetching tx hash....')
-                        }
-                    } catch (error) {
-                        // console.log(error.toString())
-                        const provider = new ethers.providers.Web3Provider(
-                            window.ethereum
-                        )
-                        await provider.provider.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: web3.chainid.rinkeby }],
-                        })
-                    }
+                    // await processDaoToPOCP(name, owner, address, jwt)
+                    dispatch(pocpRegirationInfo(dao_uuid, name, owner))
+                    setCurrentStep(currentStep + 1)
                 } else {
                     navigate(`/onboard/dao`)
                 }
@@ -338,6 +199,14 @@ export default function Onboarding() {
                         deploying={deploying}
                     />
                 )
+            case 5:
+                return (
+                    <POCPSignup
+                        hasMultiSignWallet={hasMultiSignWallet}
+                        increaseStep={increaseStep}
+                        deploying={deploying}
+                    />
+                )
             default: {
                 return (
                     <ConnectWallet
@@ -354,6 +223,7 @@ export default function Onboarding() {
                 signer={signer}
                 decreaseStep={decreaseStep}
                 currentStep={currentStep}
+                deploying={deploying}
             >
                 {getComponentFromStep(currentStep, hasMultiSignWallet)}
             </Layout>

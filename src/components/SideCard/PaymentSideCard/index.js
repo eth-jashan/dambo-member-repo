@@ -10,6 +10,7 @@ import {
     syncTxDataWithGnosis,
     setLoading,
     syncExecuteData,
+    syncAllBadges,
 } from "../../../store/actions/dao-action"
 import { EthSignSignature } from "../../../utils/EthSignSignature"
 import { message } from "antd"
@@ -23,18 +24,13 @@ import crossSvg from "../../../assets/Icons/cross_white.svg"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import {
     getIpfsUrl,
-    relayFunction,
-    updatePocpApproval,
     uplaodApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
-import { web3 } from "../../../constant/web3"
-import { approvePOCPBadge } from "../../../utils/POCPutils"
-import { getAuthToken } from "../../../store/actions/auth-action"
+import { processBadgeApprovalToPocp } from "../../../utils/POCPutils"
 import Loader from "../../Loader"
 import * as dayjs from "dayjs"
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { web3 } from "../../../constant/web3"
+const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
 
 const PaymentSlideCard = ({ signer }) => {
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
@@ -62,7 +58,6 @@ const PaymentSlideCard = ({ signer }) => {
             signature = await safeSdk.signTransactionHash(hash)
             try {
                 await serviceClient.confirmTransaction(hash, signature.data)
-                // await dispatch(signingPayout(currentPayment?.id))
                 await dispatch(getPayoutRequest())
                 await dispatch(syncTxDataWithGnosis())
                 await dispatch(set_payout_filter("PENDING", 1))
@@ -80,15 +75,12 @@ const PaymentSlideCard = ({ signer }) => {
         } catch (error) {
             console.error(error)
             message.error("Error on signing payment")
-            
         }
     }
 
     const rejectTransaction = () => {
         dispatch(setRejectModal(true))
     }
-
-    const [approveTitle, setApproveTitle] = useState(false)
 
     const executeSafeTransaction = async (hash, c_id, to) => {
         const transaction = await serviceClient.getTransaction(hash)
@@ -106,238 +98,94 @@ const PaymentSlideCard = ({ signer }) => {
             nonce: transaction.nonce,
         }
         if (!safeSdk) return
-
-        const safeTransaction = await safeSdk.createTransaction(
-            safeTransactionData
-        )
-
-        transaction.confirmations.forEach((confirmation) => {
-            const signature = new EthSignSignature(
-                confirmation.owner,
-                confirmation.signature
-            )
-            safeTransaction.addSignature(signature)
-        })
-
-        let executeTxResponse
         try {
-            executeTxResponse = await safeSdk.executeTransaction(
+            const safeTransaction = await safeSdk.createTransaction(
+                safeTransactionData
+            )
+            transaction.confirmations.forEach((confirmation) => {
+                const signature = new EthSignSignature(
+                    confirmation.owner,
+                    confirmation.signature
+                )
+                safeTransaction.addSignature(signature)
+            })
+
+            const executeTxResponse = await safeSdk.executeTransaction(
                 safeTransaction
             )
-            // console.log('done transaction.......')
+            executeTxResponse.transactionResponse &&
+                (await executeTxResponse.transactionResponse.wait())
+            dispatch(
+                setPayoutToast("EXECUTED", {
+                    item: 0,
+                    value: getTotalAmount(),
+                })
+            )
+            await syncExecuteData(
+                currentPayment?.metaInfo?.id,
+                hash,
+                isReject ? "REJECTED" : "APPROVED",
+                jwt,
+                currentDao?.uuid
+            )
         } catch (error) {
-            console.error(error)
+            if (error.toString() === "Error: Not enough Ether funds") {
+                message.error("Not enough funds in safe")
+            }
+            console.log(
+                "error",
+                error.toString() === "Error: Not enough Ether funds",
+                error.code
+            )
             return
         }
-        executeTxResponse.transactionResponse &&
-            (await executeTxResponse.transactionResponse.wait())
-        dispatch(
-            setPayoutToast("EXECUTED", {
-                item: 0,
-                value: getTotalAmount(),
-            })
-        )
-        await syncExecuteData(
-            currentPayment?.metaInfo?.id,
-            hash,
-            "APPROVED",
-            jwt,
-            currentDao?.uuid
-        )
-        setApproveTitle("Approving Badge...")
-        const { cid, url, status } = await getIpfsUrl(
-            jwt,
-            currentDao?.uuid,
-            c_id
-        )
-        // console.log('ipfs...', url, cid, status)
-        if (!status) {
-            const startTime = Date.now()
-            const interval = setInterval(async () => {
-                if (Date.now() - startTime > 10000) {
-                    clearInterval(interval)
-                    console.log("failed to get ipfs url")
-                }
-                const { cid, url, status } = await getIpfsUrl(
-                    jwt,
-                    currentDao?.uuid,
-                    c_id
-                )
-                // console.log('status', status)
-                // console.log('ipfs', url, cid, status)
-                if (status) {
-                    // console.log('ipfs', url, cid, status)
-                    clearTimeout(interval)
-                    // console.log('successfully registered')
-                    if (cid?.length > 0) {
-                        const web3Provider = new ethers.providers.Web3Provider(
-                            window.ethereum
-                        )
-                        try {
-                            await web3Provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.polygon }],
-                            })
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            const signer = provider.getSigner()
-                            const { data, signature } = await approvePOCPBadge(
-                                signer,
-                                parseInt(community_id[0].id),
+        if (!isReject) {
+            const { cid, url, status } = await getIpfsUrl(
+                jwt,
+                currentDao?.uuid,
+                c_id
+            )
+            if (!status) {
+                const startTime = Date.now()
+                const interval = setInterval(async () => {
+                    if (Date.now() - startTime > 10000) {
+                        clearInterval(interval)
+                    }
+                    const { cid, url, status } = await getIpfsUrl(
+                        jwt,
+                        currentDao?.uuid,
+                        c_id
+                    )
+                    if (status) {
+                        clearTimeout(interval)
+                        if (cid?.length > 0) {
+                            await processBadgeApprovalToPocp(
                                 address,
+                                community_id[0].id,
                                 to,
                                 cid,
-                                url
+                                url,
+                                jwt
                             )
-                            setApproveTitle("Signing Badge...")
-                            const token = await dispatch(getAuthToken())
-                            const tx_hash = await relayFunction(
-                                token,
-                                5,
-                                data,
-                                signature
-                            )
-                            if (tx_hash) {
-                                await updatePocpApproval(jwt, tx_hash, cid)
-                                const startTime = Date.now()
-                                const interval = setInterval(async () => {
-                                    if (Date.now() - startTime > 10000) {
-                                        clearInterval(interval)
-                                        // console.log('failed to get confirmation')
-                                        await updatePocpApproval(
-                                            jwt,
-                                            tx_hash,
-                                            cid
-                                        )
-                                    }
-                                    const customHttpProvider =
-                                        new ethers.providers.JsonRpcProvider(
-                                            web3.infura
-                                        )
-                                    const reciept =
-                                        await customHttpProvider.getTransactionReceipt(
-                                            tx_hash
-                                        )
-
-                                    if (reciept?.status) {
-                                        setApproveTitle("Confirmed Badge...")
-                                        clearTimeout(interval)
-                                        setPayoutToast("APPROVED_BADGE")
-                                        await provider.provider.request({
-                                            method: "wallet_switchEthereumChain",
-                                            params: [
-                                                {
-                                                    chainId:
-                                                        web3.chainid.rinkeby,
-                                                },
-                                            ],
-                                        })
-                                        // }
-                                    }
-                                }, 2000)
-                            } else {
-                                await provider.provider.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: web3.chainid.rinkeby }],
-                                })
-                            }
-                        } catch (error) {
-                            // console.log(error.toString())
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            await provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
                         }
                     }
-                }
-                // console.log('again....')
-            }, 3000)
-        } else {
-            if (cid?.length > 0) {
-                const web3Provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                try {
-                    await web3Provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.polygon }],
-                    })
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const signer = provider.getSigner()
-                    const { data, signature } = await approvePOCPBadge(
-                        signer,
-                        parseInt(community_id[0].id),
+                }, 3000)
+            } else {
+                if (cid?.length > 0) {
+                    await processBadgeApprovalToPocp(
                         address,
+                        community_id[0].id,
                         to,
                         cid,
-                        url
+                        url,
+                        jwt
                     )
-                    const token = await dispatch(getAuthToken())
-                    const tx_hash = await relayFunction(
-                        token,
-                        5,
-                        data,
-                        signature
-                    )
-                    if (tx_hash) {
-                        await updatePocpApproval(jwt, tx_hash, cid)
-                        const startTime = Date.now()
-                        const interval = setInterval(async () => {
-                            if (Date.now() - startTime > 10000) {
-                                clearInterval(interval)
-                                // console.log('failed to get confirmation')
-                            }
-                            // console.log('tx_hash', tx_hash)
-                            const customHttpProvider =
-                                new ethers.providers.JsonRpcProvider(
-                                    web3.infura
-                                )
-                            const reciept =
-                                await customHttpProvider.getTransactionReceipt(
-                                    tx_hash
-                                )
-
-                            if (reciept?.status) {
-                                clearTimeout(interval)
-                                setPayoutToast("APPROVED_BADGE")
-                                await updatePocpApproval(jwt, tx_hash, cid)
-                                // console.log('successfully registered')
-                                await provider.provider.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: web3.chainid.rinkeby }],
-                                })
-                            }
-
-                            // console.log('again....')
-                        }, 2000)
-                    } else {
-                        // console.log('error in fetching tx hash....')
-                        await provider.provider.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: web3.chainid.rinkeby }],
-                        })
-                    }
-                } catch (error) {
-                    // console.log(error.toString())
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    await provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
                 }
             }
         }
+        await dispatch(syncAllBadges())
         await dispatch(getPayoutRequest())
         await dispatch(set_payout_filter("PENDING", 1))
-        setApproveTitle(false)
         dispatch(setPayment(null))
     }
 
@@ -376,7 +224,7 @@ const PaymentSlideCard = ({ signer }) => {
 
     const checkApproval = () => {
         const confirm = []
-        currentPayment.gnosis?.confirmations?.map((item, index) => {
+        currentPayment.gnosis?.confirmations?.map((item) => {
             confirm.push(ethers.utils.getAddress(item.owner))
         })
 
@@ -384,15 +232,6 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const getExecutionMessage = () => {
-        // if(((isReject && currentPayment.gnosis.confirmations?.length !== delegates.length && checkApproval() )|| (isReject && checkApproval()) || (isReject && !checkApproval()) )&& !nonce !== currentPayment?.gnosis?.nonce ){
-        //     return 'Payment will be cancelled only after required signs are done  '
-        // }else if(((currentPayment.gnosis.confirmations.length !== delegates.length && checkApproval() ) || ( !checkApproval() || !nonce !== currentPayment?.gnosis?.nonce))||!currentPayment?.metaInfo?.is_executed ){
-        //     return 'Can be executed once the required signs are done '
-        // }else if(nonce !== currentPayment?.gnosis?.nonce && currentPayment.gnosis.confirmations.length === delegates.length ){
-        //     return 'Can be executed only after previous payments are executed'
-        // }else if ((currentPayment?.gnosis?.isExecuted && currentPayment?.gnosis?.isSuccessful) || currentPayment?.metaInfo?.is_executed){
-        //     return ''
-        // }
         if (
             (getButtonTitle()?.title === "Sign Payment" ||
                 getButtonTitle()?.title === "Payment Signed") &&
@@ -427,7 +266,7 @@ const PaymentSlideCard = ({ signer }) => {
                                     getButtonTitle()?.title ===
                                         "Sign Payment" ||
                                     getButtonTitle()?.title === "Payment Signed"
-                                        ? "#ECFFB8"
+                                        ? "#676667"
                                         : "white",
                                 borderRadius: "6px",
                             }}
@@ -712,17 +551,20 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const executeTransaction = async (hash) => {
-        const res = await uploadApproveMetatoIpfs()
-        if (res.status) {
-            await executeSafeTransaction(hash, res?.cid, res?.to)
-            console.log("success")
+        if (!isReject) {
+            const res = await uploadApproveMetatoIpfs()
+            if (res.status) {
+                await executeSafeTransaction(hash, res?.cid, res?.to)
+            }
+        } else {
+            await executeSafeTransaction(hash)
         }
     }
 
     //   const [load, setLoad] = useState(false);
 
-    const renderContribution = (item) => (
-        <div className={styles.contribContainer}>
+    const renderContribution = (item, index) => (
+        <div key={index} className={styles.contribContainer}>
             <div className={styles.leftContent}>
                 <div className={`${textStyle.m_16} ${styles.greyishText}`}>
                     {getPayoutTotal(item?.tokens)}$
@@ -797,7 +639,7 @@ const PaymentSlideCard = ({ signer }) => {
                 )}
             </div>
             {currentPayment?.metaInfo?.contributions?.map((item, index) =>
-                renderContribution(item)
+                renderContribution(item, index)
             )}
             {renderSigners()}
             <div
@@ -836,7 +678,7 @@ const PaymentSlideCard = ({ signer }) => {
                         justifyContent: isReject ? "center" : "space-between",
                     }}
                 >
-                    {(!isReject || !currentPayment?.gnosis?.isExecuted) && (
+                    {!isReject && !currentPayment?.gnosis?.isExecuted && (
                         <div
                             onClick={() => rejectTransaction()}
                             className={styles.rejectBtn}

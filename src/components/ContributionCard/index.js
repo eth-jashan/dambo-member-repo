@@ -8,18 +8,15 @@ import approved_badge from "../../assets/Icons/approved_badge.svg"
 import approved_badge_hover from "../../assets/Icons/approvedBadge_hover.svg"
 import {
     getAllBadges,
+    setBadgesAfterClaim,
     setClaimLoading,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
 import { ethers } from "ethers"
 import { web3 } from "../../constant/web3"
-import { claimPOCPBadges } from "../../utils/POCPutils"
-import { getAuthToken } from "../../store/actions/auth-action"
-import { relayFunction, updatePocpClaim } from "../../utils/relayFunctions"
-import {
-    claimUpdate,
-    syncAllBadges,
-} from "../../store/actions/dao-action"
+import { processClaimBadgeToPocp } from "../../utils/POCPutils"
+import { syncAllBadges } from "../../store/actions/dao-action"
+import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
 
 export default function ContributionCard({ item, signer, community_id }) {
     const address = item?.requested_by?.public_address
@@ -41,6 +38,24 @@ export default function ContributionCard({ item, signer, community_id }) {
             isTxSuccess.length === 1
         ) {
             return true
+        } else {
+            return false
+        }
+    }
+
+    const getClaimCheck = async () => {
+        if (item?.claimed_tx) {
+            const customHttpProvider = new ethers.providers.JsonRpcProvider(
+                web3.infura
+            )
+            const reciept = await customHttpProvider.getTransactionReceipt(
+                item?.claimed_tx
+            )
+            if (reciept.status) {
+                return true
+            } else {
+                return false
+            }
         } else {
             return false
         }
@@ -68,11 +83,11 @@ export default function ContributionCard({ item, signer, community_id }) {
     const [claimBadge, setClaimBadge] = useState(false)
 
     const getBadgeStatus = useCallback(async () => {
-        // console.log('transaction', currentTransaction?.isClaimed)
         const approval = await getApproveCheck()
-        // const claim_status = await getClaimCheck()
+        const claimStatus = await getClaimCheck()
         setApprovedBadge(approval)
-        // setClaimBadge(claim_status)
+        setClaimBadge(claimStatus)
+        console.log("claim", claimStatus)
     }, [getApproveCheck])
 
     useEffect(() => {
@@ -114,7 +129,7 @@ export default function ContributionCard({ item, signer, community_id }) {
             return { color: "#808080", title: "paid" }
         }
     }
-    const claimed = useSelector((x) => x.contributor.claimed)
+
     const unclaimed = useSelector((x) => x.contributor.unclaimed)
     const isApprovedToken = () => {
         const token = unclaimed.filter(
@@ -149,65 +164,51 @@ export default function ContributionCard({ item, signer, community_id }) {
         if (!load) {
             setLoad(true)
             dispatch(setClaimLoading(true, item?.id))
-            try {
-                const web3Provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                await web3Provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.polygon }],
-                })
+            const res = await processClaimBadgeToPocp(
+                address,
+                isApprovedToken().token[0].id,
+                jwt,
+                item?.id
+            )
+            if (res) {
                 const provider = new ethers.providers.Web3Provider(
                     window.ethereum
                 )
-                const signer = provider.getSigner()
-                const { data, signature } = await claimPOCPBadges(
-                    signer,
-                    address,
-                    [parseInt(isApprovedToken().token[0].id)]
+                const signer = await provider.getSigner()
+                const pocpProxy = new ethers.Contract(
+                    web3.POCP_Proxy,
+                    POCPProxy.abi,
+                    signer
                 )
-                const token = await dispatch(getAuthToken())
-                const tx_hash = await relayFunction(token, 3, data, signature)
-                if (tx_hash) {
-                    await updatePocpClaim(jwt, tx_hash, [item?.id])
-                    const startTime = Date.now()
-                    const interval = setInterval(async () => {
-                        if (Date.now() - startTime > 30000) {
-                            clearInterval(interval)
-                        }
-                        const customHttpProvider =
-                            new ethers.providers.JsonRpcProvider(web3.infura)
-                        const reciept =
-                            await customHttpProvider.getTransactionReceipt(
-                                tx_hash
+
+                pocpProxy.on("ClaimedBadge", async (a) => {
+                    if (
+                        parseInt(a.toString()) ===
+                        parseInt(isApprovedToken().token[0].id)
+                    ) {
+                        const userBadge = await pocpProxy.userBadge(
+                            parseInt(isApprovedToken().token[0].id)
+                        )
+
+                        dispatch(
+                            setBadgesAfterClaim(
+                                address,
+                                userBadge.approvedBy,
+                                userBadge.uri,
+                                parseInt(isApprovedToken().token[0].id),
+                                { id: community_id }
                             )
-                        if (reciept?.status) {
-                            clearTimeout(interval)
-                            dispatch(claimUpdate(item?.id))
-                            await web3Provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
-                        }
+                        )
                         dispatch(setClaimLoading(false, item?.id))
-                    }, 2000)
-                } else {
-                    await web3Provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
-                    dispatch(setClaimLoading(false, item?.id))
-                }
-            } catch (error) {
-                // console.log(error.toString())
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                await provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.rinkeby }],
+                        const provider = new ethers.providers.Web3Provider(
+                            window.ethereum
+                        )
+                        await provider.provider.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [{ chainId: web3.chainid.rinkeby }],
+                        })
+                    }
                 })
-                dispatch(setClaimLoading(false, item?.id))
             }
         }
         await dispatch(syncAllBadges())
@@ -216,7 +217,13 @@ export default function ContributionCard({ item, signer, community_id }) {
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
     }
-    console.log("status..", claim_loading)
+
+    console.log(
+        item?.status === "APPROVED",
+        item?.payout_status === "PAID",
+        (isApprovedToken()?.status, claimBadge)
+    )
+
     return (
         <div
             onMouseEnter={() => setOnHover(true)}
@@ -266,7 +273,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                     </div>
                     {item?.status === "APPROVED" &&
                         item?.payout_status === "PAID" &&
-                        isApprovedToken()?.status && (
+                        (isApprovedToken()?.status || !claimBadge) && (
                             <div
                                 onClick={async () => await claimBadges()}
                                 style={{ color: "#ECFFB8" }}

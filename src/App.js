@@ -5,87 +5,51 @@ import Dashboard from "./pages/Dashboard/index"
 import ContributorOnbording from "./pages/ContributorOnboarding"
 import AuthWallet from "./pages/AuthWallet"
 import "./App.scss"
-import { useDispatch, useSelector } from "react-redux"
 import DiscordFallback from "./pages/DiscordFallback"
+import ContributorSignupFallback from "./pages/ContributorSignupFallback"
+import * as dayjs from "dayjs"
+import * as relativeTimePlugin from "dayjs/plugin/relativeTime"
+import { useDispatch, useSelector } from "react-redux"
 import {
     setAdminStatus,
     setLoggedIn,
     signout,
 } from "./store/actions/auth-action"
-import { INFURA_ID } from "./constants"
-import WalletConnectProvider from "@walletconnect/web3-provider"
-import Web3Modal from "web3modal"
-import ContributorSignupFallback from "./pages/ContributorSignupFallback"
-import * as dayjs from "dayjs"
-import * as relativeTimePlugin from "dayjs/plugin/relativeTime"
-
-const providerOptions = {
-    walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-            bridge: "https://polygon.bridge.walletconnect.org",
-            infuraId: INFURA_ID,
-            rpc: {
-                1: `https://mainnet.infura.io/v3/${INFURA_ID}`, // mainnet // For more WalletConnect providers: https://docs.walletconnect.org/quick-start/dapps/web3-provider#required
-                100: "https://dai.poa.network", // xDai
-            },
-        },
-    },
-}
-
-const web3Modal = new Web3Modal({
-    network: "mainnet", // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
-    cacheProvider: true, // optional
-    theme: "light", // optional. Change to "dark" for a dark theme.
-    providerOptions: {
-        providerOptions,
-    },
-})
+import { web3 } from "./constant/web3"
 
 function App() {
+    dayjs.extend(relativeTimePlugin)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    dayjs.extend(relativeTimePlugin)
+    const pocp_action = useSelector((x) => x.toast.pocp_action)
 
-    const loadWeb3Modal = useCallback(async () => {
-        const provider = await web3Modal.connect()
+    window.ethereum.on("accountsChanged", () => {
+        console.log("accountsssss")
+        if (isAdmin) {
+            dispatch(setLoggedIn(false))
+            dispatch(signout())
+            navigate("/")
+        } else {
+            dispatch(setLoggedIn(false))
+            dispatch(signout())
+            dispatch(setAdminStatus(false))
+            navigate("/")
+        }
+    })
 
-        provider.on("chainChanged", (chainId) => {
-            // console.log(`CHAIN changed!`, chainId);
-            if (chainId === "0x4") {
-            } else {
-                // if(isAdmin){
-                //   dispatch(setLoggedIn(false))
-                //   dispatch(signout())
-                //   navigate('/')
-                // }else{
-                //   dispatch(setLoggedIn(false))
-                //   dispatch(signout())
-                //   dispatch(setAdminStatus(false))
-                //   navigate('/')
-                // }
-            }
-        })
-
-        provider.on("accountsChanged", async () => {
-            // console.log(`account changed!.....`);
-            if (isAdmin) {
-                dispatch(setLoggedIn(false))
-                dispatch(signout())
-                navigate("/")
-            } else {
-                dispatch(setLoggedIn(false))
-                dispatch(signout())
-                dispatch(setAdminStatus(false))
-                navigate("/")
-            }
-        })
-    }, [dispatch, isAdmin, navigate])
-
-    useEffect(() => {
-        loadWeb3Modal()
-    }, [loadWeb3Modal])
+    window.ethereum.on("chainChanged", (x) => {
+        console.log(
+            "network changed",
+            x.toString(),
+            web3.chainid.polygon === x,
+            pocp_action
+        )
+        // if (x !== "0x4" && !pocp_action) {
+        //     dispatch(signout())
+        //     navigate("/")
+        // }
+    })
 
     return (
         <div className="App">

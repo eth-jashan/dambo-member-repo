@@ -37,7 +37,7 @@ const InputText = ({
                 onFocus={() => setOnFocus(true)}
                 onBlur={(e) => {
                     setOnFocus(false)
-                    onBlur(e)
+                    onBlur && onBlur(e)
                 }}
                 disabled={disabled}
                 style={{

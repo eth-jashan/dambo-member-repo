@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import styles from "./styles.module.css"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
@@ -24,10 +24,12 @@ const RejectPayment = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
+    const [loading, setLoading] = useState(false)
 
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
 
     const rejectTransaction = async (hash) => {
+        setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
 
         if (!safeSdk) return
@@ -54,7 +56,9 @@ const RejectPayment = ({ onClose, signer }) => {
             dispatch(setPayment(null))
         } catch (error) {
             // console.log('error.........', error)
+            setLoading(false)
         }
+        setLoading(false)
     }
 
     const getContriInfo = () => {
@@ -105,7 +109,7 @@ const RejectPayment = ({ onClose, signer }) => {
                                       .title}
                         </span>
                         <span className={textStyles.m_19}>
-                            {getContriInfo()?.total}$
+                            {getContriInfo()?.total.toFixed(2)}$
                         </span>
                     </div>
                     <span
@@ -136,7 +140,9 @@ const RejectPayment = ({ onClose, signer }) => {
                             style={{ color: "white" }}
                             className={textStyles.ub_16}
                         >
-                            Reject Payment request
+                            {loading
+                                ? "Rejecting...."
+                                : "Reject Payment request"}
                         </div>
                     </div>
                 </div>

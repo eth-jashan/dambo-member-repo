@@ -421,9 +421,10 @@ export const getContriRequest = () => {
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
                                 (x) =>
-                                    x.payout_status === null &&
-                                    x.status !== "REJECTED" &&
-                                    x.tokens.length === 0
+                                    (x.payout_status === null &&
+                                        x.status !== "REJECTED" &&
+                                        x.tokens.length === 0) ||
+                                    x.status === "REQUESTED"
                             ),
                             number: 1,
                         })
@@ -759,7 +760,6 @@ export const syncTxDataWithGnosis = (payout) => {
             const updatedTX = []
 
             const nonce_inserted = []
-
             allTx.results.map((item, index) => {
                 getAllPayout.map((x, i) => {
                     if (
@@ -1132,4 +1132,10 @@ export const syncAllBadges = () => {
         }
     }
     // const
+}
+
+export const pocpRegirationInfo = (dao_uuid, name, owner) => {
+    return (dispatch) => {
+        dispatch(daoAction.set_pocp_info({ info: { dao_uuid, name, owner } }))
+    }
 }

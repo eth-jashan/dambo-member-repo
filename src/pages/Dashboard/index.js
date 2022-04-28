@@ -50,7 +50,7 @@ import GnosisExternalPayment from "../../components/Alert/GnosisExternalPayment/
 import BadgeItem from "../../components/BadgeItem"
 import { getAllBadges } from "../../store/actions/contibutor-action"
 import { LinearProgress, Stack } from "@mui/material"
-import Web3 from "web3"
+
 import ERC20_ABI from "../../smartContract/erc20.json"
 
 const serviceClient = new SafeServiceClient(
@@ -61,8 +61,8 @@ export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
     const [uniPayHover, setUniPayHover] = useState(false)
 
-    const payout_toast = useSelector((x) => x.toast.payout)
-    const account_mode = useSelector((x) => x.dao.account_mode)
+    const payoutToast = useSelector((x) => x.toast.payout)
+    const accountMode = useSelector((x) => x.dao.account_mode)
     const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -82,6 +82,7 @@ export default function Dashboard() {
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
     const [modalUniPayment, setModalUniPayment] = useState(false)
+    const [switchModal, setSwitchModal] = useState(false)
     const rejectModal = useSelector((x) => x.transaction.rejectModal)
     const approved_request = useSelector(
         (x) => x.transaction.approvedContriRequest
@@ -95,14 +96,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (payout_toast) {
+            if (payoutToast) {
                 dispatch(setPayoutToast(false))
             }
         }, 3000)
         return () => {
             clearInterval(interval)
         }
-    }, [dispatch, payout_toast])
+    }, [dispatch, payoutToast])
 
     const setProvider = async () => {
         const provider = new ethers.providers.Web3Provider(
@@ -187,7 +188,6 @@ export default function Dashboard() {
                     }
                 } else {
                     dispatch(setLoadingState(true))
-                    // console.log("fetch when contributor....");
                     await dispatch(getContriRequest())
                     await dispatch(getContributorOverview())
                     await dispatch(
@@ -238,7 +238,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (!modalPayment) {
-            if (role === account_mode && account_index === 0) {
+            if (role === accountMode && account_index === 0) {
                 // console.log("loaded for first time......");
                 initialLoad()
             } else {
@@ -253,12 +253,7 @@ export default function Dashboard() {
 
     const onRouteChange = async (route) => {
         dispatch(setLoadingState(true))
-        // await Promise.all(
-        // [
         await dispatch(getDaoHash())
-        await dispatch(getAllBadges(signer, address, community_id[0]?.id))
-        // ]
-        // )
         setTab(route)
         if (role === "ADMIN") {
             if (safeSdk) {
@@ -271,17 +266,17 @@ export default function Dashboard() {
                 await dispatch(syncTxDataWithGnosis())
                 await dispatch(set_payout_filter("PENDING", 1))
             } else {
-                // console.log("contribution route......");
                 await dispatch(getPayoutRequest())
                 await dispatch(syncTxDataWithGnosis())
                 await dispatch(getContriRequest())
             }
         } else {
-            dispatch(getContributorOverview())
+            await dispatch(syncAllBadges())
             dispatch(getAllBadges(signer, address, community_id[0]?.id))
+            dispatch(getContributorOverview())
+            // dispatch(getAllBadges(signer, address, community_id[0]?.id))
             await dispatch(getContriRequest())
-            // dispatch(getContributorOverview())
-            // dispatch(getAllBadges(signer, address, community_id[0]?.id));
+            dispatch(getContributorOverview())
         }
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -449,16 +444,30 @@ export default function Dashboard() {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        const web3Client = new Web3(
-                            new Web3.providers.HttpProvider(
-                                "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
-                            )
-                        )
-                        const coin = new web3Client.eth.Contract(
-                            ERC20_ABI,
+                        // // const web3Client = new Web3(
+                        // //     new Web3.providers.HttpProvider(
+                        // //         "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
+                        // //     )
+                        // // )
+                        // const web3Client = new ethers.providers.Web3Provider(
+                        //     window.ethereum
+                        // )
+                        // // const pocpProxy = new ethers.Contract(
+                        // //     web3.POCP_Proxy,
+                        // //     POCPProxy.abi,
+                        // //     signer
+                        // // )
+                        const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address
+                                item?.token_type?.token?.address,
+                            ERC20_ABI,
+                            signer
                         )
+                        // const coin = new web3Client.eth.Contract(
+                        //     ERC20_ABI,
+                        //     item?.token_type?.tokenAddress ||
+                        //         item?.token_type?.token?.address
+                        // )
                         const amount =
                             parseFloat(item?.amount) * 1000000000000000000
                         transaction_obj.push({
@@ -552,36 +561,36 @@ export default function Dashboard() {
                     }
                     className={styles.payNow}
                 >
-                    {paymentLoading ? "Signing...." : "Pay Now"}
+                    {paymentLoading ? "Signing...." : "Sign and Pay now"}
                 </div>
             </div>
         </div>
     )
-    const payout_data = useSelector((x) => x.toast.payout_data)
+    const payoutData = useSelector((x) => x.toast.payout_data)
     const payoutToastInfo = () => {
-        if (payout_toast === "EXECUTED") {
+        if (payoutToast === "EXECUTED") {
             return {
-                title: `Payment Executed  •  ${payout_data?.value}$`,
+                title: `Payment Executed  •  ${payoutData?.value}$`,
                 background: "#1D7F60",
             }
-        } else if (payout_toast === "SIGNED") {
+        } else if (payoutToast === "SIGNED") {
             return {
-                title: `Payment Signed  •  ${payout_data?.value}$`,
+                title: `Payment Signed  •  ${payoutData?.value}$`,
                 background: "#4D4D4D",
             }
-        } else if (payout_toast === "ACCEPTED_CONTRI") {
+        } else if (payoutToast === "ACCEPTED_CONTRI") {
             return {
-                title: `${payout_data?.item} Request approved  •  ${payout_data?.value}$`,
+                title: `${payoutData?.item} Request approved  •  ${payoutData?.value}$`,
                 background: "#4D4D4D",
             }
-        } else if (payout_toast === "REJECTED") {
+        } else if (payoutToast === "REJECTED") {
             return {
                 title: `Payment rejected  •  ${600}$`,
                 background: "#4D4D4D",
             }
-        } else if (payout_toast === "APPROVED_BADGE") {
+        } else if (payoutToast === "APPROVED_BADGE") {
             return { title: `Approved Badge`, background: "#4D4D4D" }
-        } else if (payout_toast === "CLAIMED_BADGE") {
+        } else if (payoutToast === "CLAIMED_BADGE") {
             return { title: `Claimed Badge`, background: "#4D4D4D" }
         }
     }
@@ -686,8 +695,15 @@ export default function Dashboard() {
             ? renderContributorContribution()
             : renderBadges()
 
+    const setModalBackDropFunc = (x) => {
+        setSwitchModal(x)
+    }
     return (
-        <DashboardLayout signer={signer} route={tab}>
+        <DashboardLayout
+            modalBackdrop={setModalBackDropFunc}
+            signer={signer}
+            route={tab}
+        >
             <div className={styles.dashView}>
                 {(modalContri || modalPayment || modalUniPayment) && (
                     <div
@@ -719,7 +735,7 @@ export default function Dashboard() {
                     tab === "contributions" &&
                     role === "ADMIN" &&
                     checkoutButton()}
-                {payout_toast && transactionToast()}
+                {payoutToast && transactionToast()}
                 {modalContri && (
                     <ContributionRequestModal setVisibility={setModalContri} />
                 )}

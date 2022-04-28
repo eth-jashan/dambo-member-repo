@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Input, message, Typography } from "antd"
 import { IoAddOutline, GoChevronUp } from "react-icons/all"
 import cross from "../../../assets/Icons/cross_white.svg"
-import delete_icon from "../../../assets/Icons/delete_icon.svg"
+import deleteIcon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import {
@@ -11,7 +11,6 @@ import {
     rejectContriRequest,
     setTransaction,
 } from "../../../store/actions/transaction-action"
-
 
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { TokenInput } from "../../InputComponent/TokenInput"
@@ -84,7 +83,6 @@ const TransactionCard = ({ signer }) => {
         } else {
             message.error("Please Add Amount")
         }
-        // console.log('paydetail', payDetail)
     }
 
     const feedBackContainer = () => (
@@ -157,6 +155,7 @@ const TransactionCard = ({ signer }) => {
             <div className={styles.amountScroll}>
                 {payDetail?.map((item, index) => (
                     <TokenInput
+                        key={index}
                         dark={true}
                         updateTokenType={(x) => updateTokenType(x, index)}
                         value={item.amount}
@@ -195,10 +194,10 @@ const TransactionCard = ({ signer }) => {
                             rejectContriRequest(currentTransaction?.id)
                         )
                     }
-                    className={styles.deletContainer}
+                    className={styles.deleteContainer}
                 >
                     <img
-                        src={delete_icon}
+                        src={deleteIcon}
                         alt="cross"
                         className={styles.delete}
                     />

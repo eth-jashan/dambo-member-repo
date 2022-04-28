@@ -10,25 +10,24 @@ import {
     setTransaction,
 } from "../../../store/actions/transaction-action"
 import {
+    setBadgesAfterClaim,
     setClaimLoading,
     setContributionDetail,
 } from "../../../store/actions/contibutor-action"
 import POCPBadge from "../../POCPBadge"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import { approvePOCPBadge, claimPOCPBadges } from "../../../utils/POCPutils"
-import { getAuthToken } from "../../../store/actions/auth-action"
 import {
-    relayFunction,
-    updatePocpApproval,
-    updatePocpClaim,
-} from "../../../utils/relayFunctions"
+    processBadgeApprovalToPocp,
+    processClaimBadgeToPocp,
+} from "../../../utils/POCPutils"
+
 import { ethers } from "ethers"
 import { web3 } from "../../../constant/web3"
 import {
-    claimUpdate,
     getContriRequest,
     syncAllBadges,
 } from "../../../store/actions/dao-action"
+import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import * as dayjs from "dayjs"
 
@@ -150,55 +149,67 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     }
 
     const tokenInfo = () => (
-        <div className={styles.tokenDiv}>
-            <div className={styles.tokenHeader}>
-                <div style={{ color: "#ECFFB8" }} className={textStyle.m_16}>
-                    {getTotalAmount()}$
-                </div>
-                <div
-                    style={{ color: "#ECFFB870", marginLeft: "4px" }}
-                    className={textStyle.m_16}
-                >
-                    Total Payout
-                </div>
-            </div>
-            <div
-                style={{
-                    background: "#FFFFFF12",
-                    height: "1px",
-                    marginTop: "0.75rem",
-                    marginBottom: "0.75rem",
-                }}
-            />
-            {currentTransaction?.tokens?.map((x, i) => (
-                <div
-                    key={i}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        borderBottom:
-                            i !== currentTransaction?.tokens?.length - 1
-                                ? "1px solid #FFFFFF12"
-                                : null,
-                        paddingBottom: "0.75rem",
-                    }}
-                    className={styles.tokenHeader}
-                >
+        <div style={{ position: "relative", width: "100%" }}>
+            <div className={styles.tokenDiv}>
+                <div className={styles.tokenHeader}>
                     <div
                         style={{ color: "#ECFFB8" }}
                         className={textStyle.m_16}
                     >
-                        {x?.amount} {x.details?.symbol}
+                        {getTotalAmount()}$
                     </div>
                     <div
                         style={{ color: "#ECFFB870", marginLeft: "4px" }}
                         className={textStyle.m_16}
                     >
-                        {(x?.usd_amount * x.amount).toFixed(2)}$
+                        Total Payout
                     </div>
                 </div>
-            ))}
+                <div
+                    style={{
+                        background: "#FFFFFF12",
+                        height: "1px",
+                        marginTop: "0.75rem",
+                        marginBottom: "0.75rem",
+                    }}
+                />
+                {currentTransaction?.tokens?.map((x, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            borderBottom:
+                                i !== currentTransaction?.tokens?.length - 1
+                                    ? "1px solid #FFFFFF12"
+                                    : null,
+                            paddingBottom: "0.75rem",
+                        }}
+                        className={styles.tokenHeader}
+                    >
+                        <div
+                            style={{ color: "#ECFFB8" }}
+                            className={textStyle.m_16}
+                        >
+                            {x?.amount} {x.details?.symbol}
+                        </div>
+                        <div
+                            style={{ color: "#ECFFB870", marginLeft: "4px" }}
+                            className={textStyle.m_16}
+                        >
+                            {(x?.usd_amount * x.amount).toFixed(2)}$
+                        </div>
+                    </div>
+                ))}
+            </div>
+            {currentTransaction?.feedback && (
+                <div className={styles.feedBackContainer}>
+                    <div className={textStyle.m_14}>
+                        {currentTransaction?.feedback}
+                    </div>
+                </div>
+            )}
         </div>
     )
 
@@ -532,150 +543,91 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
         }
     }
     const [load, setLoad] = useState(false)
-
+    console.log("item", currentTransaction)
     const claimBadges = async () => {
         if (!claim_loading.status) {
             setLoad(true)
             dispatch(setClaimLoading(true, currentTransaction?.id))
             try {
-                const web3Provider = new ethers.providers.Web3Provider(
-                    window.ethereum
+                const res = await processClaimBadgeToPocp(
+                    signer_address,
+                    isApprovedToken().token[0].id,
+                    jwt,
+                    currentTransaction?.id
                 )
-                await web3Provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.polygon }],
-                })
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                const signer = provider.getSigner()
-                const { data, signature } = await claimPOCPBadges(
-                    signer,
-                    address,
-                    [parseInt(isApprovedToken().token[0].id)]
-                )
-                const token = await dispatch(getAuthToken())
-                const tx_hash = await relayFunction(token, 3, data, signature)
-                if (tx_hash) {
-                    await updatePocpClaim(jwt, tx_hash, [
-                        currentTransaction?.id,
-                    ])
-                    const startTime = Date.now()
-                    const interval = setInterval(async () => {
-                        if (Date.now() - startTime > 30000) {
-                            clearInterval(interval)
+                if (res) {
+                    const provider = new ethers.providers.Web3Provider(
+                        window.ethereum
+                    )
+                    const signer = await provider.getSigner()
+                    const pocpProxy = new ethers.Contract(
+                        web3.POCP_Proxy,
+                        POCPProxy.abi,
+                        signer
+                    )
+
+                    pocpProxy.on("ClaimedBadge", async (a) => {
+                        if (
+                            parseInt(a.toString()) ===
+                            parseInt(isApprovedToken().token[0].id)
+                        ) {
+                            const userBadge = await pocpProxy.userBadge(
+                                parseInt(isApprovedToken().token[0].id)
+                            )
+
                             dispatch(
-                                setClaimLoading(false, currentTransaction?.id)
+                                setBadgesAfterClaim(
+                                    address,
+                                    userBadge.approvedBy,
+                                    userBadge.uri,
+                                    parseInt(isApprovedToken().token[0].id),
+                                    { id: parseInt(community_id[0].id) }
+                                )
                             )
-                        }
-                        const customHttpProvider =
-                            new ethers.providers.JsonRpcProvider(web3.infura)
-                        const reciept =
-                            await customHttpProvider.getTransactionReceipt(
-                                tx_hash
-                            )
-                        if (reciept?.status) {
-                            clearTimeout(interval)
                             dispatch(
-                                setClaimLoading(false, currentTransaction?.id)
+                                setClaimLoading(true, currentTransaction?.id)
                             )
-                            dispatch(claimUpdate(currentTransaction?.id))
-                            onContributionCrossPress()
-                            await web3Provider.provider.request({
+                            const provider = new ethers.providers.Web3Provider(
+                                window.ethereum
+                            )
+                            await provider.provider.request({
                                 method: "wallet_switchEthereumChain",
                                 params: [{ chainId: web3.chainid.rinkeby }],
                             })
                         }
-                    }, 2000)
-                } else {
-                    await web3Provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
                     })
-                    dispatch(setClaimLoading(false, currentTransaction?.id))
                 }
             } catch (error) {
-                // console.log(error.toString())
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                await provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.rinkeby }],
-                })
                 dispatch(setClaimLoading(false, currentTransaction?.id))
+                console.log("error in claiming")
             }
+            // dispatch(setClaimLoading(false, currentTransaction?.id))
         }
     }
 
     const approvePOCPBadgeWithUrl = async () => {
         setLoad(true)
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-        try {
-            await web3Provider.provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: web3.chainid.polygon }],
-            })
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = provider.getSigner()
-            const { data, signature } = await approvePOCPBadge(
-                signer,
-                parseInt(community_id[0].id),
-                signer_address,
-                [currentTransaction?.requested_by?.public_address],
-                [currentTransaction?.id?.toString()],
-                [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`]
-            )
-            const token = await dispatch(getAuthToken())
-            const tx_hash = await relayFunction(token, 5, data, signature)
-            if (tx_hash) {
-                await updatePocpApproval(jwt, tx_hash, [currentTransaction?.id])
-                const startTime = Date.now()
-                const interval = setInterval(async () => {
-                    if (Date.now() - startTime > 20000) {
-                        clearInterval(interval)
-                        // console.log("failed to get confirmation")
-                    }
-                    // console.log('tx_hash', tx_hash)
-                    const customHttpProvider =
-                        new ethers.providers.JsonRpcProvider(web3.infura)
-                    const reciept =
-                        await customHttpProvider.getTransactionReceipt(tx_hash)
-                    if (reciept?.status) {
-                        clearTimeout(interval)
-                        setPayoutToast("APPROVED_BADGE")
-                        // console.log('successfully registered')
-                        await provider.provider.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: web3.chainid.rinkeby }],
-                        })
-                        setLoad(false)
-                    }
-                    // console.log('again....')
-                }, 2000)
-            } else {
-                // console.log('error in fetching tx hash....')
-                await provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.rinkeby }],
-                })
-                onContributionCrossPress()
-                setLoad(false)
-            }
-        } catch (error) {
-            // console.log(error.toString())
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            await provider.provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: web3.chainid.rinkeby }],
-            })
-            onContributionCrossPress()
-            setLoad(false)
-        }
+        await processBadgeApprovalToPocp(
+            signer_address,
+            parseInt(community_id[0].id),
+            [currentTransaction?.requested_by?.public_address],
+            [currentTransaction?.id?.toString()],
+            [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
+            jwt
+        )
         await dispatch(syncAllBadges())
         await dispatch(getContriRequest())
         onContributionCrossPress()
     }
+    console.log(
+        "ccc",
+        role === "ADMIN",
+        !approvedBadge,
+        txInfo?.isExecuted,
+        currentTransaction?.ipfs_url,
+        txInfo?.data,
+        txInfo?.value !== "0"
+    )
     return (
         <div className={styles.container}>
             <img
@@ -731,7 +683,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             ),
                         }}
                     >
-                        {/* {currentTransaction?} */}
+                        {currentTransaction?.description}
                     </Typography.Paragraph>
                 </div>
             ) : (
@@ -761,23 +713,63 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                     <div className={styles.divider} />
                 )}
             {currentTransaction?.status !== "REQUESTED" && tokenInfo()}
-            {/* {currentTransaction?.status==='APPROVED'&&currentTransaction?.payout_status==='PAID'&&
-            <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-              <span
-                  className={`${textStyle.ub_23} ${styles.title}`}
-              >{`${getEmoji()}`}</span>
-              <span ellipsis={{rows:2}} className={`${textStyle.ub_23} ${styles.title}`}>
-              {`${currentTransaction?.title}`}
-              </span>
-              <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${currentTransaction?.requested_by?.metadata?.name} . (${address.slice(0,5)}...${address.slice(-3)})`}</div>
-              <div className={`${textStyle.m_16} ${styles.timeInfo}`}>{`${'Design  • '} ${currentTransaction?.time_spent} hrs`}</div>
-            </div>} */}
+            {!isAdmin &&
+                currentTransaction?.status === "APPROVED" &&
+                currentTransaction?.payout_status === "PAID" && (
+                    <div
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <div className={styles.divider} />
+
+                        <span
+                            ellipsis={{ rows: 2 }}
+                            className={`${textStyle.m_16} ${styles.title}`}
+                        >
+                            {`${currentTransaction?.title}`}
+                        </span>
+                        <div
+                            className={`${textStyle.m_16} ${styles.ownerInfo}`}
+                        >{`${
+                            currentTransaction?.requested_by?.metadata?.name
+                        } . (${address.slice(0, 5)}...${address.slice(
+                            -3
+                        )})`}</div>
+                        <div
+                            className={`${textStyle.m_16} ${styles.timeInfo}`}
+                        >{`${"Design  • "} ${
+                            currentTransaction?.time_spent
+                        } hrs`}</div>
+
+                        <Typography.Paragraph
+                            className={`${styles.description} ${textStyle.m_16}`}
+                            ellipsis={{
+                                rows: 2,
+                                expandable: true,
+                                symbol: (
+                                    <Typography.Text
+                                        className={`${styles.description} ${textStyle.m_16}`}
+                                    >
+                                        read more
+                                    </Typography.Text>
+                                ),
+                            }}
+                        >
+                            {currentTransaction?.description}
+                        </Typography.Paragraph>
+                    </div>
+                )}
             <div className={styles.divider} />
             {renderSigners_admin()}
             {role === "ADMIN" &&
                 !approvedBadge &&
                 txInfo?.isExecuted &&
-                currentTransaction?.ipfs_url && (
+                currentTransaction?.ipfs_url &&
+                // ( &&
+                txInfo?.value !== "0" && (
                     <div
                         style={{ justifyContent: "center" }}
                         className={styles.claim_container}

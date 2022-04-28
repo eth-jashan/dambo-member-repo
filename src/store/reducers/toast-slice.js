@@ -9,7 +9,7 @@ const toastSlice = createSlice({
             item: 0,
             value: 0,
         },
-        // signer:null
+        pocp_action: false,
     },
     reducers: {
         show_payout_toast(state, action) {
@@ -19,6 +19,9 @@ const toastSlice = createSlice({
 
         set_loading_state(state, action) {
             state.loading_state = action.payload.loading
+        },
+        set_pocp_action(state, action) {
+            state.pocp_action = action.payload.status
         },
     },
 })

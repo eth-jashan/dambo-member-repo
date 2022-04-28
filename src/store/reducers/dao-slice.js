@@ -41,6 +41,11 @@ const daoSlice = createSlice({
             dao_logo_url: "",
             safeAddress: null,
         },
+        pocp_register: {
+            dao_uuid: null,
+            name: null,
+            owner: null,
+        },
         executePaymentLoading: false,
     },
     reducers: {
@@ -127,6 +132,9 @@ const daoSlice = createSlice({
         },
         set_after_claim(state, action) {
             state.contribution_request = action.payload.list
+        },
+        set_pocp_info(state, action) {
+            state.pocp_register = action.payload.info
         },
     },
 })

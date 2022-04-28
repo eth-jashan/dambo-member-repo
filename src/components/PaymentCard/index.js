@@ -28,7 +28,10 @@ import {
     updatePocpApproval,
     uplaodApproveMetaDataUpload,
 } from "../../utils/relayFunctions"
-import { approvePOCPBadge } from "../../utils/POCPutils"
+import {
+    approvePOCPBadge,
+    processBadgeApprovalToPocp,
+} from "../../utils/POCPutils"
 import { getAuthToken } from "../../store/actions/auth-action"
 import { web3 } from "../../constant/web3"
 
@@ -315,235 +318,92 @@ export default function PaymentCard({ item, signer }) {
             nonce: transaction.nonce,
         }
         if (!safeSdk) return
-
-        const safeTransaction = await safeSdk.createTransaction(
-            safeTransactionData
-        )
-
-        transaction.confirmations.forEach((confirmation) => {
-            const signature = new EthSignSignature(
-                confirmation.owner,
-                confirmation.signature
-            )
-            safeTransaction.addSignature(signature)
-        })
-
-        let executeTxResponse
         try {
-            executeTxResponse = await safeSdk.executeTransaction(
+            const safeTransaction = await safeSdk.createTransaction(
+                safeTransactionData
+            )
+            transaction.confirmations.forEach((confirmation) => {
+                const signature = new EthSignSignature(
+                    confirmation.owner,
+                    confirmation.signature
+                )
+                safeTransaction.addSignature(signature)
+            })
+
+            const executeTxResponse = await safeSdk.executeTransaction(
                 safeTransaction
             )
-            // console.log('done transaction.......')
+            executeTxResponse.transactionResponse &&
+                (await executeTxResponse.transactionResponse.wait())
+            dispatch(
+                setPayoutToast("EXECUTED", {
+                    item: 0,
+                    value: getTotalAmount(),
+                })
+            )
+            await syncExecuteData(
+                item?.metaInfo?.id,
+                hash,
+                isReject ? "REJECTED" : "APPROVED",
+                jwt,
+                currentDao?.uuid
+            )
         } catch (error) {
-            console.error(error)
+            if (error.toString() === "Error: Not enough Ether funds") {
+                message.error("Not enough funds in safe")
+            }
+            console.log(
+                "error",
+                error.toString() === "Error: Not enough Ether funds",
+                error.code
+            )
             return
         }
-        executeTxResponse.transactionResponse &&
-            (await executeTxResponse.transactionResponse.wait())
-        dispatch(
-            setPayoutToast("EXECUTED", {
-                item: 0,
-                value: getTotalAmount(),
-            })
-        )
-        await syncExecuteData(
-            item?.metaInfo?.id,
-            hash,
-            "APPROVED",
-            jwt,
-            currentDao?.uuid
-        )
-        setApproveTitle("Approving Badge...")
-        const { cid, url, status } = await getIpfsUrl(
-            jwt,
-            currentDao?.uuid,
-            c_id
-        )
-        // console.log('ipfs...', url, cid, status)
-        if (!status) {
-            const startTime = Date.now()
-            const interval = setInterval(async () => {
-                if (Date.now() - startTime > 10000) {
-                    clearInterval(interval)
-                    // console.log('failed to get ipfs url')
-                }
-                const { cid, url, status } = await getIpfsUrl(
-                    jwt,
-                    currentDao?.uuid,
-                    c_id
-                )
-                // console.log('status', status)
-                // console.log('ipfs', url, cid, status)
-                if (status) {
-                    // console.log('ipfs', url, cid, status)
-                    clearTimeout(interval)
-                    // console.log('successfully registered')
-                    if (cid?.length > 0) {
-                        const web3Provider = new ethers.providers.Web3Provider(
-                            window.ethereum
-                        )
-                        try {
-                            await web3Provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.polygon }],
-                            })
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            const signer = provider.getSigner()
-                            const { data, signature } = await approvePOCPBadge(
-                                signer,
-                                parseInt(community_id[0].id),
+        if (!isReject) {
+            const { cid, url, status } = await getIpfsUrl(
+                jwt,
+                currentDao?.uuid,
+                c_id
+            )
+            if (!status) {
+                const startTime = Date.now()
+                const interval = setInterval(async () => {
+                    if (Date.now() - startTime > 10000) {
+                        clearInterval(interval)
+                    }
+                    const { cid, url, status } = await getIpfsUrl(
+                        jwt,
+                        currentDao?.uuid,
+                        c_id
+                    )
+                    if (status) {
+                        clearTimeout(interval)
+                        if (cid?.length > 0) {
+                            await processBadgeApprovalToPocp(
                                 address,
+                                community_id[0].id,
                                 to,
                                 cid,
-                                url
+                                url,
+                                jwt
                             )
-                            setApproveTitle("Signing Badge...")
-                            const token = await dispatch(getAuthToken())
-                            const tx_hash = await relayFunction(
-                                token,
-                                5,
-                                data,
-                                signature
-                            )
-                            if (tx_hash) {
-                                await updatePocpApproval(jwt, tx_hash, cid)
-                                const startTime = Date.now()
-                                const interval = setInterval(async () => {
-                                    if (Date.now() - startTime > 10000) {
-                                        clearInterval(interval)
-                                        // console.log('failed to get confirmation')
-                                        await updatePocpApproval(
-                                            jwt,
-                                            tx_hash,
-                                            cid
-                                        )
-                                    }
-                                    const customHttpProvider =
-                                        new ethers.providers.JsonRpcProvider(
-                                            web3.infura
-                                        )
-                                    const reciept =
-                                        await customHttpProvider.getTransactionReceipt(
-                                            tx_hash
-                                        )
-
-                                    if (reciept?.status) {
-                                        setPayoutToast("APPROVED_BADGE")
-                                        setApproveTitle("Confirmed Badge...")
-                                        clearTimeout(interval)
-                                        await provider.provider.request({
-                                            method: "wallet_switchEthereumChain",
-                                            params: [
-                                                {
-                                                    chainId:
-                                                        web3.chainid.rinkeby,
-                                                },
-                                            ],
-                                        })
-                                        // }
-                                    }
-                                }, 2000)
-                            } else {
-                                await provider.provider.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: web3.chainid.rinkeby }],
-                                })
-                            }
-                        } catch (error) {
-                            // console.log(error.toString())
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            await provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
                         }
                     }
-                }
-                // console.log('again....')
-            }, 3000)
-        } else {
-            if (cid?.length > 0) {
-                const web3Provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                try {
-                    await web3Provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.polygon }],
-                    })
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const signer = provider.getSigner()
-                    const { data, signature } = await approvePOCPBadge(
-                        signer,
-                        parseInt(community_id[0].id),
+                }, 3000)
+            } else {
+                if (cid?.length > 0) {
+                    await processBadgeApprovalToPocp(
                         address,
+                        community_id[0].id,
                         to,
                         cid,
-                        url
+                        url,
+                        jwt
                     )
-                    const token = await dispatch(getAuthToken())
-                    const tx_hash = await relayFunction(
-                        token,
-                        5,
-                        data,
-                        signature
-                    )
-                    if (tx_hash) {
-                        await updatePocpApproval(jwt, tx_hash, cid)
-                        const startTime = Date.now()
-                        const interval = setInterval(async () => {
-                            if (Date.now() - startTime > 10000) {
-                                clearInterval(interval)
-                                // console.log('failed to get confirmation')
-                            }
-                            // console.log('tx_hash', tx_hash)
-                            const customHttpProvider =
-                                new ethers.providers.JsonRpcProvider(
-                                    web3.infura
-                                )
-                            const reciept =
-                                await customHttpProvider.getTransactionReceipt(
-                                    tx_hash
-                                )
-
-                            if (reciept?.status) {
-                                clearTimeout(interval)
-                                setPayoutToast("APPROVED_BADGE")
-                                await updatePocpApproval(jwt, tx_hash, cid)
-                                // console.log('successfully registered')
-                                await provider.provider.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: web3.chainid.rinkeby }],
-                                })
-                            }
-
-                            // console.log('again....')
-                        }, 2000)
-                    } else {
-                        // console.log('error in fetching tx hash....')
-                        await provider.provider.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: web3.chainid.rinkeby }],
-                        })
-                    }
-                } catch (error) {
-                    // console.log(error.toString())
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    await provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
                 }
             }
         }
+
         await dispatch(getPayoutRequest())
         await dispatch(set_payout_filter("PENDING", 1))
         setApproveTitle(false)
@@ -635,15 +495,17 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const executeFunction = async () => {
-        try {
-            const res = await uploadApproveMetatoIpfs()
-            if (res.status) {
-                await executeSafeTransaction(res?.cid, res?.to)
-                // console.log('success')
+        if (!item?.isReject) {
+            try {
+                const res = await uploadApproveMetatoIpfs()
+                if (res.status) {
+                    await executeSafeTransaction(res?.cid, res?.to)
+                }
+            } catch (error) {
+                // console.log('error', error.toString())
             }
-            // console.log('success')
-        } catch (error) {
-            // console.log('error', error.toString())
+        } else {
+            await executeSafeTransaction()
         }
     }
 
@@ -717,9 +579,10 @@ export default function PaymentCard({ item, signer }) {
                                     }}
                                     className={textStyles.ub_14}
                                 >
-                                    {approveTitle || (!executePaymentLoading
-                                        ? getButtonProperty()?.title
-                                        : "Processing...")}
+                                    {approveTitle ||
+                                        (!executePaymentLoading
+                                            ? getButtonProperty()?.title
+                                            : "Processing...")}
                                 </div>
                             </div>
                         )}

@@ -190,17 +190,35 @@
 }
 
 .accountIcon {
-    height: 2rem;
-    width: 2rem;
+    height: 2.125rem;
+    width: 2.125rem;
     background-color: #5d5c5d;
     margin-left: 0.5rem;
     border-radius: 2rem;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .accountIcon:hover {
     background-color: white;
 }
 
+.initialText {
+    color: white;
+}
+
 .profileContainer {
     flex-direction: row;
     display: flex;
+}
+
+.backdrop {
+    position: absolute;
+    background: #7a7a7a;
+    opacity: 0.2;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    left: 0;
 }
