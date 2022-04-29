@@ -616,8 +616,8 @@ const PaymentSlideCard = ({ signer }) => {
     )
 
     const buttonFunction = async (hash) => {
-        if (!executePaymentLoading) {
-            dispatch(setLoading(true))
+        if (!executePaymentLoading.loadingStatus) {
+            dispatch(setLoading(true, currentPayment?.metaInfo?.id))
             if (checkApproval()) {
                 await executeTransaction(hash)
             } else if (
@@ -632,6 +632,10 @@ const PaymentSlideCard = ({ signer }) => {
             }
         }
     }
+
+    const showLoading =
+        executePaymentLoading?.loadingStatus &&
+        executePaymentLoading?.paymentId === currentPayment?.metaInfo?.id
 
     return (
         <div className={styles.container}>
@@ -664,7 +668,7 @@ const PaymentSlideCard = ({ signer }) => {
             <div
                 style={{
                     width: "20%",
-                    height: executePaymentLoading ? "140px" : "80px",
+                    height: showLoading ? "140px" : "80px",
                     position: "absolute",
                     bottom: 0,
                     background: "black",
@@ -676,7 +680,7 @@ const PaymentSlideCard = ({ signer }) => {
                     justifyContent: "center",
                 }}
             >
-                {executePaymentLoading && (
+                {showLoading && (
                     <div className={styles.loadingBottomBar}>
                         <div className={styles.loadingBottomBarLeft}>
                             <div className={styles.loadingBottomBarHeading}>
@@ -746,7 +750,7 @@ const PaymentSlideCard = ({ signer }) => {
                                     style={{ color: getButtonTitle()?.color }}
                                     className={textStyle.ub_16}
                                 >
-                                    {!executePaymentLoading
+                                    {!showLoading
                                         ? getButtonTitle()?.title
                                         : "Processing..."}
                                 </div>

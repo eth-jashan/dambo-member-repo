@@ -1069,9 +1069,16 @@ export const getAllSafeFromAddress = (address) => {
     }
 }
 
-export const setLoading = (loading) => {
+export const setLoading = (loadingStatus, paymentId = null) => {
     return (dispatch) => {
-        dispatch(daoAction.set_execute_payment_loading({ loading }))
+        dispatch(
+            daoAction.set_execute_payment_loading({
+                loadingInfo: {
+                    loadingStatus,
+                    paymentId,
+                },
+            })
+        )
     }
 }
 

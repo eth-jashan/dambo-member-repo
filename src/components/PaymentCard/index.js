@@ -296,6 +296,7 @@ export default function PaymentCard({ item, signer }) {
 
     const [approveTitle, setApproveTitle] = useState(false)
 
+
     const executeSafeTransaction = async (c_id, to, approveBadge) => {
         dispatch(setLoading(true))
         const hash = item?.gnosis?.safeTxHash
@@ -353,6 +354,7 @@ export default function PaymentCard({ item, signer }) {
                 error.toString() === "Error: Not enough Ether funds",
                 error.code
             )
+            dispatch(setLoading(false))
             return
         }
         if (approveBadge) {
@@ -522,8 +524,8 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const buttonFunc = async (tranx) => {
-        if (!executePaymentLoading) {
-            dispatch(setLoading(true))
+        if (!executePaymentLoading.loadingStatus) {
+            dispatch(setLoading(true, item?.metaInfo?.id))
             if (delegates.length === item?.gnosis?.confirmations?.length) {
                 await executeFunction()
             } else if (checkApproval()) {
@@ -534,6 +536,12 @@ export default function PaymentCard({ item, signer }) {
         }
         dispatch(setLoading(false))
     }
+
+    console.log("item in payment card", item)
+
+    const showLoading =
+        executePaymentLoading?.loadingStatus &&
+        executePaymentLoading?.paymentId === item?.metaInfo?.id
 
     return (
         <div
@@ -592,7 +600,7 @@ export default function PaymentCard({ item, signer }) {
                                     className={textStyles.ub_14}
                                 >
                                     {approveTitle ||
-                                        (!executePaymentLoading
+                                        (!showLoading
                                             ? getButtonProperty()?.title
                                             : "Processing...")}
                                 </div>

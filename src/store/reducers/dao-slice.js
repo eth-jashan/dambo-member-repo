@@ -122,7 +122,7 @@ const daoSlice = createSlice({
             state.pocp_dao_info = action.payload.info
         },
         set_execute_payment_loading(state, action) {
-            state.executePaymentLoading = action.payload.loading
+            state.executePaymentLoading = action.payload.loadingInfo
         },
         set_pocp_badges(state, action) {
             state.all_claimed_badge = action.payload.claimed
