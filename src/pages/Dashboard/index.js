@@ -49,9 +49,9 @@ import RejectPayment from "../../components/Modal/RejectPayment"
 import GnosisExternalPayment from "../../components/Alert/GnosisExternalPayment/index"
 import BadgeItem from "../../components/BadgeItem"
 import { getAllBadges } from "../../store/actions/contibutor-action"
-import { LinearProgress, Stack } from "@mui/material"
-
 import ERC20_ABI from "../../smartContract/erc20.json"
+import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
+import Lottie from "react-lottie"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -94,6 +94,15 @@ export default function Dashboard() {
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
+    const defaultOptions = {
+        loop: true,
+        autoplay: true,
+        animationData: dashboardLoader,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid meet",
+        },
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
             if (payoutToast) {
@@ -119,7 +128,6 @@ export default function Dashboard() {
         setProvider()
     }, [])
 
-    const claimed = useSelector((x) => x.contributor.claimed)
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
             message.success("invite link copied succesfully!")
@@ -381,20 +389,11 @@ export default function Dashboard() {
 
     const renderLoadingScreen = () => (
         <div className={styles.emptyDiv}>
-            <Stack
-                sx={{
-                    width: "50%",
-                    color: "grey.500",
-                    display: "flex",
-                    alignSelf: "center",
-                }}
-                spacing={2}
-            >
-                <LinearProgress
-                    style={{ background: "#ECFFB8" }}
-                    color="inherit"
-                />
-            </Stack>
+            <Lottie
+                options={defaultOptions}
+                style={{ height: "100%", width: "30%" }}
+                className={styles.layoutImage}
+            />
         </div>
     )
 

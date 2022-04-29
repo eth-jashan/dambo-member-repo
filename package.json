@@ -4,12 +4,8 @@
     "private": true,
     "dependencies": {
         "@ant-design/icons": "^4.7.0",
-        "@emotion/react": "^11.8.1",
-        "@emotion/styled": "^11.8.1",
         "@gnosis.pm/safe-core-sdk": "^1.2.0",
         "@gnosis.pm/safe-service-client": "^0.1.0",
-        "@mui/lab": "^5.0.0-alpha.71",
-        "@mui/material": "^5.4.4",
         "@portis/web3": "^4.0.6",
         "@reduxjs/toolkit": "^1.7.1",
         "@testing-library/jest-dom": "^5.11.4",
