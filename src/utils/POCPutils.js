@@ -1,3 +1,4 @@
+import { message } from "antd"
 import { ethers } from "ethers"
 import { web3 } from "../constant/web3"
 import Forwarder from "../smartContract/POCP_Contracts/minimalForwarder.json"
@@ -12,7 +13,14 @@ import {
 
 //processing registerdao function
 
-export const processDaoToPOCP = async (name, owner, address, dao_uuid, jwt) => {
+export const processDaoToPOCP = async (
+    name,
+    owner,
+    address,
+    dao_uuid,
+    jwt,
+    onSuccess
+) => {
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
     try {
         await web3Provider.provider.request({
@@ -29,9 +37,10 @@ export const processDaoToPOCP = async (name, owner, address, dao_uuid, jwt) => {
         )
         const token = await getAuthToken(jwt)
         const txHash = await relayFunction(token, 0, data, signature)
-        await updatePocpRegister(jwt, txHash, dao_uuid)
         if (txHash) {
+            await updatePocpRegister(jwt, txHash, dao_uuid)
             const startTime = Date.now()
+            console.log("getting status from register", txHash)
             const interval = setInterval(async () => {
                 if (Date.now() - startTime > 20000) {
                     clearInterval(interval)
@@ -43,37 +52,29 @@ export const processDaoToPOCP = async (name, owner, address, dao_uuid, jwt) => {
                     txHash
                 )
                 if (reciept?.status) {
+                    console.log(
+                        "reciepts status from register",
+                        reciept?.status
+                    )
                     clearTimeout(interval)
                     await provider.provider.request({
                         method: "wallet_switchEthereumChain",
                         params: [{ chainId: web3.chainid.rinkeby }],
                     })
-                    await provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
-                    return true
+                    onSuccess()
+                    // return true
                 }
             }, 2000)
+        } else {
+            console.log("hereee cancel")
+            await provider.provider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: web3.chainid.rinkeby }],
+            })
+
+            // return false
         }
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
-        return false
-    } catch (error) {
-        // console.log(error.toString())
-        // try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
-        // } catch (error) {
-        //     console.log("error")
-        // }
-        // return false
-    }
+    } catch (error) {}
 }
 
 //processing badge approver function
@@ -84,7 +85,8 @@ export const processBadgeApprovalToPocp = async (
     to,
     cid,
     url,
-    jwt
+    jwt,
+    onSuccess
 ) => {
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
     try {
@@ -110,8 +112,9 @@ export const processBadgeApprovalToPocp = async (
             const interval = setInterval(async () => {
                 if (Date.now() - startTime > 10000) {
                     clearInterval(interval)
-                    // console.log('failed to get confirmation')
                     await updatePocpApproval(jwt, txHash, cid)
+                    // message.error("failed to get confirmation")
+                    // onSuccess() && (await onSuccess())
                 }
                 const customHttpProvider = new ethers.providers.JsonRpcProvider(
                     web3.infura
@@ -130,6 +133,7 @@ export const processBadgeApprovalToPocp = async (
                             },
                         ],
                     })
+                    // onSuccess() && (await onSuccess())
                     return true
                 }
             }, 2000)
@@ -138,13 +142,16 @@ export const processBadgeApprovalToPocp = async (
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: web3.chainid.rinkeby }],
             })
+            // onSuccess() && (await onSuccess())
         }
     } catch (error) {
+        // message.error("failed to get confirmation")
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         await provider.provider.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
+        onSuccess() && (await onSuccess())
     }
 }
 
@@ -260,7 +267,7 @@ export const registerDaoToPocp = async (
         )
         return { data, signature }
     } catch (error) {
-        // console.log("Error on signing register dao data", error)
+        // //console.log("Error on signing register dao data", error)
     }
 }
 
@@ -273,7 +280,7 @@ export const approvePOCPBadge = async (
     cids,
     url
 ) => {
-    // console.log('approver', communityId, address, claimers, cids, url)
+    // //console.log('approver', communityId, address, claimers, cids, url)
     const contract = new ethers.Contract(
         web3.POCP_Forwarder,
         Forwarder.abi,
@@ -340,7 +347,7 @@ export const approvePOCPBadge = async (
         )
         return { data, signature }
     } catch (error) {
-        console.log("Error on signing approve contri  data", error)
+        //console.log("Error on signing approve contri  data", error)
     }
 }
 
@@ -401,7 +408,7 @@ export const claimPOCPBadges = async (signer, address, id) => {
         )
         return { data, signature }
     } catch (error) {
-        // console.log("Error on signing register dao data", error)
+        // //console.log("Error on signing register dao data", error)
     }
 }
 
@@ -415,7 +422,7 @@ export const getTokenURI = async (signer, tokenId) => {
     )
 
     const uri = await pocpProxy.tokenURI(tokenId)
-    console.log("uriiii", uri)
+    //console.log("uriiii", uri)
     if (uri) {
         return uri
     }

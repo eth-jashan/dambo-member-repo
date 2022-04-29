@@ -6,6 +6,7 @@ import InputText from "../InputComponent/Input"
 import NextButton from "../NextButton"
 import styles from "./styles.module.css"
 import gnosis_loader from "../../assets/lottie/gnosis_loader.json"
+import upload_pic from "../../assets/lottie/upload_pic.json"
 import retry from "../../assets/Icons/retry.svg"
 import upload_file from "../../assets/Icons/upload_file.svg"
 import Lottie from "react-lottie"
@@ -26,6 +27,15 @@ const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
         loop: true,
         autoplay: true,
         animationData: gnosis_loader,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice",
+        },
+    }
+
+    const defaultOptions_upload = {
+        loop: true,
+        autoplay: true,
+        animationData: upload_pic,
         rendererSettings: {
             preserveAspectRatio: "xMidYMid slice",
         },
@@ -196,62 +206,107 @@ const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
                                     }}
                                 >
                                     {image ? (
-                                        <img
-                                            alt="logo"
-                                            src={image?.preview}
-                                            style={{
-                                                width: "15rem",
-                                                height: "15rem",
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className={styles.picContainer}>
-                                            <label
-                                                className={styles.label}
-                                                htmlFor="upload-button"
-                                            >
+                                        <div>
+                                            <div className={styles.uploadDiv}>
                                                 <div
-                                                    className={
-                                                        styles.icon_uplaod
-                                                    }
+                                                    className={`${textStyles.m_16} ${styles.uploadTitle}`}
                                                 >
-                                                    <img
-                                                        alt="file"
-                                                        src={upload_file}
+                                                    Upload Logo
+                                                </div>
+                                                {loading && (
+                                                    <div
+                                                        className={`${textStyles.m_16} ${styles.loadingText}`}
+                                                    >
+                                                        uploading
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div
+                                                className={styles.picContainer}
+                                            >
+                                                <img
+                                                    alt="logo"
+                                                    src={image?.preview}
+                                                    style={{
+                                                        width: "15rem",
+                                                        height: "15rem",
+                                                        border: "1px solid #eeeef0",
+                                                        borderRadius: "0.75rem",
+                                                        position: "absolute",
+                                                    }}
+                                                />
+                                                {loading && (
+                                                    <Lottie
+                                                        options={
+                                                            defaultOptions_upload
+                                                        }
                                                         className={
-                                                            styles.upload_file
+                                                            styles.uploadLottie
                                                         }
                                                     />
-                                                </div>
-                                                <input
-                                                    accept="image/png, image/gif, image/jpeg"
-                                                    type="file"
-                                                    id="upload-button"
-                                                    style={{ display: "none" }}
-                                                    onChange={onFileChange}
-                                                />
-                                                <div
-                                                    style={{
-                                                        alignSelf: "center",
-                                                    }}
-                                                    className={`${textStyles.m_16}`}
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <div
+                                                className={`${textStyles.m_16} ${styles.uploadTitle}`}
+                                            >
+                                                Upload Logo
+                                            </div>
+                                            <div
+                                                className={styles.picContainer}
+                                            >
+                                                <label
+                                                    className={styles.label}
+                                                    htmlFor="upload-button"
                                                 >
-                                                    Click here to upload a file
-                                                </div>
-                                                <div
-                                                    style={{
-                                                        alignSelf: "center",
-                                                        textAlign: "center",
-                                                        marginTop: "0.5rem",
-                                                        color: "#00000050",
-                                                    }}
-                                                    className={`${textStyles.m_14}`}
-                                                >
-                                                    PNG, JPG, GIF up to 10MB
-                                                    (recommended size: 400px x
-                                                    400px)
-                                                </div>
-                                            </label>
+                                                    <div
+                                                        className={
+                                                            styles.icon_uplaod
+                                                        }
+                                                    >
+                                                        <img
+                                                            alt="file"
+                                                            src={upload_file}
+                                                            className={
+                                                                styles.upload_file
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        accept="image/png, image/gif, image/jpeg"
+                                                        type="file"
+                                                        id="upload-button"
+                                                        style={{
+                                                            display: "none",
+                                                        }}
+                                                        onChange={onFileChange}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            alignSelf: "center",
+                                                        }}
+                                                        className={`${textStyles.m_16}`}
+                                                    >
+                                                        Click here to upload a
+                                                        file
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            alignSelf: "center",
+                                                            textAlign: "center",
+                                                            marginTop: "0.5rem",
+                                                            color: "#00000050",
+                                                        }}
+                                                        className={`${textStyles.m_14}`}
+                                                    >
+                                                        PNG, JPG, GIF up to 10MB
+                                                        (recommended size: 400px
+                                                        x 400px)
+                                                    </div>
+                                                </label>
+                                            </div>
                                         </div>
                                     )}
 
@@ -260,7 +315,7 @@ const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
                             </div>
                         </div>
                     </div>
-                    <div className={styles.nextBtn}>
+                    <div className={styles.bottomBar}>
                         <NextButton
                             text={
                                 hasMultiSignWallet

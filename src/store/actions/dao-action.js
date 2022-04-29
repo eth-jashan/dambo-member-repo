@@ -85,7 +85,7 @@ export const registerDao = () => {
                 return 0
             }
         } catch (error) {
-            // console.log("error in registering.....", error)
+            // //console.log("error in registering.....", error)
         }
     }
 }
@@ -105,7 +105,7 @@ export const getAllDaowithAddress = () => {
                     },
                 }
             )
-            // console.log(`total daos of`, res.data.data.length)
+            // //console.log(`total daos of`, res.data.data.length)
 
             if (res.data.data.length > 0) {
                 dispatch(
@@ -113,7 +113,7 @@ export const getAllDaowithAddress = () => {
                         list: res.data.data,
                     })
                 )
-                // console.log("selection address", address, lastSelected)
+                // //console.log("selection address", address, lastSelected)
                 let selectionIndex = 0
 
                 if (lastSelected) {
@@ -126,15 +126,15 @@ export const getAllDaowithAddress = () => {
                             item?.dao_details?.uuid ===
                                 isLastSelection[0]?.dao_uuid
                         ) {
-                            // console.log("last remember there")
+                            // //console.log("last remember there")
                             selectionIndex = index
                         } else {
-                            // console.log("last remember not there")
+                            // //console.log("last remember not there")
                         }
                     })
                 }
 
-                // console.log('selection index', selectionIndex)
+                // //console.log('selection index', selectionIndex)
 
                 dispatch(
                     daoAction.set_current_dao({
@@ -268,7 +268,7 @@ export const set_contri_filter = (filter_key, number) => {
                 // return 0
             }
         } catch (error) {
-            // console.log("error...", error)
+            // //console.log("error...", error)
             dispatch(
                 daoAction.set_contri_list({
                     list: [],
@@ -285,13 +285,7 @@ export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
         try {
-            const safeInfo = await serviceClient.getSafeInfo(
-                currentDao?.safe_public_address
-            )
             const balance = await serviceClient.getBalances(
-                currentDao?.safe_public_address
-            )
-            const usdBalance = await serviceClient.getUsdBalances(
                 currentDao?.safe_public_address
             )
 
@@ -311,20 +305,13 @@ export const gnosisDetailsofDao = () => {
             })
             dispatch(
                 daoAction.set_gnosis_details({
-                    details: safeInfo,
                     balance: tokenType,
-                    usdBalance,
-                    delegates: safeInfo.owners,
                 })
             )
         } catch (error) {
-            // console.log("error", error)
             dispatch(
                 daoAction.set_gnosis_details({
-                    details: null,
                     balance: null,
-                    usdBalance: null,
-                    delegates: [],
                 })
             )
         }
@@ -367,8 +354,6 @@ export const getContriRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
-        const all_claimed_badge = getState().dao.all_claimed_badge
-        const all_approved_badge = getState().dao.all_approved_badge
         dispatch(tranactionAction.reset_approved_request())
         const url =
             getState().dao.role === "ADMIN"
@@ -431,10 +416,7 @@ export const getContriRequest = () => {
                     )
                     return 1
                 } else {
-                    // console.log(
-                    //     "pending contributor",
-                    //     res.data?.data?.contributions
-                    // )
+                    //console.log("contributor contri")
                     dispatch(
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
@@ -459,7 +441,7 @@ export const getContriRequest = () => {
                 return 0
             }
         } catch (error) {
-            // console.log("error...", error)
+            // //console.log("error...", error)
             dispatch(
                 daoAction.set_contri_list({
                     list: [],
@@ -472,6 +454,12 @@ export const getContriRequest = () => {
 }
 
 export const updateSingleTransaction = () => {}
+
+export const addActivePaymentBadge = (status) => {
+    return (dispatch) => {
+        dispatch(daoAction.set_active_payment_notification({ status }))
+    }
+}
 
 export const getPayoutRequest = () => {
     return async (dispatch, getState) => {
@@ -587,14 +575,14 @@ export const getPayoutRequest = () => {
                             }
                         )
                     } catch (error) {
-                        console.log("error while updating gnosis", error)
+                        //console.log("error while updating gnosis", error)
                     }
                 }
             } else {
                 return 0
             }
         } catch (error) {
-            console.log("error...", error)
+            //console.log("error...", error)
             return 0
         }
     }
@@ -605,91 +593,111 @@ export const set_payout_filter = (filter_key, number) => {
         const jwt = getState().auth.jwt
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
-        try {
-            const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
 
-            const pendingTxs = await serviceClient.getMultisigTransactions(
-                safe_address
-            )
+        const pending_txs = getState().dao.payout_request
 
-            const list_of_tx = []
-            if (res.data.success) {
-                // filtering out drepute txs from gnosis
-                res.data?.data?.payouts.map((item, index) => {
-                    pendingTxs.results.map((x, i) => {
-                        if (
-                            item.gnosis_reference_id === x.safeTxHash &&
-                            item.is_executed
-                        ) {
-                            list_of_tx.push({
-                                gnosis: x,
-                                metaInfo: item,
-                                status: item.request_type,
-                            })
-                        }
-                    })
+        if (pending_txs.length > 0) {
+            dispatch(
+                daoAction.set_active_payment_notification({ status: true })
+            )
+        } else {
+            dispatch(
+                daoAction.set_active_payment_notification({ status: false })
+            )
+        }
+
+        if (filter_key === "PENDING") {
+            dispatch(
+                daoAction.set_filter_list({
+                    key: filter_key,
+                    number,
+                    list: pending_txs,
                 })
-                const pending_txs = getState().dao.payout_request
+            )
+        } else if (filter_key === "APPROVED") {
+            const pending = pending_txs.filter((x) => x.status === filter_key)
 
-                if (filter_key === "PENDING") {
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number,
-                            list: pending_txs,
-                        })
-                    )
-                } else if (filter_key === "ALL") {
-                    const all_payout = pending_txs.concat(list_of_tx)
+            dispatch(
+                daoAction.set_filter_list({
+                    key: filter_key,
+                    number,
+                    list: pending,
+                })
+            )
+        } else if (filter_key === "REJECTED") {
+            const pending = pending_txs.filter((x) => x.status === filter_key)
 
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number,
-                            list: all_payout,
-                        })
-                    )
-                } else if (filter_key === "APPROVED") {
-                    const pending = pending_txs.filter(
-                        (x) => x.status === filter_key
-                    )
+            dispatch(
+                daoAction.set_filter_list({
+                    key: filter_key,
+                    number,
+                    list: pending,
+                })
+            )
+        } else {
+            try {
+                const res = await apiClient.get(
+                    `${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwt}`,
+                        },
+                    }
+                )
 
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number,
-                            list: pending,
-                        })
-                    )
-                } else if (filter_key === "REJECTED") {
-                    const pending = pending_txs.filter(
-                        (x) => x.status === filter_key
-                    )
+                const pendingTxs = await serviceClient.getMultisigTransactions(
+                    safe_address
+                )
 
+                const list_of_tx = []
+                if (res.data.success) {
+                    // filtering out drepute txs from gnosis
+                    res.data?.data?.payouts.map((item, index) => {
+                        pendingTxs.results.map((x, i) => {
+                            if (
+                                item.gnosis_reference_id === x.safeTxHash &&
+                                item.is_executed
+                            ) {
+                                list_of_tx.push({
+                                    gnosis: x,
+                                    metaInfo: item,
+                                    status: item.request_type,
+                                })
+                            }
+                        })
+                    })
+
+                    if (filter_key === "ALL") {
+                        const all_payout = pending_txs.concat(list_of_tx)
+
+                        dispatch(
+                            daoAction.set_filter_list({
+                                key: filter_key,
+                                number,
+                                list: all_payout,
+                            })
+                        )
+                    } else if (filter_key === "PAID") {
+                        dispatch(
+                            daoAction.set_filter_list({
+                                key: filter_key,
+                                number,
+                                list: list_of_tx,
+                            })
+                        )
+                    }
+                } else {
                     dispatch(
                         daoAction.set_filter_list({
+                            list: [],
                             key: filter_key,
                             number,
-                            list: pending,
                         })
                     )
-                } else if (filter_key === "PAID") {
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number,
-                            list: list_of_tx,
-                        })
-                    )
+                    return 0
                 }
-            } else {
+            } catch (error) {
+                //console.log("error...", error)
                 dispatch(
                     daoAction.set_filter_list({
                         list: [],
@@ -699,16 +707,6 @@ export const set_payout_filter = (filter_key, number) => {
                 )
                 return 0
             }
-        } catch (error) {
-            console.log("error...", error)
-            dispatch(
-                daoAction.set_filter_list({
-                    list: [],
-                    key: filter_key,
-                    number,
-                })
-            )
-            return 0
         }
     }
 }
@@ -725,7 +723,7 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
             },
         ],
     }
-    // console.log('updated data...', data)
+    // //console.log('updated data...', data)
     try {
         await apiClient.post(
             `${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,
@@ -737,7 +735,7 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
             }
         )
     } catch (error) {
-        console.log("error while updating gnosis", error)
+        //console.log("error while updating gnosis", error)
     }
 }
 
@@ -748,12 +746,6 @@ export const syncTxDataWithGnosis = (payout) => {
         const uuid = getState().dao.currentDao?.uuid
         const getAllPayout = getState().dao.all_payout_request
         try {
-            // const payouts = await axios.get(`${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,{
-            //   headers:{
-            //     Authorization:`Bearer ${jwt}`
-            //   }
-            // })
-
             const allTx = await serviceClient.getMultisigTransactions(
                 safe_address
             )
@@ -813,11 +805,11 @@ export const syncTxDataWithGnosis = (payout) => {
                         }
                     )
                 } catch (error) {
-                    console.log("error while updating gnosis", error)
+                    //console.log("error while updating gnosis", error)
                 }
             }
         } catch (error) {
-            console.log("error...", error)
+            //console.log("error...", error)
             // dispatch(daoAction.set_contri_list({
             //   list:[]
             // }))
@@ -1095,7 +1087,7 @@ export const getDaoHash = () => {
             const communities = resCommunity.data.communities
             dispatch(daoAction.set_pocp_dao({ info: communities }))
         } catch (error) {
-            console.log("error: ", error.toString())
+            //console.log("error: ", error.toString())
         }
     }
     // const
@@ -1113,7 +1105,7 @@ export const claimUpdate = (id) => {
 }
 
 export const syncAllBadges = () => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         const query_claimed = POCP_CLAIMED_TOKEN
         const query_approved = POCP_APPROVED_TOKEN
 
@@ -1128,7 +1120,7 @@ export const syncAllBadges = () => {
             const allApproved = resApproved?.data?.approvedTokens
             dispatch(daoAction.set_pocp_badges({ claimed, allApproved }))
         } catch (error) {
-            console.log("error", error.toString())
+            //console.log("error", error.toString())
         }
     }
     // const

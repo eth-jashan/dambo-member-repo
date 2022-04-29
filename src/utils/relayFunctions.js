@@ -27,7 +27,7 @@ export const relayFunction = async (
 
         return res.data.data.hash
     } catch (error) {
-        // console.log('relay api error', error.toString())
+        // //console.log('relay api error', error.toString())
     }
 }
 
@@ -37,14 +37,15 @@ export const uplaodApproveMetaDataUpload = async (approveContri) => {
     }
     try {
         const res = await axios.post(
-            "https://staging.api.drepute.xyz:3001/upload?",
+            "https://staging.api.drepute.xyz:3001/upload",
+            // "http://localhost:3002/upload",
             data
         )
         if (res) {
             return 1
         }
     } catch (error) {
-        // console.log('error on uploading', error.toString())
+        // //console.log('error on uploading', error.toString())
     }
 }
 
@@ -67,7 +68,7 @@ export const updatePocpRegister = async (jwt, tx_hash, dao_uuid) => {
             return 0
         }
     } catch (error) {
-        // console.log('error in registering.....', error)
+        // //console.log('error in registering.....', error)
     }
 }
 
@@ -78,7 +79,7 @@ export const updatePocpApproval = async (
 ) => {
     const data = { approval_tx_hash, contribution_ids }
 
-    // //console.log('tx_hash...', data)
+    // ////console.log('tx_hash...', data)
 
     try {
         const res = await axios.post(
@@ -96,14 +97,14 @@ export const updatePocpApproval = async (
             return 0
         }
     } catch (error) {
-        // console.log('error in registering.....', error)
+        // //console.log('error in registering.....', error)
     }
 }
 
 export const updatePocpClaim = async (jwt, claim_tx_hash, contribution_ids) => {
     const data = { claim_tx_hash, contribution_ids }
 
-    // //console.log('tx_hash...', data)
+    // ////console.log('tx_hash...', data)
 
     try {
         const res = await axios.post(
@@ -121,7 +122,7 @@ export const updatePocpClaim = async (jwt, claim_tx_hash, contribution_ids) => {
             return 0
         }
     } catch (error) {
-        // console.log('error in registering.....', error)
+        // //console.log('error in registering.....', error)
     }
 }
 
@@ -159,13 +160,13 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
                     url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
                 }
             })
-            // console.log('status...', status)
+            // //console.log('status...', status)
             return { cid, url, status }
         } else {
             return { cid, url: [], status: false }
         }
     } catch (error) {
-        // console.log('error', error.toString())
+        // //console.log('error', error.toString())
         return { cid, url: [], status: false }
     }
 }

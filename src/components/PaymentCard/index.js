@@ -19,21 +19,15 @@ import {
     syncExecuteData,
     syncTxDataWithGnosis,
     setLoading,
+    syncAllBadges,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { setPayoutToast } from "../../store/actions/toast-action"
 import {
     getIpfsUrl,
-    relayFunction,
-    updatePocpApproval,
     uplaodApproveMetaDataUpload,
 } from "../../utils/relayFunctions"
-import {
-    approvePOCPBadge,
-    processBadgeApprovalToPocp,
-} from "../../utils/POCPutils"
-import { getAuthToken } from "../../store/actions/auth-action"
-import { web3 } from "../../constant/web3"
+import { processBadgeApprovalToPocp } from "../../utils/POCPutils"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -43,10 +37,10 @@ export default function PaymentCard({ item, signer }) {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const [onHover, setOnHover] = useState(false)
-    const delegates = useSelector((x) => x.dao.delegates)
     const nonce = useSelector((x) => x.dao.active_nonce)
     // const [loading, setLoading] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
+    const delegates = currentDao?.signers
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === "REJECTED"
     const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
@@ -257,8 +251,10 @@ export default function PaymentCard({ item, signer }) {
     const dispatch = useDispatch()
 
     const onPaymentPress = () => {
-        dispatch(setTransaction(null))
-        dispatch(setPayment(item))
+        if (!executePaymentLoading) {
+            dispatch(setTransaction(null))
+            dispatch(setPayment(item))
+        }
     }
 
     const confirmTransaction = async () => {
@@ -300,7 +296,7 @@ export default function PaymentCard({ item, signer }) {
 
     const [approveTitle, setApproveTitle] = useState(false)
 
-    const executeSafeTransaction = async (c_id, to) => {
+    const executeSafeTransaction = async (c_id, to, approveBadge) => {
         dispatch(setLoading(true))
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)
@@ -359,7 +355,7 @@ export default function PaymentCard({ item, signer }) {
             )
             return
         }
-        if (!isReject) {
+        if (approveBadge) {
             const { cid, url, status } = await getIpfsUrl(
                 jwt,
                 currentDao?.uuid,
@@ -370,6 +366,9 @@ export default function PaymentCard({ item, signer }) {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
+                        await dispatch(getPayoutRequest())
+                        await dispatch(set_payout_filter("PENDING", 1))
+                        message.error("failed to get ipfs url")
                     }
                     const { cid, url, status } = await getIpfsUrl(
                         jwt,
@@ -387,6 +386,9 @@ export default function PaymentCard({ item, signer }) {
                                 url,
                                 jwt
                             )
+                            await dispatch(syncAllBadges())
+                            await dispatch(getPayoutRequest())
+                            await dispatch(set_payout_filter("PENDING", 1))
                         }
                     }
                 }, 3000)
@@ -400,12 +402,13 @@ export default function PaymentCard({ item, signer }) {
                         url,
                         jwt
                     )
+                    await dispatch(syncAllBadges())
+                    await dispatch(getPayoutRequest())
+                    await dispatch(set_payout_filter("PENDING", 1))
                 }
             }
         }
 
-        await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING", 1))
         setApproveTitle(false)
         dispatch(setPayment(null))
     }
@@ -495,17 +498,26 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const executeFunction = async () => {
-        if (!item?.isReject) {
+        console.log(
+            "community id",
+            community_id[0]?.id,
+            pocp_dao_info,
+            currentDao
+        )
+        if (!isReject && community_id[0]?.id) {
             try {
                 const res = await uploadApproveMetatoIpfs()
                 if (res.status) {
-                    await executeSafeTransaction(res?.cid, res?.to)
+                    await executeSafeTransaction(res?.cid, res?.to, true)
+                } else {
+                    setLoading(false)
                 }
             } catch (error) {
-                // console.log('error', error.toString())
+                // setLoading(false)
             }
         } else {
-            await executeSafeTransaction()
+            console.log("no pocp", isReject)
+            await executeSafeTransaction(null, null, false)
         }
     }
 

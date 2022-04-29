@@ -215,3 +215,30 @@
     align-items: center;
     flex-direction: column;
 }
+
+.bottomBar {
+    position: fixed;
+    bottom: 1.25rem;
+    /* background: red; */
+    width: 100%;
+}
+
+.uploadTitle {
+    margin-bottom: 0.5rem;
+}
+
+.uploadLottie {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.uploadDiv {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+}
+
+.loadingText {
+    color: #808080;
+}

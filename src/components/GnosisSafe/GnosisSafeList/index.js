@@ -34,7 +34,7 @@ const GnosisSafeList = (props) => {
         try {
             dispatch(getAllSafeFromAddress(address))
         } catch (error) {
-            // console.log('error on safe fetch.......', error)
+            // //console.log('error on safe fetch.......', error)
         }
     }, [address, dispatch])
 

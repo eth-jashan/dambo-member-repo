@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux"
 import {
     getContributorOverview,
     getContriRequest,
-    getDaoHash,
     getPayoutRequest,
     set_payout_filter,
     switchRole,
@@ -20,36 +19,29 @@ import { setLoadingState } from "../../../store/actions/toast-action"
 
 const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
     const address = useSelector((x) => x.auth.address)
-    const currentDao = useSelector((x) => x.dao.currentDao)
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
     const dispatch = useDispatch()
     const changeRole = async (role) => {
+        //console.log("change role")
         dispatch(setLoadingState(true))
         dispatch(switchRole(role))
         onChange()
-        // await Promise.all([
-        await dispatch(getDaoHash())
         await dispatch(syncAllBadges())
-        // ])
-        dispatch(getContributorOverview())
-        dispatch(getAllBadges(signer, address, community_id[0]?.id))
+        await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
-            await dispatch(getContriRequest())
             await dispatch(getPayoutRequest())
-            await dispatch(syncTxDataWithGnosis())
-        } else if (role !== "ADMIN") {
-            await dispatch(getAllBadges(signer, address, c_id))
-            await dispatch(getContriRequest())
-            await dispatch(getAllBadges(signer, address, community_id[0]?.id))
-            dispatch(getContributorOverview())
-        } else if (route !== "contributions" && role === "ADMIN") {
-            // await  dispatch(getContriRequest())
-            await dispatch(getPayoutRequest())
-            await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(syncTxDataWithGnosis())
+            dispatch(setLoadingState(false))
+        } else if (role !== "ADMIN") {
+            dispatch(getAllBadges(address))
+            dispatch(getContributorOverview())
+            dispatch(setLoadingState(false))
+        } else if (route !== "contributions" && role === "ADMIN") {
+            await dispatch(getPayoutRequest())
+            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(syncTxDataWithGnosis())
+            // await dispatch(set_payout_filter("PENDING", 1))
+            dispatch(setLoadingState(false))
         }
         dispatch(setLoadingState(false))
     }

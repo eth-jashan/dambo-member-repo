@@ -11,7 +11,7 @@ const ContributorOnbording = () => {
         window.history.pushState(null, document.title, window.location.href)
         window.addEventListener("popstate", () => {
             if (address && jwt) {
-                // console.log('on back!!!')
+                // //console.log('on back!!!')
                 window.history.pushState(
                     null,
                     document.title,

@@ -55,7 +55,6 @@ const RejectPayment = ({ onClose, signer }) => {
             dispatch(setRejectModal(false))
             dispatch(setPayment(null))
         } catch (error) {
-            // console.log('error.........', error)
             setLoading(false)
         }
         setLoading(false)
@@ -66,7 +65,7 @@ const RejectPayment = ({ onClose, signer }) => {
         const amount = []
         currentPayment?.metaInfo?.contributions.map((x, i) => {
             x?.tokens.map((item, index) => {
-                // console.log('item', item)
+                // //console.log('item', item)
                 if (!tokens.includes(item?.details?.symbol)) {
                     tokens?.push(item?.details?.symbol)
                 }
@@ -77,7 +76,7 @@ const RejectPayment = ({ onClose, signer }) => {
         const total = amount?.reduce((a, b) => a + b)
         const totalToken = `${tokens?.toString()?.replace(/,/g, "+")}`
 
-        // console.log('ttt', total, totalToken, currentPayment?.metaInfo?.contributions)
+        // //console.log('ttt', total, totalToken, currentPayment?.metaInfo?.contributions)
         return { total, totalToken }
     }
 

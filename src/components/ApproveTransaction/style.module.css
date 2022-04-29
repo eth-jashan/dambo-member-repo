@@ -52,7 +52,8 @@
 }
 
 .bottomBar {
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    bottom: 1.25rem;
+    /* background: red; */
     width: 100%;
 }

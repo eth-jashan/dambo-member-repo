@@ -12,6 +12,7 @@ const serviceClient = new SafeServiceClient(
 export const getAddressMembership = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
+
         try {
             const res = await apiClient.get(
                 `${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,

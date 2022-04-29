@@ -6,7 +6,6 @@
         "@ant-design/icons": "^4.7.0",
         "@gnosis.pm/safe-core-sdk": "^1.2.0",
         "@gnosis.pm/safe-service-client": "^0.1.0",
-        "@portis/web3": "^4.0.6",
         "@reduxjs/toolkit": "^1.7.1",
         "@testing-library/jest-dom": "^5.11.4",
         "@testing-library/react": "^11.1.0",

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Typography } from "antd"
+import { message, Typography } from "antd"
 import cross from "../../../assets/Icons/cross_white.svg"
 import delete_icon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
@@ -25,17 +25,27 @@ import { ethers } from "ethers"
 import { web3 } from "../../../constant/web3"
 import {
     getContriRequest,
+    set_contri_filter,
     syncAllBadges,
 } from "../../../store/actions/dao-action"
 import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
-import { setPayoutToast } from "../../../store/actions/toast-action"
+import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
 import * as dayjs from "dayjs"
+import {
+    getIpfsUrl,
+    uplaodApproveMetaDataUpload,
+} from "../../../utils/relayFunctions"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
 )
 
-const ContributionSideCard = ({ signer, isAdmin = true }) => {
+const ContributionSideCard = ({
+    signer,
+    isAdmin = true,
+    route,
+    onRouteChange,
+}) => {
     const currentTransaction = useSelector(
         isAdmin
             ? (x) => x.transaction.currentTransaction
@@ -51,6 +61,11 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     const dispatch = useDispatch()
     const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
+    const [signerOpen, setSignerOpen] = useState(
+        currentTransaction?.status !== "REQUESTED" &&
+            !(safeInfo?.owners?.length === txInfo?.confirmations?.length)
+    )
+    const [executionOpen, setExecutionOpen] = useState(false)
     const community_id = pocp_dao_info.filter(
         (x) => x.txhash === currentDao?.tx_hash
     )
@@ -107,7 +122,6 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             currentTransaction?.status !== "REQUESTED" &&
             currentTransaction?.status !== "REJECTED"
         ) {
-            // console.log('here', currentTransaction)
             tx = await serviceClient.getTransaction(
                 currentTransaction?.gnosis_reference_id
             )
@@ -115,7 +129,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
         const safeInfo = await serviceClient.getSafeInfo(
             currentDao?.safe_public_address
         )
-        // console.log('transaction', currentTransaction?.isClaimed)
+
         const approval = await getApproveCheck()
         const claim_status = await getClaimCheck()
         setApprovedBadge(approval)
@@ -212,7 +226,6 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             )}
         </div>
     )
-
     const getStatusProperty = () => {
         if (isAdmin) {
         } else {
@@ -307,7 +320,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
     }
 
     const getSignerName = (address) => {
-        // console.log(currentDao?.signers[0].public_address, address.toString())
+        // //console.log(currentDao?.signers[0].public_address, address.toString())
         return currentDao?.signers?.filter(
             (x) => x.public_address === address
         )[0]?.metadata?.name
@@ -370,24 +383,8 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             }}
                         />
                     </div>
-
-                    <div className={styles.headerTimeline_signer}>
-                        <div
-                            style={{
-                                color: isAdmin
-                                    ? "white"
-                                    : !(
-                                          safeInfo?.owners?.length ===
-                                          txInfo?.confirmations?.length
-                                      )
-                                    ? getSigningProperty()?.color
-                                    : "white",
-                            }}
-                            className={textStyle.m_16}
-                        >
-                            {"Signing"}
-                        </div>
-                        {currentTransaction?.status !== "REQUESTED" && (
+                    <div className={styles.headingDiv}>
+                        <div className={styles.headerTimeline_signer}>
                             <div
                                 style={{
                                     color: isAdmin
@@ -396,57 +393,90 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                                               safeInfo?.owners?.length ===
                                               txInfo?.confirmations?.length
                                           )
-                                        ? currentTransaction?.status !==
-                                          "REJECTED"
-                                            ? "#ECFFB8"
-                                            : "red"
-                                        : "grey",
-                                    marginLeft: "0.5rem",
+                                        ? getSigningProperty()?.color
+                                        : "white",
                                 }}
                                 className={textStyle.m_16}
                             >
-                                {txInfo?.confirmations?.length} of{" "}
-                                {safeInfo?.owners?.length}
+                                {"Signing"}
                             </div>
-                        )}
+                            {currentTransaction?.status !== "REQUESTED" && (
+                                <div
+                                    style={{
+                                        color: isAdmin
+                                            ? "white"
+                                            : !(
+                                                  safeInfo?.owners?.length ===
+                                                  txInfo?.confirmations?.length
+                                              )
+                                            ? currentTransaction?.status !==
+                                              "REJECTED"
+                                                ? "#ECFFB8"
+                                                : "red"
+                                            : "grey",
+                                        marginLeft: "0.5rem",
+                                    }}
+                                    className={textStyle.m_16}
+                                >
+                                    {txInfo?.confirmations?.length} of{" "}
+                                    {safeInfo?.owners?.length}
+                                </div>
+                            )}
+                            {/* txInfo?isExecuted&& */}
+                            {!signerOpen ? (
+                                <AiFillCaretDown
+                                    className={styles.icon}
+                                    color="gray"
+                                    size="16px"
+                                    onClick={() => setSignerOpen(true)}
+                                />
+                            ) : (
+                                <AiFillCaretUp
+                                    className={styles.icon}
+                                    color="white"
+                                    size="16px"
+                                    onClick={() => setSignerOpen(false)}
+                                />
+                            )}
+                            {/* :null */}
+                        </div>
                     </div>
                 </div>
 
                 <div className={styles.singleHeaderContainer_signer}>
                     <div className={styles.childrenTimeline_signer}>
-                        {currentTransaction?.status !== "REQUESTED" &&
-                            !(
-                                safeInfo?.owners?.length ===
-                                txInfo?.confirmations?.length
-                            ) &&
-                            txInfo?.confirmations?.map((item, index) => (
-                                <div
-                                    className={styles.singleAddress}
-                                    key={index}
-                                >
-                                    <div
-                                        style={{
-                                            color:
-                                                currentTransaction?.status !==
-                                                "REJECTED"
-                                                    ? "#ECFFB8"
-                                                    : "red",
-                                        }}
-                                        className={`${textStyle.m_16}`}
-                                    >
-                                        {`${getSignerName(item?.owner)}  •   `}
-                                    </div>
-                                    <div
-                                        style={{ color: "white" }}
-                                        className={`${textStyle.m_16}`}
-                                    >
-                                        {`${item?.owner.slice(
-                                            0,
-                                            5
-                                        )}...${item?.owner.slice(-3)}`}
-                                    </div>
-                                </div>
-                            ))}
+                        {signerOpen
+                            ? txInfo?.confirmations?.map((item, index) => (
+                                  <div
+                                      className={styles.singleAddress}
+                                      key={index}
+                                  >
+                                      <div
+                                          style={{
+                                              color:
+                                                  currentTransaction?.status !==
+                                                  "REJECTED"
+                                                      ? "#ECFFB8"
+                                                      : "red",
+                                          }}
+                                          className={`${textStyle.m_16}`}
+                                      >
+                                          {`${getSignerName(
+                                              item?.owner
+                                          )}  •   `}
+                                      </div>
+                                      <div
+                                          style={{ color: "white" }}
+                                          className={`${textStyle.m_16}`}
+                                      >
+                                          {`${item?.owner.slice(
+                                              0,
+                                              5
+                                          )}...${item?.owner.slice(-3)}`}
+                                      </div>
+                                  </div>
+                              ))
+                            : null}
                     </div>
                 </div>
             </div>
@@ -473,35 +503,56 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             }}
                         />
                     </div>
-
-                    <div className={styles.headerTimeline_signer}>
-                        <div
-                            style={{
-                                color: isAdmin
-                                    ? "white"
-                                    : !(
-                                          safeInfo?.owners?.length ===
-                                          txInfo?.confirmations?.length
-                                      ) ||
-                                      currentTransaction?.status === "REQUESTED"
-                                    ? getExecutionProperty().color
-                                    : "#ECFFB8",
-                            }}
-                            className={textStyle.m_16}
-                        >
-                            Executed
+                    <div className={styles.headingDiv}>
+                        <div className={styles.headerTimeline_signer}>
+                            <div
+                                style={{
+                                    color: isAdmin
+                                        ? "white"
+                                        : !(
+                                              safeInfo?.owners?.length ===
+                                              txInfo?.confirmations?.length
+                                          ) ||
+                                          currentTransaction?.status ===
+                                              "REQUESTED"
+                                        ? getExecutionProperty().color
+                                        : "#ECFFB8",
+                                }}
+                                className={textStyle.m_16}
+                            >
+                                Executed
+                            </div>
+                            {!executionOpen ? (
+                                <AiFillCaretDown
+                                    className={styles.icon}
+                                    color="gray"
+                                    size="16px"
+                                    onClick={() => setExecutionOpen(true)}
+                                />
+                            ) : (
+                                <AiFillCaretUp
+                                    className={styles.icon}
+                                    color="white"
+                                    size="16px"
+                                    onClick={() => setExecutionOpen(false)}
+                                />
+                            )}
+                            {/* :null */}
                         </div>
                     </div>
                 </div>
 
-                {isAdmin && txInfo && txInfo?.isExecuted && (
+                {isAdmin && txInfo && txInfo?.isExecuted && executionOpen && (
                     <div className={styles.singleHeaderContainer_signer}>
                         <div
                             style={{ border: 0 }}
                             className={styles.childrenTimeline_signer}
                         >
                             <div
-                                style={{ color: "gray", textAlign: "start" }}
+                                style={{
+                                    color: "gray",
+                                    textAlign: "start",
+                                }}
                                 className={`${textStyle.m_16}`}
                             >
                                 <div
@@ -543,7 +594,7 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
         }
     }
     const [load, setLoad] = useState(false)
-    console.log("item", currentTransaction)
+
     const claimBadges = async () => {
         if (!claim_loading.status) {
             setLoad(true)
@@ -571,63 +622,173 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
                             parseInt(a.toString()) ===
                             parseInt(isApprovedToken().token[0].id)
                         ) {
-                            const userBadge = await pocpProxy.userBadge(
-                                parseInt(isApprovedToken().token[0].id)
-                            )
-
-                            dispatch(
-                                setBadgesAfterClaim(
-                                    address,
-                                    userBadge.approvedBy,
-                                    userBadge.uri,
-                                    parseInt(isApprovedToken().token[0].id),
-                                    { id: parseInt(community_id[0].id) }
+                            try {
+                                const userBadge = await pocpProxy.userBadge(
+                                    parseInt(isApprovedToken().token[0].id)
                                 )
-                            )
-                            dispatch(
-                                setClaimLoading(true, currentTransaction?.id)
-                            )
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            await provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
+
+                                dispatch(
+                                    setBadgesAfterClaim(
+                                        address,
+                                        userBadge.approvedBy,
+                                        userBadge.uri,
+                                        parseInt(isApprovedToken().token[0].id),
+                                        { id: parseInt(community_id[0].id) }
+                                    )
+                                )
+                                dispatch(
+                                    setClaimLoading(
+                                        false,
+                                        currentTransaction?.id
+                                    )
+                                )
+                                // await dispatch(syncAllBadges())
+                                const provider =
+                                    new ethers.providers.Web3Provider(
+                                        window.ethereum
+                                    )
+                                await provider.provider.request({
+                                    method: "wallet_switchEthereumChain",
+                                    params: [{ chainId: web3.chainid.rinkeby }],
+                                })
+                            } catch (error) {
+                                dispatch(
+                                    setClaimLoading(
+                                        false,
+                                        currentTransaction?.id
+                                    )
+                                )
+                                const provider =
+                                    new ethers.providers.Web3Provider(
+                                        window.ethereum
+                                    )
+                                await provider.provider.request({
+                                    method: "wallet_switchEthereumChain",
+                                    params: [{ chainId: web3.chainid.rinkeby }],
+                                })
+                            }
                         }
                     })
+                } else {
+                    dispatch(setClaimLoading(false, currentTransaction?.id))
                 }
             } catch (error) {
                 dispatch(setClaimLoading(false, currentTransaction?.id))
-                console.log("error in claiming")
+                //console.log("error in claiming")
             }
             // dispatch(setClaimLoading(false, currentTransaction?.id))
         }
     }
 
+    const uploadApproveMetatoIpfs = async () => {
+        const metaInfo = []
+        const cid = []
+        const to = []
+        // currentTransaction?.metaInfo?.contributions.map((x, index) => {
+        metaInfo.push({
+            dao_name: currentDao?.name,
+            contri_title: currentTransaction?.title,
+            signer: address,
+            claimer: currentTransaction?.requested_by?.public_address,
+            date_of_approve: dayjs().format("D MMM YYYY"),
+            id: currentTransaction?.id,
+            dao_logo_url:
+                currentDao?.logo_url ||
+                "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
+            work_type: currentTransaction?.stream.toString(),
+        })
+        cid.push(currentTransaction?.id)
+        to.push(currentTransaction?.requested_by?.public_address)
+        // })
+        const response = await uplaodApproveMetaDataUpload(metaInfo)
+        if (response) {
+            return { status: true, cid, to }
+        } else {
+            return { status: false, cid: [], to: [] }
+        }
+    }
+
     const approvePOCPBadgeWithUrl = async () => {
         setLoad(true)
-        await processBadgeApprovalToPocp(
-            signer_address,
-            parseInt(community_id[0].id),
-            [currentTransaction?.requested_by?.public_address],
-            [currentTransaction?.id?.toString()],
-            [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
-            jwt
-        )
-        await dispatch(syncAllBadges())
-        await dispatch(getContriRequest())
-        onContributionCrossPress()
+        if (currentTransaction?.ipfs_url) {
+            await processBadgeApprovalToPocp(
+                signer_address,
+                parseInt(community_id[0].id),
+                [currentTransaction?.requested_by?.public_address],
+                [currentTransaction?.id?.toString()],
+                [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
+                jwt
+            )
+            onContributionCrossPress()
+            setLoad(false)
+            //await dispatch(getContriRequest())
+            // await dispatch(set_contri_filter("ALL", 0))
+        } else {
+            const res = await uploadApproveMetatoIpfs()
+            if (res.status) {
+                const { cid, url, status } = await getIpfsUrl(
+                    jwt,
+                    currentDao?.uuid,
+                    [currentTransaction?.id]
+                )
+                if (!status) {
+                    const startTime = Date.now()
+                    const interval = setInterval(async () => {
+                        if (Date.now() - startTime > 30000) {
+                            onContributionCrossPress()
+                            message.error("Failed to get ipfs url")
+                            setLoad(false)
+                            clearInterval(interval)
+                        }
+                        const { cid, url, status } = await getIpfsUrl(
+                            jwt,
+                            currentDao?.uuid,
+                            [currentTransaction?.id]
+                        )
+                        if (status) {
+                            clearTimeout(interval)
+                            if (cid?.length > 0) {
+                                await processBadgeApprovalToPocp(
+                                    signer_address,
+                                    parseInt(community_id[0].id),
+                                    [
+                                        currentTransaction?.requested_by
+                                            ?.public_address,
+                                    ],
+                                    [currentTransaction?.id?.toString()],
+                                    url,
+                                    jwt
+                                )
+                                await dispatch(syncAllBadges())
+                                setLoad(false)
+                                onContributionCrossPress()
+                                await dispatch(getContriRequest())
+                                await dispatch(set_contri_filter("ALL", 0))
+                            }
+                        }
+                    }, 2000)
+                } else {
+                    if (cid?.length > 0) {
+                        await processBadgeApprovalToPocp(
+                            signer_address,
+                            parseInt(community_id[0].id),
+                            [currentTransaction?.requested_by?.public_address],
+                            [currentTransaction?.id?.toString()],
+                            url,
+                            jwt
+                        )
+                        setLoad(false)
+                        onContributionCrossPress()
+                        await dispatch(getContriRequest())
+                        await dispatch(set_contri_filter("ALL", 0))
+                    }
+                }
+            }
+        }
+        // await dispatch(syncAllBadges())
+        // await dispatch(getContriRequest())
     }
-    console.log(
-        "ccc",
-        role === "ADMIN",
-        !approvedBadge,
-        txInfo?.isExecuted,
-        currentTransaction?.ipfs_url,
-        txInfo?.data,
-        txInfo?.value !== "0"
-    )
+
     return (
         <div className={styles.container}>
             <img
@@ -715,7 +876,9 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             {currentTransaction?.status !== "REQUESTED" && tokenInfo()}
             {!isAdmin &&
                 currentTransaction?.status === "APPROVED" &&
-                currentTransaction?.payout_status === "PAID" && (
+                currentTransaction?.payout_status === "PAID" &&
+                route !== "payments" &&
+                !isAdmin && (
                     <div
                         style={{
                             width: "100%",
@@ -767,21 +930,38 @@ const ContributionSideCard = ({ signer, isAdmin = true }) => {
             {role === "ADMIN" &&
                 !approvedBadge &&
                 txInfo?.isExecuted &&
-                currentTransaction?.ipfs_url &&
-                // ( &&
-                txInfo?.value !== "0" && (
+                txInfo?.value !== "0" &&
+                currentDao?.tx_hash && (
                     <div
                         style={{ justifyContent: "center" }}
                         className={styles.claim_container}
                     >
                         <div
                             onClick={async () =>
-                                await approvePOCPBadgeWithUrl()
+                                !load && (await approvePOCPBadgeWithUrl())
                             }
                             className={styles.payNow}
                         >
                             <div className={`${textStyle.ub_16}`}>
                                 {!load ? "Approve Badge" : "Approving...."}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            {role === "ADMIN" &&
+                currentTransaction?.status === "APPROVED" &&
+                (currentTransaction?.payout_status === null ||
+                    currentTransaction?.payout_status === "REQUESTED") && (
+                    <div
+                        style={{ justifyContent: "center" }}
+                        className={styles.claim_container}
+                    >
+                        <div
+                            onClick={async () => await onRouteChange()}
+                            className={styles.payNow}
+                        >
+                            <div className={`${textStyle.ub_16}`}>
+                                View Transaction
                             </div>
                         </div>
                     </div>

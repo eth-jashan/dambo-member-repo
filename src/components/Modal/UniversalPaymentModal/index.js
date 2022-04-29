@@ -83,7 +83,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
 
     const proposeSafeTransaction = async () => {
         const transaction_obj = []
-        // console.log('pay detail', payDetail)
+        // //console.log('pay detail', payDetail)
         setLoading(true)
 
         if (payDetail.length > 0) {
@@ -129,7 +129,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             })
         }
 
-        // console.log(transaction_obj)
+        // //console.log(transaction_obj)
 
         if (!safeSdk || !serviceClient) return
         let safeTransaction
@@ -165,7 +165,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                 safeTxHash,
                 safeSignature
             )
-            // console.log(currentDao, safeTxHash)
+            // //console.log(currentDao, safeTxHash)
             dispatch(createExternalPayment(safeTxHash, nonce, payDetail))
             dispatch(resetApprovedRequest())
             // dispatch(setPayoutToast('ACCEPTED_CONTRI',{
@@ -174,7 +174,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             //   }))
             setLoading(false)
         } catch (error) {
-            // console.log('error.........', error)
+            // //console.log('error.........', error)
             setLoading(false)
         }
     }

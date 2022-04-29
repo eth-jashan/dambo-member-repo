@@ -10,6 +10,7 @@ import { resetApprovedRequest } from "../../../store/actions/transaction-action"
 import ERC20_ABI from "../../../smartContract/erc20.json"
 
 import {
+    addActivePaymentBadge,
     createPayout,
     getNonceForCreation,
 } from "../../../store/actions/dao-action"
@@ -33,7 +34,6 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         setLoading(true)
 
         const transaction_obj = []
-
         if (approved_request.length > 0) {
             approved_request.map((item, index) => {
                 item?.payout?.map((item, index) => {
@@ -51,16 +51,6 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        // const web3Client = new Web3(
-                        //     new Web3.providers.HttpProvider(
-                        //         "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
-                        //     )
-                        // )
-                        // const coin = new web3Client.eth.Contract(
-                        //     ERC20_ABI,
-                        //     item?.token_type?.tokenAddress ||
-                        //         item?.token_type?.token?.address
-                        // )
                         const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
@@ -87,7 +77,10 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
             })
         }
 
-        if (!safeSdk || !serviceClient) return
+        if (!safeSdk || !serviceClient) {
+            setLoading(false)
+            return
+        }
         let safeTransaction
         let nonce
         try {
@@ -102,6 +95,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         } catch (error) {
             console.error("errorrrr", error)
             message.error("Error on creating Transaction")
+            setLoading(false)
             return
         }
 
@@ -110,7 +104,8 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         try {
             safeSignature = await safeSdk.signTransactionHash(safeTxHash)
         } catch (error) {
-            // console.log('error on signing...', error.toString())
+            // //console.log('error on signing...', error.toString())
+            setLoading(false)
         }
 
         try {
@@ -129,8 +124,11 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                 })
             )
             // onClose()
+            dispatch(addActivePaymentBadge(true))
+            setLoading(false)
         } catch (error) {
-            // console.log('error.........', error)
+            // //console.log('error.........', error)
+            setLoading(false)
         }
         setLoading(false)
         onClose()

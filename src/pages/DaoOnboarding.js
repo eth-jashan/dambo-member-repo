@@ -141,10 +141,10 @@ export default function Onboarding() {
                         })
                         await deploySafe(owner)
                     } catch (error) {
-                        // console.log("error.... on deploying", error);
+                        // //console.log("error.... on deploying", error);
                     }
                 } catch (error) {
-                    // console.log("error.......", error);
+                    // //console.log("error.......", error);
                 }
             }
         } else setCurrentStep(currentStep + 1)

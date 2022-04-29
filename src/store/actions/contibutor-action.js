@@ -97,13 +97,13 @@ export const createContributionrequest = (
             )
 
             if (res.data.success) {
-                // console.log('suucessfully created !')
+                // //console.log('suucessfully created !')
                 return 1
             } else {
                 return 0
             }
         } catch (error) {
-            // console.log('error....', error)
+            // //console.log('error....', error)
         }
     }
 }
@@ -145,21 +145,29 @@ export const setBadgesAfterClaim = (
     }
 }
 
-export const getAllBadges = (signer, address, communityId) => {
+
+export const getAllBadges = (address) => {
     return (dispatch, getState) => {
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const all_claimed_badge = getState().dao.all_claimed_badge
         const all_approved_badge = getState().dao.all_approved_badge
+        const pocp_dao_info = getState().dao.pocp_dao_info
+        const currentDao = getState().dao.currentDao
+        // //console.log()
+        const communityId = pocp_dao_info.filter(
+            (x) => x.txhash === currentDao?.tx_hash
+        )
+        //console.log(all_approved_badge.filter((x) => x.identifier === "235"))
         const cid = getState().dao.contribution_id
 
         const claimed = all_claimed_badge.filter(
             (x) =>
                 ethers.utils.hexlify(x.claimer) ===
                     ethers.utils.hexlify(address) &&
-                x?.community?.id === communityId
+                x?.community?.id === communityId[0]?.id
         )
         const allApproved = all_approved_badge.filter(
-            (x) => x?.community?.id === communityId
+            (x) => x?.community?.id === communityId[0]?.id
         )
         const claimed_identifier = []
         const unclaimed = []
@@ -180,7 +188,7 @@ export const getAllBadges = (signer, address, communityId) => {
                 }
             })
         })
-        // console.log('unclaimed',cid,unclaimed)
+        // //console.log('unclaimed',cid,unclaimed)
         dispatch(
             contributorAction.set_badges({
                 claimed: claimed_identifier,

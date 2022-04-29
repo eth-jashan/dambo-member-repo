@@ -25,7 +25,6 @@ function App() {
     const pocp_action = useSelector((x) => x.toast.pocp_action)
 
     window.ethereum.on("accountsChanged", () => {
-        console.log("accountsssss")
         if (isAdmin) {
             dispatch(setLoggedIn(false))
             dispatch(signout())
@@ -39,12 +38,12 @@ function App() {
     })
 
     window.ethereum.on("chainChanged", (x) => {
-        console.log(
-            "network changed",
-            x.toString(),
-            web3.chainid.polygon === x,
-            pocp_action
-        )
+        // //console.log(
+        //     "network changed",
+        //     x.toString(),
+        //     web3.chainid.polygon === x,
+        //     pocp_action
+        // )
         // if (x !== "0x4" && !pocp_action) {
         //     dispatch(signout())
         //     navigate("/")

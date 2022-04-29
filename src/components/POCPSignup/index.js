@@ -16,24 +16,31 @@ const POCPSignup = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
 
+    const onSuccess = () => {
+        console.log("fired on success !")
+        navigate("/dashboard")
+    }
+
     const signupForPocp = async () => {
         setLoading(true)
-        const res = await processDaoToPOCP(
+        await processDaoToPOCP(
             pocpInfo.name,
             pocpInfo.owner,
             address,
             pocpInfo.dao_uuid,
-            jwt
+            jwt,
+            onSuccess
         )
-        if (res) {
-            setLoading(false)
-            message.success("Registered To Pocp Successfully")
-            navigate("/dashboard")
-        } else {
-            setLoading(false)
-            // message.error("Failed To Pocp Successfully")
-            navigate("/dashboard")
-        }
+        // console.log("register function", res)
+        // if (res) {
+        //     setLoading(false)
+        //     console.log("successfull")
+        //     message.success("Registered To Pocp Successfully")
+        //     navigate("/dashboard")
+        // } else if (!res && res !== undefined) {
+        //     setLoading(false)
+        //     navigate("/dashboard")
+        // }
     }
     const defaultOptions = {
         loop: true,

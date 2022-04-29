@@ -26,6 +26,7 @@ import { web3 } from "../../constant/web3"
 const ConnectWallet = ({ isAdmin }) => {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
+    // here jwt
     const uuid = useSelector((x) => x.contributor.invite_code)
     const [auth, setAuth] = useState(false)
     const dispatch = useDispatch()
@@ -52,35 +53,48 @@ const ConnectWallet = ({ isAdmin }) => {
                             setAuth(false)
                             if (!isAdmin) {
                                 try {
-                                    const res = await dispatch(getRole(uuid))
-                                    if (res) {
-                                        message.success("Already a member")
-                                        dispatch(setAdminStatus(true))
-                                        navigate(`/dashboard`)
+                                    if (uuid) {
+                                        const res = await dispatch(
+                                            getRole(uuid)
+                                        )
+                                        if (res) {
+                                            message.success("Already a member")
+                                            dispatch(setAdminStatus(true))
+                                            navigate(`/dashboard`)
+                                        }
+                                    } else {
+                                        dispatch(signout())
                                     }
                                 } catch (error) {
-                                    // message.error('Error on getting role')
+                                    setAuth(false)
                                 }
                             }
                         }
+                    } else {
+                        setAuth(false)
+                        message.error("Error on Signing")
                     }
                 } catch (error) {
-                    // console.log('error on signing....', error)
+                    setAuth(false)
                 }
             } else {
-                //console.log('change chain id')
+                setAuth(false)
             }
+            setAuth(false)
         },
         [dispatch, isAdmin, navigate, uuid]
     )
 
-    const alertBanner = () => (
-        <Alert
-            message="Error Text"
-            description="Error Description Error Description Error Description Error Description"
-            type="error"
-        />
-    )
+    const checkIsAdminInvite = useCallback(() => {
+        if (!uuid && !isAdmin) {
+            dispatch(signout())
+        }
+    }, [])
+
+    useEffect(() => {
+        checkIsAdminInvite()
+    }, [checkIsAdminInvite])
+
     const onDiscordAuth = () => {
         dispatch(setDiscordOAuth(address, uuid, jwt))
         window.location.replace(links.discord_oauth.staging)
@@ -89,7 +103,7 @@ const ConnectWallet = ({ isAdmin }) => {
     const loadWeb3Modal = useCallback(async () => {
         setAuth(true)
         try {
-            const accounts = await window.ethereum.request({
+            await window.ethereum.request({
                 method: "eth_requestAccounts",
             })
 
@@ -99,8 +113,8 @@ const ConnectWallet = ({ isAdmin }) => {
             const newAddress = await signer.getAddress()
             dispatch(setAddress(newAddress))
             //check jwt validity
-            const res = dispatch(getJwt(newAddress))
-
+            const res = await dispatch(getJwt(newAddress, jwt))
+            //console.log("load", jwt, res)
             if (res && chainId === web3.chainid.connectionChainID) {
                 // has token and chain is selected for rinkeby
 
@@ -123,7 +137,17 @@ const ConnectWallet = ({ isAdmin }) => {
                             if (res) {
                                 message.success("Already a member")
                                 dispatch(setAdminStatus(true))
-                                navigate(`/dashboard`)
+                                const isMember = await dispatch(
+                                    getAddressMembership()
+                                )
+                                if (isMember) {
+                                    setAuth(false)
+                                    navigate(`/dashboard`)
+                                } else {
+                                    setAuth(false)
+                                    navigate("/onboard/dao")
+                                }
+                                // navigate(`/dashboard`)
                             }
                         } catch (error) {
                             message.error("Error on getting role")
@@ -140,10 +164,11 @@ const ConnectWallet = ({ isAdmin }) => {
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 alert("change chain id......")
-                alertBanner()
+                // alertBanner()
             }
         } catch (error) {
-            console.log("Error on connecting: ", error)
+            // console.log("Error on connecting: ", error)
+            message.error("Please Check your metamask")
         }
     }, [authWithWallet, dispatch, isAdmin, navigate, uuid])
 
@@ -225,9 +250,7 @@ const ConnectWallet = ({ isAdmin }) => {
         dispatch(signout())
         dispatch(setAdminStatus(false))
     }
-    {
-        /* inline style required */
-    }
+
     const daoWallet = () => (
         <div style={{ width: "100%" }}>
             <div className={styles.headingCnt}>

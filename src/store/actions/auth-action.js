@@ -50,30 +50,39 @@ export const authWithSign = (address, signer) => {
                     return 1
                 }
             } catch (error) {
-                // console.log('error on signing api', error)
+                // //console.log('error on signing api', error)
                 return 0
             }
         } catch (error) {
-            // console.log('error on nonce api', error)
+            // //console.log('error on nonce api', error)
             return 0
         }
     }
 }
 
-export const getJwt = (address) => {
-    return (dispatch) => {
+export const getJwt = (address, jwt) => {
+    return async (dispatch) => {
         const jwtInfo = JSON.parse(localStorage.getItem(address))
+        //console.log("jwt", jwtInfo?.jwt)
         if (jwtInfo?.jwt) {
-            const currentTime = new Date()
-            const createdTime = new Date(jwtInfo.time)
-            const diffInMilliseconds = Math.abs(currentTime - createdTime)
-            const hours = diffInMilliseconds / 36e5
-            if (hours <= 2) {
+            const res = await apiClient.get(
+                `${api.drepute.dev.BASE_URL}/auth/ping`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwtInfo?.jwt || jwt}`,
+                    },
+                }
+            )
+
+            if (res.data?.success) {
+                //console.log("Save", jwtInfo?.jwt)
                 dispatch(authActions.set_signing({ jwt: jwtInfo.jwt }))
-                return 1
+                return jwtInfo?.jwt
+            } else {
+                return 0
             }
-            return 0
         } else {
+            localStorage.removeItem(address)
             dispatch(authActions.set_signing({ jwt: false }))
             return 0
         }
@@ -93,15 +102,13 @@ export const retrieveAddress = () => {
 
 export const setAddress = (address) => {
     return (dispatch) => {
-        // //console.log('setting new address.....', address)
-        // localStorage.setItem("current_signer", signer)
         dispatch(authActions.set_address({ address }))
     }
 }
 
 export const setLoggedIn = (status) => {
     return (dispatch) => {
-        // console.log('changing status.....')
+        // //console.log('changing status.....')
         dispatch(authActions.set_loggedIn({ status }))
     }
 }
@@ -114,7 +121,7 @@ export const setContriInfo = (name, role) => {
 
 export const setAdminStatus = (status) => {
     return (dispatch) => {
-        // //console.log('changing status.....', name, role)
+        // //console.log("changing status.....", status)
         dispatch(authActions.set_admin({ status }))
     }
 }

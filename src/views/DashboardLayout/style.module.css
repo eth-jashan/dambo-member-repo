@@ -144,8 +144,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* position: absolute;
-    bottom: 0; */
+    position: absolute;
+    /* bottom: 50px; */
 }
 .copyLinkdiv {
     font-family: "TelegrafMedium";
@@ -221,4 +221,21 @@
     right: 0;
     top: 0;
     left: 0;
+}
+
+.emptySideCard {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* position: relative; */
+}
+
+.selectContriText {
+    color: gray;
+    text-align: start;
+    margin-left: 2rem;
+    margin-top: 10rem;
+    line-height: 36px;
 }

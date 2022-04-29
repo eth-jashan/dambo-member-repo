@@ -47,6 +47,7 @@ const daoSlice = createSlice({
             owner: null,
         },
         executePaymentLoading: false,
+        active_payout_notification: false,
     },
     reducers: {
         set_allSafe(state, action) {
@@ -95,10 +96,7 @@ const daoSlice = createSlice({
             state.payout_filter_key = action.payload.number
         },
         set_gnosis_details(state, action) {
-            state.gnosis_details = action.payload.details
             state.balance = action.payload.balance
-            state.balanceUsd = action.payload.usdBalance
-            state.delegates = action.payload.delegates
         },
         set_contribution_filter(state, action) {
             state.contri_filter_key = action.payload.number
@@ -136,6 +134,11 @@ const daoSlice = createSlice({
         set_pocp_info(state, action) {
             state.pocp_register = action.payload.info
         },
+
+        set_active_payment_notification(state, action) {
+            state.active_payout_notification = action.payload.status
+        },
+
     },
 })
 

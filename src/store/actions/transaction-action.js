@@ -141,13 +141,13 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
                             number: contri_filter_key,
                         })
                     )
-                    // console.log('successfully confirmed')
+                    // //console.log('successfully confirmed')
                     return 1
                 } else {
                     return 0
                 }
             } catch (error) {
-                // console.log('error....', error)
+                // //console.log('error....', error)
             }
         }
     }
@@ -178,7 +178,7 @@ export const rejectContriRequest = (id) => {
                 return 0
             }
         } catch (error) {
-            // console.log('error....', error)
+            // //console.log('error....', error)
         }
     }
 }

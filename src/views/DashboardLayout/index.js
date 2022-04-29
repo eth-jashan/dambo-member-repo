@@ -14,6 +14,7 @@ import {
     lastSelectedId,
     set_active_nonce,
     set_dao,
+    set_payout_filter,
     syncAllBadges,
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
@@ -45,6 +46,8 @@ export default function DashboardLayout({
     route,
     signer,
     modalBackdrop,
+    onRouteChange,
+
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -80,7 +83,9 @@ export default function DashboardLayout({
             if (nameArray?.length > 1) {
                 return {
                     first: nameArray[0].charAt(0)?.toUpperCase(),
-                    last: nameArray[1].charAt(1)?.toUpperCase(),
+
+                    last: nameArray[1].charAt(0)?.toUpperCase(),
+
                 }
             } else {
                 return {
@@ -94,28 +99,30 @@ export default function DashboardLayout({
     }
 
     const changeAccount = async (item, index) => {
+        //console.log("account changed profile")
+        dispatch(set_dao(item))
         dispatch(setLoadingState(true))
+        dispatch(set_dao(item))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
-        // await Promise.all([
+        dispatch(setContributionDetail(null))
         await dispatch(getDaoHash())
         await dispatch(syncAllBadges())
-
         dispatch(resetApprovedRequest())
-        dispatch(set_dao(item))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
         await dispatch(gnosisDetailsofDao())
         await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())
+            await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
         } else if (role !== "ADMIN") {
-            // await dispatch(getContriRequest());
+            await dispatch(syncAllBadges())
+            dispatch(getAllBadges(address))
             dispatch(getContributorOverview())
-            dispatch(getAllBadges(signer, address, community_id[0]?.id))
         } else if (route !== "contributions" && role === "ADMIN") {
-            // await  dispatch(getContriRequest())
             await dispatch(getPayoutRequest())
+            await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
         }
 
@@ -123,7 +130,6 @@ export default function DashboardLayout({
             const nonce = await safeSdk.getNonce()
             dispatch(set_active_nonce(nonce))
         }
-        // await dispatch(set_payout_filter('PENDING',1))
         dispatch(setLoadingState(false))
     }
 
@@ -143,6 +149,10 @@ export default function DashboardLayout({
     }
 
     const onProfileModal = () => {
+        dispatch(setPayment(null))
+        dispatch(setTransaction(null))
+        dispatch(setContributionDetail(null))
+        //console.log("here")
         setProfileModal(!profile_modal)
         setSwitchRoleModal(false)
     }
@@ -256,9 +266,17 @@ export default function DashboardLayout({
     }
 
     const renderAdminStats = () => (
-        <div onClick={() => copyTextToClipboard()} className={styles.copyLink}>
-            <MdLink size={16} color="white" />
-            <span className={styles.copyLinkdiv}>copy invite link</span>
+        <div className={styles.emptySideCard}>
+            <div className={`${textStyles.m_28} ${styles.selectContriText}`}>
+                Select contribution to see details
+            </div>
+            {/* <div
+                onClick={() => copyTextToClipboard()}
+                className={styles.copyLink}
+            >
+                <MdLink size={16} color="white" />
+                <span className={styles.copyLinkdiv}>copy invite link</span>
+            </div> */}
         </div>
     )
 
@@ -268,7 +286,10 @@ export default function DashboardLayout({
                 return contri_filter_key ? (
                     <TransactionCard signer={signer} />
                 ) : (
-                    <ContributionSideCard signer={signer} />
+                    <ContributionSideCard
+                        onRouteChange={async () => await onRouteChange()}
+                        signer={signer}
+                    />
                 )
             } else if (route === "payments" && currentPayment) {
                 return <PaymentSlideCard signer={signer} />
@@ -277,7 +298,13 @@ export default function DashboardLayout({
             }
         } else {
             if (contribution_detail) {
-                return <ContributionSideCard isAdmin={false} signer={signer} />
+                return (
+                    <ContributionSideCard
+                        route={route}
+                        isAdmin={false}
+                        signer={signer}
+                    />
+                )
             } else {
                 return <ContributionOverview />
             }
@@ -311,7 +338,9 @@ export default function DashboardLayout({
                             title={() => text(item?.dao_details?.name)}
                         >
                             <div
-                                onClick={() => changeAccount(item, index)}
+                                onClick={async () =>
+                                    await changeAccount(item, index)
+                                }
                                 style={{
                                     height: "2.25rem",
                                     width: "100%",

@@ -37,7 +37,7 @@ const PaymentSlideCard = ({ signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
     const address = useSelector((x) => x.auth.address)
-    const delegates = useSelector((x) => x.dao.delegates)
+    const delegates = currentDao?.signers
     const isReject = currentPayment?.status === "REJECTED"
     const nonce = useSelector((x) => x.dao.active_nonce)
     const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
@@ -82,7 +82,14 @@ const PaymentSlideCard = ({ signer }) => {
         dispatch(setRejectModal(true))
     }
 
-    const executeSafeTransaction = async (hash, c_id, to) => {
+    const onSuccessfullyApproving = async () => {
+        await dispatch(syncAllBadges())
+        await dispatch(getPayoutRequest())
+        await dispatch(set_payout_filter("PENDING", 1))
+        dispatch(setPayment(null))
+    }
+
+    const executeSafeTransaction = async (hash, c_id, to, approveBadge) => {
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
             to: transaction.to,
@@ -131,15 +138,15 @@ const PaymentSlideCard = ({ signer }) => {
         } catch (error) {
             if (error.toString() === "Error: Not enough Ether funds") {
                 message.error("Not enough funds in safe")
+            } else if (error.code === "TRANSACTION_REPLACED") {
+                message.error("Transaction Replaced")
             }
-            console.log(
-                "error",
-                error.toString() === "Error: Not enough Ether funds",
-                error.code
-            )
+            dispatch(setLoading(false))
+            console.log("error", error.code, error.toString())
             return
         }
-        if (!isReject) {
+
+        if (approveBadge) {
             const { cid, url, status } = await getIpfsUrl(
                 jwt,
                 currentDao?.uuid,
@@ -150,6 +157,9 @@ const PaymentSlideCard = ({ signer }) => {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
+                        await onSuccessfullyApproving()
+                        message.error("failed to get ipfs url")
+                        // dispatch(setLoading(false))
                     }
                     const { cid, url, status } = await getIpfsUrl(
                         jwt,
@@ -167,6 +177,8 @@ const PaymentSlideCard = ({ signer }) => {
                                 url,
                                 jwt
                             )
+                            await onSuccessfullyApproving()
+                            // dispatch(setLoading(false))
                         }
                     }
                 }, 3000)
@@ -180,13 +192,16 @@ const PaymentSlideCard = ({ signer }) => {
                         url,
                         jwt
                     )
+                    await onSuccessfullyApproving()
+                    dispatch(setLoading(false))
                 }
             }
+        } else {
+            await dispatch(getPayoutRequest())
+            await dispatch(set_payout_filter("PENDING", 1))
+            dispatch(setPayment(null))
+            dispatch(setLoading(false))
         }
-        await dispatch(syncAllBadges())
-        await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING", 1))
-        dispatch(setPayment(null))
     }
 
     const getPayoutTotal = (payout) => {
@@ -551,13 +566,20 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const executeTransaction = async (hash) => {
-        if (!isReject) {
-            const res = await uploadApproveMetatoIpfs()
-            if (res.status) {
-                await executeSafeTransaction(hash, res?.cid, res?.to)
+        if (!isReject && community_id[0]?.id) {
+            try {
+                const res = await uploadApproveMetatoIpfs()
+                if (res.status) {
+                    await executeSafeTransaction(hash, res?.cid, res?.to, true)
+                } else {
+                    setLoading(false)
+                }
+            } catch (error) {
+                // setLoading(false)
+                // console.log('error', error.toString())
             }
         } else {
-            await executeSafeTransaction(hash)
+            await executeSafeTransaction(hash, null, null, false)
         }
     }
 
@@ -595,10 +617,8 @@ const PaymentSlideCard = ({ signer }) => {
 
     const buttonFunction = async (hash) => {
         if (!executePaymentLoading) {
-            //   setLoad(true);
             dispatch(setLoading(true))
             if (checkApproval()) {
-                // if(checkApproval() && delegates.length === currentPayment?.gnosis?.confirmations?.length && nonce === currentPayment?.gnosis?.nonce){
                 await executeTransaction(hash)
             } else if (
                 checkApproval() &&
@@ -608,9 +628,8 @@ const PaymentSlideCard = ({ signer }) => {
                 // console.log("Payment Already Signed")
             } else if (!checkApproval()) {
                 await confirmTransaction(hash)
+                dispatch(setLoading(false))
             }
-            //   setLoad(false);
-            dispatch(setLoading(false))
         }
     }
 

@@ -182,3 +182,13 @@
     color: #8b8c88;
     text-align: start;
 }
+.headingDiv {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.icon {
+    align-self: center;
+    margin-left: 12px;
+}

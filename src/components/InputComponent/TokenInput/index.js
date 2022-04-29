@@ -173,11 +173,11 @@ export const TokenInput = ({ dark, value, onChange, updateTokenType }) => {
     const dropDownSelect = async (x) => {
         updateTokenType(x)
         const amount = await convertTokentoUsd(x.label)
-        // console.log('AMOUNT', amount, x.label)
+        // //console.log('AMOUNT', amount, x.label)
         setToken_symbol(amount)
     }
 
-    // console.log('AMOUNT', amount, token_symbol)
+    // //console.log('AMOUNT', amount, token_symbol)
 
     return (
         <div className={styles.container}>

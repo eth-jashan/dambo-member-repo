@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router"
+import { signout } from "../store/actions/auth-action"
 import { getDiscordOAuth } from "../store/actions/contibutor-action"
 
 const DiscordFallback = () => {
@@ -18,7 +19,8 @@ const DiscordFallback = () => {
             if (res) {
                 navigate(`/onboard/contributor/${id}`)
             } else {
-                navigate(`/auth`)
+                dispatch(signout())
+                navigate(`/`)
             }
         } catch (error) {}
     }, [code, dispatch, id, navigate])

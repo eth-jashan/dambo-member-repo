@@ -29,6 +29,7 @@ const authSlice = createSlice({
             // state.signer = action.payload.signer;
         },
         set_signing(state, action) {
+            //console.log("jwt store", action.payload.jwt)
             state.jwt = action.payload.jwt
             state.loggedIn = true
         },
@@ -87,7 +88,7 @@ const authSlice = createSlice({
                     state.lastSelection = lastSelection
                 }
             } else {
-                // console.log('initial', action.payload.address, action.payload.dao_uuid)
+                // //console.log('initial', action.payload.address, action.payload.dao_uuid)
                 state.lastSelection = [
                     {
                         address: action.payload.address,

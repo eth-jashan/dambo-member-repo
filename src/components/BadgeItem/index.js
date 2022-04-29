@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 
 const BadgeItem = ({ item }) => {
-    // console.log('item', item)
+    // //console.log('item', item)
     const [meta, setMeta] = useState()
     const allContribution = useSelector((x) => x.dao.contribution_id)
     const currentDao = useSelector((x) => x.dao.currentDao)

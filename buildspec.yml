@@ -14,9 +14,9 @@ phases:
     build:
         commands:
             - node -v
-            - node -e 'console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
+            - node -e '//console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
             - export NODE_OPTIONS="--max-old-space-size=4096"
-            - node -e 'console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
+            - node -e '//console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
             - mkdir build
             - yarn build
 # Artifacts will specify what files will be uploaded to s3

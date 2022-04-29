@@ -16,7 +16,7 @@ export default function useOnBlock(provider, fn, args) {
             const listener = (blockNumber) => {
                 if (DEBUG)
                     if (args && args.length > 0) {
-                        // console.log(blockNumber, fn, args, provider.listeners());
+                        // //console.log(blockNumber, fn, args, provider.listeners());
 
                         savedCallback.current(...args)
                     } else {

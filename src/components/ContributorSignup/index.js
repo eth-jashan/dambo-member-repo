@@ -9,6 +9,7 @@ import {
     joinContributor,
     setAdminStatus,
     setContriInfo,
+    signout,
 } from "../../store/actions/auth-action"
 import { useNavigate, useParams } from "react-router"
 import InputText from "../InputComponent/Input"
@@ -17,16 +18,13 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
     const { id } = useParams()
     const [name, setName] = useState("")
     const dispatch = useDispatch()
-    const colorOption = useSelector((x) => x.auth.community_roles)
+
     const [role, setRole] = useState()
     const navigate = useNavigate()
     const address = useSelector((x) => x.auth.address)
     const fetchRoles = useCallback(async () => {
-        try {
-            await dispatch(getCommunityRole())
-            // await dispatch(getDao())
-        } catch (error) {
-            // console.log('error in fetching role.....')
+        if (!id) {
+            dispatch(signout())
         }
     }, [dispatch])
 
@@ -45,7 +43,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
             }
         } catch (error) {
             message.error("Error on Joining")
-            // console.log('error on joining...', error)
+            // //console.log('error on joining...', error)
         }
     }
 
@@ -109,6 +107,13 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
         }),
     }
 
+    const roleOption = [
+        { value: "CREATOR", label: "Creator" },
+        { value: "DEVELOPER", label: "Developer" },
+        { value: "DESIGNER", label: "Designer" },
+        { value: "CONTENT", label: "Content" },
+    ]
+
     return (
         <div className={styles.layout}>
             <div style={{ flexDirection: "column", display: "flex" }}>
@@ -149,7 +154,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
                                 styles={colourStyles}
                                 isSearchable={false}
                                 name="color"
-                                options={colorOption}
+                                options={roleOption}
                                 placeholder="Role"
                             />
                         </div>
