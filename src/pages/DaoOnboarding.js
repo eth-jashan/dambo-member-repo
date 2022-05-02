@@ -8,19 +8,19 @@ import DaoInfo from "../components/DaoInfo"
 import { useDispatch, useSelector } from "react-redux"
 import {
     addSafeAddress,
-    addThreshold,
     lastSelectedId,
     pocpRegirationInfo,
     registerDao,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
-import { useNavigate } from "react-router"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { message } from "antd"
 import POCPSignup from "../components/POCPSignup"
+import DiscordRegister from "../components/DiscordRegister"
 
 export default function Onboarding() {
-    const [currentStep, setCurrentStep] = useState(1)
+    const [currentStep, setCurrentStep] = useState(0)
     const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const [deploying, setDeploying] = useState(false)
@@ -37,6 +37,19 @@ export default function Onboarding() {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const accounts = useSelector((x) => x.dao.dao_list)
+    const isAdmin = useSelector((x) => x.auth.isAdmin)
+    // const [searchParams, _setSearchParams] = useSearchParams()
+    // const discordIdentifier = searchParams.get("discord_identifier")
+
+    const steps = [
+        "connectWallet",
+        // ...(discordIdentifier ? ["registerDiscord"] : []),
+        "gnosisSafeList",
+        "addOwners",
+        "approveTransaction",
+        "daoInfo",
+        "pocpSignup",
+    ]
 
     const preventGoingBack = useCallback(() => {
         window.history.pushState(null, document.title, window.location.href)
@@ -59,6 +72,14 @@ export default function Onboarding() {
     useEffect(() => {
         preventGoingBack()
     }, [preventGoingBack])
+
+    useEffect(() => {
+        if (address) {
+            setCurrentStep(1)
+        } else {
+            setCurrentStep(0)
+        }
+    }, [address])
 
     const deploySafe = useCallback(
         async (owners) => {
@@ -104,68 +125,74 @@ export default function Onboarding() {
         setSigner(signer)
     }
 
-    const increaseStep = async () => {
-        if (currentStep === 2) {
-            setCurrentStep(currentStep + 1)
-        } else if (currentStep === 3) {
-            dispatch(addThreshold(selectedIndex + 1))
-            setCurrentStep(currentStep + 1)
-            if (!hasMultiSignWallet) {
-                setProvider()
-            }
-        } else if (currentStep === 4) {
-            if (hasMultiSignWallet) {
-                const { dao_uuid, name, owners } = await dispatch(registerDao())
-                const owner = [address]
-                if (owners.length > 1) {
-                    owners.map((x, i) => {
-                        if (x?.address !== address) {
-                            owner.push(x?.address)
-                        }
-                    })
-                }
-                dispatch(lastSelectedId(dao_uuid))
-                if (dao_uuid) {
-                    // await processDaoToPOCP(name, owner, address, jwt)
-                    dispatch(pocpRegirationInfo(dao_uuid, name, owner))
-                    setCurrentStep(currentStep + 1)
-                } else {
-                    navigate(`/onboard/dao`)
-                }
-            } else {
-                try {
-                    try {
-                        const owner = []
-                        owners.map((item, index) => {
-                            owner.push(item.address)
-                        })
-                        await deploySafe(owner)
-                    } catch (error) {
-                        // //console.log("error.... on deploying", error);
-                    }
-                } catch (error) {
-                    // //console.log("error.......", error);
-                }
-            }
-        } else setCurrentStep(currentStep + 1)
-    }
-
-    const decreaseStep = () => {
-        if (currentStep > 0) setCurrentStep(currentStep - 1)
-        if (currentStep === 4) {
-            if (hasMultiSignWallet) {
-                setCurrentStep(2)
-            } else {
-                setCurrentStep(3)
-            }
-        } else if (currentStep === 2) {
-            setCurrentStep(currentStep - 1)
+    const increaseStep = () => {
+        if (currentStep < steps.length - 1) {
+            setCurrentStep((currentStep) => currentStep + 1)
+        } else {
+            setCurrentStep(steps.length - 1)
         }
     }
 
-    const getComponentFromStep = (step, hasMultiSignWallet = false) => {
-        switch (step) {
-            case 1: {
+    const createDao = async () => {
+        if (hasMultiSignWallet) {
+            const { dao_uuid, name, owners } = await dispatch(registerDao())
+            const owner = [address]
+            if (owners.length > 1) {
+                owners.map((x, i) => {
+                    if (x?.address !== address) {
+                        owner.push(x?.address)
+                    }
+                })
+            }
+            dispatch(lastSelectedId(dao_uuid))
+            if (dao_uuid) {
+                // await processDaoToPOCP(name, owner, address, jwt)
+                dispatch(pocpRegirationInfo(dao_uuid, name, owner))
+                increaseStep()
+            } else {
+                navigate(`/onboard/dao`)
+            }
+        } else {
+            try {
+                try {
+                    const owner = []
+                    owners.map((item) => {
+                        owner.push(item.address)
+                    })
+                    await deploySafe(owner)
+                } catch (error) {
+                    // console.log("error.... on deploying", error);
+                }
+            } catch (error) {
+                // console.log("error.......", error);
+            }
+        }
+    }
+
+    const decreaseStep = () => {
+        if (hasMultiSignWallet && steps[currentStep] === "daoInfo") {
+            setCurrentStep(steps.indexOf("addOwners"))
+        } else if (currentStep > 0) setCurrentStep(currentStep - 1)
+    }
+
+    const afterConnectWalletCallback = async (setAuth) => {
+        setAuth(false)
+        increaseStep()
+    }
+
+    const getComponentFromName = (name, hasMultiSignWallet = false) => {
+        switch (name) {
+            case "connectWallet": {
+                return (
+                    <ConnectWallet
+                        increaseStep={increaseStep}
+                        owners={owners}
+                        afterConnectWalletCallback={afterConnectWalletCallback}
+                        isAdmin={isAdmin}
+                    />
+                )
+            }
+            case "gnosisSafeList": {
                 return (
                     <GnosisSafeList
                         setStep={(x) => setCurrentStep(x)}
@@ -174,32 +201,38 @@ export default function Onboarding() {
                     />
                 )
             }
-            case 2: {
+            case "registerDiscord": {
+                return <DiscordRegister increaseStep={increaseStep} />
+            }
+            case "addOwners": {
                 return (
                     <AddOwners
                         hasMultiSignWallet={hasMultiSignWallet}
                         increaseStep={increaseStep}
-                        setStep={(x) => setCurrentStep(x)}
+                        setStep={(x) => setCurrentStep(steps.indexOf(x))}
                     />
                 )
             }
-            case 3:
+            case "approveTransaction":
                 return (
                     <ApproveTransaction
                         increaseStep={increaseStep}
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
+                        hasMultiSignWallet={hasMultiSignWallet}
+                        setProvider={setProvider}
                     />
                 )
-            case 4:
+            case "daoInfo":
                 return (
                     <DaoInfo
                         hasMultiSignWallet={hasMultiSignWallet}
                         increaseStep={increaseStep}
                         deploying={deploying}
+                        createDao={createDao}
                     />
                 )
-            case 5:
+            case "pocpSignup":
                 return (
                     <POCPSignup
                         hasMultiSignWallet={hasMultiSignWallet}
@@ -212,11 +245,13 @@ export default function Onboarding() {
                     <ConnectWallet
                         increaseStep={increaseStep}
                         owners={owners}
+                        afterConnectWalletCallback={afterConnectWalletCallback}
                     />
                 )
             }
         }
     }
+
     return (
         <div>
             <Layout
@@ -224,8 +259,9 @@ export default function Onboarding() {
                 decreaseStep={decreaseStep}
                 currentStep={currentStep}
                 deploying={deploying}
+                steps={steps}
             >
-                {getComponentFromStep(currentStep, hasMultiSignWallet)}
+                {getComponentFromName(steps[currentStep], hasMultiSignWallet)}
             </Layout>
         </div>
     )

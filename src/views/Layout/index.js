@@ -12,9 +12,10 @@ export default function Layout({
     contributorWallet,
     signer,
     deploying,
+    steps,
 }) {
     const checkRoute = () => {
-        if (currentStep > 1 && currentStep <= 4) {
+        if (currentStep > 1 && currentStep <= steps.length - 1) {
             return true
         }
     }

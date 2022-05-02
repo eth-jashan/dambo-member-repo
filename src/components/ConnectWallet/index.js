@@ -23,7 +23,7 @@ import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { web3 } from "../../constant/web3"
 
-const ConnectWallet = ({ isAdmin }) => {
+const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     // here jwt
@@ -39,40 +39,7 @@ const ConnectWallet = ({ isAdmin }) => {
                 try {
                     const res = await dispatch(authWithSign(address, signer))
                     if (res) {
-                        dispatch(setLoggedIn(true))
-                        if (isAdmin) {
-                            const res = await dispatch(getAddressMembership())
-                            if (res) {
-                                setAuth(false)
-                                navigate(`/dashboard`)
-                            } else {
-                                setAuth(false)
-                                navigate("/onboard/dao")
-                            }
-                        } else {
-                            setAuth(false)
-                            if (!isAdmin) {
-                                try {
-                                    if (uuid) {
-                                        const res = await dispatch(
-                                            getRole(uuid)
-                                        )
-                                        if (res) {
-                                            message.success("Already a member")
-                                            dispatch(setAdminStatus(true))
-                                            navigate(`/dashboard`)
-                                        }
-                                    } else {
-                                        dispatch(signout())
-                                    }
-                                } catch (error) {
-                                    setAuth(false)
-                                }
-                            }
-                        }
-                    } else {
-                        setAuth(false)
-                        message.error("Error on Signing")
+                        await afterConnectWalletCallback(setAuth)
                     }
                 } catch (error) {
                     setAuth(false)
