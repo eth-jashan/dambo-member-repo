@@ -156,10 +156,29 @@
     color: #ffffff;
     margin-left: 0.75rem;
 }
+
+.enableDiscord {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1.5rem;
+    border-top: 1px solid #fff;
+    color: #ffffff;
+    font-family: "TelegrafMedium";
+    font-size: 1rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+}
+.enableDiscord > svg {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
 .childrenLayout {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .addIcon {
