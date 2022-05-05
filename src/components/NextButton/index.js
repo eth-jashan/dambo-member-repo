@@ -1,31 +1,19 @@
 import React from "react"
 import styles from "./style.module.css"
 import rightArrow from "../../assets/Icons/right_arrow_white.svg"
-import gnosis_loader from "../../assets/lottie/gnosis_loader.json"
 
 export default function NextButton({
-    increaseStep,
     text,
     isDisabled,
     isContributor,
-    loader,
+    nextButtonCallback,
 }) {
-    const defaultOptions = {
-        loop: true,
-        autoplay: true,
-        animationData: gnosis_loader,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice",
-        },
-    }
-
     return (
         <div
             style={{ cursor: "pointer" }}
-            onClick={!isDisabled ? increaseStep : () => {}}
+            onClick={!isDisabled ? nextButtonCallback : () => {}}
             className={!isDisabled ? styles.btnCtn : styles.btnCtnGreyed}
         >
-            {/* { !loader? */}
             <div
                 style={{
                     display: "flex",
@@ -47,8 +35,6 @@ export default function NextButton({
                 </div>
                 <img src={rightArrow} alt="right" className={styles.icon} />
             </div>
-            {/*: <Lottie options={defaultOptions} style={{height:'1rem'}} className={styles.layoutImage}/> */}
-            {/* } */}
         </div>
     )
 }

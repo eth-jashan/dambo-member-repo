@@ -3,6 +3,9 @@ import styles from "./style.module.css"
 import NextButton from "../NextButton"
 
 export default function ReviewDAO({ increaseStep, owners, selectedIndex }) {
+    const onNext = () => {
+        increaseStep()
+    }
     return (
         <div className={styles.wrapper}>
             <h1 className={styles.heading}>Double check to see if</h1>
@@ -28,7 +31,7 @@ export default function ReviewDAO({ increaseStep, owners, selectedIndex }) {
                 </div>
             </div>
             <div className={styles.bottomBar}>
-                <NextButton text="Review" increaseStep={increaseStep} />
+                <NextButton text="Review" nextButtonCallback={onNext} />
             </div>
         </div>
     )

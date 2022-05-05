@@ -15,7 +15,7 @@ import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
 
-const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
+const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [discord, setDiscord] = useState("")
@@ -43,7 +43,7 @@ const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
 
     const onSubmit = async () => {
         dispatch(addDaoInfo(name, email, discord, image?.url))
-        increaseStep()
+        createDao()
     }
     const createImage = (file) => {
         const reader = new FileReader()
@@ -322,7 +322,7 @@ const DaoInfo = ({ increaseStep, deploying, hasMultiSignWallet }) => {
                                     ? "Register Dao"
                                     : "Create Multisig"
                             }
-                            increaseStep={onSubmit}
+                            nextButtonCallback={onSubmit}
                             isDisabled={name === "" || deploying || loading}
                         />
                     </div>

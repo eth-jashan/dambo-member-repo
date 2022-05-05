@@ -101,7 +101,7 @@ export default function AddOwners({
         dispatch(addOwners(owners))
         if (hasMultiSignWallet) {
             dispatch(addThreshold(threshold))
-            setStep(4)
+            setStep("daoInfo")
         } else {
             increaseStep()
         }
@@ -184,7 +184,7 @@ export default function AddOwners({
                                 ? "Add DAO details"
                                 : "Add Permissions"
                         }
-                        increaseStep={onNext}
+                        nextButtonCallback={onNext}
                         isDisabled={!areValidOwners()}
                     />
                 </div>

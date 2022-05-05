@@ -165,7 +165,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
             <div className={styles.nextBtn}>
                 <NextButton
                     text="Review"
-                    increaseStep={onSubmit}
+                    nextButtonCallback={onSubmit}
                     isDisabled={name === ""}
                     isContributor={true}
                 />
