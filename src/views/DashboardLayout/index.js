@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Tooltip, message } from "antd"
 import "antd/dist/antd.css"
 import styles from "./style.module.css"
-import { MdLink } from "react-icons/md"
+import { FaDiscord } from "react-icons/fa"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -47,7 +47,6 @@ export default function DashboardLayout({
     signer,
     modalBackdrop,
     onRouteChange,
-
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -77,6 +76,13 @@ export default function DashboardLayout({
         (x) => x.public_address === address
     )
 
+    const openDiscordBot = () => {
+        window.open(
+            "https://discord.com/api/oauth2/authorize?client_id=968825110075166751&permissions=84992&scope=bot%20applications.commands",
+            "_blank"
+        )
+    }
+
     const getInitialForAccount = () => {
         if (currentUser) {
             const nameArray = currentUser[0]?.metadata?.name?.split(" ")
@@ -85,7 +91,6 @@ export default function DashboardLayout({
                     first: nameArray[0].charAt(0)?.toUpperCase(),
 
                     last: nameArray[1].charAt(0)?.toUpperCase(),
-
                 }
             } else {
                 return {
@@ -277,6 +282,13 @@ export default function DashboardLayout({
                 <MdLink size={16} color="white" />
                 <span className={styles.copyLinkdiv}>copy invite link</span>
             </div> */}
+            <div
+                onClick={() => openDiscordBot()}
+                className={styles.enableDiscord}
+            >
+                <FaDiscord color="white" />
+                <div>enable discord bot</div>
+            </div>
         </div>
     )
 
