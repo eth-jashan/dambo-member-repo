@@ -35,6 +35,7 @@ export default function Layout({
                 options={defaultOptions}
                 style={{ position: "absolute", height: "70vh", bottom: 0 }}
                 className={styles.layoutImage}
+                isClickToPauseDisabled={true}
             />
             <div className={styles.content}>
                 <OnboardingHeader signer={signer} />

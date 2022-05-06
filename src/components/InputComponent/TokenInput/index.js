@@ -9,7 +9,13 @@ import { convertTokentoUsd } from "../../../utils/conversion"
 // import InputText from "../InputComponent/Input";
 import styles from "./styles.module.css"
 
-export const TokenInput = ({ dark, value, onChange, updateTokenType }) => {
+export const TokenInput = ({
+    dark,
+    value,
+    onChange,
+    updateTokenType,
+    hideDropDown,
+}) => {
     const token_available = useSelector((x) => x.dao.balance)
     const [amount, setAmount] = useState()
 
@@ -162,18 +168,18 @@ export const TokenInput = ({ dark, value, onChange, updateTokenType }) => {
         }),
     }
 
-    const CustomDropDownIndicatior = () => (
-        <AiFillCaretDown
-            style={{ alignSelf: "center" }}
-            color="black"
-            size={"1rem"}
-        />
-    )
+    const CustomDropDownIndicator = () =>
+        hideDropDown && (
+            <AiFillCaretDown
+                style={{ alignSelf: "center" }}
+                color="black"
+                size={"1rem"}
+            />
+        )
 
     const dropDownSelect = async (x) => {
         updateTokenType(x)
         const amount = await convertTokentoUsd(x.label)
-        // //console.log('AMOUNT', amount, x.label)
         setToken_symbol(amount)
     }
 
@@ -187,7 +193,7 @@ export const TokenInput = ({ dark, value, onChange, updateTokenType }) => {
                     classNamePrefix="select"
                     closeMenuOnSelect
                     isDisabled={token_available?.length === 1}
-                    components={{ DropdownIndicator: CustomDropDownIndicatior }}
+                    components={{ DropdownIndicator: CustomDropDownIndicator }}
                     onChange={(x) => dropDownSelect(x)}
                     styles={dark ? darkColourStyles : ligntColourStyles}
                     isSearchable={false}

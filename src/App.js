@@ -38,16 +38,19 @@ function App() {
     })
 
     window.ethereum.on("chainChanged", (x) => {
-        // //console.log(
-        //     "network changed",
-        //     x.toString(),
-        //     web3.chainid.polygon === x,
-        //     pocp_action
-        // )
-        // if (x !== "0x4" && !pocp_action) {
-        //     dispatch(signout())
-        //     navigate("/")
-        // }
+        // console.log("chain changed", x, pocp_action)
+        if (x !== web3.chainid.rinkeby && x !== web3.chainid.polygon) {
+            if (isAdmin) {
+                dispatch(setLoggedIn(false))
+                dispatch(signout())
+                navigate("/")
+            } else {
+                dispatch(setLoggedIn(false))
+                dispatch(signout())
+                dispatch(setAdminStatus(false))
+                navigate("/")
+            }
+        }
     })
 
     return (
@@ -66,7 +69,7 @@ function App() {
                     />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route
-                        path="contributor/invite/:id"
+                        path="contributor/invite/:name/:id"
                         element={<ContributorSignupFallback />}
                     />
                 </Routes>

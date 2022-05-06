@@ -6,15 +6,22 @@ import { useDispatch, useSelector } from "react-redux"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 
 const BadgeItem = ({ item }) => {
-    // //console.log('item', item)
     const [meta, setMeta] = useState()
     const allContribution = useSelector((x) => x.dao.contribution_id)
     const currentDao = useSelector((x) => x.dao.currentDao)
-
+    const role = useSelector((x) => x.dao.role)
+    const currentTransaction = useSelector(
+        role === "ADMIN"
+            ? (x) => x.transaction.currentTransaction
+            : (x) => x.contributor.contribution_detail
+    )
     const fetchMetaFromIpfs = useCallback(async () => {
         const res = await getMetaInfo(item?.ipfsMetaUri)
         setMeta(res)
     }, [item?.ipfsMetaUri])
+    const activeSelection =
+        `https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}` ===
+        item?.ipfsMetaUri
 
     useEffect(() => {
         fetchMetaFromIpfs()
@@ -41,11 +48,14 @@ const BadgeItem = ({ item }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 borderTop: 0,
-                background: onHover && "#292929",
+                background: (onHover || activeSelection) && "#292929",
             }}
         >
             <div
-                style={{ background: onHover ? "#292929" : "black" }}
+                style={{
+                    background:
+                        onHover || activeSelection ? "#292929" : "black",
+                }}
                 className={styles.container}
             >
                 <div
@@ -70,9 +80,10 @@ const BadgeItem = ({ item }) => {
                         style={{
                             height: 0,
                             width: 0,
-                            borderBottom: onHover
-                                ? "16px solid #292929"
-                                : "16px solid black",
+                            borderBottom:
+                                onHover || activeSelection
+                                    ? "16px solid #292929"
+                                    : "16px solid black",
                             borderRight: "16px solid transparent",
                             bottom: 0,
                             position: "absolute",
@@ -83,9 +94,10 @@ const BadgeItem = ({ item }) => {
                             height: 0,
                             width: 0,
                             borderBottom: "20px solid transparent",
-                            borderRight: onHover
-                                ? "20px solid #292929"
-                                : "20px solid black",
+                            borderRight:
+                                onHover || activeSelection
+                                    ? "20px solid #292929"
+                                    : "20px solid black",
                             top: 0,
                             position: "absolute",
                             right: 0,

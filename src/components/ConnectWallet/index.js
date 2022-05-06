@@ -11,7 +11,7 @@ import {
 } from "../../store/actions/auth-action"
 import styles from "./style.module.css"
 import metamaskIcon from "../../assets/Icons/metamask.svg"
-import { Divider, Alert, message } from "antd"
+import { Divider, message } from "antd"
 import { useNavigate } from "react-router"
 import walletIcon from "../../assets/Icons/wallet.svg"
 import tickIcon from "../../assets/Icons/tick.svg"
@@ -40,12 +40,26 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     const res = await dispatch(authWithSign(address, signer))
                     if (res) {
                         await afterConnectWalletCallback(setAuth)
+                    } else {
+                        message.error("Check metamask popup!")
                     }
                 } catch (error) {
+                    console.log(error)
                     setAuth(false)
                 }
             } else {
-                setAuth(false)
+                const provider = new ethers.providers.Web3Provider(
+                    window.ethereum
+                )
+                try {
+                    await provider.provider.request({
+                        method: "wallet_switchEthereumChain",
+                        params: [{ chainId: web3.chainid.rinkeby }],
+                    })
+                    setAuth(false)
+                } catch (error) {
+                    setAuth(false)
+                }
             }
             setAuth(false)
         },
@@ -130,11 +144,15 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 // chain is wrong
                 setAuth(false)
                 dispatch(setLoggedIn(false))
-                alert("change chain id......")
-                // alertBanner()
+                const provider = new ethers.providers.Web3Provider(
+                    window.ethereum
+                )
+                await provider.provider.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: web3.chainid.rinkeby }],
+                })
             }
         } catch (error) {
-            // console.log("Error on connecting: ", error)
             message.error("Please Check your metamask")
         }
     }, [authWithWallet, dispatch, isAdmin, navigate, uuid])

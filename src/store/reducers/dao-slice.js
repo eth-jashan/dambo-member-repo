@@ -139,6 +139,9 @@ const daoSlice = createSlice({
             state.active_payout_notification = action.payload.status
         },
 
+        set_after_approve(state, action) {
+            state.contribution_request = action.payload.list
+        },
     },
 })
 

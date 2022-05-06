@@ -151,7 +151,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
 
     const tokenItem = (item) => {
         return (
-            <div style={{}} className={styles.tokenDiv}>
+            <div className={styles.tokenDiv}>
                 <div className={`${textStyles.m_16} ${styles.usdText}`}>
                     {(item?.usd_amount * parseFloat(item?.amount)).toFixed(2)}$
                     •
@@ -186,9 +186,11 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                 <div style={{ marginBottom: "5rem" }}>
                     {approved_request.map((item, index) => (
                         <RequestItem
+                            key={index}
                             item={item}
                             tokenItem={tokenItem}
                             approved_request={approved_request}
+                            onClose={onClose}
                         />
                     ))}
                 </div>

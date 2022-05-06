@@ -145,7 +145,6 @@ export const setBadgesAfterClaim = (
     }
 }
 
-
 export const getAllBadges = (address) => {
     return (dispatch, getState) => {
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)

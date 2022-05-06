@@ -15,16 +15,24 @@ import {
 import { ethers } from "ethers"
 import { web3 } from "../../constant/web3"
 import { processClaimBadgeToPocp } from "../../utils/POCPutils"
-import { syncAllBadges } from "../../store/actions/dao-action"
+import { claimUpdate, syncAllBadges } from "../../store/actions/dao-action"
 import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
 
 export default function ContributionCard({ item, signer, community_id }) {
+    const dispatch = useDispatch()
     const address = item?.requested_by?.public_address
     const all_approved_badge = useSelector(
         (x) => x.dao.all_approved_badge
     ).filter((x) => x.community.id === community_id)
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
     const jwt = useSelector((x) => x.auth.jwt)
+    const contri_filter_key = useSelector((x) => x.dao.contri_filter_key)
+    const role = useSelector((x) => x.dao.role)
+    const currentTransaction = useSelector(
+        role === "ADMIN"
+            ? (x) => x.transaction.currentTransaction
+            : (x) => x.contributor.contribution_detail
+    )
 
     const checkClaimApprovedSuccess = () => {
         const isTxSuccess = all_approved_badge.filter(
@@ -77,22 +85,19 @@ export default function ContributionCard({ item, signer, community_id }) {
 
     const [approvedBadge, setApprovedBadge] = useState(false)
     const [claimBadge, setClaimBadge] = useState(false)
+    const selectionActive = currentTransaction?.id === item.id
 
     const getBadgeStatus = useCallback(async () => {
         const approval = await getApproveCheck()
         const claimStatus = await getClaimCheck()
         setApprovedBadge(approval)
         setClaimBadge(claimStatus)
-        //console.log("claim", claimStatus)
     }, [getApproveCheck])
 
     useEffect(() => {
         getBadgeStatus()
     }, [getBadgeStatus])
 
-    const dispatch = useDispatch()
-    const contri_filter_key = useSelector((x) => x.dao.contri_filter_key)
-    const role = useSelector((x) => x.dao.role)
     const onContributionPress = async () => {
         if (role === "ADMIN") {
             const ethPrice = await convertTokentoUsd("ETH")
@@ -154,66 +159,47 @@ export default function ContributionCard({ item, signer, community_id }) {
         }
     }
 
+    const onClaimEventCallback = async (event) => {
+        console.log("event", parseInt(event[0].toString()))
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = await provider.getSigner()
+        const pocpProxy = new ethers.Contract(
+            web3.POCP_Proxy,
+            POCPProxy.abi,
+            signer
+        )
+        const userBadge = await pocpProxy.userBadge(
+            parseInt(event[0].toString())
+        )
+        dispatch(
+            setBadgesAfterClaim(
+                address,
+                userBadge.approvedBy,
+                userBadge.uri,
+                parseInt(isApprovedToken().token[0].id),
+                { id: community_id }
+            )
+        )
+        dispatch(setContributionDetail(null))
+        dispatch(claimUpdate(item?.id))
+        dispatch(setClaimLoading(false, item?.id))
+        await provider.provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: web3.chainid.rinkeby }],
+        })
+    }
+
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, item?.id))
-            const res = await processClaimBadgeToPocp(
-                address,
+            console.log(isApprovedToken().token[0].id)
+            await processClaimBadgeToPocp(
                 isApprovedToken().token[0].id,
                 jwt,
-                item?.id
+                item?.id,
+                onClaimEventCallback,
+                onClaimEventCallback
             )
-            if (res) {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
-                const signer = await provider.getSigner()
-                const pocpProxy = new ethers.Contract(
-                    web3.POCP_Proxy,
-                    POCPProxy.abi,
-                    signer
-                )
-                pocpProxy.on("ClaimedBadge", async (a) => {
-                    if (
-                        parseInt(a.toString()) ===
-                        parseInt(isApprovedToken().token[0].id)
-                    ) {
-                        try {
-                            const userBadge = await pocpProxy.userBadge(
-                                parseInt(isApprovedToken().token[0].id)
-                            )
-                            dispatch(
-                                setBadgesAfterClaim(
-                                    address,
-                                    userBadge.approvedBy,
-                                    userBadge.uri,
-                                    parseInt(isApprovedToken().token[0].id),
-                                    { id: community_id }
-                                )
-                            )
-                            dispatch(setClaimLoading(false, item?.id))
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            await provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
-                        } catch (error) {
-                            dispatch(setClaimLoading(false, item?.id))
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            await provider.provider.request({
-                                method: "wallet_switchEthereumChain",
-                                params: [{ chainId: web3.chainid.rinkeby }],
-                            })
-                        }
-                    }
-                })
-            } else {
-                dispatch(setClaimLoading(false, item?.id))
-            }
         }
         await dispatch(syncAllBadges())
         dispatch(getAllBadges(address))
@@ -226,11 +212,16 @@ export default function ContributionCard({ item, signer, community_id }) {
             onMouseEnter={() => setOnHover(true)}
             onMouseLeave={() => setOnHover(false)}
             onClick={() => onContributionPress()}
-            className={styles.container}
+            className={
+                onHover || selectionActive ? styles.onHover : styles.container
+            }
         >
             <div className={styles.titleContainer}>
                 <div
-                    style={{ fontFamily: onHover && "TelegrafBolder" }}
+                    style={{
+                        fontFamily:
+                            (onHover || selectionActive) && "TelegrafBolder",
+                    }}
                     className={`${textStyles.m_16} ${styles.title}`}
                 >
                     {item?.title}
@@ -251,7 +242,7 @@ export default function ContributionCard({ item, signer, community_id }) {
             </div>
             <div className={styles.descriptionContainer}>
                 <div
-                    style={{ color: onHover && "white" }}
+                    style={{ color: (onHover || selectionActive) && "white" }}
                     className={`${textStyles.m_16} ${styles.description}`}
                 >{`${item?.requested_by?.metadata?.name?.toLowerCase()}  •  ${item?.stream?.toLowerCase()}  •  ${
                     item?.time_spent
@@ -291,7 +282,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                 ((checkClaimApprovedSuccess() || approvedBadge) &&
                 item?.status === "APPROVED" &&
                 item?.payout_status === "PAID" ? (
-                    onHover ? (
+                    onHover || selectionActive ? (
                         <img
                             className={styles.menuIcon}
                             alt="menu"

@@ -103,8 +103,6 @@ export default function Onboarding() {
             const { dao_uuid, name } = await dispatch(registerDao())
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
-                // await processDaoToPOCP(name, owners, address, dao_uuid, jwt)
-                // navigate("/dashboard")
                 dispatch(pocpRegirationInfo(dao_uuid, name, owners))
                 setCurrentStep(currentStep + 1)
             } else {
@@ -125,6 +123,63 @@ export default function Onboarding() {
         setSigner(signer)
     }
 
+    // <<<<<<< HEAD
+    //     const increaseStep = async () => {
+    //         if (currentStep === 2) {
+    //             setCurrentStep(currentStep + 1)
+    //         } else if (currentStep === 3) {
+    //             dispatch(addThreshold(selectedIndex + 1))
+    //             setCurrentStep(currentStep + 1)
+    //             if (!hasMultiSignWallet) {
+    //                 setProvider()
+    //             }
+    //         } else if (currentStep === 4) {
+    //             if (hasMultiSignWallet) {
+    //                 const { dao_uuid, name, owners } = await dispatch(registerDao())
+    //                 const owner = [address]
+    //                 if (owners.length > 1) {
+    //                     owners.map((x, i) => {
+    //                         if (x?.address !== address) {
+    //                             owner.push(x?.address)
+    //                         }
+    //                     })
+    //                 }
+    //                 dispatch(lastSelectedId(dao_uuid))
+    //                 if (dao_uuid) {
+    //                     dispatch(pocpRegirationInfo(dao_uuid, name, owner))
+    //                     setCurrentStep(currentStep + 1)
+    //                 } else {
+    //                     navigate(`/onboard/dao`)
+    //                 }
+    //             } else {
+    //                 try {
+    //                     try {
+    //                         const owner = []
+    //                         owners.map((item, index) => {
+    //                             owner.push(item.address)
+    //                         })
+    //                         await deploySafe(owner)
+    //                     } catch (error) {
+    //                         // //console.log("error.... on deploying", error);
+    //                     }
+    //                 } catch (error) {
+    //                     // //console.log("error.......", error);
+    //                 }
+    //             }
+    //         } else setCurrentStep(currentStep + 1)
+    //     }
+
+    //     const decreaseStep = () => {
+    //         if (currentStep > 0) setCurrentStep(currentStep - 1)
+    //         if (currentStep === 4) {
+    //             if (hasMultiSignWallet) {
+    //                 setCurrentStep(2)
+    //             } else {
+    //                 setCurrentStep(3)
+    //             }
+    //         } else if (currentStep === 2) {
+    //             setCurrentStep(currentStep - 1)
+    // =======
     const increaseStep = () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep((currentStep) => currentStep + 1)

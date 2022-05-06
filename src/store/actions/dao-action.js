@@ -416,7 +416,6 @@ export const getContriRequest = () => {
                     )
                     return 1
                 } else {
-                    //console.log("contributor contri")
                     dispatch(
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
@@ -1136,5 +1135,33 @@ export const syncAllBadges = () => {
 export const pocpRegirationInfo = (dao_uuid, name, owner) => {
     return (dispatch) => {
         dispatch(daoAction.set_pocp_info({ info: { dao_uuid, name, owner } }))
+    }
+}
+
+export const refreshContributionList = () => {
+    return (dispatch) => {
+        dispatch(
+            daoAction.set_after_claim({
+                list: [],
+            })
+        )
+    }
+}
+
+export const afterApproval = (txHash, id) => {
+    return (dispatch, getState) => {
+        const contributionrequest = getState().dao.contribution_request
+        // const newArray = contributionrequest.map((x) => {
+        //     if (x.id === id) x.approved_tx = txHash
+        // })
+        const newArray = []
+        contributionrequest.forEach((x) => {
+            if (x.id === id) {
+                x.approved_tx = txHash
+            }
+            newArray.push(x)
+        })
+        console.log(newArray)
+        dispatch(daoAction.set_after_approve({ list: newArray }))
     }
 }

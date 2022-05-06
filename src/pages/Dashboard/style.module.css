@@ -199,3 +199,16 @@
     align-items: center;
     justify-content: center;
 }
+
+.emptyBadge {
+    height: 280px;
+    border: 1px #1f1f1f solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.emptySlot {
+    color: gray;
+}

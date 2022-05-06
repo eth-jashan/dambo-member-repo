@@ -2,49 +2,52 @@ import React, { useState } from "react"
 import "./styles.scss"
 import texStyles from "../../commonStyles/textType/styles.module.css"
 import { processDaoToPOCP } from "../../utils/POCPutils"
-import { useSelector } from "react-redux"
-import { message } from "antd"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import Lottie from "react-lottie"
 import confetti from ".././../assets/lottie/confett-lottie.json"
+import { setPocpAction } from "../../store/actions/toast-action"
+import { ethers } from "ethers"
+import { web3 } from "../../constant/web3"
 
 const POCPSignup = () => {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const pocpInfo = useSelector((x) => x.dao.pocp_register)
-
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
 
-    const onSuccess = () => {
-        console.log("fired on success !")
+    const registerCallback = async (events) => {
+        console.log("heree", events)
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+        await web3Provider.provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: web3.chainid.rinkeby }],
+        })
         navigate("/dashboard")
     }
-
+    const registerErrorCallback = () => setLoading(false)
     const signupForPocp = async () => {
         setLoading(true)
-        await processDaoToPOCP(
-            pocpInfo.name,
-            pocpInfo.owner,
-            address,
-            pocpInfo.dao_uuid,
-            jwt,
-            onSuccess
-        )
-        // console.log("register function", res)
-        // if (res) {
-        //     setLoading(false)
-        //     console.log("successfull")
-        //     message.success("Registered To Pocp Successfully")
-        //     navigate("/dashboard")
-        // } else if (!res && res !== undefined) {
-        //     setLoading(false)
-        //     navigate("/dashboard")
-        // }
+        try {
+            await processDaoToPOCP(
+                pocpInfo.name,
+                pocpInfo.owner,
+                pocpInfo.dao_uuid,
+                jwt,
+                registerCallback,
+                registerErrorCallback
+            )
+            // if (!res) {
+            //     setLoading(false)
+            // }
+        } catch (error) {
+            setLoading(false)
+        }
     }
     const defaultOptions = {
-        loop: true,
-        autoplay: true,
+        loop: false,
         animationData: confetti,
         rendererSettings: {
             preserveAspectRatio: "xMidYMid slice",
@@ -87,6 +90,7 @@ const POCPSignup = () => {
                 <br /> created and ready to use
             </div>
             <Lottie
+                isClickToPauseDisabled={true}
                 options={defaultOptions}
                 style={{
                     height: "40%",

@@ -6,6 +6,7 @@
         "@ant-design/icons": "^4.7.0",
         "@gnosis.pm/safe-core-sdk": "^1.2.0",
         "@gnosis.pm/safe-service-client": "^0.1.0",
+        "@rainbow-me/rainbowkit": "^0.1.0",
         "@reduxjs/toolkit": "^1.7.1",
         "@testing-library/jest-dom": "^5.11.4",
         "@testing-library/react": "^11.1.0",
@@ -15,6 +16,7 @@
         "dayjs": "^1.11.1",
         "ethers": "^5.5.2",
         "graphql": "^16.3.0",
+        "pocp-service-sdk": "^0.0.2",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-icons": "^4.3.1",
@@ -29,6 +31,7 @@
         "sass": "^1.50.1",
         "urql": "^2.2.0",
         "uuid": "^8.3.2",
+        "wagmi": "^0.3.3",
         "web-vitals": "^1.0.1"
     },
     "scripts": {

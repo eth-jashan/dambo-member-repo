@@ -14,6 +14,7 @@ import {
     getNonceForCreation,
     getPayoutRequest,
     gnosisDetailsofDao,
+    refreshContributionList,
     set_active_nonce,
     set_payout_filter,
     syncAllBadges,
@@ -136,15 +137,23 @@ export default function Dashboard() {
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
-            message.success("invite link copied succesfully!")
+            message.success("invite link copied successfully!")
             return await navigator.clipboard.writeText(
-                `${window.location.origin}/contributor/invite/${currentDao?.uuid}`
+                `${
+                    window.location.origin
+                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                    currentDao?.uuid
+                }`
             )
         } else {
             return document.execCommand(
                 "copy",
                 true,
-                `${window.location.origin}/contributor/invite/${currentDao?.uuid}`
+                `${
+                    window.location.origin
+                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                    currentDao?.uuid
+                }`
             )
         }
     }
@@ -172,87 +181,87 @@ export default function Dashboard() {
         return account
     }
 
-    const initialLoad = useCallback(async () => {
+    const adminContributionFetch = async () => {
         dispatch(setLoadingState(true))
+        await dispatch(getContriRequest())
+        dispatch(setPayment(null))
+        dispatch(setTransaction(null))
+        if (safeSdk) {
+            const nonce = await safeSdk.getNonce()
+            console.log("nonce", nonce)
+            dispatch(set_active_nonce(nonce))
+        }
+        dispatch(setLoadingState(false))
+        await dispatch(getPayoutRequest())
+        dispatch(set_payout_filter("PENDING", 1))
+    }
+
+    const contributorFetch = async () => {
+        dispatch(setLoadingState(true))
+        await dispatch(getContriRequest())
+        dispatch(getAllBadges(address))
+        dispatch(getContributorOverview())
+        dispatch(setLoadingState(false))
+    }
+
+    const initialLoad = useCallback(async () => {
+        dispatch(refreshContributionList())
         const account = await onInit()
-
-        console.log(
-            "initial load starts here",
-            address === ethers.utils.getAddress(account)
-        )
-
         await dispatch(getDaoHash())
         if (address === ethers.utils.getAddress(account)) {
-            const account_role = await dispatch(getAllDaowithAddress())
-            await dispatch(getContriRequest())
+            const accountRole = await dispatch(getAllDaowithAddress())
             await dispatch(syncAllBadges())
-            //testing gnosis
             await dispatch(gnosisDetailsofDao())
-            if (account_role === "ADMIN") {
-                dispatch(setPayment(null))
-                dispatch(setTransaction(null))
-                if (safeSdk) {
-                    const nonce = await safeSdk.getNonce()
-                    dispatch(set_active_nonce(nonce))
-                }
-                await dispatch(getPayoutRequest())
-                dispatch(set_payout_filter("PENDING", 1))
-                console.log(
-                    "initial load ends here",
-                    address === ethers.utils.getAddress(account)
-                )
+
+            if (accountRole === "ADMIN") {
+                await adminContributionFetch()
             } else {
-                // dispatch(setLoadingState(true))
-                console.log(
-                    "initial load ends here",
-                    address === ethers.utils.getAddress(account)
-                )
-                dispatch(getAllBadges(address))
-                await dispatch(getContributorOverview())
-                dispatch(setLoadingState(false))
+                await contributorFetch()
             }
         } else {
-            console.log(
-                "initial load ends here",
-                address === ethers.utils.getAddress(account)
-            )
             dispatch(setLoadingState(false))
             message.info("Token expired")
             dispatch(signout())
             navigate("/")
         }
-        console.log("initial load ends doubt")
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
-    const accountSwitch = useCallback(async () => {
-        console.log("account change outside")
+    const contributionAdminFetchAccountSwitch = async () => {
         dispatch(setLoadingState(true))
+        dispatch(setPayment(null))
+        dispatch(setTransaction(null))
+        await dispatch(getContriRequest())
+        dispatch(setLoadingState(false))
+    }
+
+    const paymentsAdminFetchAccountSwitch = async () => {
+        dispatch(setLoadingState(true))
+        await dispatch(getPayoutRequest())
+        await dispatch(set_payout_filter("PENDING", 1))
+        await dispatch(getPendingTransaction())
+        await dispatch(syncTxDataWithGnosis())
+        dispatch(setLoadingState(false))
+    }
+
+    const accountSwitch = useCallback(async () => {
         await dispatch(getDaoHash())
         await dispatch(syncAllBadges())
-        const account_role = await dispatch(getAllDaowithAddress())
-        if (account_role === "ADMIN") {
-            dispatch(setPayment(null))
-            dispatch(setTransaction(null))
-            await dispatch(getContriRequest())
+        const accountRole = await dispatch(getAllDaowithAddress())
+        if (accountRole === "ADMIN") {
+            await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
-                await dispatch(getPayoutRequest())
-                await dispatch(set_payout_filter("PENDING", 1))
-                await dispatch(getPendingTransaction())
-                await dispatch(syncTxDataWithGnosis())
+                await paymentsAdminFetchAccountSwitch()
             }
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
             }
         } else {
-            console.log("account change")
-            await dispatch(getContriRequest())
-            await dispatch(getContributorOverview())
-            dispatch(getAllBadges(address))
+            await contributorFetch()
         }
         dispatch(setLoadingState(false))
-    }, [address, community_id, dispatch, role, safeSdk, signer, tab])
+    }, [dispatch, safeSdk, tab])
 
     useEffect(() => {
         if (!modalPayment) {
@@ -270,7 +279,7 @@ export default function Dashboard() {
     }, [preventGoingBack])
 
     const onRouteChange = async (route) => {
-        dispatch(setLoadingState(true))
+        dispatch(refreshContributionList())
         setTab(route)
         if (role === "ADMIN") {
             if (safeSdk) {
@@ -278,19 +287,26 @@ export default function Dashboard() {
                 dispatch(set_active_nonce(nonce))
             }
             await dispatch(getDaoHash())
+            dispatch(setLoadingState(true))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter("PENDING", 1))
             if (route !== "payments") {
                 await dispatch(getContriRequest())
+                dispatch(setLoadingState(false))
             }
+            dispatch(setLoadingState(false))
         } else {
             if (route === "payments") {
+                dispatch(setLoadingState(true))
                 await dispatch(syncAllBadges())
                 dispatch(getAllBadges(address))
+                dispatch(setLoadingState(false))
             } else {
+                dispatch(setLoadingState(true))
                 await dispatch(getContriRequest())
                 dispatch(getContributorOverview())
+                dispatch(setLoadingState(false))
             }
         }
         dispatch(setPayment(null))
@@ -299,10 +315,12 @@ export default function Dashboard() {
     }
 
     const onUniModalOpen = async () => {
-        const ethPrice = await convertTokentoUsd("ETH")
-        if (ethPrice) {
-            dispatch(setEthPrice(ethPrice))
-            setModalUniPayment(true)
+        if (!loadingState) {
+            const ethPrice = await convertTokentoUsd("ETH")
+            if (ethPrice) {
+                dispatch(setEthPrice(ethPrice))
+                setModalUniPayment(true)
+            }
         }
     }
 
@@ -364,6 +382,7 @@ export default function Dashboard() {
                         alt="plus"
                     />
                 </div>
+
                 {modalUniPayment && (
                     <UniversalPaymentModal
                         signer={signer}
@@ -462,30 +481,13 @@ export default function Dashboard() {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        // // const web3Client = new Web3(
-                        // //     new Web3.providers.HttpProvider(
-                        // //         "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
-                        // //     )
-                        // // )
-                        // const web3Client = new ethers.providers.Web3Provider(
-                        //     window.ethereum
-                        // )
-                        // // const pocpProxy = new ethers.Contract(
-                        // //     web3.POCP_Proxy,
-                        // //     POCPProxy.abi,
-                        // //     signer
-                        // // )
                         const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
                             ERC20_ABI,
                             signer
                         )
-                        // const coin = new web3Client.eth.Contract(
-                        //     ERC20_ABI,
-                        //     item?.token_type?.tokenAddress ||
-                        //         item?.token_type?.token?.address
-                        // )
+
                         const amount =
                             parseFloat(item?.amount) * 1000000000000000000
                         transaction_obj.push({
@@ -640,7 +642,7 @@ export default function Dashboard() {
 
     const renderContribution = () =>
         contribution_request.length > 0 ? (
-            <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
+            <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
                         <ContributionCard
@@ -658,7 +660,7 @@ export default function Dashboard() {
 
     const renderContributorContribution = () =>
         contribution_request.length > 0 ? (
-            <div style={{ width: "100%", height: "100%", overflowY: "scroll" }}>
+            <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
                         <ContributionCard
@@ -682,11 +684,40 @@ export default function Dashboard() {
                 gridGap: 0,
                 overflowY: "auto",
                 marginBottom: "2rem",
+                width: "100%",
             }}
         >
+            {/* {dataSource.length > 0 */}
             {dataSource.map((x, i) => (
                 <BadgeItem item={x} key={i} />
             ))}
+        </div>
+    )
+    const renderEmptyBadgesScreen = () => (
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gridGap: 0,
+                overflowY: "auto",
+                marginBottom: "2rem",
+            }}
+        >
+            <div className={styles.emptyBadge}>
+                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
+                    Empty Slot
+                </div>
+            </div>
+            <div className={styles.emptyBadge}>
+                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
+                    Empty Slot
+                </div>
+            </div>
+            <div className={styles.emptyBadge}>
+                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
+                    Empty Slot
+                </div>
+            </div>
         </div>
     )
     const nonce = useSelector((x) => x.dao.active_nonce)
@@ -714,11 +745,13 @@ export default function Dashboard() {
 
     const adminScreen = () =>
         tab === "contributions" ? renderContribution() : renderPayment()
-
+    console.log(dataSource)
     const contributorScreen = () =>
         tab === "contributions"
             ? renderContributorContribution()
-            : renderBadges()
+            : dataSource.length > 0
+            ? renderBadges()
+            : renderEmptyBadgesScreen()
 
     const setModalBackDropFunc = (x) => {
         dispatch(setPayment(null))
@@ -736,6 +769,11 @@ export default function Dashboard() {
             <div className={styles.dashView}>
                 {(modalContri || modalPayment || modalUniPayment) && (
                     <div
+                        onClick={() => {
+                            setModalContri(false)
+                            setModalPayment(false)
+                            setModalUniPayment(false)
+                        }}
                         style={{
                             position: "absolute",
                             background: "#7A7A7A",

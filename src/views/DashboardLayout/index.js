@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Tooltip, message } from "antd"
 import "antd/dist/antd.css"
 import styles from "./style.module.css"
-import { MdLink } from "react-icons/md"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -12,6 +11,7 @@ import {
     getPayoutRequest,
     gnosisDetailsofDao,
     lastSelectedId,
+    refreshContributionList,
     set_active_nonce,
     set_dao,
     set_payout_filter,
@@ -19,7 +19,7 @@ import {
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
 import { links } from "../../constant/links"
-import logo from "../../assets/drepute_logo.svg"
+import logo from "../../assets/dreputeLogo.svg"
 import add_white from "../../assets/Icons/add_white.svg"
 import TransactionCard from "../../components/SideCard/TransactionCard"
 import PaymentSlideCard from "../../components/SideCard/PaymentSideCard"
@@ -47,7 +47,6 @@ export default function DashboardLayout({
     signer,
     modalBackdrop,
     onRouteChange,
-
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -85,7 +84,6 @@ export default function DashboardLayout({
                     first: nameArray[0].charAt(0)?.toUpperCase(),
 
                     last: nameArray[1].charAt(0)?.toUpperCase(),
-
                 }
             } else {
                 return {
@@ -99,20 +97,20 @@ export default function DashboardLayout({
     }
 
     const changeAccount = async (item, index) => {
-        //console.log("account changed profile")
-        dispatch(set_dao(item))
-        dispatch(setLoadingState(true))
+        dispatch(refreshContributionList())
+        dispatch(resetApprovedRequest())
         dispatch(set_dao(item))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
         await dispatch(getDaoHash())
         await dispatch(syncAllBadges())
-        dispatch(resetApprovedRequest())
         dispatch(lastSelectedId(item?.dao_details?.uuid))
         await dispatch(gnosisDetailsofDao())
+        dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
+            dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
@@ -120,10 +118,12 @@ export default function DashboardLayout({
             await dispatch(syncAllBadges())
             dispatch(getAllBadges(address))
             dispatch(getContributorOverview())
+            dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
+            dispatch(setLoadingState(false))
         }
 
         if (safeSdk) {
@@ -152,7 +152,6 @@ export default function DashboardLayout({
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
-        //console.log("here")
         setProfileModal(!profile_modal)
         setSwitchRoleModal(false)
     }
@@ -200,18 +199,21 @@ export default function DashboardLayout({
                                 }
                                 onClick={() => onSwitchRoleModal()}
                                 style={{
-                                    background: roleContainerHover
-                                        ? "white"
-                                        : "#5D5C5D",
+                                    background:
+                                        switchRoleModal || roleContainerHover
+                                            ? "white"
+                                            : "#5D5C5D",
                                     cursor: "pointer",
                                 }}
                                 className={styles.roleSwitchContainer}
                             >
                                 <div
                                     style={{
-                                        color: roleContainerHover
-                                            ? "black"
-                                            : "white",
+                                        color:
+                                            switchRoleModal ||
+                                            roleContainerHover
+                                                ? "black"
+                                                : "white",
                                     }}
                                     className={textStyles.m_14}
                                 >
@@ -270,13 +272,6 @@ export default function DashboardLayout({
             <div className={`${textStyles.m_28} ${styles.selectContriText}`}>
                 Select contribution to see details
             </div>
-            {/* <div
-                onClick={() => copyTextToClipboard()}
-                className={styles.copyLink}
-            >
-                <MdLink size={16} color="white" />
-                <span className={styles.copyLinkdiv}>copy invite link</span>
-            </div> */}
         </div>
     )
 
@@ -411,7 +406,6 @@ export default function DashboardLayout({
                 {headerComponet()}
                 <div className={styles.layoutContainer}>
                     <div className={styles.children}>{children}</div>
-                    {/* {role === 'ADMIN' && */}
                     <div className={styles.adminStats}>
                         {renderSideBarComp()}
                     </div>

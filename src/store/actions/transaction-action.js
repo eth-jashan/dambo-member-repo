@@ -141,7 +141,7 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
                             number: contri_filter_key,
                         })
                     )
-                    // //console.log('successfully confirmed')
+
                     return 1
                 } else {
                     return 0
@@ -160,10 +160,11 @@ export const rejectContriRequest = (id) => {
         const data = {
             status: "REJECTED",
             tokens: [],
+            id,
         }
         try {
-            const res = await api.post(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update/${id}`,
+            const res = await apiClient.post(
+                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,
                 data,
                 {
                     headers: {
@@ -171,6 +172,45 @@ export const rejectContriRequest = (id) => {
                     },
                 }
             )
+
+            if (res.data.success) {
+                const currentList = getState().dao.contribution_request
+                dispatch(
+                    daoAction.set_after_claim({
+                        list: currentList.filter((x) => x.id !== id),
+                    })
+                )
+                return 1
+            } else {
+                return 0
+            }
+        } catch (error) {
+            //console.log('error....', error)
+        }
+    }
+}
+
+export const rejectApproval = (id) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+
+        const data = {
+            status: "REQUESTED",
+            tokens: [],
+            id,
+        }
+
+        try {
+            const res = await apiClient.post(
+                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+
             if (res.data.success) {
                 dispatch(tranactionAction.set_reject_request({ id }))
                 return 1
@@ -178,7 +218,7 @@ export const rejectContriRequest = (id) => {
                 return 0
             }
         } catch (error) {
-            // //console.log('error....', error)
+            //console.log('error....', error)
         }
     }
 }

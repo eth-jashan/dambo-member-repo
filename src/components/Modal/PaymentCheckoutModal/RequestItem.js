@@ -1,12 +1,16 @@
 import React, { useState } from "react"
 import { useDispatch } from "react-redux"
-import { rejectContriRequest } from "../../../store/actions/transaction-action"
+import {
+    rejectApproval,
+    rejectContriRequest,
+} from "../../../store/actions/transaction-action"
 import styles from "./styles.module.css"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
 import cross from "../../../assets/Icons/cross.svg"
 import { Typography } from "antd"
+import { getContriRequest } from "../../../store/actions/dao-action"
 
-const RequestItem = ({ item, tokenItem, approved_request }) => {
+const RequestItem = ({ item, tokenItem, approved_request, onClose }) => {
     const dispatch = useDispatch()
 
     const [onCancelHover, setCancelHover] = useState(false)
@@ -23,8 +27,6 @@ const RequestItem = ({ item, tokenItem, approved_request }) => {
         return amount_total.toFixed(2)
     }
 
-    // //console.log("item....", item)
-
     return (
         <div className={styles.requestItem}>
             <div
@@ -32,11 +34,13 @@ const RequestItem = ({ item, tokenItem, approved_request }) => {
             >
                 <div style={{ width: "5.2%" }}>
                     <div
-                        onClick={async () =>
+                        onClick={async () => {
                             await dispatch(
-                                rejectContriRequest(item?.contri_detail?.id)
+                                rejectApproval(item?.contri_detail?.id)
                             )
-                        }
+                            await dispatch(getContriRequest())
+                            onClose()
+                        }}
                         onMouseLeave={() => setCancelHover(false)}
                         onMouseEnter={() => setCancelHover(true)}
                         className={styles.cancel}

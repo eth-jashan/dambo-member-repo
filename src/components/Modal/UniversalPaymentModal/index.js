@@ -98,15 +98,6 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                         operation: 0,
                     })
                 } else if (item?.token_type?.token?.symbol) {
-                    // const web3Client = new Web3(
-                    //     new Web3.providers.HttpProvider(
-                    //         "https://rinkeby.infura.io/v3/25f28dcc7e6b4c85b74ddfb3eeda03e5"
-                    //     )
-                    // )
-                    // const coin = new web3Client.eth.Contract(
-                    //     ERC20_ABI,
-                    //     item?.token_type?.tokenAddress
-                    // )
                     const coin = new ethers.Contract(
                         item?.token_type?.tokenAddress,
                         ERC20_ABI,
@@ -128,8 +119,6 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                 }
             })
         }
-
-        // //console.log(transaction_obj)
 
         if (!safeSdk || !serviceClient) return
         let safeTransaction
@@ -165,13 +154,10 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
                 safeTxHash,
                 safeSignature
             )
-            // //console.log(currentDao, safeTxHash)
+
             dispatch(createExternalPayment(safeTxHash, nonce, payDetail))
             dispatch(resetApprovedRequest())
-            // dispatch(setPayoutToast('ACCEPTED_CONTRI',{
-            //     // item:0,
-            //     value:
-            //   }))
+
             setLoading(false)
         } catch (error) {
             // //console.log('error.........', error)
@@ -219,27 +205,29 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             </div>
             {payDetail?.map((item, index) => (
                 <TokenInput
+                    key={index}
                     updateTokenType={(x) => updateTokenType(x, index)}
                     value={item.amount}
                     onChange={(e) => updatedPayDetail(e, index)}
+                    hideDropDown={!token_available?.length > 1}
                 />
             ))}
 
-            <div
-                onClick={
-                    token_available.length > 1 ? () => addToken() : () => {}
-                }
-                style={{ marginTop: "1.5rem" }}
-                className={styles.addToken}
-            >
+            {token_available.length > 1 && (
                 <div
-                    style={{ color: "#808080" }}
-                    className={`${textStyles.m_16}`}
+                    onClick={() => addToken()}
+                    style={{ marginTop: "1.5rem" }}
+                    className={styles.addToken}
                 >
-                    Add another token
+                    <div
+                        style={{ color: "#808080" }}
+                        className={`${textStyles.m_16}`}
+                    >
+                        Add another token
+                    </div>
+                    <img src={plus} alt="plus" className={styles.plus} />
                 </div>
-                <img src={plus} alt="plus" className={styles.plus} />
-            </div>
+            )}
 
             <div
                 onClick={() => setFeedBackSow(!feedBackShow)}

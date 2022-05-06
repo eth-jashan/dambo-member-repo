@@ -28,17 +28,19 @@ import {
     uplaodApproveMetaDataUpload,
 } from "../../utils/relayFunctions"
 import { processBadgeApprovalToPocp } from "../../utils/POCPutils"
-
+import { web3 } from "../../constant/web3"
+import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
 )
 
 export default function PaymentCard({ item, signer }) {
     const address = useSelector((x) => x.auth.address)
+    const currentPayment = useSelector((x) => x.transaction.currentPayment)
     const jwt = useSelector((x) => x.auth.jwt)
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
-    // const [loading, setLoading] = useState(false)
+
     const currentDao = useSelector((x) => x.dao.currentDao)
     const delegates = currentDao?.signers
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -50,7 +52,7 @@ export default function PaymentCard({ item, signer }) {
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
-    // console.log('communit id', community_id, pocp_dao_info, currentDao)
+    const activeSelection = currentPayment?.metaInfo?.id === item?.metaInfo?.id
 
     const getPayoutTotal = (payout) => {
         const usd_amount = []
@@ -221,16 +223,28 @@ export default function PaymentCard({ item, signer }) {
                             }}
                         >
                             <div
-                                style={{ background: onHover && "#5C5C5C" }}
+                                style={{
+                                    background:
+                                        (onHover || activeSelection) &&
+                                        "#5C5C5C",
+                                }}
                                 className={styles.signerInfo}
                             >
                                 <img
                                     alt="edit"
-                                    src={onHover ? edit_hover : edit_active}
+                                    src={
+                                        onHover || activeSelection
+                                            ? edit_hover
+                                            : edit_active
+                                    }
                                     className={styles.editIcon}
                                 />
                                 <div
-                                    style={{ color: onHover && "#ECFFB8" }}
+                                    style={{
+                                        color:
+                                            (onHover || activeSelection) &&
+                                            "#ECFFB8",
+                                    }}
                                     className={`${textStyles.m_16} ${styles.whiterText}`}
                                 >
                                     {item?.gnosis.confirmations?.length}/
@@ -251,10 +265,10 @@ export default function PaymentCard({ item, signer }) {
     const dispatch = useDispatch()
 
     const onPaymentPress = () => {
-        if (!executePaymentLoading) {
-            dispatch(setTransaction(null))
-            dispatch(setPayment(item))
-        }
+        // if (!executePaymentLoading) {
+        dispatch(setTransaction(null))
+        dispatch(setPayment(item))
+        // }
     }
 
     const confirmTransaction = async () => {
@@ -295,10 +309,21 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const [approveTitle, setApproveTitle] = useState(false)
-
+    const approvalEventCallback = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        await provider.provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: web3.chainid.rinkeby }],
+        })
+        await dispatch(syncAllBadges())
+        await dispatch(getPayoutRequest())
+        await dispatch(set_payout_filter("PENDING", 1))
+        dispatch(setPayment(null))
+        dispatch(setLoading(false))
+    }
 
     const executeSafeTransaction = async (c_id, to, approveBadge) => {
-        dispatch(setLoading(true))
+        dispatch(setLoading(true, item?.metaInfo?.id))
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
@@ -314,7 +339,10 @@ export default function PaymentCard({ item, signer }) {
             refundReceiver: transaction.refundReceiver,
             nonce: transaction.nonce,
         }
-        if (!safeSdk) return
+        if (!safeSdk) {
+            dispatch(setLoading(false))
+            return
+        }
         try {
             const safeTransaction = await safeSdk.createTransaction(
                 safeTransactionData
@@ -354,7 +382,7 @@ export default function PaymentCard({ item, signer }) {
                 error.toString() === "Error: Not enough Ether funds",
                 error.code
             )
-            dispatch(setLoading(false))
+            dispatch(setLoading(false, item?.metaInfo?.id))
             return
         }
         if (approveBadge) {
@@ -381,38 +409,31 @@ export default function PaymentCard({ item, signer }) {
                         clearTimeout(interval)
                         if (cid?.length > 0) {
                             await processBadgeApprovalToPocp(
-                                address,
                                 community_id[0].id,
                                 to,
                                 cid,
                                 url,
-                                jwt
+                                jwt,
+                                approvalEventCallback,
+                                approvalEventCallback
                             )
-                            await dispatch(syncAllBadges())
-                            await dispatch(getPayoutRequest())
-                            await dispatch(set_payout_filter("PENDING", 1))
                         }
                     }
                 }, 3000)
             } else {
                 if (cid?.length > 0) {
                     await processBadgeApprovalToPocp(
-                        address,
                         community_id[0].id,
                         to,
                         cid,
                         url,
-                        jwt
+                        jwt,
+                        approvalEventCallback,
+                        approvalEventCallback
                     )
-                    await dispatch(syncAllBadges())
-                    await dispatch(getPayoutRequest())
-                    await dispatch(set_payout_filter("PENDING", 1))
                 }
             }
         }
-
-        setApproveTitle(false)
-        dispatch(setPayment(null))
     }
     const getButtonProperty = () => {
         if (
@@ -441,7 +462,11 @@ export default function PaymentCard({ item, signer }) {
                 color: "white",
                 background: "#333333",
             }
-        } else if (!checkApproval() && !isReject && onHover) {
+        } else if (
+            !checkApproval() &&
+            !isReject &&
+            (onHover || activeSelection)
+        ) {
             return {
                 title: "Sign Payment",
                 color: "black",
@@ -500,19 +525,13 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const executeFunction = async () => {
-        console.log(
-            "community id",
-            community_id[0]?.id,
-            pocp_dao_info,
-            currentDao
-        )
         if (!isReject && community_id[0]?.id) {
             try {
                 const res = await uploadApproveMetatoIpfs()
                 if (res.status) {
                     await executeSafeTransaction(res?.cid, res?.to, true)
                 } else {
-                    setLoading(false)
+                    dispatch(setLoading(false, item?.metaInfo?.id))
                 }
             } catch (error) {
                 // setLoading(false)
@@ -530,14 +549,11 @@ export default function PaymentCard({ item, signer }) {
                 await executeFunction()
             } else if (checkApproval()) {
                 // console.log('Already Signed !!!')
-            } else if (!checkApproval() && onHover) {
+            } else if (!checkApproval() && (onHover || activeSelection)) {
                 await confirmTransaction(tranx)
             }
         }
-        dispatch(setLoading(false))
     }
-
-    console.log("item in payment card", item)
 
     const showLoading =
         executePaymentLoading?.loadingStatus &&
@@ -546,9 +562,9 @@ export default function PaymentCard({ item, signer }) {
     return (
         <div
             style={{
-                background: onHover && "#333333",
-                border: onHover && 0,
-                borderRadius: onHover && "0.75rem",
+                background: (onHover || activeSelection) && "#333333",
+                border: (onHover || activeSelection) && 0,
+                borderRadius: (onHover || activeSelection) && "0.75rem",
             }}
             onMouseLeave={() => setOnHover(false)}
             onMouseEnter={() => setOnHover(true)}

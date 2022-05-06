@@ -160,19 +160,17 @@ const TransactionCard = ({ signer }) => {
                         updateTokenType={(x) => updateTokenType(x, index)}
                         value={item.amount}
                         onChange={(e) => updatedPayDetail(e, index)}
+                        hideDropDown={!token_available?.length > 1}
                     />
                 ))}
             </div>
 
-            <div
-                onClick={
-                    token_available?.length > 1 ? () => addToken() : () => {}
-                }
-                className={styles.addToken}
-            >
-                <div className={`${textStyle.m_16}`}>Add another token</div>
-                <IoAddOutline color="#808080" className={styles.add} />
-            </div>
+            {token_available?.length > 1 && (
+                <div onClick={() => addToken()} className={styles.addToken}>
+                    <div className={`${textStyle.m_16}`}>Add another token</div>
+                    <IoAddOutline color="#808080" className={styles.add} />
+                </div>
+            )}
 
             {feedBackContainer()}
             <div
@@ -189,11 +187,12 @@ const TransactionCard = ({ signer }) => {
                 }}
             >
                 <div
-                    onClick={async () =>
+                    onClick={async () => {
                         await dispatch(
                             rejectContriRequest(currentTransaction?.id)
                         )
-                    }
+                        onContributionPress()
+                    }}
                     className={styles.deleteContainer}
                 >
                     <img

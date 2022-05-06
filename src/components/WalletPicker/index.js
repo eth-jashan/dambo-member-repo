@@ -5,11 +5,9 @@ import { setAdminStatus, signout } from "../../store/actions/auth-action"
 import { useNavigate } from "react-router"
 import chevronDown from "../../assets/Icons/chevron_down.svg"
 import styles from "./style.module.css"
-import { useLookupAddress } from "../../hooks"
 
 export default function WalletPicker({ signer }) {
     const address = useSelector((x) => x.auth.address)
-    // const { ensName } = useLookupAddress(signer, address)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const dispatch = useDispatch()
     const navigate = useNavigate()

@@ -9,6 +9,7 @@ import {
     getContributorOverview,
     getContriRequest,
     getPayoutRequest,
+    refreshContributionList,
     set_payout_filter,
     switchRole,
     syncAllBadges,
@@ -21,13 +22,14 @@ const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
     const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
     const changeRole = async (role) => {
-        //console.log("change role")
-        dispatch(setLoadingState(true))
+        dispatch(refreshContributionList())
         dispatch(switchRole(role))
         onChange()
         await dispatch(syncAllBadges())
+        dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
+            dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
@@ -40,7 +42,6 @@ const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
-            // await dispatch(set_payout_filter("PENDING", 1))
             dispatch(setLoadingState(false))
         }
         dispatch(setLoadingState(false))

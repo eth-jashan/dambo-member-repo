@@ -37,7 +37,7 @@ const AuthWallet = () => {
                         navigate(`/dashboard`)
                     }
                 } catch (error) {
-                    // message.error('Error on getting role')
+                    message.error("Error on getting role")
                 }
             }
         }

@@ -107,7 +107,7 @@ const DashboardSearchTab = ({ route }) => {
                 paddingTop: "1rem",
                 paddingBottom: "1rem",
             }}
-            onClick={payoutOnClick}
+            // onClick={payoutOnClick}
         >
             <Menu.Item className={styles.menuContainer} key="1">
                 <div className={styles.menu}>All requests</div>

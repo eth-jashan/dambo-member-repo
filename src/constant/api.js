@@ -14,7 +14,7 @@ const api = {
         url: "https://qs17tofrz7.execute-api.us-east-1.amazonaws.com/uploads?",
     },
     subgraph: {
-        url: "https://api.thegraph.com/subgraphs/id/QmYdDT55qCw1Y29U8zV5bM2gEf86djNpzPPraeDqzsimDB",
+        url: "https://api.thegraph.com/subgraphs/id/QmctWyJKqKwU7XJmxK8c1MA3BW4YPEzN8LbSmECcP8N6gk",
     },
     ipfs: {
         // url:'https://staging.api.drepute.xyz:5001'
