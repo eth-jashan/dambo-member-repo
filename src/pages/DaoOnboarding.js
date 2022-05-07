@@ -11,6 +11,7 @@ import {
     lastSelectedId,
     pocpRegistrationInfo,
     registerDao,
+    getIdentifierStatus,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
@@ -18,6 +19,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { message } from "antd"
 import POCPSignup from "../components/POCPSignup"
 import DiscordRegister from "../components/DiscordRegister"
+import OnboardingError from "../components/OnboardingError"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(0)
@@ -38,8 +40,10 @@ export default function Onboarding() {
     const jwt = useSelector((x) => x.auth.jwt)
     const accounts = useSelector((x) => x.dao.dao_list)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
-    // const [searchParams, _setSearchParams] = useSearchParams()
-    // const discordIdentifier = searchParams.get("discord_identifier")
+    const [searchParams, _setSearchParams] = useSearchParams()
+    const discordIdentifier = searchParams.get("discord_identifier")
+    const [isDiscordIdentifierValid, setIsDiscordIdentifierValid] =
+        useState(true)
 
     const steps = [
         "connectWallet",
@@ -80,6 +84,15 @@ export default function Onboarding() {
             setCurrentStep(0)
         }
     }, [address])
+
+    useEffect(async () => {
+        if (discordIdentifier) {
+            const res = await dispatch(getIdentifierStatus(discordIdentifier))
+            if (!res) {
+                setIsDiscordIdentifierValid(false)
+            }
+        }
+    }, [])
 
     const deploySafe = useCallback(
         async (owners) => {
@@ -253,6 +266,7 @@ export default function Onboarding() {
                         setStep={(x) => setCurrentStep(x)}
                         increaseStep={increaseStep}
                         setHasMultiSignWallet={setHasMultiSignWallet}
+                        discordIdentifier={discordIdentifier}
                     />
                 )
             }
@@ -295,6 +309,8 @@ export default function Onboarding() {
                         deploying={deploying}
                     />
                 )
+            case "identifierExpired":
+                return <OnboardingError text="This page has expired" />
             default: {
                 return (
                     <ConnectWallet
@@ -316,7 +332,12 @@ export default function Onboarding() {
                 deploying={deploying}
                 steps={steps}
             >
-                {getComponentFromName(steps[currentStep], hasMultiSignWallet)}
+                {getComponentFromName(
+                    isDiscordIdentifierValid
+                        ? steps[currentStep]
+                        : "identifierExpired",
+                    hasMultiSignWallet
+                )}
             </Layout>
         </div>
     )
