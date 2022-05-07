@@ -1,0 +1,154 @@
+.gnosisSafeListContainer {
+    &.layout {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .heading {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 3.375rem;
+        line-height: 3.5rem;
+        /* margin-bottom: 96px; */
+        margin-bottom: 13.12%;
+    }
+    .headingSecondary {
+        color: black;
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 3.375rem;
+        line-height: 3.5rem;
+    }
+    .greyHeading {
+        color: #818081;
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 3.375rem;
+        line-height: 3.5rem;
+        margin-bottom: 13.12%;
+    }
+
+    .content {
+        max-height: 24%;
+        min-height: 27.5%;
+        justify-content: center;
+    }
+
+    .listContent {
+        width: 100%;
+        justify-content: center;
+        overflow-y: scroll;
+        max-height: 100%;
+        border: 1px solid #e0e0e0;
+        border-top: 0;
+        border-left: 0;
+        border-right: 0;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .listContent::-webkit-scrollbar {
+        display: none;
+    }
+
+    .safeSingleItem {
+        display: flex;
+        width: 100%;
+        border: 1px solid #e0e0e0;
+        padding: 1.25rem 0rem;
+        border-left-width: 0;
+        border-right-width: 0;
+        border-bottom-width: 0;
+        justify-content: space-between;
+        cursor: pointer;
+        &.botRegistered {
+            cursor: not-allowed;
+            .safeAdress {
+                color: rgba(0, 0, 0, 0.5);
+            }
+            .botEnabled {
+                display: flex;
+                align-items: center;
+                display: flex;
+                align-items: center;
+                font-size: 1.25rem;
+                line-height: 1.75rem;
+                color: #000000;
+                font-family: "TelegrafMedium";
+                opacity: 0.5;
+                img {
+                    width: 1.75rem;
+                    margin-left: 0.625rem;
+                }
+            }
+        }
+    }
+
+    .noWaletItem {
+        display: flex;
+        width: 100%;
+        border: 1px solid #e0e0e0;
+        padding: 1.25rem 0rem;
+        border-left-width: 0;
+        border-right-width: 0;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .noWalletText {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.188rem;
+        line-height: 2rem;
+        margin-left: 1rem;
+        /* margin: 0 0 0 8px; */
+    }
+
+    .safeAdress {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.188rem;
+        line-height: 2rem;
+        /* margin: 0 0 0 8px; */
+    }
+    /* .safeTitle{
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 19px;
+        line-height: 32px;
+    } */
+    .multiSigCtn {
+        display: flex;
+        margin-top: 2.04%;
+        cursor: pointer;
+    }
+    .multiSigBtn {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1.188rem;
+        line-height: 2rem;
+        margin-left: 1.25rem;
+        color: #6852ff;
+    }
+    .chevronIcon {
+        align-self: center;
+    }
+    .plus {
+        height: 1.188rem;
+        width: 1.188rem;
+    }
+}
+.safeListPopoverContent {
+    font-size: 16px;
+    line-height: 24px;
+    color: #000000;
+    opacity: 0.5;
+    font-family: "TelegrafMedium";
+}

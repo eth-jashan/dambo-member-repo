@@ -1,32 +1,57 @@
-import { Typography } from "antd"
+import { Typography, Popover, message } from "antd"
 import React, { useCallback, useEffect } from "react"
-import styles from "./style.module.css"
+// import styles from "./style.module.css"
+import "./style.scss"
 import { MdOutlineAdd } from "react-icons/md"
 import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import chevron_right from "../../../assets/Icons/chevron_right.svg"
+import info from "../../../assets/Icons/info.svg"
 import plus from "../../../assets/Icons/plus_black.svg"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
 import {
     addSafeAddress,
     getAllSafeFromAddress,
+    connectDaoToDiscord,
 } from "../../../store/actions/dao-action"
 
-const GnosisSafeList = (props) => {
+const GnosisSafeList = ({
+    setStep,
+    discordIdentifier,
+    increaseStep,
+    setHasMultiSignWallet,
+}) => {
+    // const [searchParams, _setSearchParams] = useSearchParams()
+    // const discordIdentifier = searchParams.get("discord_identifier")
     const setCurrentStep = () => {
-        props.setStep(2)
+        setStep(2)
     }
     let safeList = useSelector((x) => x.dao.allSafeList)
-    safeList = safeList?.filter((x) => x.name === "")
+    if (!discordIdentifier) {
+        safeList = safeList?.filter((x) => x.name === "")
+    }
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const setGnosisWallet = (x) => {
-        dispatch(addSafeAddress(x.addr))
-        if (x.name !== "") {
-            navigate("/dashboard")
+    const setGnosisWallet = async (x) => {
+        if (x.guild_id) return
+        if (discordIdentifier && x.name) {
+            const res = await dispatch(
+                connectDaoToDiscord(x.uuid, discordIdentifier)
+            )
+            if (res) {
+                message.success("Discord registered to dao successfully")
+                navigate("/dashboard")
+            } else {
+                message.error("Something went wrong please try again later")
+            }
         } else {
-            props.setHasMultiSignWallet(true)
-            setCurrentStep()
+            dispatch(addSafeAddress(x.addr))
+            if (x.name !== "") {
+                navigate("/dashboard")
+            } else {
+                setHasMultiSignWallet(true)
+                setCurrentStep()
+            }
         }
     }
     const address = useSelector((x) => x.auth.address)
@@ -42,42 +67,64 @@ const GnosisSafeList = (props) => {
         fetchAllSafe()
     }, [fetchAllSafe])
 
+    const popoverContent = () => {
+        return (
+            <div className="safeListPopoverContent">
+                Discord bot is already enabled for this safe, go to DAO settings
+                to change discord server of the bot.
+            </div>
+        )
+    }
+
     const RenderSafe = ({ item }) => (
         <div
             onClick={() => setGnosisWallet(item)}
-            className={styles.safeSingleItem}
+            className={`safeSingleItem ${item.guild_id ? "botRegistered" : ""}`}
         >
             <div>
-                <Typography.Text className={styles.safeAdress}>
-                    {item.addr}
+                <Typography.Text className="safeAdress">
+                    {discordIdentifier ? item.name || item.addr : item.addr}
                 </Typography.Text>
             </div>
-            <img
-                src={chevron_right}
-                className={styles.chevronIcon}
-                width="32px"
-                height="32px"
-                alt="cheveron-right"
-            />
+            {item.guild_id ? (
+                <div className="botEnabled">
+                    <div>bot enabled</div>
+                    <Popover
+                        content={popoverContent}
+                        title="Drepute bot enabled"
+                        placement="right"
+                    >
+                        <img src={info} alt="info" />
+                    </Popover>
+                </div>
+            ) : (
+                <img
+                    src={chevron_right}
+                    className="chevronIcon"
+                    width="32px"
+                    height="32px"
+                    alt="cheveron-right"
+                />
+            )}
         </div>
     )
 
     const createNewMulti = () => {
-        props.increaseStep()
-        props.setHasMultiSignWallet(false)
+        increaseStep()
+        setHasMultiSignWallet(false)
     }
 
     const renderNoWallet = () => (
-        <div onClick={() => createNewMulti()} className={styles.noWaletItem}>
+        <div onClick={() => createNewMulti()} className="noWaletItem">
             <div>
-                <img alt="plus" src={plus} className={styles.plus} />
-                <Typography.Text className={styles.noWalletText}>
+                <img alt="plus" src={plus} className="plus" />
+                <Typography.Text className="noWalletText">
                     Create New Multisig
                 </Typography.Text>
             </div>
             <img
                 src={chevron_right}
-                className={styles.chevronIcon}
+                className="chevronIcon"
                 width="32px"
                 height="32px"
                 alt="cheveron-right"
@@ -86,29 +133,25 @@ const GnosisSafeList = (props) => {
     )
 
     return (
-        <div className={styles.layout}>
+        <div className="gnosisSafeListContainer layout">
             {safeList.length > 0 ? (
-                <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                <div className={`heading ${textStyles.ub_53}`}>
                     Select the safe you
                     <br /> want to continue with
                 </div>
             ) : (
-                <div
-                    className={`${styles.headingSecondary} ${textStyles.ub_53}`}
-                >
+                <div className={`headingSecondary ${textStyles.ub_53}`}>
                     Couldn’t find multisig
                 </div>
             )}
             {!safeList.length > 0 && (
-                <div
-                    className={`${styles.headingSecondary} ${styles.greyHeading}`}
-                >
+                <div className={`headingSecondary greyHeading`}>
                     Create a new one
                 </div>
             )}
-            <div className={styles.content}>
+            <div className="content">
                 {safeList.length > 0 ? (
-                    <div className={styles.listContent}>
+                    <div className="listContent">
                         {safeList.map((item, index) => (
                             <RenderSafe key={index} item={item} />
                         ))}
@@ -119,15 +162,13 @@ const GnosisSafeList = (props) => {
                 {safeList.length > 0 && (
                     <div
                         onClick={() => createNewMulti()}
-                        className={styles.multiSigCtn}
+                        className="multiSigCtn"
                     >
                         <MdOutlineAdd
                             color={"#6852FF"}
                             style={{ alignSelf: "center" }}
                         />
-                        <div className={styles.multiSigBtn}>
-                            Create New Multisig
-                        </div>
+                        <div className="multiSigBtn">Create New Multisig</div>
                     </div>
                 )}
             </div>

@@ -282,13 +282,15 @@ export default function DashboardLayout({
                 <MdLink size={16} color="white" />
                 <span className={styles.copyLinkdiv}>copy invite link</span>
             </div> */}
-            <div
-                onClick={() => openDiscordBot()}
-                className={styles.enableDiscord}
-            >
-                <FaDiscord color="white" />
-                <div>enable discord bot</div>
-            </div>
+            {!currentDao.guild_id && (
+                <div
+                    onClick={() => openDiscordBot()}
+                    className={styles.enableDiscord}
+                >
+                    <FaDiscord color="white" />
+                    <div>enable discord bot</div>
+                </div>
+            )}
         </div>
     )
 
