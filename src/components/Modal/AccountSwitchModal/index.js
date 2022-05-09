@@ -6,16 +6,17 @@ import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
 import { useDispatch, useSelector } from "react-redux"
 import {
+    getAllApprovedBadges,
+    getAllClaimedBadges,
+    getAllUnclaimedBadges,
     getContributorOverview,
     getContriRequest,
     getPayoutRequest,
     refreshContributionList,
     set_payout_filter,
     switchRole,
-    syncAllBadges,
     syncTxDataWithGnosis,
 } from "../../../store/actions/dao-action"
-import { getAllBadges } from "../../../store/actions/contibutor-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
 
 const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
@@ -25,8 +26,8 @@ const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
         dispatch(refreshContributionList())
         dispatch(switchRole(role))
         onChange()
-        await dispatch(syncAllBadges())
         dispatch(setLoadingState(true))
+        await dispatch(getAllApprovedBadges())
         await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
@@ -35,7 +36,8 @@ const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
             await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         } else if (role !== "ADMIN") {
-            dispatch(getAllBadges(address))
+            await dispatch(getAllClaimedBadges())
+            await dispatch(getAllUnclaimedBadges())
             dispatch(getContributorOverview())
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {

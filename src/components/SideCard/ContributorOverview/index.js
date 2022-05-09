@@ -45,8 +45,8 @@ const ContributionOverview = () => {
         </div>
     )
 
-    const claimed = useSelector((x) => x.contributor.claimed)
-    const unclaimed = useSelector((x) => x.contributor.unclaimed)
+    const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
+    const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
 
     const contributionStats = () => (
@@ -75,7 +75,7 @@ const ContributionOverview = () => {
                 }}
                 className={textStyle.m_14}
             >
-                {claimed.length} Claimed badges
+                {all_claimed_badge.length} Claimed badges
             </div>
             <div
                 style={{

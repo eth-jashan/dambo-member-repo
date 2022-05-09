@@ -6,6 +6,7 @@ import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 
 import apiClient from "../../utils/api_client"
+import { daoAction } from "../reducers/dao-slice"
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
@@ -135,9 +136,16 @@ export const setBadgesAfterClaim = (
         ])
 
         dispatch(
-            contributorAction.set_badges({
-                claimed: newClaimed,
+            daoAction.set_claimed_badges({
+                claimedTokens: newClaimed,
                 unclaimed: unClaimedToken.filter(
+                    (x) => x.id !== tokenId.toString()
+                ),
+            })
+        )
+        dispatch(
+            daoAction.set_unclaimed_badges({
+                unclaimedToken: unClaimedToken.filter(
                     (x) => x.id !== tokenId.toString()
                 ),
             })
@@ -150,12 +158,8 @@ export const getAllBadges = (address) => {
         // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const all_claimed_badge = getState().dao.all_claimed_badge
         const all_approved_badge = getState().dao.all_approved_badge
-        const pocp_dao_info = getState().dao.pocp_dao_info
-        const currentDao = getState().dao.currentDao
         // //console.log()
-        const communityId = pocp_dao_info.filter(
-            (x) => x.txhash === currentDao?.tx_hash
-        )
+        const communityId = useSelector((x) => x.dao.communityInfo)
         //console.log(all_approved_badge.filter((x) => x.identifier === "235"))
         const cid = getState().dao.contribution_id
 
@@ -187,7 +191,7 @@ export const getAllBadges = (address) => {
                 }
             })
         })
-        // //console.log('unclaimed',cid,unclaimed)
+
         dispatch(
             contributorAction.set_badges({
                 claimed: claimed_identifier,
@@ -195,7 +199,6 @@ export const getAllBadges = (address) => {
             })
         )
     }
-    // const
 }
 
 export const setClaimLoading = (status, id) => {

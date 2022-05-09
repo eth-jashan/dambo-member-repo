@@ -39,7 +39,10 @@ const ProfileModal = () => {
                 <div>
                     <div className={styles.dot} />
                     <div>
-                        <div className={textStyles.m_14}>0X4jh...4h3</div>
+                        <div className={textStyles.m_14}>{`${address.slice(
+                            0,
+                            5
+                        )}...${address.slice(-3)}`}</div>
                         <div
                             onClick={() => onDisconnect()}
                             className={`${textStyles.m_14} ${styles.disconnect}`}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useState } from "react"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -7,96 +7,46 @@ import { convertTokentoUsd } from "../../utils/conversion"
 import approved_badge from "../../assets/Icons/approved_badge.svg"
 import approved_badge_hover from "../../assets/Icons/approvedBadge_hover.svg"
 import {
-    getAllBadges,
-    setBadgesAfterClaim,
     setClaimLoading,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
 import { ethers } from "ethers"
 import { web3 } from "../../constant/web3"
-import { processClaimBadgeToPocp } from "../../utils/POCPutils"
-import { claimUpdate, syncAllBadges } from "../../store/actions/dao-action"
-import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
+import {
+    checkClaimApprovedSuccess,
+    isApprovedToken,
+    processClaimBadgeToPocp,
+} from "../../utils/POCPutils"
+import {
+    claimUpdate,
+    getAllApprovedBadges,
+    getAllClaimedBadges,
+    getAllUnclaimedBadges,
+} from "../../store/actions/dao-action"
 
 export default function ContributionCard({ item, signer, community_id }) {
     const dispatch = useDispatch()
     const address = item?.requested_by?.public_address
-    const all_approved_badge = useSelector(
-        (x) => x.dao.all_approved_badge
-    ).filter((x) => x.community.id === community_id)
+    const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
+    const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
     const jwt = useSelector((x) => x.auth.jwt)
     const contri_filter_key = useSelector((x) => x.dao.contri_filter_key)
     const role = useSelector((x) => x.dao.role)
+    const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const currentTransaction = useSelector(
         role === "ADMIN"
             ? (x) => x.transaction.currentTransaction
             : (x) => x.contributor.contribution_detail
     )
 
-    const checkClaimApprovedSuccess = () => {
-        const isTxSuccess = all_approved_badge.filter(
-            (x) => x.identifier === item?.id.toString()
-        )
-        if (
-            (item?.approved_tx && isTxSuccess.length === 1) ||
-            isTxSuccess.length === 1
-        ) {
-            return true
-        } else {
-            return false
-        }
-    }
+    console.log(
+        "status approved",
+        checkClaimApprovedSuccess(all_approved_badge, item?.id),
+        all_claimed_badge
+    )
 
-    const customHttpProvider = new ethers.providers.JsonRpcProvider(web3.infura)
-
-    const getClaimCheck = async () => {
-        if (item?.claimed_tx) {
-            const reciept = await customHttpProvider.getTransactionReceipt(
-                item?.claimed_tx
-            )
-            if (reciept.status) {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
-
-    const getApproveCheck = useCallback(async () => {
-        if (item?.approved_tx) {
-            // const customHttpProvider = new ethers.providers.JsonRpcProvider(
-            //     web3.infura
-            // )
-            const reciept = await customHttpProvider.getTransactionReceipt(
-                item?.approved_tx
-            )
-            if (reciept.status) {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }, [item?.approved_tx])
-
-    const [approvedBadge, setApprovedBadge] = useState(false)
-    const [claimBadge, setClaimBadge] = useState(false)
     const selectionActive = currentTransaction?.id === item.id
-
-    const getBadgeStatus = useCallback(async () => {
-        const approval = await getApproveCheck()
-        const claimStatus = await getClaimCheck()
-        setApprovedBadge(approval)
-        setClaimBadge(claimStatus)
-    }, [getApproveCheck])
-
-    useEffect(() => {
-        getBadgeStatus()
-    }, [getBadgeStatus])
 
     const onContributionPress = async () => {
         if (role === "ADMIN") {
@@ -104,9 +54,7 @@ export default function ContributionCard({ item, signer, community_id }) {
             if (ethPrice && contri_filter_key !== 0) {
                 dispatch(setTransaction(item, ethPrice))
             } else if (contri_filter_key === 0) {
-                dispatch(
-                    setTransaction(item, ethPrice, checkClaimApprovedSuccess())
-                )
+                dispatch(setTransaction(item, ethPrice))
             }
         } else {
             dispatch(setContributionDetail(item))
@@ -131,18 +79,6 @@ export default function ContributionCard({ item, signer, community_id }) {
         }
     }
 
-    const unclaimed = useSelector((x) => x.contributor.unclaimed)
-    const isApprovedToken = () => {
-        const token = unclaimed.filter(
-            (x) => x.identifier === item?.id.toString()
-        )
-        if (token.length > 0) {
-            return { status: true, token }
-        } else {
-            return { status: false, token: [] }
-        }
-    }
-
     const getContributionStatus = () => {
         if (item.status === "REQUESTED") {
             return { title: "waiting for approval", color: "#FFC664" }
@@ -160,26 +96,10 @@ export default function ContributionCard({ item, signer, community_id }) {
     }
 
     const onClaimEventCallback = async (event) => {
-        console.log("event", parseInt(event[0].toString()))
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const pocpProxy = new ethers.Contract(
-            web3.POCP_Proxy,
-            POCPProxy.abi,
-            signer
-        )
-        const userBadge = await pocpProxy.userBadge(
-            parseInt(event[0].toString())
-        )
-        dispatch(
-            setBadgesAfterClaim(
-                address,
-                userBadge.approvedBy,
-                userBadge.uri,
-                parseInt(isApprovedToken().token[0].id),
-                { id: community_id }
-            )
-        )
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllClaimedBadges())
+        await dispatch(getAllUnclaimedBadges())
         dispatch(setContributionDetail(null))
         dispatch(claimUpdate(item?.id))
         dispatch(setClaimLoading(false, item?.id))
@@ -192,17 +112,15 @@ export default function ContributionCard({ item, signer, community_id }) {
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, item?.id))
-            console.log(isApprovedToken().token[0].id)
+            console.log(isApprovedToken(unclaimed, item?.id).token[0].id)
             await processClaimBadgeToPocp(
-                isApprovedToken().token[0].id,
+                isApprovedToken(unclaimed, item?.id).token[0].id,
                 jwt,
                 item?.id,
                 onClaimEventCallback,
-                onClaimEventCallback
+                () => dispatch(setClaimLoading(false))
             )
         }
-        await dispatch(syncAllBadges())
-        dispatch(getAllBadges(address))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
     }
@@ -261,8 +179,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                     </div>
                     {item?.status === "APPROVED" &&
                         item?.payout_status === "PAID" &&
-                        isApprovedToken()?.status &&
-                        !claimBadge && (
+                        isApprovedToken(unclaimed, item?.id)?.status && (
                             <div
                                 onClick={async () => await claimBadges()}
                                 style={{ color: "#ECFFB8" }}
@@ -279,7 +196,7 @@ export default function ContributionCard({ item, signer, community_id }) {
                 </div>
             )}
             {role === "ADMIN" &&
-                ((checkClaimApprovedSuccess() || approvedBadge) &&
+                (checkClaimApprovedSuccess(all_approved_badge, item?.id) &&
                 item?.status === "APPROVED" &&
                 item?.payout_status === "PAID" ? (
                     onHover || selectionActive ? (

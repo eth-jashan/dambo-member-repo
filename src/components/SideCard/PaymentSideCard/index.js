@@ -10,7 +10,9 @@ import {
     syncTxDataWithGnosis,
     setLoading,
     syncExecuteData,
-    syncAllBadges,
+    getAllApprovedBadges,
+    getAllUnclaimedBadges,
+    getAllClaimedBadges,
 } from "../../../store/actions/dao-action"
 import { EthSignSignature } from "../../../utils/EthSignSignature"
 import { message } from "antd"
@@ -41,10 +43,7 @@ const PaymentSlideCard = ({ signer }) => {
     const delegates = currentDao?.signers
     const isReject = currentPayment?.status === "REJECTED"
     const nonce = useSelector((x) => x.dao.active_nonce)
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
+    const community_id = useSelector((x) => x.dao.communityInfo)
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
@@ -89,7 +88,9 @@ const PaymentSlideCard = ({ signer }) => {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
-        await dispatch(syncAllBadges())
+        await dispatch(getAllUnclaimedBadges())
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllClaimedBadges())
         await dispatch(getPayoutRequest())
         await dispatch(set_payout_filter("PENDING", 1))
         dispatch(setPayment(null))

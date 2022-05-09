@@ -31,6 +31,7 @@ const daoSlice = createSlice({
         all_payout_request: [],
         all_claimed_badge: [],
         all_approved_badge: [],
+        all_unclaimed_badges: [],
         pocp_dao_info: [],
         newSafeSetup: {
             owners: [],
@@ -48,6 +49,7 @@ const daoSlice = createSlice({
         },
         executePaymentLoading: false,
         active_payout_notification: false,
+        communityInfo: null,
     },
     reducers: {
         set_allSafe(state, action) {
@@ -141,6 +143,18 @@ const daoSlice = createSlice({
 
         set_after_approve(state, action) {
             state.contribution_request = action.payload.list
+        },
+        set_community_info(state, action) {
+            state.communityInfo = action.payload.communityInfo
+        },
+        set_approved_badges(state, action) {
+            state.all_approved_badge = action.payload.approvedTokens
+        },
+        set_claimed_badges(state, action) {
+            state.all_claimed_badge = action.payload.claimedTokens
+        },
+        set_unclaimed_badges(state, action) {
+            state.all_unclaimed_badges = action.payload.unclaimedToken
         },
     },
 })

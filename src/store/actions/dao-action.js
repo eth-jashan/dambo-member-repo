@@ -1,17 +1,11 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import { createClient } from "@urql/core"
-// import axios from "axios"
 import apiClient from "../../utils/api_client"
 import api from "../../constant/api"
 import routes from "../../constant/routes"
-import {
-    POCP_APPROVED_TOKEN,
-    POCP_CLAIMED_TOKEN,
-    POCP_COMMUNTIES_TX_HASH,
-} from "../../utils/subgraphQuery"
 import { authActions } from "../reducers/auth-slice"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
+import { PocpGetters } from "pocp-service-sdk"
 
 const serviceClient = new SafeServiceClient(
     "https://safe-transaction.rinkeby.gnosis.io/"
@@ -133,8 +127,6 @@ export const getAllDaowithAddress = () => {
                         }
                     })
                 }
-
-                // //console.log('selection index', selectionIndex)
 
                 dispatch(
                     daoAction.set_current_dao({
@@ -1081,24 +1073,6 @@ export const setLoading = (loadingStatus, paymentId = null) => {
     }
 }
 
-export const getDaoHash = () => {
-    return async (dispatch, getState) => {
-        const query_communtiy = POCP_COMMUNTIES_TX_HASH
-        const client = createClient({
-            url: api.subgraph.url,
-        })
-
-        try {
-            const resCommunity = await client.query(query_communtiy).toPromise()
-            const communities = resCommunity.data.communities
-            dispatch(daoAction.set_pocp_dao({ info: communities }))
-        } catch (error) {
-            //console.log("error: ", error.toString())
-        }
-    }
-    // const
-}
-
 export const claimUpdate = (id) => {
     return (dispatch, getState) => {
         const currentList = getState().dao.contribution_request
@@ -1110,29 +1084,121 @@ export const claimUpdate = (id) => {
     }
 }
 
-export const syncAllBadges = () => {
-    return async (dispatch) => {
-        const query_claimed = POCP_CLAIMED_TOKEN
-        const query_approved = POCP_APPROVED_TOKEN
-
-        const client = createClient({
-            url: api.subgraph.url,
-        })
-
-        try {
-            const resApproved = await client.query(query_approved).toPromise()
-            const resClaimed = await client.query(query_claimed).toPromise()
-            const claimed = resClaimed.data?.pocpTokens
-            const allApproved = resApproved?.data?.approvedTokens
-            dispatch(daoAction.set_pocp_badges({ claimed, allApproved }))
-        } catch (error) {
-            //console.log("error", error.toString())
-        }
+export const getCommunityId = () => {
+    return async (dispatch, getState) => {
+        const daoTxHash = getState().dao.currentDao?.tx_hash
+        const pocpGetter = new PocpGetters()
+        const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
+        dispatch(
+            daoAction.set_community_info({
+                communityInfo: community.data.communities,
+            })
+        )
     }
-    // const
 }
 
-export const pocpRegirationInfo = (dao_uuid, name, owner) => {
+export const getAllApprovedBadges = () => {
+    return async (dispatch, getState) => {
+        const communityInfo = getState().dao.communityInfo
+        const pocpGetter = new PocpGetters()
+
+        try {
+            const approvedToken = await pocpGetter.getApproveBadges(
+                communityInfo[0]?.id.toString()
+            )
+
+            // if (
+            //     approvedToken.data.approvedTokens.length > approvedBadge.length
+            // ) {
+            dispatch(
+                daoAction.set_approved_badges({
+                    approvedTokens: approvedToken.data.approvedTokens,
+                })
+            )
+            // }
+        } catch (error) {
+            console.log("error", error)
+            dispatch(
+                daoAction.set_approved_badges({
+                    approvedTokens: [],
+                })
+            )
+        }
+    }
+}
+
+export const updateApprovedBadge = (tokenId, communityId, identifier) => {
+    return async (dispatch, getState) => {
+        const approvedBadge = getState().dao.all_approved_badge
+        const newApprovedBadge = {
+            id: tokenId,
+            community: {
+                id: communityId,
+            },
+            identifier,
+        }
+        const updatedList = approvedBadge.concat(newApprovedBadge)
+
+        dispatch(daoAction.set_approved_badges({ approvedTokens: updatedList }))
+    }
+}
+
+export const getAllClaimedBadges = () => {
+    return async (dispatch, getState) => {
+        const communityInfo = getState().dao.communityInfo
+        const address = getState().auth.address
+        const pocpGetter = new PocpGetters()
+        try {
+            const claimedTokens = await pocpGetter.getClaimedBadgesOfClaimers(
+                communityInfo[0]?.id.toString(),
+
+                address
+            )
+
+            dispatch(
+                daoAction.set_claimed_badges({
+                    claimedTokens: claimedTokens.data.pocpTokens,
+                })
+            )
+            console.log("claimed", claimedTokens.data.pocpTokens.length)
+        } catch (error) {
+            console.log("claimed", error)
+            dispatch(
+                daoAction.set_claimed_badges({
+                    claimedTokens: [],
+                })
+            )
+        }
+    }
+}
+
+export const getAllUnclaimedBadges = () => {
+    return async (dispatch, getState) => {
+        const communityInfo = getState().dao.communityInfo
+        const pocpGetter = new PocpGetters()
+        try {
+            const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
+                communityInfo[0]?.id.toString()
+                // "15"
+            )
+            console.log("all unclaimed badges Fetched", unclaimedTokens.length)
+            dispatch(
+                daoAction.set_unclaimed_badges({
+                    unclaimedToken: unclaimedTokens,
+                })
+            )
+        } catch (error) {
+            console.log(error)
+            dispatch(
+                daoAction.set_claimed_badges({
+                    unclaimedToken: [],
+                })
+            )
+        }
+    }
+}
+
+export const pocpRegistrationInfo = (dao_uuid, name, owner) => {
     return (dispatch) => {
         dispatch(daoAction.set_pocp_info({ info: { dao_uuid, name, owner } }))
     }
@@ -1148,20 +1214,16 @@ export const refreshContributionList = () => {
     }
 }
 
-export const afterApproval = (txHash, id) => {
-    return (dispatch, getState) => {
-        const contributionrequest = getState().dao.contribution_request
-        // const newArray = contributionrequest.map((x) => {
-        //     if (x.id === id) x.approved_tx = txHash
-        // })
-        const newArray = []
-        contributionrequest.forEach((x) => {
-            if (x.id === id) {
-                x.approved_tx = txHash
-            }
-            newArray.push(x)
+export const contributorRefreshList = () => {
+    return (dispatch) => {
+        dispatch(daoAction.set_approved_badges({ approvedTokens: [] }))
+        dispatch(
+            daoAction.set_unclaimed_badges({
+                unclaimedToken: [],
+            })
+        )
+        daoAction.set_claimed_badges({
+            claimedTokens: [],
         })
-        console.log(newArray)
-        dispatch(daoAction.set_after_approve({ list: newArray }))
     }
 }

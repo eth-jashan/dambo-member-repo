@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {
     addSafeAddress,
     lastSelectedId,
-    pocpRegirationInfo,
+    pocpRegistrationInfo,
     registerDao,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
@@ -103,7 +103,7 @@ export default function Onboarding() {
             const { dao_uuid, name } = await dispatch(registerDao())
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
-                dispatch(pocpRegirationInfo(dao_uuid, name, owners))
+                dispatch(pocpRegistrationInfo(dao_uuid, name, owners))
                 setCurrentStep(currentStep + 1)
             } else {
                 navigate(`/`)
@@ -202,7 +202,7 @@ export default function Onboarding() {
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
                 // await processDaoToPOCP(name, owner, address, jwt)
-                dispatch(pocpRegirationInfo(dao_uuid, name, owner))
+                dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
                 increaseStep()
             } else {
                 navigate(`/onboard/dao`)

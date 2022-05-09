@@ -5,9 +5,13 @@ import styles from "./style.module.css"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
+    contributorRefreshList,
+    getAllApprovedBadges,
+    getAllClaimedBadges,
+    getAllUnclaimedBadges,
+    getCommunityId,
     getContributorOverview,
     getContriRequest,
-    getDaoHash,
     getPayoutRequest,
     gnosisDetailsofDao,
     lastSelectedId,
@@ -15,7 +19,6 @@ import {
     set_active_nonce,
     set_dao,
     set_payout_filter,
-    syncAllBadges,
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
 import { links } from "../../constant/links"
@@ -36,10 +39,7 @@ import ContributionOverview from "../../components/SideCard/ContributorOverview"
 import AccountSwitchModal from "../../components/Modal/AccountSwitchModal"
 import { AiFillCaretDown } from "react-icons/ai"
 import { setLoadingState } from "../../store/actions/toast-action"
-import {
-    getAllBadges,
-    setContributionDetail,
-} from "../../store/actions/contibutor-action"
+import { setContributionDetail } from "../../store/actions/contibutor-action"
 
 export default function DashboardLayout({
     children,
@@ -67,10 +67,7 @@ export default function DashboardLayout({
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
     const [roleContainerHover, setRoleContainerHover] = useState(false)
     const address = useSelector((x) => x.auth.address)
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
+    const community_id = useSelector((x) => x.dao.communityInfo)
 
     const currentUser = currentDao?.signers.filter(
         (x) => x.public_address === address
@@ -96,15 +93,25 @@ export default function DashboardLayout({
         }
     }
 
+    const contributorFetch = async () => {
+        dispatch(setLoadingState(true))
+        await dispatch(getContriRequest())
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllClaimedBadges())
+        await dispatch(getAllUnclaimedBadges())
+        dispatch(getContributorOverview())
+        dispatch(setLoadingState(false))
+    }
+
     const changeAccount = async (item, index) => {
         dispatch(refreshContributionList())
+        dispatch(contributorRefreshList())
         dispatch(resetApprovedRequest())
         dispatch(set_dao(item))
+        await dispatch(getCommunityId())
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
-        await dispatch(getDaoHash())
-        await dispatch(syncAllBadges())
         dispatch(lastSelectedId(item?.dao_details?.uuid))
         await dispatch(gnosisDetailsofDao())
         dispatch(setLoadingState(true))
@@ -115,9 +122,7 @@ export default function DashboardLayout({
             await dispatch(set_payout_filter("PENDING", 1))
             await dispatch(syncTxDataWithGnosis())
         } else if (role !== "ADMIN") {
-            await dispatch(syncAllBadges())
-            dispatch(getAllBadges(address))
-            dispatch(getContributorOverview())
+            await contributorFetch()
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())

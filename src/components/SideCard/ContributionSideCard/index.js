@@ -5,19 +5,16 @@ import cross from "../../../assets/Icons/cross_white.svg"
 import delete_icon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
+import { setTransaction } from "../../../store/actions/transaction-action"
 import {
-    rejectContriRequest,
-    setTransaction,
-} from "../../../store/actions/transaction-action"
-import {
-    getAllBadges,
-    setBadgesAfterClaim,
     setClaimLoading,
     setContributionDetail,
 } from "../../../store/actions/contibutor-action"
 import POCPBadge from "../../POCPBadge"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import {
+    checkClaimApprovedSuccess,
+    isApprovedToken,
     processBadgeApprovalToPocp,
     processClaimBadgeToPocp,
 } from "../../../utils/POCPutils"
@@ -25,11 +22,14 @@ import {
 import { ethers } from "ethers"
 import { web3 } from "../../../constant/web3"
 import {
-    afterApproval,
     claimUpdate,
+    getAllApprovedBadges,
+    getAllClaimedBadges,
+    getAllUnclaimedBadges,
     getContriRequest,
+    getPayoutRequest,
     set_contri_filter,
-    syncAllBadges,
+    set_payout_filter,
 } from "../../../store/actions/dao-action"
 import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
@@ -54,45 +54,29 @@ const ContributionSideCard = ({
             ? (x) => x.transaction.currentTransaction
             : (x) => x.contributor.contribution_detail
     )
+    const communityInfo = useSelector((x) => x.dao.communityInfo)
     const role = useSelector((x) => x.dao.role)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const address = currentTransaction?.requested_by?.public_address
-    const signer_address = useSelector((x) => x.auth.address)
+    // const signer_address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const [txInfo, setTxInfo] = useState([])
     const [safeInfo, setSafeInfo] = useState()
     const dispatch = useDispatch()
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
+    const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const [signerOpen, setSignerOpen] = useState(
         currentTransaction?.status !== "REQUESTED" &&
             !(safeInfo?.owners?.length === txInfo?.confirmations?.length)
     )
     const [executionOpen, setExecutionOpen] = useState(false)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
-    const all_approved_badge = useSelector(
-        (x) => x.dao.all_approved_badge
-    ).filter((x) => x.community.id === community_id)
+
+    const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
     const getEmoji = () => {
         if (currentTransaction?.stream === "DESIGN") {
             return "🎨"
         } else {
             return "🎨"
-        }
-    }
-    const checkClaimApprovedSuccess = () => {
-        const isTxSuccess = all_approved_badge.filter(
-            (x) => x.identifier === currentTransaction?.id.toString()
-        )
-        if (
-            (currentTransaction?.approved_tx && isTxSuccess.length === 1) ||
-            isTxSuccess.length === 1
-        ) {
-            return true
-        } else {
-            return false
         }
     }
 
@@ -598,19 +582,18 @@ const ContributionSideCard = ({
         </div>
     )
 
-    const unclaimed = useSelector((x) => x.contributor.unclaimed)
     const claimed = useSelector((x) => x.contributor.claimed)
 
-    const isApprovedToken = () => {
-        const token = unclaimed.filter(
-            (x) => x.identifier === currentTransaction?.id.toString()
-        )
-        if (token.length > 0) {
-            return { status: true, token }
-        } else {
-            return { status: false, token: [] }
-        }
-    }
+    // const isApprovedToken = () => {
+    //     const token = unclaimed.filter(
+    //         (x) => x.identifier === currentTransaction?.id.toString()
+    //     )
+    //     if (token.length > 0) {
+    //         return { status: true, token }
+    //     } else {
+    //         return { status: false, token: [] }
+    //     }
+    // }
     const [load, setLoad] = useState(false)
 
     const onClaimEventCallback = async (event) => {
@@ -625,15 +608,21 @@ const ContributionSideCard = ({
         const userBadge = await pocpProxy.userBadge(
             parseInt(event[0].toString())
         )
-        dispatch(
-            setBadgesAfterClaim(
-                address,
-                userBadge.approvedBy,
-                userBadge.uri,
-                parseInt(isApprovedToken().token[0].id),
-                { id: community_id }
-            )
-        )
+        // dispatch(
+        //     setBadgesAfterClaim(
+        //         address,
+        //         userBadge.approvedBy,
+        //         userBadge.uri,
+        //         parseInt(
+        //             isApprovedToken(unclaimed, currentTransaction?.id).token[0]
+        //                 .id
+        //         ),
+        //         { id: community_id }
+        //     )
+        // )
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllClaimedBadges())
+        await dispatch(getAllUnclaimedBadges())
         dispatch(setContributionDetail(null))
         dispatch(claimUpdate(currentTransaction?.id))
         dispatch(setClaimLoading(false, currentTransaction?.id))
@@ -646,17 +635,17 @@ const ContributionSideCard = ({
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, currentTransaction?.id))
-            console.log(isApprovedToken().token[0].id)
+            console.log(
+                isApprovedToken(unclaimed, currentTransaction?.id).token[0].id
+            )
             await processClaimBadgeToPocp(
-                isApprovedToken().token[0].id,
+                isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
                 jwt,
                 currentTransaction?.id,
                 onClaimEventCallback,
-                onClaimEventCallback
+                () => dispatch(setClaimLoading(false))
             )
         }
-        await dispatch(syncAllBadges())
-        dispatch(getAllBadges(address))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
     }
@@ -702,15 +691,21 @@ const ContributionSideCard = ({
         //         currentTransaction?.id
         //     )
         // )
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllUnclaimedBadges())
+        await dispatch(getAllClaimedBadges())
+        // await dispatch(getPayoutRequest())
+        //await dispatch(set_payout_filter("PENDING", 1))
         onContributionCrossPress()
         setLoad(false)
     }
 
     const approvePOCPBadgeWithUrl = async () => {
         setLoad(true)
+        console.log(parseInt(communityInfo[0].id))
         if (currentTransaction?.ipfs_url) {
             await processBadgeApprovalToPocp(
-                parseInt(community_id[0].id),
+                parseInt(communityInfo[0].id),
                 [currentTransaction?.requested_by?.public_address],
                 [currentTransaction?.id?.toString()],
                 [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
@@ -744,7 +739,7 @@ const ContributionSideCard = ({
                             clearTimeout(interval)
                             if (cid?.length > 0) {
                                 await processBadgeApprovalToPocp(
-                                    parseInt(community_id[0].id),
+                                    parseInt(communityInfo[0].id),
                                     [
                                         currentTransaction?.requested_by
                                             ?.public_address,
@@ -761,7 +756,7 @@ const ContributionSideCard = ({
                 } else {
                     if (cid?.length > 0) {
                         await processBadgeApprovalToPocp(
-                            parseInt(community_id[0].id),
+                            parseInt(communityInfo[0].id),
                             [currentTransaction?.requested_by?.public_address],
                             [currentTransaction?.id?.toString()],
                             url,
@@ -774,7 +769,11 @@ const ContributionSideCard = ({
             }
         }
     }
-    console.log(approvedBadge, checkClaimApprovedSuccess())
+    // console.log(
+    //     "here",
+    //     !checkClaimApprovedSuccess(all_approved_badge, currentTransaction?.id),
+    //     txInfo?.isExecuted
+    // )
     return (
         <div className={styles.container}>
             <img
@@ -914,7 +913,10 @@ const ContributionSideCard = ({
             <div className={styles.divider} />
             {renderSigners_admin()}
             {role === "ADMIN" &&
-                (checkClaimApprovedSuccess() || !approvedBadge) &&
+                !checkClaimApprovedSuccess(
+                    all_approved_badge,
+                    currentTransaction?.id
+                ) &&
                 txInfo?.isExecuted &&
                 txInfo?.value !== "0" &&
                 currentDao?.tx_hash && (
@@ -952,9 +954,7 @@ const ContributionSideCard = ({
                         </div>
                     </div>
                 )}
-            {!claimBadge &&
-                isApprovedToken().status &&
-                !currentTransaction?.isClaimed &&
+            {isApprovedToken(unclaimed, currentTransaction?.id).status &&
                 !isAdmin &&
                 currentTransaction?.status !== "REQUESTED" &&
                 currentTransaction?.status !== "REJECTED" &&

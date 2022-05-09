@@ -19,7 +19,10 @@ import {
     syncExecuteData,
     syncTxDataWithGnosis,
     setLoading,
-    syncAllBadges,
+    getAllUnclaimedBadges,
+    getAllClaimedBadges,
+    getAllApprovedBadges,
+    updateApprovedBadge,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { setPayoutToast } from "../../store/actions/toast-action"
@@ -45,10 +48,9 @@ export default function PaymentCard({ item, signer }) {
     const delegates = currentDao?.signers
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === "REJECTED"
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
+
+    const community_id = useSelector((x) => x.dao.communityInfo)
+
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
@@ -309,13 +311,23 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const [approveTitle, setApproveTitle] = useState(false)
-    const approvalEventCallback = async () => {
+    const approvalEventCallback = async (a) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         await provider.provider.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
-        await dispatch(syncAllBadges())
+
+        // dispatch(
+        //     updateApprovedBadge(
+        //         a[2].toString(),
+        //         a[0].toString(),
+        //         a[1].toString()
+        //     )
+        // )
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllUnclaimedBadges())
+        await dispatch(getAllClaimedBadges())
         await dispatch(getPayoutRequest())
         await dispatch(set_payout_filter("PENDING", 1))
         dispatch(setPayment(null))

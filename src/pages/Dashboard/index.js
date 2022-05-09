@@ -7,17 +7,19 @@ import { AiOutlineCaretDown } from "react-icons/all"
 import {
     addActivePaymentBadge,
     createPayout,
+    getAllApprovedBadges,
+    getAllClaimedBadges,
     getAllDaowithAddress,
+    getAllUnclaimedBadges,
+    getCommunityId,
     getContributorOverview,
     getContriRequest,
-    getDaoHash,
     getNonceForCreation,
     getPayoutRequest,
     gnosisDetailsofDao,
     refreshContributionList,
     set_active_nonce,
     set_payout_filter,
-    syncAllBadges,
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
@@ -50,10 +52,7 @@ import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import GnosisExternalPayment from "../../components/Alert/GnosisExternalPayment/index"
 import BadgeItem from "../../components/BadgeItem"
-import {
-    getAllBadges,
-    setContributionDetail,
-} from "../../store/actions/contibutor-action"
+import { setContributionDetail } from "../../store/actions/contibutor-action"
 import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
@@ -74,10 +73,7 @@ export default function Dashboard() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const pocp_dao_info = useSelector((x) => x.dao.pocp_dao_info)
-    const community_id = pocp_dao_info.filter(
-        (x) => x.txhash === currentDao?.tx_hash
-    )
+    const community_id = useSelector((x) => x.dao.communityInfo)
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
@@ -199,7 +195,8 @@ export default function Dashboard() {
     const contributorFetch = async () => {
         dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
-        dispatch(getAllBadges(address))
+        await dispatch(getAllClaimedBadges())
+        await dispatch(getAllUnclaimedBadges())
         dispatch(getContributorOverview())
         dispatch(setLoadingState(false))
     }
@@ -207,11 +204,11 @@ export default function Dashboard() {
     const initialLoad = useCallback(async () => {
         dispatch(refreshContributionList())
         const account = await onInit()
-        await dispatch(getDaoHash())
         if (address === ethers.utils.getAddress(account)) {
             const accountRole = await dispatch(getAllDaowithAddress())
-            await dispatch(syncAllBadges())
+            await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
+            await dispatch(getAllApprovedBadges())
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
@@ -245,9 +242,8 @@ export default function Dashboard() {
     }
 
     const accountSwitch = useCallback(async () => {
-        await dispatch(getDaoHash())
-        await dispatch(syncAllBadges())
         const accountRole = await dispatch(getAllDaowithAddress())
+        await dispatch(getCommunityId())
         if (accountRole === "ADMIN") {
             await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
@@ -266,7 +262,6 @@ export default function Dashboard() {
     useEffect(() => {
         if (!modalPayment) {
             if (role === accountMode && account_index === 0) {
-                // console.log("loaded for first time......");
                 initialLoad()
             } else {
                 accountSwitch()
@@ -281,12 +276,12 @@ export default function Dashboard() {
     const onRouteChange = async (route) => {
         dispatch(refreshContributionList())
         setTab(route)
+        await dispatch(getAllApprovedBadges())
         if (role === "ADMIN") {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
             }
-            await dispatch(getDaoHash())
             dispatch(setLoadingState(true))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
@@ -297,17 +292,10 @@ export default function Dashboard() {
             }
             dispatch(setLoadingState(false))
         } else {
-            if (route === "payments") {
-                dispatch(setLoadingState(true))
-                await dispatch(syncAllBadges())
-                dispatch(getAllBadges(address))
-                dispatch(setLoadingState(false))
-            } else {
-                dispatch(setLoadingState(true))
-                await dispatch(getContriRequest())
-                dispatch(getContributorOverview())
-                dispatch(setLoadingState(false))
-            }
+            console.log("hereee on Route change")
+            dispatch(setLoadingState(true))
+            await contributorFetch()
+            dispatch(setLoadingState(false))
         }
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -675,7 +663,7 @@ export default function Dashboard() {
         ) : (
             renderEmptyScreen()
         )
-    const dataSource = useSelector((x) => x.contributor.claimed)
+    const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const renderBadges = () => (
         <div
             style={{
@@ -745,7 +733,6 @@ export default function Dashboard() {
 
     const adminScreen = () =>
         tab === "contributions" ? renderContribution() : renderPayment()
-    console.log(dataSource)
     const contributorScreen = () =>
         tab === "contributions"
             ? renderContributorContribution()

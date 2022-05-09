@@ -73,13 +73,14 @@ export const processBadgeApprovalToPocp = async (
             relayer_token: "f1960990-b217-4426-90fd-21802301363f",
         })
         await pocp.createInstance()
-        const res = pocp.approveBadgeToContributor(
+        const res = await pocp.approveBadgeToContributor(
             parseInt(communityId),
             to,
             url,
             cid,
             eventCallbackFunction
         )
+        console.log(res)
         if (res) {
             await updatePocpApproval(jwt, res.hash, cid)
         }
@@ -135,8 +136,29 @@ export const getTokenURI = async (signer, tokenId) => {
     )
 
     const uri = await pocpProxy.tokenURI(tokenId)
-    //console.log("uriiii", uri)
     if (uri) {
         return uri
+    }
+}
+
+export const checkClaimApprovedSuccess = (approved, id) => {
+    const unclaimedList = approved || []
+    const isTxSuccess = unclaimedList.filter(
+        (x) => x.identifier === id.toString()
+    )
+    if (isTxSuccess.length === 1) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export const isApprovedToken = (unclaimed, id) => {
+    const unclaimedList = unclaimed || []
+    const token = unclaimedList.filter((x) => x.identifier === id.toString())
+    if (token.length > 0) {
+        return { status: true, token }
+    } else {
+        return { status: false, token: [] }
     }
 }
