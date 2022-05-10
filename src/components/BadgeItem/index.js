@@ -8,6 +8,7 @@ import { setContributionDetail } from "../../store/actions/contibutor-action"
 const BadgeItem = ({ item }) => {
     const [meta, setMeta] = useState()
     const allContribution = useSelector((x) => x.dao.contribution_id)
+    const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const role = useSelector((x) => x.dao.role)
     const currentTransaction = useSelector(
@@ -30,9 +31,11 @@ const BadgeItem = ({ item }) => {
     const [onHover, setHover] = useState(false)
     const dispatch = useDispatch()
     const onBadgeClick = () => {
+        const identifier = all_approved_badge.filter((x) => x.id === item?.id)
         const contribution = allContribution.filter(
-            (x) => x.id.toString() === item?.identifier
+            (x) => x.id.toString() === identifier[0]?.identifier
         )
+        // console.log(contribution, identifier, all_approved_badge)
         dispatch(setContributionDetail({ ...contribution[0], isClaimed: true }))
     }
 

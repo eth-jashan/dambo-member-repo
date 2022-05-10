@@ -790,10 +790,12 @@ const ContributionSideCard = ({
                         className={`${textStyle.m_16} ${styles.ownerInfo}`}
                     >{`${
                         currentTransaction?.requested_by?.metadata?.name
-                    } . (${address.slice(0, 5)}...${address.slice(-3)})`}</div>
+                    } . (${address?.slice(0, 5)}...${address?.slice(
+                        -3
+                    )})`}</div>
                     <div
                         className={`${textStyle.m_16} ${styles.timeInfo}`}
-                    >{`${currentTransaction?.stream.toLowerCase()} ${
+                    >{`${currentTransaction?.stream?.toLowerCase()} ${
                         currentTransaction?.time_spent
                     } hrs`}</div>
                     <Typography.Paragraph
