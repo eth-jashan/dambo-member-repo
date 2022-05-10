@@ -9029,6 +9029,11 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
+pocp-service-sdk@^0.2.8--beta:
+  version "0.2.8--beta"
+  resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-0.2.8--beta.tgz#d37dfa205c26b90a96bf1a094840b26e9c8617fb"
+  integrity sha512-coSFIxYpDMZyjLAo9K5nJpMp4tO/7L5bPOdx1mPPtq2uvKbkrf262L1wgczJHCWWsCzWNjhgle1UINKCFr/SkA==
+
 portfinder@^1.0.26:
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"

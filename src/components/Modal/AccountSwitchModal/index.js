@@ -19,7 +19,7 @@ import {
 } from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
 
-const AccountSwitchModal = ({ onChange, route, c_id, signer }) => {
+const AccountSwitchModal = ({ onChange, route }) => {
     const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
     const changeRole = async (role) => {

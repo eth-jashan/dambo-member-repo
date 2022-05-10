@@ -597,29 +597,7 @@ const ContributionSideCard = ({
     const [load, setLoad] = useState(false)
 
     const onClaimEventCallback = async (event) => {
-        console.log("event", parseInt(event[0].toString()))
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const pocpProxy = new ethers.Contract(
-            web3.POCP_Proxy,
-            POCPProxy.abi,
-            signer
-        )
-        const userBadge = await pocpProxy.userBadge(
-            parseInt(event[0].toString())
-        )
-        // dispatch(
-        //     setBadgesAfterClaim(
-        //         address,
-        //         userBadge.approvedBy,
-        //         userBadge.uri,
-        //         parseInt(
-        //             isApprovedToken(unclaimed, currentTransaction?.id).token[0]
-        //                 .id
-        //         ),
-        //         { id: community_id }
-        //     )
-        // )
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
@@ -630,6 +608,9 @@ const ContributionSideCard = ({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
+    }
+    const onErrorCallBack = () => {
+        dispatch(setClaimLoading(false, currentTransaction?.id))
     }
 
     const claimBadges = async () => {
@@ -643,7 +624,7 @@ const ContributionSideCard = ({
                 jwt,
                 currentTransaction?.id,
                 onClaimEventCallback,
-                () => dispatch(setClaimLoading(false))
+                onErrorCallBack
             )
         }
         dispatch(setTransaction(null))

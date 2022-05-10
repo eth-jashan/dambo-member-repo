@@ -123,6 +123,7 @@ export const processClaimBadgeToPocp = async (
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
+        errorCallback()
     }
 }
 

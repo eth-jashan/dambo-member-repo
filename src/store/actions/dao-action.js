@@ -1179,7 +1179,6 @@ export const getAllUnclaimedBadges = () => {
         try {
             const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
                 communityInfo[0]?.id.toString()
-                // "15"
             )
             console.log("all unclaimed badges Fetched", unclaimedTokens.length)
             dispatch(

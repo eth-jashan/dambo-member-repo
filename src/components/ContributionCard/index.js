@@ -108,17 +108,19 @@ export default function ContributionCard({ item, signer, community_id }) {
             params: [{ chainId: web3.chainid.rinkeby }],
         })
     }
+    const onErrorCallBack = () => {
+        dispatch(setClaimLoading(false, item?.id))
+    }
 
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, item?.id))
-            console.log(isApprovedToken(unclaimed, item?.id).token[0].id)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, item?.id).token[0].id,
                 jwt,
                 item?.id,
                 onClaimEventCallback,
-                () => dispatch(setClaimLoading(false))
+                onErrorCallBack
             )
         }
         dispatch(setTransaction(null))

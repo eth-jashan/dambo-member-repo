@@ -276,6 +276,7 @@ export default function Dashboard() {
     const onRouteChange = async (route) => {
         dispatch(refreshContributionList())
         setTab(route)
+        await dispatch(getCommunityId())
         await dispatch(getAllApprovedBadges())
         if (role === "ADMIN") {
             if (safeSdk) {
@@ -292,7 +293,6 @@ export default function Dashboard() {
             }
             dispatch(setLoadingState(false))
         } else {
-            console.log("hereee on Route change")
             dispatch(setLoadingState(true))
             await contributorFetch()
             dispatch(setLoadingState(false))

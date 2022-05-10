@@ -317,14 +317,6 @@ export default function PaymentCard({ item, signer }) {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: web3.chainid.rinkeby }],
         })
-
-        // dispatch(
-        //     updateApprovedBadge(
-        //         a[2].toString(),
-        //         a[0].toString(),
-        //         a[1].toString()
-        //     )
-        // )
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllUnclaimedBadges())
         await dispatch(getAllClaimedBadges())

@@ -242,9 +242,7 @@ export default function DashboardLayout({
                         )}
                         {switchRoleModal && (
                             <AccountSwitchModal
-                                signer={signer}
                                 route={route}
-                                c_id={community_id[0]?.id}
                                 onChange={() => accountSwitchPress()}
                             />
                         )}
