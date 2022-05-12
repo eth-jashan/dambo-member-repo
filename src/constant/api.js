@@ -1,7 +1,7 @@
 const api = {
     drepute: {
         dev: {
-            BASE_URL: "https://staging.api.drepute.xyz",
+            BASE_URL: "https://staging.api.drepute.xyz/dao_tool_server",
         },
     },
     pocp_service: {
