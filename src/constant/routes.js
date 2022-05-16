@@ -27,6 +27,7 @@ const routes = {
     discord: {
         register: "/discord/register",
         identifierStatus: "/discord/identifier/status",
+        userId: "/discord/user_id",
     },
 }
 

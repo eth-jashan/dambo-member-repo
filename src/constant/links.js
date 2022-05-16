@@ -10,4 +10,8 @@ export const links = {
         // dev:'http://localhost:3000/contributor/invite/'
         dev: "https://staging.app.drepute.xyz/contributor/invite/",
     },
+    discord_fallback: {
+        local: "http://localhost:3000/discord/fallback",
+        staging: "https://staging.app.drepute.xyz/discord/fallback",
+    },
 }

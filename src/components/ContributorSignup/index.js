@@ -14,7 +14,7 @@ import {
 import { useNavigate, useParams } from "react-router"
 import InputText from "../InputComponent/Input"
 
-const ContributorSignup = ({ increaseStep, decreaseStep }) => {
+const ContributorSignup = ({ discordUserId }) => {
     const { id } = useParams()
     const [name, setName] = useState("")
     const dispatch = useDispatch()
@@ -35,7 +35,7 @@ const ContributorSignup = ({ increaseStep, decreaseStep }) => {
     const onSubmit = async () => {
         dispatch(setContriInfo(name, role))
         try {
-            const res = await dispatch(joinContributor(id))
+            const res = await dispatch(joinContributor(id, discordUserId))
             if (res) {
                 navigate(`/dashboard`)
                 message.success("You successfully joined as contributor")
