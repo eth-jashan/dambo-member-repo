@@ -149,7 +149,11 @@ export default function DashboardLayout({
         if ("clipboard" in navigator) {
             message.success("invite link copied succesfully!")
             return await navigator.clipboard.writeText(
-                `${links.contributor_invite.dev}${currentDao?.uuid}`
+                `${
+                    window.location.origin
+                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                    currentDao?.uuid
+                }`
             )
         } else {
             return document.execCommand(
@@ -282,22 +286,24 @@ export default function DashboardLayout({
             <div className={`${textStyles.m_28} ${styles.selectContriText}`}>
                 Select contribution to see details
             </div>
-            <div
-                onClick={() => copyTextToClipboard()}
-                className={styles.copyLink}
-            >
-                <MdLink size={16} color="white" />
-                <span className={styles.copyLinkdiv}>copy invite link</span>
-            </div>
-            {!currentDao.guild_id && (
+            <div>
                 <div
-                    onClick={() => openDiscordBot()}
-                    className={styles.enableDiscord}
+                    onClick={() => copyTextToClipboard()}
+                    className={styles.copyLink}
                 >
-                    <FaDiscord color="white" />
-                    <div>enable discord bot</div>
+                    <MdLink color="white" />
+                    <span className={styles.copyLinkdiv}>copy invite link</span>
                 </div>
-            )}
+                {!currentDao.guild_id && (
+                    <div
+                        onClick={() => openDiscordBot()}
+                        className={styles.enableDiscord}
+                    >
+                        <FaDiscord color="white" />
+                        <div>enable discord bot</div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 
