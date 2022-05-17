@@ -203,9 +203,6 @@ export default function Onboarding() {
             }
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
-<<<<<<< Updated upstream
-                // await processDaoToPOCP(name, owner, address, jwt)
-=======
                 if (guildId) {
                     const res = await dispatch(
                         connectDaoToDiscord(dao_uuid, guildId, discordUserId)
@@ -220,7 +217,6 @@ export default function Onboarding() {
                         )
                     }
                 }
->>>>>>> Stashed changes
                 dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
                 increaseStep()
             } else {
