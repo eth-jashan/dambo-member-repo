@@ -16,7 +16,7 @@
             "modules": true
         }
     },
-    "plugins": ["react", "unused-imports", "prettier", "only-warn"],
+    "plugins": ["react", "unused-imports", "prettier"],
     "rules": {
         "react/prop-types": 0,
         "no-unused-vars": "off",
@@ -30,7 +30,15 @@
                 "args": "after-used",
                 "argsIgnorePattern": "^_"
             }
-        ]
+        ],
+        "camelcase": "off",
+        "no-undef": "error",
+        "no-use-before-define": "error",
+        "react/jsx-no-undef": "error",
+        "spaced-comment": "warn",
+        "prefer-const": "warn",
+        "array-callback-return": "warn",
+        "no-unreachable": "warn"
     },
     "settings": {
         "react": {
