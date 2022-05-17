@@ -11,6 +11,7 @@ import {
     lastSelectedId,
     pocpRegistrationInfo,
     registerDao,
+    connectDaoToDiscord,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
@@ -202,7 +203,24 @@ export default function Onboarding() {
             }
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
+<<<<<<< Updated upstream
                 // await processDaoToPOCP(name, owner, address, jwt)
+=======
+                if (guildId) {
+                    const res = await dispatch(
+                        connectDaoToDiscord(dao_uuid, guildId, discordUserId)
+                    )
+                    if (res) {
+                        message.success(
+                            "Discord registered to dao successfully"
+                        )
+                    } else {
+                        message.error(
+                            "Something went wrong please try again later"
+                        )
+                    }
+                }
+>>>>>>> Stashed changes
                 dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
                 increaseStep()
             } else {
