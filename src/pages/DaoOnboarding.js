@@ -321,12 +321,7 @@ export default function Onboarding() {
                 deploying={deploying}
                 steps={steps}
             >
-                {getComponentFromName(
-                    isDiscordIdentifierValid
-                        ? steps[currentStep]
-                        : "identifierExpired",
-                    hasMultiSignWallet
-                )}
+                {getComponentFromName(steps[currentStep], hasMultiSignWallet)}
             </Layout>
         </div>
     )
