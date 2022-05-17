@@ -76,7 +76,7 @@ export default function DashboardLayout({
 
     const openDiscordBot = () => {
         localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
-        window.open(links.discord_add_bot.local, "_self")
+        window.open(links.discord_add_bot.staging, "_self")
     }
 
     const getInitialForAccount = () => {
@@ -281,13 +281,13 @@ export default function DashboardLayout({
             <div className={`${textStyles.m_28} ${styles.selectContriText}`}>
                 Select contribution to see details
             </div>
-            {/* <div
+            <div
                 onClick={() => copyTextToClipboard()}
                 className={styles.copyLink}
             >
                 <MdLink size={16} color="white" />
                 <span className={styles.copyLinkdiv}>copy invite link</span>
-            </div> */}
+            </div>
             {!currentDao.guild_id && (
                 <div
                     onClick={() => openDiscordBot()}

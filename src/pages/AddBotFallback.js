@@ -19,7 +19,7 @@ export default function AddBotFallback() {
             const discordId = await dispatch(
                 getDiscordUserId(
                     code,
-                    "http://localhost:3000/discord/add-bot-fallback"
+                    "http://staging.app.drepute.xyz/discord/add-bot-fallback"
                 )
             )
             const res = await dispatch(
