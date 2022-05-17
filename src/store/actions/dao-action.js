@@ -1227,15 +1227,17 @@ export const contributorRefreshList = () => {
     }
 }
 
-export const connectDaoToDiscord = (daoUuid, discordIdentifier) => {
+export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
     return async (dispatch, getState) => {
         const data = {
             dao_uuid: daoUuid,
+            guild_id: guildId,
+            discord_user_id: discordId,
         }
         const jwt = getState().auth.jwt
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.register}/${discordIdentifier}`,
+                `${api.drepute.dev.BASE_URL}${routes.discord.register}`,
                 data,
                 {
                     headers: {
@@ -1244,132 +1246,6 @@ export const connectDaoToDiscord = (daoUuid, discordIdentifier) => {
                 }
             )
             if (res.data.success) {
-                return 1
-            } else {
-                return 0
-            }
-        } catch (err) {
-            return 0
-        }
-    }
-}
-
-export const getIdentifierStatus = (identifier) => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.identifierStatus}/${identifier}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            console.log("res", res.data)
-            if (res.data.success && res.data.data.is_active) {
-                return 1
-            } else {
-                return 0
-            }
-        } catch (err) {
-            return 0
-        }
-    }
-}
-
-export const connectDaoToDiscord = (daoUuid, discordIdentifier) => {
-    return async (dispatch, getState) => {
-        const data = {
-            dao_uuid: daoUuid,
-        }
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.register}/${discordIdentifier}`,
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (res.data.success) {
-                return 1
-            } else {
-                return 0
-            }
-        } catch (err) {
-            return 0
-        }
-    }
-}
-
-export const getIdentifierStatus = (identifier) => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.identifierStatus}/${identifier}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            console.log("res", res.data)
-            if (res.data.success && res.data.data.is_active) {
-                return 1
-            } else {
-                return 0
-            }
-        } catch (err) {
-            return 0
-        }
-    }
-}
-
-export const connectDaoToDiscord = (daoUuid, discordIdentifier) => {
-    return async (dispatch, getState) => {
-        const data = {
-            dao_uuid: daoUuid,
-        }
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.register}/${discordIdentifier}`,
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (res.data.success) {
-                return 1
-            } else {
-                return 0
-            }
-        } catch (err) {
-            return 0
-        }
-    }
-}
-
-export const getIdentifierStatus = (identifier) => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}/${routes.discord.identifierStatus}/${identifier}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            console.log("res", res.data)
-            if (res.data.success && res.data.data.is_active) {
                 return 1
             } else {
                 return 0

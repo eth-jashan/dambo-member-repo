@@ -75,10 +75,8 @@ export default function DashboardLayout({
     )
 
     const openDiscordBot = () => {
-        window.open(
-            "https://discord.com/api/oauth2/authorize?client_id=968825110075166751&permissions=84992&scope=bot%20applications.commands",
-            "_blank"
-        )
+        localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
+        window.open(links.discord_add_bot.local, "_self")
     }
 
     const getInitialForAccount = () => {

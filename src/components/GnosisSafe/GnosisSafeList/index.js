@@ -17,26 +17,26 @@ import {
 
 const GnosisSafeList = ({
     setStep,
-    discordIdentifier,
+    guildId,
     increaseStep,
     setHasMultiSignWallet,
+    discordUserId,
 }) => {
     // const [searchParams, _setSearchParams] = useSearchParams()
-    // const discordIdentifier = searchParams.get("discord_identifier")
     const setCurrentStep = () => {
         setStep(2)
     }
     let safeList = useSelector((x) => x.dao.allSafeList)
-    if (!discordIdentifier) {
+    if (!guildId) {
         safeList = safeList?.filter((x) => x.name === "")
     }
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const setGnosisWallet = async (x) => {
         if (x.guild_id) return
-        if (discordIdentifier && x.name) {
+        if (guildId && x.name) {
             const res = await dispatch(
-                connectDaoToDiscord(x.uuid, discordIdentifier)
+                connectDaoToDiscord(x.uuid, guildId, discordUserId)
             )
             if (res) {
                 message.success("Discord registered to dao successfully")
@@ -83,7 +83,7 @@ const GnosisSafeList = ({
         >
             <div>
                 <Typography.Text className="safeAdress">
-                    {discordIdentifier ? item.name || item.addr : item.addr}
+                    {guildId ? item.name || item.addr : item.addr}
                 </Typography.Text>
             </div>
             {item.guild_id ? (

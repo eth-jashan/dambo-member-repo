@@ -11,7 +11,6 @@ import {
     lastSelectedId,
     pocpRegistrationInfo,
     registerDao,
-    getIdentifierStatus,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
@@ -41,13 +40,11 @@ export default function Onboarding() {
     const accounts = useSelector((x) => x.dao.dao_list)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const [searchParams, _setSearchParams] = useSearchParams()
-    const discordIdentifier = searchParams.get("discord_identifier")
-    const [isDiscordIdentifierValid, setIsDiscordIdentifierValid] =
-        useState(true)
+    const guildId = searchParams.get("guild_id")
+    const discordUserId = searchParams.get("discord_user_id")
 
     const steps = [
         "connectWallet",
-        // ...(discordIdentifier ? ["registerDiscord"] : []),
         "gnosisSafeList",
         "addOwners",
         "approveTransaction",
@@ -84,15 +81,6 @@ export default function Onboarding() {
             setCurrentStep(0)
         }
     }, [address])
-
-    useEffect(async () => {
-        if (discordIdentifier) {
-            const res = await dispatch(getIdentifierStatus(discordIdentifier))
-            if (!res) {
-                setIsDiscordIdentifierValid(false)
-            }
-        }
-    }, [])
 
     const deploySafe = useCallback(
         async (owners) => {
@@ -266,7 +254,8 @@ export default function Onboarding() {
                         setStep={(x) => setCurrentStep(x)}
                         increaseStep={increaseStep}
                         setHasMultiSignWallet={setHasMultiSignWallet}
-                        discordIdentifier={discordIdentifier}
+                        guildId={guildId}
+                        discordUserId={discordUserId}
                     />
                 )
             }
