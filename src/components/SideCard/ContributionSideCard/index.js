@@ -26,12 +26,7 @@ import {
     getAllApprovedBadges,
     getAllClaimedBadges,
     getAllUnclaimedBadges,
-    getContriRequest,
-    getPayoutRequest,
-    set_contri_filter,
-    set_payout_filter,
 } from "../../../store/actions/dao-action"
-import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
 import * as dayjs from "dayjs"
 import {
