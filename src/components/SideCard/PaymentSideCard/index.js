@@ -1,5 +1,4 @@
-import React, { useState } from "react"
-import cross from "../../../assets/Icons/cross_white.svg"
+import React from "react"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -653,7 +652,7 @@ const PaymentSlideCard = ({ signer }) => {
         <div className={styles.container}>
             <img
                 onClick={() => dispatch(setPayment(null))}
-                src={cross}
+                src={crossSvg}
                 alt="cross"
                 className={styles.cross}
             />

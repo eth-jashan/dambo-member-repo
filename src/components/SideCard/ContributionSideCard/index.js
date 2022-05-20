@@ -233,8 +233,7 @@ const ContributionSideCard = ({
         </div>
     )
     const getStatusProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Waiting for approval",
@@ -264,8 +263,7 @@ const ContributionSideCard = ({
     }
 
     const getSigningProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Signing",
@@ -295,8 +293,7 @@ const ContributionSideCard = ({
     }
 
     const getExecutionProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Signing",

@@ -38,7 +38,9 @@
         "spaced-comment": "warn",
         "prefer-const": "warn",
         "array-callback-return": "warn",
-        "no-unreachable": "warn"
+        "no-unreachable": "warn",
+        "no-useless-escape": "warn",
+        "react/no-unescaped-entities": "warn"
     },
     "settings": {
         "react": {
