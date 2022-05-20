@@ -38,7 +38,8 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint . --ext .js,.jsx,.css",
-        "lint-and-fix": "eslint . --ext .js,.jsx,.css --fix"
+        "lint-and-fix": "eslint . --ext .js,.jsx,.css --fix",
+        "postinstall": "husky install"
     },
     "eslintConfig": {
         "extends": [
