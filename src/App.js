@@ -16,6 +16,7 @@ import {
     signout,
 } from "./store/actions/auth-action"
 import { web3 } from "./constant/web3"
+import AddBotFallback from "./pages/AddBotFallback"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
@@ -71,6 +72,10 @@ function App() {
                     <Route
                         path="contributor/invite/:name/:id"
                         element={<ContributorSignupFallback />}
+                    />
+                    <Route
+                        path="/discord/add-bot-fallback"
+                        element={<AddBotFallback />}
                     />
                 </Routes>
             </div>

@@ -156,7 +156,7 @@ export const getCommunityRole = () => {
     }
 }
 
-export const joinContributor = (id) => {
+export const joinContributor = (id, discordUserId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
@@ -167,6 +167,7 @@ export const joinContributor = (id) => {
             addr: address,
             name: contributorName,
             community_role: role.value,
+            discord_user_id: discordUserId,
         }
 
         try {

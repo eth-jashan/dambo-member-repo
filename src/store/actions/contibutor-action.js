@@ -67,6 +67,25 @@ export const getDiscordOAuth = (code) => {
     }
 }
 
+export const getDiscordUserId = (grant_code, redirect_uri) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const res = await apiClient.get(
+            `${api.drepute.dev.BASE_URL}${routes.discord.userId}?discord_code=${grant_code}&redirect_uri=${redirect_uri}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            }
+        )
+        if (res.data.success) {
+            return res.data.data.discord_user_id
+        } else {
+            return null
+        }
+    }
+}
+
 export const createContributionrequest = (
     title,
     type,

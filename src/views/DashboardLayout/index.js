@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Tooltip, message } from "antd"
 import "antd/dist/antd.css"
 import styles from "./style.module.css"
+import { FaDiscord } from "react-icons/fa"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -40,6 +41,7 @@ import AccountSwitchModal from "../../components/Modal/AccountSwitchModal"
 import { AiFillCaretDown } from "react-icons/ai"
 import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
+import { MdLink } from "react-icons/md"
 
 export default function DashboardLayout({
     children,
@@ -72,6 +74,11 @@ export default function DashboardLayout({
     const currentUser = currentDao?.signers.filter(
         (x) => x.public_address === address
     )
+
+    const openDiscordBot = () => {
+        localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
+        window.open(links.discord_add_bot.staging, "_self")
+    }
 
     const getInitialForAccount = () => {
         if (currentUser) {
@@ -142,7 +149,11 @@ export default function DashboardLayout({
         if ("clipboard" in navigator) {
             message.success("invite link copied succesfully!")
             return await navigator.clipboard.writeText(
-                `${links.contributor_invite.dev}${currentDao?.uuid}`
+                `${
+                    window.location.origin
+                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                    currentDao?.uuid
+                }`
             )
         } else {
             return document.execCommand(
@@ -274,6 +285,24 @@ export default function DashboardLayout({
         <div className={styles.emptySideCard}>
             <div className={`${textStyles.m_28} ${styles.selectContriText}`}>
                 Select contribution to see details
+            </div>
+            <div>
+                <div
+                    onClick={() => copyTextToClipboard()}
+                    className={styles.copyLink}
+                >
+                    <MdLink color="white" />
+                    <span className={styles.copyLinkdiv}>copy invite link</span>
+                </div>
+                {!currentDao.guild_id && (
+                    <div
+                        onClick={() => openDiscordBot()}
+                        className={styles.enableDiscord}
+                    >
+                        <FaDiscord color="white" />
+                        <div>enable discord bot</div>
+                    </div>
+                )}
             </div>
         </div>
     )

@@ -2,11 +2,13 @@ import React, { useCallback, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router"
 import { signout } from "../store/actions/auth-action"
-import { getDiscordOAuth } from "../store/actions/contibutor-action"
+import {
+    getDiscordOAuth,
+    getDiscordUserId,
+} from "../store/actions/contibutor-action"
+import { links } from "../constant/links"
 
 const DiscordFallback = () => {
-    const address = useSelector((x) => x.auth.address)
-    const isAdmin = useSelector((x) => x.auth.isAdmin)
     const id = useSelector((x) => x.contributor.invite_code)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -15,15 +17,23 @@ const DiscordFallback = () => {
 
     const fallbackCheck = useCallback(async () => {
         try {
+            const userId = await dispatch(
+                getDiscordUserId(code, links.discord_fallback.staging)
+            )
             const res = await dispatch(getDiscordOAuth(code))
-            if (res) {
-                navigate(`/onboard/contributor/${id}`)
+            const data = JSON.parse(localStorage.getItem("discord"))
+            if (res && userId) {
+                navigate(`/onboard/contributor/${data.id}`, {
+                    state: {
+                        discordUserId: userId,
+                    },
+                })
             } else {
                 dispatch(signout())
                 navigate(`/`)
             }
         } catch (error) {}
-    }, [code, dispatch, id, navigate])
+    }, [code, dispatch, navigate])
 
     useEffect(() => {
         fallbackCheck()
