@@ -1,9 +1,7 @@
-import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { gnosisAction } from "../reducers/gnosis-slice"
 // import axios from "axios";
 import apiClient from "../../utils/api_client"
-import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 
 export const getAddressMembership = (chainId) => {
     return async (dispatch, getState) => {
@@ -19,7 +17,7 @@ export const getAddressMembership = (chainId) => {
                 }
             )
             console.log(chainId, res.data.data)
-            let dao_details = []
+            const dao_details = []
 
             res.data.data.forEach((x, i) => {
                 if (x.dao_details.chain_id === chainId) {

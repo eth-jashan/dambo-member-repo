@@ -9,7 +9,6 @@ import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import InputText from "../Input"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { addOwners, addThreshold } from "../../store/actions/dao-action"
-import { web3 } from "../../constant/web3"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 
 export default function AddOwners({

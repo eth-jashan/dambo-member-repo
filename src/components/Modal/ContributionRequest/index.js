@@ -69,9 +69,9 @@ const ContributionRequestModal = ({ setVisibility }) => {
     ]
 
     const handleLinkBlur = () => {
-        let urlExpression =
+        const urlExpression =
             /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
-        let regex = new RegExp(urlExpression)
+        const regex = new RegExp(urlExpression)
         if (link.length > 0 && !link.match(regex)) {
             setLinkError(true)
         } else {

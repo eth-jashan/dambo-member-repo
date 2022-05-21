@@ -10,7 +10,6 @@ import upload_pic from "../../assets/lottie/upload_pic.json"
 import retry from "../../assets/Icons/retry.svg"
 import upload_file from "../../assets/Icons/upload_file.svg"
 import Lottie from "react-lottie"
-import api from "../../constant/api"
 import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"

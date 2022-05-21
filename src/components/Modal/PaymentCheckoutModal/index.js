@@ -16,7 +16,6 @@ import {
 } from "../../../store/actions/dao-action"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
-import { web3 } from "../../../constant/web3"
 import RequestItem from "./RequestItem"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 
@@ -31,7 +30,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl()) //change here service
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl()) // change here service
         const transaction_obj = []
         if (approved_request.length > 0) {
             approved_request.map((item, index) => {

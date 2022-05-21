@@ -6,7 +6,6 @@ import {
     getDiscordOAuth,
     getDiscordUserId,
 } from "../store/actions/contibutor-action"
-import { links } from "../constant/links"
 
 const DiscordFallback = () => {
     const id = useSelector((x) => x.contributor.invite_code)

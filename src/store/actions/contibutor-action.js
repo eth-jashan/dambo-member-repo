@@ -1,6 +1,5 @@
 // import axios from "axios"
 import { ethers } from "ethers"
-import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
@@ -178,7 +177,7 @@ export const getAllBadges = (address) => {
         const all_approved_badge = getState().dao.all_approved_badge
         // //console.log()
         const communityId = getState().dao.communityInfo
-        //console.log(all_approved_badge.filter((x) => x.identifier === "235"))
+        // console.log(all_approved_badge.filter((x) => x.identifier === "235"))
         const cid = getState().dao.contribution_id
 
         const claimed = all_claimed_badge.filter(

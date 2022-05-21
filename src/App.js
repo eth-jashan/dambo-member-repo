@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
@@ -18,10 +18,7 @@ import {
 import AppContext from "./appContext"
 import {
     getSelectedChainId,
-    removeChainSelection,
-    setChainInfoAction,
 } from "./utils/POCPutils"
-import { web3 } from "./constant/web3"
 import AddBotFallback from "./pages/AddBotFallback"
 
 function App() {

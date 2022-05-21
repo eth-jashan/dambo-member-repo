@@ -23,17 +23,12 @@ import {
 } from "../../../utils/POCPutils"
 
 import { ethers } from "ethers"
-import { web3 } from "../../../constant/web3"
 import {
     claimUpdate,
     getAllApprovedBadges,
     getAllClaimedBadges,
     getAllUnclaimedBadges,
     getContributorOverview,
-    getContriRequest,
-    getPayoutRequest,
-    set_contri_filter,
-    set_payout_filter,
 
 } from "../../../store/actions/dao-action"
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"

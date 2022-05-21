@@ -22,11 +22,10 @@ import {
     getAllUnclaimedBadges,
     getAllClaimedBadges,
     getAllApprovedBadges,
-    updateApprovedBadge,
     updateListOnExecute,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
-import { setPayoutToast, setPocpAction } from "../../store/actions/toast-action"
+import { setPayoutToast } from "../../store/actions/toast-action"
 import {
     getIpfsUrl,
     uploadApproveMetaDataUpload,
@@ -37,8 +36,6 @@ import {
     processBadgeApprovalToPocp,
     setChainInfoAction,
 } from "../../utils/POCPutils"
-import { web3 } from "../../constant/web3"
-import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 import AppContext from "../../appContext"
 

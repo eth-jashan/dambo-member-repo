@@ -21,8 +21,7 @@ import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
 import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { web3 } from "../../constant/web3"
-import { chainSwitch, setChainInfoAction } from "../../utils/POCPutils"
+import { setChainInfoAction } from "../../utils/POCPutils"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const address = useSelector((x) => x.auth.address)
@@ -93,14 +92,14 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             const chainId = await signer.getChainId()
             const newAddress = await signer.getAddress()
             dispatch(setAddress(newAddress))
-            //check jwt validity
+            // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
             if (res && (chainId === 4 || chainId === 1)) {
                 // has token and chain is selected for rinkeby
                 setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
                 if (isAdmin) {
-                    //checks whether has dao membership or not
+                    // checks whether has dao membership or not
                     const res = await dispatch(getAddressMembership(chainId))
                     if (res) {
                         setAuth(false)

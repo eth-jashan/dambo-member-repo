@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import "./styles.scss"
 import { Input } from "antd"
 const MultiTextBox = ({ value = "", setValue, textLimit }) => {

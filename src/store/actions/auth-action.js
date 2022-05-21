@@ -1,5 +1,4 @@
 import axios from "axios"
-import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"

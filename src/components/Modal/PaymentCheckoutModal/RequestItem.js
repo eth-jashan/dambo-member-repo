@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import {
     rejectApproval,
-    rejectContriRequest,
 } from "../../../store/actions/transaction-action"
 import styles from "./styles.module.css"
 import textStyles from "../../../commonStyles/textType/styles.module.css"

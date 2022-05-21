@@ -29,7 +29,7 @@ const authSlice = createSlice({
             // state.signer = action.payload.signer;
         },
         set_signing(state, action) {
-            //console.log("jwt store", action.payload.jwt)
+            // console.log("jwt store", action.payload.jwt)
             state.jwt = action.payload.jwt
             state.loggedIn = true
         },
