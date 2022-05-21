@@ -7,7 +7,7 @@ import {
     updatePocpRegister,
 } from "./relayFunctions"
 
-//processing registerdao function
+// processing registerdao function
 export const getSelectedChainId = () => {
     const chainId = JSON.parse(localStorage.getItem("chain_info"))
     return chainId
@@ -51,7 +51,7 @@ export const processDaoToPOCP = async (
     }
 }
 
-//processing badge approver function
+// processing badge approver function
 
 export const processBadgeApprovalToPocp = async (
     communityId,
@@ -90,7 +90,7 @@ export const processBadgeApprovalToPocp = async (
     }
 }
 
-//processing badge claim function
+// processing badge claim function
 
 export const processClaimBadgeToPocp = async (
     tokenId,

@@ -11,7 +11,6 @@ import {
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
 import { ethers } from "ethers"
-import { web3 } from "../../constant/web3"
 import {
     chainSwitch,
     checkClaimApprovedSuccess,
@@ -27,7 +26,6 @@ import {
     getAllUnclaimedBadges,
     getContributorOverview,
 } from "../../store/actions/dao-action"
-import { setPocpAction } from "../../store/actions/toast-action"
 import AppContext from "../../appContext"
 
 export default function ContributionCard({ item, signer, community_id }) {

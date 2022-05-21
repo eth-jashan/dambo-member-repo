@@ -111,8 +111,8 @@ export const getAllDaowithAddress = (chainId) => {
             )
 
             if (res.data.data.length > 0) {
-                //console.log(res.data.data)
-                let dao_details = []
+                // console.log(res.data.data)
+                const dao_details = []
 
                 res.data.data.forEach((x, i) => {
                     if (x.dao_details.chain_id === chainId) {
@@ -586,14 +586,14 @@ export const getPayoutRequest = () => {
                             }
                         )
                     } catch (error) {
-                        //console.log("error while updating gnosis", error)
+                        // console.log("error while updating gnosis", error)
                     }
                 }
             } else {
                 return 0
             }
         } catch (error) {
-            //console.log("error...", error)
+            // console.log("error...", error)
             return 0
         }
     }
@@ -735,7 +735,7 @@ export const set_payout_filter = (filter_key, number) => {
                     return 0
                 }
             } catch (error) {
-                //console.log("error...", error)
+                // console.log("error...", error)
                 dispatch(
                     daoAction.set_filter_list({
                         list: [],
@@ -773,7 +773,7 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
             }
         )
     } catch (error) {
-        //console.log("error while updating gnosis", error)
+        // console.log("error while updating gnosis", error)
     }
 }
 
@@ -844,11 +844,11 @@ export const syncTxDataWithGnosis = (payout) => {
                         }
                     )
                 } catch (error) {
-                    //console.log("error while updating gnosis", error)
+                    // console.log("error while updating gnosis", error)
                 }
             }
         } catch (error) {
-            //console.log("error...", error)
+            // console.log("error...", error)
             // dispatch(daoAction.set_contri_list({
             //   list:[]
             // }))

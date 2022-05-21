@@ -5,7 +5,6 @@ import NextButton from "../NextButton"
 import styles from "./styles.module.css"
 import Select from "react-select"
 import {
-    getCommunityRole,
     joinContributor,
     setAdminStatus,
     setContriInfo,

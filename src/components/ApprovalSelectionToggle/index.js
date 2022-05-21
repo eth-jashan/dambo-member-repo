@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { assets } from "../../constant/assets"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import "./styles.scss"

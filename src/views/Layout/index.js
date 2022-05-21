@@ -4,7 +4,6 @@ import BackSvg from "../../assets/Icons/backSvg.svg"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import Lottie from "react-lottie"
 import background from "../../assets/lottie/onboarding_background.json"
-import ProfileModal from "../../components/Modal/ProfileModal"
 
 export default function Layout({
     children,

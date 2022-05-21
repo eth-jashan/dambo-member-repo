@@ -44,21 +44,18 @@ import {
 import {
     setLoadingState,
     setPayoutToast,
-    setPocpAction,
 } from "../../store/actions/toast-action"
 import UniversalPaymentModal from "../../components/Modal/UniversalPaymentModal"
 import plus_black from "../../assets/Icons/plus_black.svg"
 import plus_gray from "../../assets/Icons/plus_gray.svg"
 import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
-import GnosisExternalPayment from "../../components/Alert/GnosisExternalPayment/index"
 import BadgeItem from "../../components/BadgeItem"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
-import { processDaoToPOCP } from "../../utils/POCPutils"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")

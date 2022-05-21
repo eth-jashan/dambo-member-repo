@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router"
 import { connectDaoToDiscord } from "../store/actions/dao-action"
 import { message } from "antd"
 import { getDiscordUserId } from "../store/actions/contibutor-action"
-import { links } from "../constant/links"
 
 export default function AddBotFallback() {
     const dispatch = useDispatch()

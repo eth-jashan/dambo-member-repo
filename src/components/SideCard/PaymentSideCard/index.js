@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react"
-import cross from "../../../assets/Icons/cross_white.svg"
+import React, { useContext } from "react"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -26,7 +25,6 @@ import {
 import crossSvg from "../../../assets/Icons/cross_white.svg"
 import {
     setPayoutToast,
-    setPocpAction,
 } from "../../../store/actions/toast-action"
 import {
     getIpfsUrl,

@@ -187,7 +187,7 @@ export const rejectContriRequest = (id) => {
                 return 0
             }
         } catch (error) {
-            //console.log('error....', error)
+            // console.log('error....', error)
         }
     }
 }
@@ -220,7 +220,7 @@ export const rejectApproval = (id) => {
                 return 0
             }
         } catch (error) {
-            //console.log('error....', error)
+            // console.log('error....', error)
         }
     }
 }
