@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react"
-import cross from "../../../assets/Icons/cross_white.svg"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
