@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    height: 85%;
+    height: 90vh;
     padding: 2rem 1.5rem 0rem 1.5rem;
     display: flex;
     flex-direction: column;
@@ -35,8 +35,7 @@
 
 .ownerInfo {
     color: white;
-    text-align: start;
-    margin-top: 1.5rem;
+    /* text-align: start; */
 }
 
 .timeInfo {
@@ -49,6 +48,7 @@
     color: #737373;
     text-align: start;
     margin-bottom: 1.5rem;
+    margin-left: 2.625rem;
 }
 
 .addToken {
@@ -175,4 +175,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.contributorContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.faceIcon {
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 1.125rem;
+}
+
+.timelineContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
 }

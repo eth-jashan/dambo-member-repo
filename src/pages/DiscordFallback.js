@@ -18,7 +18,10 @@ const DiscordFallback = () => {
     const fallbackCheck = useCallback(async () => {
         try {
             const userId = await dispatch(
-                getDiscordUserId(code, links.discord_fallback.staging)
+                getDiscordUserId(
+                    code,
+                    `${window.location.origin}/discord/fallback`
+                )
             )
             const res = await dispatch(getDiscordOAuth(code))
             const data = JSON.parse(localStorage.getItem("discord"))

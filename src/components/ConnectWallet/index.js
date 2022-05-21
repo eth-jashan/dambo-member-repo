@@ -22,6 +22,7 @@ import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { web3 } from "../../constant/web3"
+import { chainSwitch, setChainInfoAction } from "../../utils/POCPutils"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const address = useSelector((x) => x.auth.address)
@@ -35,9 +36,11 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
             setAuth(true)
-            if (chainId === web3.chainid.connectionChainID) {
+            if (chainId === 4 || chainId === 1) {
                 try {
-                    const res = await dispatch(authWithSign(address, signer))
+                    const res = await dispatch(
+                        authWithSign(address, signer, chainId)
+                    )
                     if (res) {
                         await afterConnectWalletCallback(setAuth)
                     } else {
@@ -48,14 +51,11 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     setAuth(false)
                 }
             } else {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                )
                 try {
-                    await provider.provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: web3.chainid.rinkeby }],
-                    })
+                    // await chainSwitch(process.env.REACT_APP_ETHEREUM_CHAIN_ID)
+                    message.error(
+                        "You are in a wrong chain, We are live in rinkeby and mainnet"
+                    )
                     setAuth(false)
                 } catch (error) {
                     setAuth(false)
@@ -78,7 +78,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     const onDiscordAuth = () => {
         dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(links.discord_oauth.staging)
+        window.location.replace(links.discord_oauth.local)
     }
 
     const loadWeb3Modal = useCallback(async () => {
@@ -95,14 +95,13 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             dispatch(setAddress(newAddress))
             //check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            //console.log("load", jwt, res)
-            if (res && chainId === web3.chainid.connectionChainID) {
+            if (res && (chainId === 4 || chainId === 1)) {
                 // has token and chain is selected for rinkeby
-
+                setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
                 if (isAdmin) {
-                    //checkes whether has dao membership or not
-                    const res = await dispatch(getAddressMembership())
+                    //checks whether has dao membership or not
+                    const res = await dispatch(getAddressMembership(chainId))
                     if (res) {
                         setAuth(false)
                         navigate(`/dashboard`)
@@ -119,7 +118,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 message.success("Already a member")
                                 dispatch(setAdminStatus(true))
                                 const isMember = await dispatch(
-                                    getAddressMembership()
+                                    getAddressMembership(chainId)
                                 )
                                 if (isMember) {
                                     setAuth(false)
@@ -135,8 +134,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         }
                     }
                 }
-            } else if (!res && chainId === web3.chainid.connectionChainID) {
-                // doesnot have valid token and chain is selected one
+            } else if (!res && (chainId === 4 || chainId === 1)) {
+                // doesn't have valid token and chain is selected one
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 await authWithWallet(newAddress, chainId, signer)
@@ -144,13 +143,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 // chain is wrong
                 setAuth(false)
                 dispatch(setLoggedIn(false))
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
+                message.error(
+                    "You are in a wrong chain, We are live in rinkeby and mainnet"
                 )
-                await provider.provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: web3.chainid.rinkeby }],
-                })
+                // await chainSwitch(process.env.REACT_APP_ETHEREUM_CHAIN_ID)
             }
         } catch (error) {
             message.error("Please Check your metamask")

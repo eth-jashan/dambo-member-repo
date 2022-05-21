@@ -18,8 +18,8 @@ export default function AddBotFallback() {
         async function connectDiscord() {
             const discordId = await dispatch(
                 getDiscordUserId(
-                    code,
-                    "https://staging.app.drepute.xyz/discord/add-bot-fallback"
+                    code, // "https://staging.app.drepute.xyz/discord/add-bot-fallback"
+                    `${window.location.origin}/discord/add-bot-fallback`
                 )
             )
             const res = await dispatch(

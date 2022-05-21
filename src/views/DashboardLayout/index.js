@@ -41,6 +41,7 @@ import AccountSwitchModal from "../../components/Modal/AccountSwitchModal"
 import { AiFillCaretDown } from "react-icons/ai"
 import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
+import { getSelectedChainId } from "../../utils/POCPutils"
 import { MdLink } from "react-icons/md"
 
 export default function DashboardLayout({
@@ -77,7 +78,7 @@ export default function DashboardLayout({
 
     const openDiscordBot = () => {
         localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
-        window.open(links.discord_add_bot.staging, "_self")
+        window.open(links.discord_add_bot.local, "_self")
     }
 
     const getInitialForAccount = () => {
@@ -145,22 +146,15 @@ export default function DashboardLayout({
         dispatch(setLoadingState(false))
     }
 
-    async function copyTextToClipboard() {
+    async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
-            message.success("invite link copied succesfully!")
+            message.success("Copied Successfully")
             return await navigator.clipboard.writeText(
-                `${
-                    window.location.origin
-                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
-                    currentDao?.uuid
-                }`
+                // currentDao?.safe_public_address
+                textToCopy
             )
         } else {
-            return document.execCommand(
-                "copy",
-                true,
-                `${links.contributor_invite.dev}${currentDao?.uuid}`
-            )
+            return document.execCommand("copy", true, address)
         }
     }
 
@@ -184,10 +178,14 @@ export default function DashboardLayout({
         setSwitchRoleModal(false)
     }
 
-    const headerComponet = () => {
+    const currentChainId = getSelectedChainId().chainId
+
+    const [safeInfoHover, setSafeInfoHover] = useState(false)
+
+    const headerComponent = () => {
         return (
             <div className={styles.header}>
-                <div className={styles.safe_info}>
+                <div>
                     <div
                         style={{ color: "white", textAlign: "start" }}
                         className={textStyles.ub_14}
@@ -195,17 +193,41 @@ export default function DashboardLayout({
                         {currentDao?.name}
                     </div>
                     <div
-                        style={{
-                            color: "white",
-                            textAlign: "start",
-                            marginLeft: "0.5rem",
-                        }}
-                        className={textStyles.m_14}
+                        className={styles.safeContainer}
+                        onMouseLeave={() => setSafeInfoHover(false)}
+                        onMouseEnter={() => setSafeInfoHover(true)}
                     >
-                        {currentDao?.safe_public_address}
+                        <div className={styles.safe_addr}>
+                            {currentDao?.safe_public_address?.slice(0, 5)}...
+                            {currentDao?.safe_public_address?.slice(-4)}
+                        </div>
+                        {safeInfoHover && (
+                            <div className={styles.safeContainer}>
+                                <div
+                                    onClick={async () =>
+                                        await copyTextToClipboard(
+                                            currentDao?.safe_public_address
+                                        )
+                                    }
+                                    style={{ marginLeft: "0.75rem" }}
+                                    className={styles.safeCopy}
+                                >
+                                    copy link
+                                </div>
+                                <div className={styles.dot}>•</div>
+                                <div className={styles.safeCopy}>etherscan</div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className={styles.profileContainer}>
+                    {/* <Tooltip placement="bottom" title="to"> */}
+                    {currentChainId === 4 ? (
+                        <div className={styles.testnetText}>
+                            Rinkeby testnet
+                        </div>
+                    ) : null}
+                    {/* </Tooltip> */}
                     <div>
                         {account_mode === "ADMIN" && (
                             <div
@@ -218,7 +240,7 @@ export default function DashboardLayout({
                                     background:
                                         switchRoleModal || roleContainerHover
                                             ? "white"
-                                            : "#5D5C5D",
+                                            : "#1f1f1f",
                                     cursor: "pointer",
                                 }}
                                 className={styles.roleSwitchContainer}
@@ -288,7 +310,15 @@ export default function DashboardLayout({
             </div>
             <div>
                 <div
-                    onClick={() => copyTextToClipboard()}
+                    onClick={() =>
+                        copyTextToClipboard(
+                            `${
+                                window.location.origin
+                            }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                                currentDao?.uuid
+                            }`
+                        )
+                    }
                     className={styles.copyLink}
                 >
                     <MdLink color="white" />
@@ -435,7 +465,7 @@ export default function DashboardLayout({
                         className={styles.backdrop}
                     />
                 )}
-                {headerComponet()}
+                {headerComponent()}
                 <div className={styles.layoutContainer}>
                     <div className={styles.children}>{children}</div>
                     <div className={styles.adminStats}>

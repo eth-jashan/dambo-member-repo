@@ -1,15 +1,10 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-// import axios from "axios"
+
 import apiClient from "../../utils/api_client"
-import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
-// import { gnosisAction } from "../reducers/gnosis-slice"
-
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 
 export const setTransaction = (item, ethPrice, isPOCPApproved = false) => {
     return (dispatch) => {
@@ -45,6 +40,7 @@ export const resetApprovedRequest = () => {
 export const getPendingTransaction = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const pendingTxs = await serviceClient.getPendingTransactions(
             currentDao?.safe_public_address
         )
@@ -58,7 +54,12 @@ export const getPendingTransaction = () => {
     }
 }
 
-export const approveContriRequest = (payout, isExternal = false, feedback) => {
+export const approveContriRequest = (
+    payout,
+    isExternal = false,
+    feedback,
+    mint_badge
+) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const currentTransaction = getState().transaction.currentTransaction
@@ -118,10 +119,11 @@ export const approveContriRequest = (payout, isExternal = false, feedback) => {
                 tokens: newPayout,
                 id: currentTransaction.id,
                 feedback,
+                mint_badge,
             }
             try {
                 const res = await apiClient.post(
-                    `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}/update`,
                     data,
                     {
                         headers: {
@@ -164,7 +166,7 @@ export const rejectContriRequest = (id) => {
         }
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}/update`,
                 data,
                 {
                     headers: {
@@ -202,7 +204,7 @@ export const rejectApproval = (id) => {
 
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}/update`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}/update`,
                 data,
                 {
                     headers: {

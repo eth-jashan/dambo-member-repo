@@ -18,8 +18,7 @@ import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
 import { web3 } from "../../../constant/web3"
 import RequestItem from "./RequestItem"
-
-const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 
 const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -32,7 +31,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
-
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl()) //change here service
         const transaction_obj = []
         if (approved_request.length > 0) {
             approved_request.map((item, index) => {
@@ -51,14 +50,31 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
+                        console.log(
+                            "coin",
+                            item?.token_type?.tokenAddress ||
+                                item?.token_type?.token?.address,
+                            item?.address
+                        )
                         const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
                             ERC20_ABI,
                             signer
                         )
-                        const amount =
-                            parseFloat(item?.amount) * 1000000000000000000
+                        // const amount =
+                        const amount = parseFloat(item?.amount) * 1e18
+                        // console.log(
+                        //     "amount",
+                        //     amount,
+                        //     ethers.utils.getAddress(item?.address),
+                        //     coin.methods
+                        //         .transfer(
+                        //             ethers.utils.getAddress(item?.address),
+                        //             amount.toString()
+                        //         )
+                        //         .encodeABI()
+                        // )
                         transaction_obj.push({
                             to:
                                 item?.token_type?.tokenAddress ||
@@ -93,7 +109,7 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                 nonce,
             })
         } catch (error) {
-            console.error("errorrrr", error)
+            console.error("error", error)
             message.error("Error on creating Transaction")
             setLoading(false)
             return

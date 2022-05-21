@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { message, Typography } from "antd"
 import cross from "../../../assets/Icons/cross_white.svg"
@@ -13,10 +13,13 @@ import {
 import POCPBadge from "../../POCPBadge"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import {
+    chainSwitch,
     checkClaimApprovedSuccess,
+    getSelectedChainId,
     isApprovedToken,
     processBadgeApprovalToPocp,
     processClaimBadgeToPocp,
+    setChainInfoAction,
 } from "../../../utils/POCPutils"
 
 import { ethers } from "ethers"
@@ -26,6 +29,7 @@ import {
     getAllApprovedBadges,
     getAllClaimedBadges,
     getAllUnclaimedBadges,
+    getContributorOverview,
     getContriRequest,
     getPayoutRequest,
     set_contri_filter,
@@ -36,12 +40,10 @@ import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
 import * as dayjs from "dayjs"
 import {
     getIpfsUrl,
-    uplaodApproveMetaDataUpload,
+    uploadApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
-
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import AppContext from "../../../appContext"
 
 const ContributionSideCard = ({
     signer,
@@ -58,7 +60,11 @@ const ContributionSideCard = ({
     const role = useSelector((x) => x.dao.role)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const address = currentTransaction?.requested_by?.public_address
-    // const signer_address = useSelector((x) => x.auth.address)
+    const myContext = useContext(AppContext)
+    const setPocpAction = (status, chainId) => {
+        // myContext.setPocpActionValue(status, chainId)
+        setChainInfoAction(chainId)
+    }
     const jwt = useSelector((x) => x.auth.jwt)
     const [txInfo, setTxInfo] = useState([])
     const [safeInfo, setSafeInfo] = useState()
@@ -80,49 +86,49 @@ const ContributionSideCard = ({
         }
     }
 
-    const getApproveCheck = async () => {
-        console.log(currentTransaction?.approved_tx, currentTransaction)
-        if (currentTransaction?.approved_tx) {
-            const customHttpProvider = new ethers.providers.JsonRpcProvider(
-                web3.infura
-            )
-            const reciept = await customHttpProvider.getTransactionReceipt(
-                currentTransaction?.approved_tx
-            )
-            console.log("reciept", reciept)
-            if (reciept.status) {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
+    // const getApproveCheck = async () => {
+    //     console.log(currentTransaction?.approved_tx, currentTransaction)
+    //     if (currentTransaction?.approved_tx) {
+    //         const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    //             web3.infura
+    //         )
+    //         const reciept = await customHttpProvider.getTransactionReceipt(
+    //             currentTransaction?.approved_tx
+    //         )
+    //         if (reciept.status) {
+    //             return true
+    //         } else {
+    //             return false
+    //         }
+    //     } else {
+    //         return false
+    //     }
+    // }
 
-    const getClaimCheck = async () => {
-        if (currentTransaction?.claimed_tx) {
-            const customHttpProvider = new ethers.providers.JsonRpcProvider(
-                web3.infura
-            )
-            const reciept = await customHttpProvider.getTransactionReceipt(
-                currentTransaction?.claimed_tx
-            )
-            if (reciept.status) {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
+    // const getClaimCheck = async () => {
+    //     if (currentTransaction?.claimed_tx) {
+    //         const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    //             web3.infura
+    //         )
+    //         const reciept = await customHttpProvider.getTransactionReceipt(
+    //             currentTransaction?.claimed_tx
+    //         )
+    //         if (reciept.status) {
+    //             return true
+    //         } else {
+    //             return false
+    //         }
+    //     } else {
+    //         return false
+    //     }
+    // }
 
-    const [approvedBadge, setApprovedBadge] = useState(false)
-    const [claimBadge, setClaimBadge] = useState(false)
+    // const [approvedBadge, setApprovedBadge] = useState(false)
+    // const [claimBadge, setClaimBadge] = useState(false)
 
     const getTransactionInfo = useCallback(async () => {
         let tx
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         if (
             currentTransaction?.status !== "REQUESTED" &&
             currentTransaction?.status !== "REJECTED"
@@ -135,11 +141,11 @@ const ContributionSideCard = ({
             currentDao?.safe_public_address
         )
 
-        const approval = await getApproveCheck()
-        const claim_status = await getClaimCheck()
-        console.log("Yo", approval)
-        setApprovedBadge(approval)
-        setClaimBadge(claim_status)
+        // const approval = await getApproveCheck()
+        // const claim_status = await getClaimCheck()
+        // console.log("Yo", approval)
+        // setApprovedBadge(approval)
+        // setClaimBadge(claim_status)
         setTxInfo(tx)
         setSafeInfo(safeInfo)
     }, [
@@ -582,32 +588,19 @@ const ContributionSideCard = ({
         </div>
     )
 
-    const claimed = useSelector((x) => x.contributor.claimed)
-
-    // const isApprovedToken = () => {
-    //     const token = unclaimed.filter(
-    //         (x) => x.identifier === currentTransaction?.id.toString()
-    //     )
-    //     if (token.length > 0) {
-    //         return { status: true, token }
-    //     } else {
-    //         return { status: false, token: [] }
-    //     }
-    // }
     const [load, setLoad] = useState(false)
 
     const onClaimEventCallback = async (event) => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
+        dispatch(getContributorOverview())
         dispatch(setContributionDetail(null))
         dispatch(claimUpdate(currentTransaction?.id))
         dispatch(setClaimLoading(false, currentTransaction?.id))
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
     }
     const onErrorCallBack = () => {
         dispatch(setClaimLoading(false, currentTransaction?.id))
@@ -616,9 +609,9 @@ const ContributionSideCard = ({
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, currentTransaction?.id))
-            console.log(
-                isApprovedToken(unclaimed, currentTransaction?.id).token[0].id
-            )
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const { chainId } = await provider.getNetwork()
+            setPocpAction(true, chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
                 jwt,
@@ -651,7 +644,7 @@ const ContributionSideCard = ({
         cid.push(currentTransaction?.id)
         to.push(currentTransaction?.requested_by?.public_address)
         // })
-        const response = await uplaodApproveMetaDataUpload(metaInfo)
+        const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
         if (response) {
             return { status: true, cid, to }
         } else {
@@ -661,22 +654,23 @@ const ContributionSideCard = ({
 
     const onApprovalSuccess = async (events) => {
         console.log(events)
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
-        // dispatch(
-        //     afterApproval(
-        //         events[events.length - 1].transactionHash,
-        //         currentTransaction?.id
-        //     )
-        // )
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // await provider.provider.request({
+        //     method: "wallet_switchEthereumChain",
+        //     params: [
+        //         {
+        //             chainId: process.env.REACT_APP_ETHEREUM_CHAIN_ID,
+        //         },
+        //     ],
+        // })
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
+
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllUnclaimedBadges())
         await dispatch(getAllClaimedBadges())
-        // await dispatch(getPayoutRequest())
-        //await dispatch(set_payout_filter("PENDING", 1))
+
         onContributionCrossPress()
         setLoad(false)
     }
@@ -750,11 +744,7 @@ const ContributionSideCard = ({
             }
         }
     }
-    // console.log(
-    //     "here",
-    //     !checkClaimApprovedSuccess(all_approved_badge, currentTransaction?.id),
-    //     txInfo?.isExecuted
-    // )
+    console.log("here", currentTransaction?.mint_badge)
     return (
         <div className={styles.container}>
             <img
@@ -902,7 +892,8 @@ const ContributionSideCard = ({
                 ) &&
                 txInfo?.isExecuted &&
                 txInfo?.value !== "0" &&
-                currentDao?.tx_hash && (
+                currentDao?.tx_hash &&
+                currentTransaction?.mint_badge && (
                     <div
                         style={{ justifyContent: "center" }}
                         className={styles.claim_container}

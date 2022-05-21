@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import edit_active from "../../assets/Icons/edit_active.svg"
 import edit_hover from "../../assets/Icons/edit_hover.svg"
 import styles from "./style.module.css"
@@ -23,19 +23,24 @@ import {
     getAllClaimedBadges,
     getAllApprovedBadges,
     updateApprovedBadge,
+    updateListOnExecute,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
-import { setPayoutToast } from "../../store/actions/toast-action"
+import { setPayoutToast, setPocpAction } from "../../store/actions/toast-action"
 import {
     getIpfsUrl,
-    uplaodApproveMetaDataUpload,
+    uploadApproveMetaDataUpload,
 } from "../../utils/relayFunctions"
-import { processBadgeApprovalToPocp } from "../../utils/POCPutils"
+import {
+    chainSwitch,
+    getSelectedChainId,
+    processBadgeApprovalToPocp,
+    setChainInfoAction,
+} from "../../utils/POCPutils"
 import { web3 } from "../../constant/web3"
 import POCPProxy from "../../smartContract/POCP_Contracts/POCP.json"
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import AppContext from "../../appContext"
 
 export default function PaymentCard({ item, signer }) {
     const address = useSelector((x) => x.auth.address)
@@ -43,7 +48,12 @@ export default function PaymentCard({ item, signer }) {
     const jwt = useSelector((x) => x.auth.jwt)
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
+    const myContext = useContext(AppContext)
 
+    const setPocpAction = (status, chainId) => {
+        // myContext.setPocpActionValue(status, chainId)
+        setChainInfoAction(chainId)
+    }
     const currentDao = useSelector((x) => x.dao.currentDao)
     const delegates = currentDao?.signers
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -274,6 +284,7 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const confirmTransaction = async () => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         dispatch(setLoading(true))
         if (!safeSdk || !serviceClient) {
             dispatch(setLoading(false))
@@ -312,11 +323,9 @@ export default function PaymentCard({ item, signer }) {
 
     const [approveTitle, setApproveTitle] = useState(false)
     const approvalEventCallback = async (a) => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllUnclaimedBadges())
         await dispatch(getAllClaimedBadges())
@@ -327,6 +336,7 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const executeSafeTransaction = async (c_id, to, approveBadge) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         dispatch(setLoading(true, item?.metaInfo?.id))
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)
@@ -389,6 +399,13 @@ export default function PaymentCard({ item, signer }) {
             dispatch(setLoading(false, item?.metaInfo?.id))
             return
         }
+
+        if (!approveBadge) {
+            dispatch(updateListOnExecute(item?.metaInfo?.id))
+            dispatch(setPayment(null))
+            dispatch(setLoading(false))
+        }
+
         if (approveBadge) {
             const { cid, url, status } = await getIpfsUrl(
                 jwt,
@@ -400,9 +417,12 @@ export default function PaymentCard({ item, signer }) {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
-                        await dispatch(getPayoutRequest())
-                        await dispatch(set_payout_filter("PENDING", 1))
+                        // await dispatch(getPayoutRequest())
+                        // await dispatch(set_payout_filter("PENDING", 1))
+                        dispatch(updateListOnExecute(item?.metaInfo?.id))
+                        dispatch(setPayment(null))
                         message.error("failed to get ipfs url")
+                        dispatch(setLoading(false))
                     }
                     const { cid, url, status } = await getIpfsUrl(
                         jwt,
@@ -412,6 +432,13 @@ export default function PaymentCard({ item, signer }) {
                     if (status) {
                         clearTimeout(interval)
                         if (cid?.length > 0) {
+                            const provider = new ethers.providers.Web3Provider(
+                                window.ethereum
+                            )
+                            const { chainId } = await provider.getNetwork()
+                            console.log("chain iddddd", chainId)
+                            setPocpAction(true, chainId)
+                            // setPocpAction(true)
                             await processBadgeApprovalToPocp(
                                 community_id[0].id,
                                 to,
@@ -426,6 +453,12 @@ export default function PaymentCard({ item, signer }) {
                 }, 3000)
             } else {
                 if (cid?.length > 0) {
+                    const provider = new ethers.providers.Web3Provider(
+                        window.ethereum
+                    )
+                    const { chainId } = await provider.getNetwork()
+                    console.log("chain iddddd", chainId)
+                    setPocpAction(true, chainId)
                     await processBadgeApprovalToPocp(
                         community_id[0].id,
                         to,
@@ -505,24 +538,30 @@ export default function PaymentCard({ item, signer }) {
         const cid = []
         const to = []
         item?.metaInfo?.contributions.map((x, index) => {
-            metaInfo.push({
-                dao_name: currentDao?.name,
-                contri_title: x?.title,
-                signer: address,
-                claimer: x?.requested_by?.public_address,
-                date_of_approve: dayjs().format("D MMM YYYY"),
-                id: x?.id,
-                dao_logo_url:
-                    currentDao?.logo_url ||
-                    "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-                work_type: x?.stream.toString(),
-            })
-            cid.push(x?.id)
-            to.push(x?.requested_by?.public_address)
+            if (x?.mint_badge) {
+                metaInfo.push({
+                    dao_name: currentDao?.name,
+                    contri_title: x?.title,
+                    signer: address,
+                    claimer: x?.requested_by?.public_address,
+                    date_of_approve: dayjs().format("D MMM YYYY"),
+                    id: x?.id,
+                    dao_logo_url:
+                        currentDao?.logo_url ||
+                        "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
+                    work_type: x?.stream.toString(),
+                })
+                cid.push(x?.id)
+                to.push(x?.requested_by?.public_address)
+            }
         })
-        const response = await uplaodApproveMetaDataUpload(metaInfo)
-        if (response) {
-            return { status: true, cid, to }
+        if (metaInfo.length > 0) {
+            const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
+            if (response) {
+                return { status: true, cid, to }
+            } else {
+                return { status: false, cid: [], to: [] }
+            }
         } else {
             return { status: false, cid: [], to: [] }
         }
@@ -535,13 +574,12 @@ export default function PaymentCard({ item, signer }) {
                 if (res.status) {
                     await executeSafeTransaction(res?.cid, res?.to, true)
                 } else {
-                    dispatch(setLoading(false, item?.metaInfo?.id))
+                    await executeSafeTransaction(null, null, false)
+                    // dispatch(setLoading(false, item?.metaInfo?.id))
                 }
-            } catch (error) {
-                // setLoading(false)
-            }
+            } catch (error) {}
         } else {
-            console.log("no pocp", isReject)
+            console.log("no pocp", isReject, community_id[0]?.id)
             await executeSafeTransaction(null, null, false)
         }
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -13,16 +13,22 @@ import {
 import { ethers } from "ethers"
 import { web3 } from "../../constant/web3"
 import {
+    chainSwitch,
     checkClaimApprovedSuccess,
+    getSelectedChainId,
     isApprovedToken,
     processClaimBadgeToPocp,
+    setChainInfoAction,
 } from "../../utils/POCPutils"
 import {
     claimUpdate,
     getAllApprovedBadges,
     getAllClaimedBadges,
     getAllUnclaimedBadges,
+    getContributorOverview,
 } from "../../store/actions/dao-action"
+import { setPocpAction } from "../../store/actions/toast-action"
+import AppContext from "../../appContext"
 
 export default function ContributionCard({ item, signer, community_id }) {
     const dispatch = useDispatch()
@@ -39,13 +45,11 @@ export default function ContributionCard({ item, signer, community_id }) {
             ? (x) => x.transaction.currentTransaction
             : (x) => x.contributor.contribution_detail
     )
-
-    console.log(
-        "status approved",
-        checkClaimApprovedSuccess(all_approved_badge, item?.id),
-        all_claimed_badge
-    )
-
+    const myContext = useContext(AppContext)
+    const setPocpAction = (status, chainId) => {
+        // myContext.setPocpActionValue(status, chainId)
+        setChainInfoAction(chainId)
+    }
     const selectionActive = currentTransaction?.id === item.id
 
     const onContributionPress = async () => {
@@ -96,17 +100,16 @@ export default function ContributionCard({ item, signer, community_id }) {
     }
 
     const onClaimEventCallback = async (event) => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
+        dispatch(getContributorOverview())
         dispatch(setContributionDetail(null))
         dispatch(claimUpdate(item?.id))
         dispatch(setClaimLoading(false, item?.id))
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
     }
     const onErrorCallBack = () => {
         dispatch(setClaimLoading(false, item?.id))
@@ -115,6 +118,9 @@ export default function ContributionCard({ item, signer, community_id }) {
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, item?.id))
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const { chainId } = await provider.getNetwork()
+            setPocpAction(true, chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, item?.id).token[0].id,
                 jwt,
@@ -123,8 +129,6 @@ export default function ContributionCard({ item, signer, community_id }) {
                 onErrorCallBack
             )
         }
-        dispatch(setTransaction(null))
-        dispatch(setContributionDetail(null))
     }
 
     return (

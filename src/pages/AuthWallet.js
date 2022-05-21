@@ -7,18 +7,19 @@ import { setAdminStatus, setLoggedIn } from "../store/actions/auth-action"
 import { getAddressMembership } from "../store/actions/gnosis-action"
 import { getRole } from "../store/actions/contibutor-action"
 import { message } from "antd"
+import { getSelectedChainId } from "../utils/POCPutils"
 
 const AuthWallet = () => {
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const uuid = useSelector((x) => x.contributor.invite_code)
-
+    const currentChainId = getSelectedChainId()?.chainId
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const afterConnectWalletCallback = async (setAuth) => {
         dispatch(setLoggedIn(true))
         if (isAdmin) {
-            const res = await dispatch(getAddressMembership())
+            const res = await dispatch(getAddressMembership(currentChainId))
             if (res) {
                 setAuth(false)
                 navigate(`/dashboard`)

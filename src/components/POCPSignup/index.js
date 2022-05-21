@@ -1,14 +1,18 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import "./styles.scss"
 import texStyles from "../../commonStyles/textType/styles.module.css"
-import { processDaoToPOCP } from "../../utils/POCPutils"
+import {
+    chainSwitch,
+    getSelectedChainId,
+    processDaoToPOCP,
+    setChainInfoAction,
+} from "../../utils/POCPutils"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import Lottie from "react-lottie"
 import confetti from ".././../assets/lottie/confett-lottie.json"
-import { setPocpAction } from "../../store/actions/toast-action"
 import { ethers } from "ethers"
-import { web3 } from "../../constant/web3"
+import AppContext from "../../appContext"
 
 const POCPSignup = () => {
     const address = useSelector((x) => x.auth.address)
@@ -17,18 +21,23 @@ const POCPSignup = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
+    const myContext = useContext(AppContext)
+    const setPocpAction = (chainId) => {
+        setChainInfoAction(chainId)
+    }
 
     const registerCallback = async (events) => {
-        console.log("heree", events)
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-        await web3Provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
+        console.log(events)
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
         navigate("/dashboard")
     }
     const registerErrorCallback = () => setLoading(false)
     const signupForPocp = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const { chainId } = await provider.getNetwork()
+        setPocpAction(chainId)
         setLoading(true)
         try {
             await processDaoToPOCP(
