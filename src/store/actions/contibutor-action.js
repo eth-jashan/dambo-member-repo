@@ -29,7 +29,7 @@ export const getRole = (uuid) => {
             wallet_addr: address,
         }
         const res = await apiClient.post(
-            `${api.drepute.dev.BASE_URL}${routes.dao.getRole}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getRole}`,
             data,
             {
                 headers: {
@@ -67,6 +67,25 @@ export const getDiscordOAuth = (code) => {
     }
 }
 
+export const getDiscordUserId = (grant_code, redirect_uri) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const res = await apiClient.get(
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.discord.userId}?discord_code=${grant_code}&redirect_uri=${redirect_uri}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            }
+        )
+        if (res.data.success) {
+            return res.data.data.discord_user_id
+        } else {
+            return null
+        }
+    }
+}
+
 export const createContributionrequest = (
     title,
     type,
@@ -88,7 +107,7 @@ export const createContributionrequest = (
         }
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}`,
                 data,
                 {
                     headers: {
@@ -155,7 +174,6 @@ export const setBadgesAfterClaim = (
 
 export const getAllBadges = (address) => {
     return (dispatch, getState) => {
-        // let pocpProxy = new ethers.Contract(web3.POCP_Proxy, POCPProxy.abi, signer)
         const all_claimed_badge = getState().dao.all_claimed_badge
         const all_approved_badge = getState().dao.all_approved_badge
         // //console.log()

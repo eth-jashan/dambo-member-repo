@@ -11,6 +11,7 @@ import {
     lastSelectedId,
     pocpRegistrationInfo,
     registerDao,
+    connectDaoToDiscord,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
@@ -18,6 +19,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { message } from "antd"
 import POCPSignup from "../components/POCPSignup"
 import DiscordRegister from "../components/DiscordRegister"
+import OnboardingError from "../components/OnboardingError"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(0)
@@ -38,12 +40,12 @@ export default function Onboarding() {
     const jwt = useSelector((x) => x.auth.jwt)
     const accounts = useSelector((x) => x.dao.dao_list)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
-    // const [searchParams, _setSearchParams] = useSearchParams()
-    // const discordIdentifier = searchParams.get("discord_identifier")
+    const [searchParams, _setSearchParams] = useSearchParams()
+    const guildId = searchParams.get("guild_id")
+    const discordUserId = searchParams.get("discord_user_id")
 
     const steps = [
         "connectWallet",
-        // ...(discordIdentifier ? ["registerDiscord"] : []),
         "gnosisSafeList",
         "addOwners",
         "approveTransaction",
@@ -97,12 +99,27 @@ export default function Onboarding() {
                 return
             }
             const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
+            console.log(newSafeAddress)
             setSafeAddress(newSafeAddress)
             dispatch(addSafeAddress(newSafeAddress))
-            setDeploying(true)
+            // setDeploying(true)
             const { dao_uuid, name } = await dispatch(registerDao())
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
+                if (guildId) {
+                    const res = await dispatch(
+                        connectDaoToDiscord(dao_uuid, guildId, discordUserId)
+                    )
+                    if (res) {
+                        message.success(
+                            "Discord registered to dao successfully"
+                        )
+                    } else {
+                        message.error(
+                            "Something went wrong please try again later"
+                        )
+                    }
+                }
                 dispatch(pocpRegistrationInfo(dao_uuid, name, owners))
                 setCurrentStep(currentStep + 1)
             } else {
@@ -123,63 +140,6 @@ export default function Onboarding() {
         setSigner(signer)
     }
 
-    // <<<<<<< HEAD
-    //     const increaseStep = async () => {
-    //         if (currentStep === 2) {
-    //             setCurrentStep(currentStep + 1)
-    //         } else if (currentStep === 3) {
-    //             dispatch(addThreshold(selectedIndex + 1))
-    //             setCurrentStep(currentStep + 1)
-    //             if (!hasMultiSignWallet) {
-    //                 setProvider()
-    //             }
-    //         } else if (currentStep === 4) {
-    //             if (hasMultiSignWallet) {
-    //                 const { dao_uuid, name, owners } = await dispatch(registerDao())
-    //                 const owner = [address]
-    //                 if (owners.length > 1) {
-    //                     owners.map((x, i) => {
-    //                         if (x?.address !== address) {
-    //                             owner.push(x?.address)
-    //                         }
-    //                     })
-    //                 }
-    //                 dispatch(lastSelectedId(dao_uuid))
-    //                 if (dao_uuid) {
-    //                     dispatch(pocpRegirationInfo(dao_uuid, name, owner))
-    //                     setCurrentStep(currentStep + 1)
-    //                 } else {
-    //                     navigate(`/onboard/dao`)
-    //                 }
-    //             } else {
-    //                 try {
-    //                     try {
-    //                         const owner = []
-    //                         owners.map((item, index) => {
-    //                             owner.push(item.address)
-    //                         })
-    //                         await deploySafe(owner)
-    //                     } catch (error) {
-    //                         // //console.log("error.... on deploying", error);
-    //                     }
-    //                 } catch (error) {
-    //                     // //console.log("error.......", error);
-    //                 }
-    //             }
-    //         } else setCurrentStep(currentStep + 1)
-    //     }
-
-    //     const decreaseStep = () => {
-    //         if (currentStep > 0) setCurrentStep(currentStep - 1)
-    //         if (currentStep === 4) {
-    //             if (hasMultiSignWallet) {
-    //                 setCurrentStep(2)
-    //             } else {
-    //                 setCurrentStep(3)
-    //             }
-    //         } else if (currentStep === 2) {
-    //             setCurrentStep(currentStep - 1)
-    // =======
     const increaseStep = () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep((currentStep) => currentStep + 1)
@@ -201,7 +161,20 @@ export default function Onboarding() {
             }
             dispatch(lastSelectedId(dao_uuid))
             if (dao_uuid) {
-                // await processDaoToPOCP(name, owner, address, jwt)
+                if (guildId) {
+                    const res = await dispatch(
+                        connectDaoToDiscord(dao_uuid, guildId, discordUserId)
+                    )
+                    if (res) {
+                        message.success(
+                            "Discord registered to dao successfully"
+                        )
+                    } else {
+                        message.error(
+                            "Something went wrong please try again later"
+                        )
+                    }
+                }
                 dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
                 increaseStep()
             } else {
@@ -253,6 +226,8 @@ export default function Onboarding() {
                         setStep={(x) => setCurrentStep(x)}
                         increaseStep={increaseStep}
                         setHasMultiSignWallet={setHasMultiSignWallet}
+                        guildId={guildId}
+                        discordUserId={discordUserId}
                     />
                 )
             }
@@ -295,6 +270,8 @@ export default function Onboarding() {
                         deploying={deploying}
                     />
                 )
+            case "identifierExpired":
+                return <OnboardingError text="This page has expired" />
             default: {
                 return (
                     <ConnectWallet

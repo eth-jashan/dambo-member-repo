@@ -1,51 +1,25 @@
 import axios from "axios"
-import api from "../constant/api"
-import routes from "../constant/routes"
 
-export const relayFunction = async (
-    token,
-    functionType,
-    request,
-    signature
-) => {
+export const uploadApproveMetaDataUpload = async (approveContri, jwt) => {
     const data = {
-        function: functionType,
-        request_data: request,
-        signature,
-        callback_api: "https://staging.api.drepute.xyz/eth/callback",
+        contribution_meta_array: approveContri,
+        callbackApi: "https://api.drepute.xyz/dao_tool_server",
     }
     try {
         const res = await axios.post(
-            `https://staging.api.drepute.xyz:5001${routes.pocp.relay}`,
+            `https://staging.api.drepute.xyz:3001/ipfs_server/upload`,
             data,
             {
                 headers: {
-                    "X-Authentication": token,
+                    Authorization: `Bearer ${jwt}`,
                 },
             }
-        )
-
-        return res.data.data.hash
-    } catch (error) {
-        // //console.log('relay api error', error.toString())
-    }
-}
-
-export const uplaodApproveMetaDataUpload = async (approveContri) => {
-    const data = {
-        contribution_meta_array: approveContri,
-    }
-    try {
-        const res = await axios.post(
-            "https://staging.api.drepute.xyz:3001/upload",
-            // "http://localhost:3002/upload",
-            data
         )
         if (res) {
             return 1
         }
     } catch (error) {
-        // //console.log('error on uploading', error.toString())
+        console.log("error on uploading", error.toString())
     }
 }
 
@@ -54,7 +28,7 @@ export const updatePocpRegister = async (jwt, tx_hash, dao_uuid) => {
 
     try {
         const res = await axios.post(
-            `${api.drepute.dev.BASE_URL}/dao/update/pocp`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}/dao/update/pocp`,
             data,
             {
                 headers: {
@@ -83,7 +57,7 @@ export const updatePocpApproval = async (
 
     try {
         const res = await axios.post(
-            `${api.drepute.dev.BASE_URL}/contrib/update/pocp`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}/contrib/update/pocp`,
             data,
             {
                 headers: {
@@ -104,11 +78,10 @@ export const updatePocpApproval = async (
 export const updatePocpClaim = async (jwt, claim_tx_hash, contribution_ids) => {
     const data = { claim_tx_hash, contribution_ids }
 
-    // ////console.log('tx_hash...', data)
-
     try {
         const res = await axios.post(
-            `${api.drepute.dev.BASE_URL}/contrib/update/pocp`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}/contrib/update/pocp`,
+            // "https://staging.api.drepute.xyz:3001/ipfs_server/upload",
             data,
             {
                 headers: {
@@ -141,7 +114,7 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
     try {
         const query = buildQuery(cid)
         const res = await axios.get(
-            `${api.drepute.dev.BASE_URL}/contrib/get/ipfs?${query}&dao_uuid=${dao_uuid}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}/contrib/get/ipfs?${query}&dao_uuid=${dao_uuid}`,
             {
                 headers: {
                     Authorization: `Bearer ${jwt}`,
@@ -160,7 +133,7 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
                     url.push(`https://ipfs.infura.io/ipfs/${item?.ipfs_url}`)
                 }
             })
-            // //console.log('status...', status)
+
             return { cid, url, status }
         } else {
             return { cid, url: [], status: false }

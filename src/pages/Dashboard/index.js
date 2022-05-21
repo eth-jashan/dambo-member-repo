@@ -44,6 +44,7 @@ import {
 import {
     setLoadingState,
     setPayoutToast,
+    setPocpAction,
 } from "../../store/actions/toast-action"
 import UniversalPaymentModal from "../../components/Modal/UniversalPaymentModal"
 import plus_black from "../../assets/Icons/plus_black.svg"
@@ -56,9 +57,8 @@ import { setContributionDetail } from "../../store/actions/contibutor-action"
 import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
-import { web3 } from "../../constant/web3"
-
-const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
+import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { processDaoToPOCP } from "../../utils/POCPutils"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -152,13 +152,13 @@ export default function Dashboard() {
                 }`
             )
         }
+        // await processDaoToPOCP()
     }
 
     const preventGoingBack = useCallback(() => {
         window.history.pushState(null, document.title, window.location.href)
         window.addEventListener("popstate", () => {
             if (address && jwt) {
-                // console.log("on back!!!");
                 window.history.pushState(
                     null,
                     document.title,
@@ -169,7 +169,6 @@ export default function Dashboard() {
     }, [address, jwt])
 
     async function onInit() {
-        // await window.ethereum.enable();
         const accounts = await window.ethereum.request({
             method: "eth_requestAccounts",
         })
@@ -178,13 +177,13 @@ export default function Dashboard() {
     }
 
     const adminContributionFetch = async () => {
+        console.log("herererererereerrerere")
         dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         if (safeSdk) {
             const nonce = await safeSdk.getNonce()
-            console.log("nonce", nonce)
             dispatch(set_active_nonce(nonce))
         }
         dispatch(setLoadingState(false))
@@ -205,11 +204,14 @@ export default function Dashboard() {
         dispatch(refreshContributionList())
         const account = await onInit()
         if (address === ethers.utils.getAddress(account)) {
-            const accountRole = await dispatch(getAllDaowithAddress())
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signer = await provider.getSigner()
+            const chainId = await signer.getChainId()
+            const accountRole = await dispatch(getAllDaowithAddress(chainId))
+            console.log("acount role", accountRole)
             await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
-
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
             } else {
@@ -242,7 +244,10 @@ export default function Dashboard() {
     }
 
     const accountSwitch = useCallback(async () => {
-        const accountRole = await dispatch(getAllDaowithAddress())
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = await provider.getSigner()
+        const chainId = await signer.getChainId()
+        const accountRole = await dispatch(getAllDaowithAddress(chainId))
         await dispatch(getCommunityId())
         if (accountRole === "ADMIN") {
             await contributionAdminFetchAccountSwitch()
@@ -386,7 +391,7 @@ export default function Dashboard() {
             <div className={styles.heading}>No contribution requests</div>
             {role !== "ADMIN" ? (
                 <div className={`${styles.heading} ${styles.greyedHeading}`}>
-                    Initiate a contributrion
+                    Initiate a contribution
                     <br /> request to get paid
                 </div>
             ) : (
@@ -449,7 +454,7 @@ export default function Dashboard() {
 
     const proposeSafeTransaction = async () => {
         setPaymentLoading(true)
-
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const transaction_obj = []
 
         if (approved_request.length > 0) {
@@ -470,24 +475,22 @@ export default function Dashboard() {
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
                         const coin = new ethers.Contract(
-                            item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address,
+                            item?.token_type?.tokenAddress,
                             ERC20_ABI,
                             signer
                         )
-
-                        const amount =
-                            parseFloat(item?.amount) * 1000000000000000000
+                        const amount = parseFloat(item?.amount) * 1e18
                         transaction_obj.push({
                             to:
                                 item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
-                            data: coin.methods
-                                .transfer(
+                            data: coin.interface.encodeFunctionData(
+                                "transfer",
+                                [
                                     ethers.utils.getAddress(item?.address),
-                                    amount.toString()
-                                )
-                                .encodeABI(),
+                                    amount.toString(),
+                                ]
+                            ),
                             value: "0",
                             operation: 0,
                         })
@@ -709,7 +712,7 @@ export default function Dashboard() {
         </div>
     )
     const nonce = useSelector((x) => x.dao.active_nonce)
-
+    console.log(payout_request)
     const renderPayment = () =>
         payout_request.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>

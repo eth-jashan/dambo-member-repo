@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Input, message, Typography } from "antd"
-import { IoAddOutline, GoChevronUp } from "react-icons/all"
+import { message, Typography } from "antd"
+
 import cross from "../../../assets/Icons/cross_white.svg"
 import deleteIcon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
@@ -12,14 +12,16 @@ import {
     setTransaction,
 } from "../../../store/actions/transaction-action"
 
+import ApprovalSelectionToggle from "../../ApprovalSelectionToggle"
 import { convertTokentoUsd } from "../../../utils/conversion"
-import { TokenInput } from "../../InputComponent/TokenInput"
+import { assets } from "../../../constant/assets"
 
 const TransactionCard = ({ signer }) => {
     const currentTransaction = useSelector(
         (x) => x.transaction.currentTransaction
     )
-    const token_available = useSelector((x) => x.dao.balance)
+    const [payToken, setPayToken] = useState(false)
+    const [mint, setMint] = useState(false)
     const address = currentTransaction?.requested_by?.public_address
     const dispatch = useDispatch()
     const getEmoji = () => {
@@ -30,9 +32,10 @@ const TransactionCard = ({ signer }) => {
         }
     }
 
-    const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
     const [feedBackShow, setFeedBackSow] = useState(false)
     const [feedback, setFeedback] = useState("")
+
+    const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
     const [payDetail, setPayDetail] = useState([
         {
             amount: "",
@@ -42,29 +45,33 @@ const TransactionCard = ({ signer }) => {
         },
     ])
 
+    const availableToken = useSelector((x) => x.dao.balance)
+
     const addToken = async () => {
-        const usdCoversion = await convertTokentoUsd("ETH")
-        if (usdCoversion) {
+        const usdConversion = await convertTokentoUsd("ETH")
+        if (usdConversion) {
             const newDetail = {
                 amount: "",
                 token_type: null,
-                usd_amount: usdCoversion,
+                usd_amount: usdConversion,
                 address: currentTransaction?.requested_by?.public_address,
             }
             setPayDetail([...payDetail, newDetail])
         }
     }
 
-    const updatedPayDetail = async (e, index) => {
+    const updatedPayDetail = (e, index) => {
+        console.log(e.target.value, index)
         payDetail[index].amount = e.target.value
+        console.log(payDetail)
         setPayDetail(payDetail)
     }
 
     const updateTokenType = async (value, index) => {
-        const usdCoversion = await convertTokentoUsd(value.label)
-        if (usdCoversion) {
+        const usdConversion = await convertTokentoUsd(value.label)
+        if (usdConversion) {
             payDetail[index].token_type = value.value
-            payDetail[index].usd_amount = usdCoversion
+            payDetail[index].usd_amount = usdConversion
             setPayDetail(payDetail)
         }
     }
@@ -74,40 +81,19 @@ const TransactionCard = ({ signer }) => {
     }
     const onApproveTransaction = async () => {
         if (
-            payDetail[0].amount !== 0 &&
-            payDetail[0].amount !== "" &&
-            payDetail[0].amount !== "0"
+            payDetail[0]?.amount !== 0 &&
+            payDetail[0]?.amount !== "" &&
+            payDetail[0]?.amount !== "0"
         ) {
-            dispatch(approveContriRequest(payDetail, false, feedback))
+            dispatch(
+                approveContriRequest(payDetail, false, feedback, mint ? 1 : 0)
+            )
             dispatch(setTransaction(null))
         } else {
             message.error("Please Add Amount")
         }
     }
-
-    const feedBackContainer = () => (
-        <div style={{ width: "100%", marginBottom: "5rem" }}>
-            <div
-                onClick={() => setFeedBackSow(!feedBackShow)}
-                className={styles.feedBackContainer}
-            >
-                <div className={`${textStyle.m_16}`}>Add Feedback</div>
-                {!feedBackShow ? (
-                    <IoAddOutline color="#808080" className={styles.add} />
-                ) : (
-                    <GoChevronUp color="white" className={styles.add} />
-                )}
-            </div>
-            {feedBackShow && (
-                <Input.TextArea
-                    placeholder="Write your feedback here"
-                    className={styles.textArea}
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                />
-            )}
-        </div>
-    )
+    console.log("MINT", mint, payToken)
 
     return (
         <div className={styles.container}>
@@ -117,23 +103,29 @@ const TransactionCard = ({ signer }) => {
                 alt="cross"
                 className={styles.cross}
             />
-            <span
-                className={`${textStyle.ub_23} ${styles.title}`}
-            >{`${getEmoji()}`}</span>
+
             <span
                 ellipsis={{ rows: 2 }}
                 className={`${textStyle.ub_23} ${styles.title}`}
             >
                 {`${currentTransaction?.title}`}
             </span>
-            <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${
-                currentTransaction?.requested_by?.metadata?.name
-            } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}</div>
-            <div
-                className={`${textStyle.m_16} ${styles.timeInfo}`}
-            >{`${currentTransaction?.stream?.toLowerCase()} ${
-                currentTransaction?.time_spent
-            } hrs`}</div>
+
+            <div className={styles.contributorContainer}>
+                <img className={styles.faceIcon} src={assets.icons.faceIcon} />
+                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${
+                    currentTransaction?.requested_by?.metadata?.name
+                } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}</div>
+            </div>
+
+            <div className={styles.timelineContainer}>
+                <img className={styles.faceIcon} src={assets.icons.feedIcon} />
+                <div
+                    className={`${textStyle.m_16} ${styles.ownerInfo}`}
+                >{`${currentTransaction?.stream?.toLowerCase()} ${
+                    currentTransaction?.time_spent
+                } hrs`}</div>
+            </div>
 
             <Typography.Paragraph
                 className={`${styles.description} ${textStyle.m_16}`}
@@ -152,27 +144,33 @@ const TransactionCard = ({ signer }) => {
                 {currentTransaction?.description}
             </Typography.Paragraph>
 
-            <div className={styles.amountScroll}>
-                {payDetail?.map((item, index) => (
-                    <TokenInput
-                        key={index}
-                        dark={true}
-                        updateTokenType={(x) => updateTokenType(x, index)}
-                        value={item.amount}
-                        onChange={(e) => updatedPayDetail(e, index)}
-                        hideDropDown={!token_available?.length > 1}
-                    />
-                ))}
+            <ApprovalSelectionToggle
+                feedback={feedback}
+                setFeedback={(e) => setFeedback(e)}
+                toggleTitle="Mint contribution badge"
+                type="mint"
+                feedbackShow={feedBackShow}
+                setFeedBackSow={(x) => setFeedBackSow(x)}
+                active={mint}
+                setActive={() => setMint(!mint)}
+            />
+
+            <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
+                <ApprovalSelectionToggle
+                    toggleTitle="Pay in tokens"
+                    type="token"
+                    feedbackShow={feedBackShow}
+                    setFeedBackSow={(x) => setFeedBackSow(x)}
+                    payDetail={payDetail}
+                    addToken={() => addToken()}
+                    updatedPayDetail={(e, index) => updatedPayDetail(e, index)}
+                    updateTokenType={(value, index) =>
+                        updateTokenType(value, index)
+                    }
+                    active={payToken}
+                    setActive={() => setPayToken(!payToken)}
+                />
             </div>
-
-            {token_available?.length > 1 && (
-                <div onClick={() => addToken()} className={styles.addToken}>
-                    <div className={`${textStyle.m_16}`}>Add another token</div>
-                    <IoAddOutline color="#808080" className={styles.add} />
-                </div>
-            )}
-
-            {feedBackContainer()}
             <div
                 style={{
                     width: "20%",

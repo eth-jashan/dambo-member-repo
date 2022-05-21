@@ -35,7 +35,6 @@ const BadgeItem = ({ item }) => {
         const contribution = allContribution.filter(
             (x) => x.id.toString() === identifier[0]?.identifier
         )
-        // console.log(contribution, identifier, all_approved_badge)
         dispatch(setContributionDetail({ ...contribution[0], isClaimed: true }))
     }
 

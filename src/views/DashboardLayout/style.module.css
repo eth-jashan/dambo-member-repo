@@ -1,17 +1,22 @@
 .header {
-    width: "100%";
+    width: 100%;
     border: 1px solid #21212b;
-    padding: 1.2rem 1.125rem 1rem 2.75rem;
+    padding: 0.75rem 1.5rem 0.75rem 2.5rem;
     border-top: 0;
     border-right: 0;
     border-left: 0;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    background-color: #010001;
 }
-.safe_info {
-    flex-direction: row;
-    display: flex;
+.safe_addr {
+    font-family: "SFMono";
+    font-weight: 400;
+    line-height: 20px;
+    font-size: 14px;
+    color: gray;
 }
 
 .headerText {
@@ -42,7 +47,7 @@
 
 .accountsLayout {
     width: 3.5rem;
-    background: #333232;
+    background: #010001;
     height: 100%;
     align-items: center;
     display: flex;
@@ -51,6 +56,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
     /* position: relative; */
+    border-right: 1px solid #21212b;
 }
 .accountsLayout::-webkit-scrollbar {
     display: none;
@@ -76,7 +82,7 @@
     /* padding: 0.625rem; */
     margin-top: 0.625rem;
     margin-bottom: 1.125rem;
-    background: #333232;
+    background: #010001;
 }
 
 .addContainer {
@@ -144,7 +150,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    position: absolute;
+    /* position: absolute; */
     /* bottom: 50px; */
 }
 .copyLinkdiv {
@@ -156,10 +162,29 @@
     color: #ffffff;
     margin-left: 0.75rem;
 }
+
+.enableDiscord {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-family: "TelegrafMedium";
+    font-size: 1rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+}
+.enableDiscord > svg {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
 .childrenLayout {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .addIcon {
@@ -192,13 +217,14 @@
 .accountIcon {
     height: 2.125rem;
     width: 2.125rem;
-    background-color: #5d5c5d;
+    background-color: #1f1f1f;
     margin-left: 0.5rem;
     border-radius: 2rem;
     flex-direction: row;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 .accountIcon:hover {
     background-color: white;
@@ -211,6 +237,7 @@
 .profileContainer {
     flex-direction: row;
     display: flex;
+    align-items: center;
 }
 
 .backdrop {
@@ -238,4 +265,43 @@
     margin-left: 2rem;
     margin-top: 10rem;
     line-height: 36px;
+}
+
+.testnetText {
+    color: #ffb22e;
+    font-family: "SFMono";
+    font-weight: 400;
+    line-height: 20px;
+    font-size: 14px;
+    margin-right: 1.5rem;
+    cursor: pointer;
+}
+
+.testnetText:hover {
+    text-decoration: underline;
+}
+
+.safeCopy {
+    font-family: "SFMono";
+    font-weight: 400;
+    line-height: 20px;
+    font-size: 14px;
+    color: gray;
+    text-decoration: underline;
+}
+
+.dot {
+    margin-right: 0.75rem;
+    margin-left: 0.75rem;
+    font-family: "SFMono";
+    font-weight: 400;
+    line-height: 20px;
+    font-size: 14px;
+    color: gray;
+}
+
+.safeContainer {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
 }

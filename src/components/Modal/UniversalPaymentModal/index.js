@@ -21,10 +21,7 @@ import { TokenInput } from "../../InputComponent/TokenInput"
 import { AiOutlineMinus } from "react-icons/all"
 
 import plus from "../../../assets/Icons/plus_black.svg"
-
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 
 const UniversalPaymentModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -84,6 +81,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
     const proposeSafeTransaction = async () => {
         const transaction_obj = []
         // //console.log('pay detail', payDetail)
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         setLoading(true)
 
         if (payDetail.length > 0) {

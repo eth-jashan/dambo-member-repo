@@ -72,7 +72,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
         setLoading(true)
         const response = await axios({
             method: "GET",
-            url: api.s3Uplaod.url,
+            url: process.env.REACT_APP_S3_UPLOAD,
         })
         let binary
         binary = atob(imageObj.image.split(",")[1])

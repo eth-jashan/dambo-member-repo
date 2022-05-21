@@ -1,15 +1,22 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import apiClient from "../../utils/api_client"
-import api from "../../constant/api"
+// import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 import { PocpGetters } from "pocp-service-sdk"
+import { ethers } from "ethers"
+import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { getSelectedChainId } from "../../utils/POCPutils"
 
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+const currentNetwork = getSelectedChainId()
+
+export const setChainId = (chainId) => {
+    return (dispatch) => {
+        dispatch(daoAction.set_chainId({ chainId }))
+    }
+}
 
 export const addSafeAddress = (safeAddress) => {
     return (dispatch) => {
@@ -45,7 +52,10 @@ export const registerDao = () => {
         const name = getState().dao.newSafeSetup.dao_name
         const logo = getState().dao.newSafeSetup.dao_logo_url
         const discord = getState().dao.newSafeSetup.dao_discord
-
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = await provider.getSigner()
+        const chainId = await signer.getChainId()
+        console.log("chain id", chainId)
         const owner = []
 
         owners.map((item, index) =>
@@ -60,11 +70,12 @@ export const registerDao = () => {
             signs_required: threshold,
             logo_url: logo,
             discord_link: discord,
+            chain_id: chainId,
         }
 
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}${routes.dao.registerDao}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
                 data,
                 {
                     headers: {
@@ -79,48 +90,54 @@ export const registerDao = () => {
                 return 0
             }
         } catch (error) {
-            // //console.log("error in registering.....", error)
+            console.log("error in registering.....", error)
         }
     }
 }
 
-export const getAllDaowithAddress = () => {
+export const getAllDaowithAddress = (chainId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
         const lastSelected = getState().auth.lastSelection
-
         try {
             const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}${routes.dao.getDaoMembership}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
                     },
                 }
             )
-            // //console.log(`total daos of`, res.data.data.length)
 
             if (res.data.data.length > 0) {
+                //console.log(res.data.data)
+                let dao_details = []
+
+                res.data.data.forEach((x, i) => {
+                    if (x.dao_details.chain_id === chainId) {
+                        console.log(x, chainId)
+                        dao_details.push(x)
+                    }
+                })
+
                 dispatch(
                     daoAction.set_dao_list({
-                        list: res.data.data,
+                        list: dao_details,
                     })
                 )
-                // //console.log("selection address", address, lastSelected)
                 let selectionIndex = 0
 
                 if (lastSelected) {
                     const isLastSelection = lastSelected.filter(
                         (x) => x.address === address
                     )
-                    res.data.data.map((item, index) => {
+                    dao_details.map((item, index) => {
                         if (
                             isLastSelection.length > 0 &&
                             item?.dao_details?.uuid ===
                                 isLastSelection[0]?.dao_uuid
                         ) {
-                            // //console.log("last remember there")
                             selectionIndex = index
                         } else {
                             // //console.log("last remember not there")
@@ -130,15 +147,15 @@ export const getAllDaowithAddress = () => {
 
                 dispatch(
                     daoAction.set_current_dao({
-                        dao: res.data.data[selectionIndex].dao_details,
-                        role: res.data.data[selectionIndex].access_role,
+                        dao: dao_details[selectionIndex].dao_details,
+                        role: dao_details[selectionIndex].access_role,
                         community_role:
-                            res.data.data[selectionIndex].community_role,
-                        account_mode: res.data.data[selectionIndex].access_role,
+                            dao_details[selectionIndex].community_role,
+                        account_mode: dao_details[selectionIndex].access_role,
                         index: selectionIndex,
                     })
                 )
-                return res.data.data[selectionIndex].access_role
+                return dao_details[selectionIndex].access_role
             } else {
                 dispatch(
                     daoAction.set_dao_list({
@@ -182,8 +199,8 @@ export const set_contri_filter = (filter_key, number) => {
         const uuid = getState().dao.currentDao?.uuid
         const url =
             getState().dao.role === "ADMIN"
-                ? `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
-                : `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
+                ? `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
+                : `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
         try {
             const res = await apiClient.get(url, {
                 headers: {
@@ -275,6 +292,7 @@ export const set_contri_filter = (filter_key, number) => {
 
 export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const currentDao = getState().dao.currentDao
         try {
             const balance = await serviceClient.getBalances(
@@ -349,8 +367,8 @@ export const getContriRequest = () => {
         dispatch(tranactionAction.reset_approved_request())
         const url =
             getState().dao.role === "ADMIN"
-                ? `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
-                : `${api.drepute.dev.BASE_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
+                ? `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
+                : `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
         try {
             const res = await apiClient.get(url, {
                 headers: {
@@ -416,7 +434,8 @@ export const getContriRequest = () => {
                                         x.payout_status === "REQUESTED" ||
                                         x.payout_status === "PAID") &&
                                     x.status !== "REJECTED" &&
-                                    !x.claimed_tx
+                                    !x.claimed_tx &&
+                                    x?.mint_badge
                             ),
                             number: 1,
                         })
@@ -455,12 +474,13 @@ export const addActivePaymentBadge = (status) => {
 export const getPayoutRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
 
         try {
             const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
@@ -557,7 +577,7 @@ export const getPayoutRequest = () => {
 
                     try {
                         await apiClient.post(
-                            `${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,
+                            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.updatePayout}`,
                             data,
                             {
                                 headers: {
@@ -579,12 +599,39 @@ export const getPayoutRequest = () => {
     }
 }
 
+export const updateListOnExecute = (id) => {
+    return (dispatch, getState) => {
+        const pendingTxs = getState().dao.payout_request
+        console.log(
+            pendingTxs.length,
+            id,
+            pendingTxs.filter((x) => x.metaInfo?.id !== id)
+        )
+        if (pendingTxs.length > 0) {
+            dispatch(
+                daoAction.set_active_payment_notification({ status: true })
+            )
+        } else {
+            dispatch(
+                daoAction.set_active_payment_notification({ status: false })
+            )
+        }
+        dispatch(
+            daoAction.set_filter_list({
+                key: "PENDING",
+                number: 1,
+                list: pendingTxs.filter((x) => x.metaInfo?.id !== id),
+            })
+        )
+    }
+}
+
 export const set_payout_filter = (filter_key, number) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
-
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const pending_txs = getState().dao.payout_request
 
         if (pending_txs.length > 0) {
@@ -628,7 +675,7 @@ export const set_payout_filter = (filter_key, number) => {
         } else {
             try {
                 const res = await apiClient.get(
-                    `${api.drepute.dev.BASE_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
                     {
                         headers: {
                             Authorization: `Bearer ${jwt}`,
@@ -717,7 +764,7 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
     // //console.log('updated data...', data)
     try {
         await apiClient.post(
-            `${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.updatePayout}`,
             data,
             {
                 headers: {
@@ -732,6 +779,7 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
 
 export const syncTxDataWithGnosis = (payout) => {
     return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const jwt = getState().auth.jwt
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
@@ -787,7 +835,7 @@ export const syncTxDataWithGnosis = (payout) => {
 
                 try {
                     await apiClient.post(
-                        `${api.drepute.dev.BASE_URL}${routes.contribution.updatePayout}`,
+                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.updatePayout}`,
                         data,
                         {
                             headers: {
@@ -810,6 +858,7 @@ export const syncTxDataWithGnosis = (payout) => {
 }
 
 export const getNonceForCreation = async (safe_address) => {
+    const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
     try {
         const pendingTxs = await serviceClient.getPendingTransactions(
             safe_address
@@ -843,7 +892,7 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
         }
 
         const res = await apiClient.post(
-            `${api.drepute.dev.BASE_URL}${routes.contribution.payout}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}`,
             isExternal ? data_external : data,
             {
                 headers: {
@@ -907,7 +956,7 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
         }
 
         const res = await apiClient.post(
-            `${api.drepute.dev.BASE_URL}${routes.contribution.externalPayout}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.externalPayout}`,
             data,
             {
                 headers: {
@@ -1040,6 +1089,7 @@ export const getContributorOverview = () => {
 
 export const getAllSafeFromAddress = (address) => {
     return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const list = await serviceClient.getSafesByOwner(address)
         let daos = []
         for (let i = 0; i < list.safes.length; i++) {
@@ -1049,7 +1099,7 @@ export const getAllSafeFromAddress = (address) => {
         daos = daos.replace(/,/g, "&")
         const jwt = getState().auth.jwt
         const res = await apiClient.get(
-            `${api.drepute.dev.BASE_URL}/${routes.dao.getOurSafes}?${daos}`,
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getOurSafes}?${daos}`,
             {
                 headers: {
                     Authorization: `Bearer ${jwt}`,
@@ -1087,8 +1137,14 @@ export const claimUpdate = (id) => {
 export const getCommunityId = () => {
     return async (dispatch, getState) => {
         const daoTxHash = getState().dao.currentDao?.tx_hash
-        const pocpGetter = new PocpGetters()
+        console.log(daoTxHash, currentNetwork)
+
+        const pocpGetter = new PocpGetters(
+            currentNetwork?.chainId === 4 ? 80001 : 137
+        )
+
         const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
+        console.log(community)
         dispatch(
             daoAction.set_community_info({
                 communityInfo: community.data.communities,
@@ -1100,7 +1156,10 @@ export const getCommunityId = () => {
 export const getAllApprovedBadges = () => {
     return async (dispatch, getState) => {
         const communityInfo = getState().dao.communityInfo
-        const pocpGetter = new PocpGetters()
+        console.log(communityInfo)
+        const pocpGetter = new PocpGetters(
+            currentNetwork?.chainId === 4 ? 80001 : 137
+        )
 
         try {
             const approvedToken = await pocpGetter.getApproveBadges(
@@ -1147,7 +1206,10 @@ export const getAllClaimedBadges = () => {
     return async (dispatch, getState) => {
         const communityInfo = getState().dao.communityInfo
         const address = getState().auth.address
-        const pocpGetter = new PocpGetters()
+        // const pocpGetter = new PocpGetters(currentNetwork === 4 ? 137 : 137)
+        const pocpGetter = new PocpGetters(
+            currentNetwork?.chainId === 4 ? 80001 : 137
+        )
         try {
             const claimedTokens = await pocpGetter.getClaimedBadgesOfClaimers(
                 communityInfo[0]?.id.toString(),
@@ -1175,17 +1237,50 @@ export const getAllClaimedBadges = () => {
 export const getAllUnclaimedBadges = () => {
     return async (dispatch, getState) => {
         const communityInfo = getState().dao.communityInfo
-        const pocpGetter = new PocpGetters()
+        // const pocpGetter = new PocpGetters(currentNetwork === 4 ? 137 : 137)
+        const pocpGetter = new PocpGetters(
+            currentNetwork?.chainId === 4 ? 80001 : 137
+        )
+        const uuid = getState().dao.currentDao?.uuid
+        const jwt = getState().auth.jwt
         try {
-            const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
-                communityInfo[0]?.id.toString()
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
             )
-            console.log("all unclaimed badges Fetched", unclaimedTokens.length)
-            dispatch(
-                daoAction.set_unclaimed_badges({
-                    unclaimedToken: unclaimedTokens,
+            if (res.data.success) {
+                const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
+                    communityInfo[0]?.id.toString()
+                )
+                const unclaimedBadges = []
+                res.data.data.contributions.forEach((contribution) => {
+                    unclaimedTokens.forEach((badge) => {
+                        if (contribution.id === parseInt(badge.identifier)) {
+                            console.log(contribution.id)
+                            unclaimedBadges.push(badge)
+                        }
+                    })
                 })
-            )
+                console.log(
+                    "all unclaimed badges Fetched",
+                    unclaimedTokens.length
+                )
+                dispatch(
+                    daoAction.set_unclaimed_badges({
+                        unclaimedToken: unclaimedBadges,
+                    })
+                )
+            } else {
+                dispatch(
+                    daoAction.set_claimed_badges({
+                        unclaimedToken: [],
+                    })
+                )
+            }
         } catch (error) {
             console.log(error)
             dispatch(
@@ -1224,5 +1319,34 @@ export const contributorRefreshList = () => {
         daoAction.set_claimed_badges({
             claimedTokens: [],
         })
+    }
+}
+
+export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
+    return async (dispatch, getState) => {
+        const data = {
+            dao_uuid: daoUuid,
+            guild_id: guildId,
+            discord_user_id: discordId,
+        }
+        const jwt = getState().auth.jwt
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.discord.register}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                return 1
+            } else {
+                return 0
+            }
+        } catch (err) {
+            return 0
+        }
     }
 }

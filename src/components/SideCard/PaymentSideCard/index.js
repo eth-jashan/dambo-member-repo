@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useContext, useState } from "react"
+import cross from "../../../assets/Icons/cross_white.svg"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -12,6 +13,7 @@ import {
     getAllApprovedBadges,
     getAllUnclaimedBadges,
     getAllClaimedBadges,
+    updateListOnExecute,
 } from "../../../store/actions/dao-action"
 import { EthSignSignature } from "../../../utils/EthSignSignature"
 import { message } from "antd"
@@ -22,17 +24,24 @@ import {
     setRejectModal,
 } from "../../../store/actions/transaction-action"
 import crossSvg from "../../../assets/Icons/cross_white.svg"
-import { setPayoutToast } from "../../../store/actions/toast-action"
+import {
+    setPayoutToast,
+    setPocpAction,
+} from "../../../store/actions/toast-action"
 import {
     getIpfsUrl,
-    uplaodApproveMetaDataUpload,
+    uploadApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
-import { processBadgeApprovalToPocp } from "../../../utils/POCPutils"
+import {
+    chainSwitch,
+    getSelectedChainId,
+    processBadgeApprovalToPocp,
+    setChainInfoAction,
+} from "../../../utils/POCPutils"
 import Loader from "../../Loader"
 import * as dayjs from "dayjs"
-import { web3 } from "../../../constant/web3"
-import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
-const serviceClient = new SafeServiceClient(web3.gnosis.rinkeby)
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import AppContext from "../../../appContext"
 
 const PaymentSlideCard = ({ signer }) => {
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
@@ -46,11 +55,17 @@ const PaymentSlideCard = ({ signer }) => {
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
+    const myContext = useContext(AppContext)
 
+    const setPocpAction = (status, chainId) => {
+        // myContext.setPocpActionValue(status, chainId)
+        setChainInfoAction(chainId)
+    }
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
     const confirmTransaction = async (hash) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         if (!safeSdk || !serviceClient) return
         let signature
         try {
@@ -82,11 +97,9 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const approvalEventCallback = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await provider.provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: web3.chainid.rinkeby }],
-        })
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        await chainSwitch(chainId)
         await dispatch(getAllUnclaimedBadges())
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllClaimedBadges())
@@ -97,6 +110,7 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const executeSafeTransaction = async (hash, c_id, to, approveBadge) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
             to: transaction.to,
@@ -156,6 +170,12 @@ const PaymentSlideCard = ({ signer }) => {
             return
         }
 
+        if (!approveBadge) {
+            dispatch(updateListOnExecute(currentPayment?.metaInfo?.id))
+            dispatch(setPayment(null))
+            dispatch(setLoading(false))
+        }
+
         if (approveBadge) {
             const { cid, url, status } = await getIpfsUrl(
                 jwt,
@@ -167,9 +187,14 @@ const PaymentSlideCard = ({ signer }) => {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
-                        await dispatch(getPayoutRequest())
-                        await dispatch(set_payout_filter("PENDING", 1))
+                        // await dispatch(getPayoutRequest())
+                        // await dispatch(set_payout_filter("PENDING", 1))
+                        dispatch(
+                            updateListOnExecute(currentPayment?.metaInfo?.id)
+                        )
+                        dispatch(setPayment(null))
                         message.error("failed to get ipfs url")
+                        dispatch(setLoading(false))
                     }
                     const { cid, url, status } = await getIpfsUrl(
                         jwt,
@@ -179,6 +204,11 @@ const PaymentSlideCard = ({ signer }) => {
                     if (status) {
                         clearTimeout(interval)
                         if (cid?.length > 0) {
+                            const provider = new ethers.providers.Web3Provider(
+                                window.ethereum
+                            )
+                            const { chainId } = await provider.getNetwork()
+                            setPocpAction(true, chainId)
                             await processBadgeApprovalToPocp(
                                 community_id[0].id,
                                 to,
@@ -193,6 +223,11 @@ const PaymentSlideCard = ({ signer }) => {
                 }, 3000)
             } else {
                 if (cid?.length > 0) {
+                    const provider = new ethers.providers.Web3Provider(
+                        window.ethereum
+                    )
+                    const { chainId } = await provider.getNetwork()
+                    setPocpAction(true, chainId)
                     await processBadgeApprovalToPocp(
                         community_id[0].id,
                         to,
@@ -204,11 +239,6 @@ const PaymentSlideCard = ({ signer }) => {
                     )
                 }
             }
-        } else {
-            await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING", 1))
-            dispatch(setPayment(null))
-            dispatch(setLoading(false))
         }
     }
 
@@ -554,24 +584,30 @@ const PaymentSlideCard = ({ signer }) => {
         const cid = []
         const to = []
         currentPayment?.metaInfo?.contributions.map((x, index) => {
-            metaInfo.push({
-                dao_name: currentDao?.name,
-                contri_title: x?.title,
-                signer: address,
-                claimer: x?.requested_by?.public_address,
-                date_of_approve: dayjs().format("D MMM YYYY"),
-                id: x?.id,
-                dao_logo_url:
-                    currentDao?.logo_url ||
-                    "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-                work_type: x?.stream.toString(),
-            })
-            cid.push(x?.id)
-            to.push(x?.requested_by?.public_address)
+            if (x?.mint_badge) {
+                metaInfo.push({
+                    dao_name: currentDao?.name,
+                    contri_title: x?.title,
+                    signer: address,
+                    claimer: x?.requested_by?.public_address,
+                    date_of_approve: dayjs().format("D MMM YYYY"),
+                    id: x?.id,
+                    dao_logo_url:
+                        currentDao?.logo_url ||
+                        "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
+                    work_type: x?.stream.toString(),
+                })
+                cid.push(x?.id)
+                to.push(x?.requested_by?.public_address)
+            }
         })
-        const response = await uplaodApproveMetaDataUpload(metaInfo)
-        if (response) {
-            return { status: true, cid, to }
+        if (metaInfo.length > 0) {
+            const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
+            if (response) {
+                return { status: true, cid, to }
+            } else {
+                return { status: false, cid: [], to: [] }
+            }
         } else {
             return { status: false, cid: [], to: [] }
         }
@@ -584,7 +620,7 @@ const PaymentSlideCard = ({ signer }) => {
                 if (res.status) {
                     await executeSafeTransaction(hash, res?.cid, res?.to, true)
                 } else {
-                    setLoading(false)
+                    await executeSafeTransaction(hash, null, null, false)
                 }
             } catch (error) {
                 setLoading(false)
@@ -593,8 +629,6 @@ const PaymentSlideCard = ({ signer }) => {
             await executeSafeTransaction(hash, null, null, false)
         }
     }
-
-    //   const [load, setLoad] = useState(false);
 
     const renderContribution = (item, index) => (
         <div key={index} className={styles.contribContainer}>
