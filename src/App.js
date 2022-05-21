@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
@@ -15,14 +15,34 @@ import {
     setLoggedIn,
     signout,
 } from "./store/actions/auth-action"
+import AppContext from "./appContext"
+import {
+    getSelectedChainId,
+    removeChainSelection,
+    setChainInfoAction,
+} from "./utils/POCPutils"
 import { web3 } from "./constant/web3"
+import AddBotFallback from "./pages/AddBotFallback"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const pocp_action = useSelector((x) => x.toast.pocp_action)
+
+    const [pocpAction, setPocpAction] = useState(false)
+    const [chainId, setChainId] = useState(null)
+
+    const setPocpActionValue = (status, chainId) => {
+        setPocpAction(status)
+        setChainId(chainId)
+    }
+
+    const pocpActionSetup = {
+        status: pocpAction,
+        chainId,
+        setPocpActionValue,
+    }
 
     window.ethereum.on("accountsChanged", () => {
         if (isAdmin) {
@@ -36,10 +56,19 @@ function App() {
             navigate("/")
         }
     })
-
+    const selectedChainId = getSelectedChainId()
+    console.log(
+        selectedChainId?.chainId === 4 ? "0x13881" : "0x89",
+        selectedChainId
+    )
     window.ethereum.on("chainChanged", (x) => {
-        // console.log("chain changed", x, pocp_action)
-        if (x !== web3.chainid.rinkeby && x !== web3.chainid.polygon) {
+        const selectedChainId = getSelectedChainId()
+        const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
+        if (
+            parseInt(x) !== selectedChainId.chainId &&
+            parseInt(x) !== maticNetwork
+        ) {
+            console.log(parseInt(x), maticNetwork)
             if (isAdmin) {
                 dispatch(setLoggedIn(false))
                 dispatch(signout())
@@ -52,29 +81,36 @@ function App() {
             }
         }
     })
+    // window.ethereum.on("chainChanged", (x) => onChainChanged(x))
 
     return (
-        <div className="App">
-            <div className="App-header">
-                <Routes>
-                    <Route path="/" element={<AuthWallet />} />
-                    <Route
-                        path="/discord/fallback"
-                        element={<DiscordFallback />}
-                    />
-                    <Route path="/onboard/dao" element={<Onboarding />} />
-                    <Route
-                        path="onboard/contributor/:id"
-                        element={<ContributorOnbording />}
-                    />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route
-                        path="contributor/invite/:name/:id"
-                        element={<ContributorSignupFallback />}
-                    />
-                </Routes>
+        <AppContext.Provider value={pocpActionSetup}>
+            <div className="App">
+                <div className="App-header">
+                    <Routes>
+                        <Route path="/" element={<AuthWallet />} />
+                        <Route
+                            path="/discord/fallback"
+                            element={<DiscordFallback />}
+                        />
+                        <Route path="/onboard/dao" element={<Onboarding />} />
+                        <Route
+                            path="onboard/contributor/:id"
+                            element={<ContributorOnbording />}
+                        />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route
+                            path="contributor/invite/:name/:id"
+                            element={<ContributorSignupFallback />}
+                        />
+                        <Route
+                            path="/discord/add-bot-fallback"
+                            element={<AddBotFallback />}
+                        />
+                    </Routes>
+                </div>
             </div>
-        </div>
+        </AppContext.Provider>
     )
 }
 

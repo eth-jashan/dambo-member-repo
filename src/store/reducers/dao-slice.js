@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit"
 const daoSlice = createSlice({
     name: "dao",
     initialState: {
+        chainId: null,
         allSafeList: [],
         dao_list: [],
         contribution_request: [],
@@ -52,6 +53,9 @@ const daoSlice = createSlice({
         communityInfo: null,
     },
     reducers: {
+        set_chainId(state, action) {
+            state.chainId = action.payload.chainId
+        },
         set_allSafe(state, action) {
             state.allSafeList = action.payload.list
         },
@@ -94,6 +98,7 @@ const daoSlice = createSlice({
             state.payout_request = action.payload.list
         },
         set_filter_list(state, action) {
+            console.log("list", action.payload.list)
             state.payout_filter = action.payload.list
             state.payout_filter_key = action.payload.number
         },

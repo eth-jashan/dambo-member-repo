@@ -17,3 +17,29 @@
     height: 0.5rem;
     width: 0.75rem;
 }
+
+.testnet {
+    color: #ffb22e;
+    margin-right: 1rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+.disconnectDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0rem 1rem 0rem 1rem;
+    align-items: center;
+    text-align: start;
+}
+.disconnectDiv > div {
+    display: flex;
+    flex-direction: row;
+}
+.addrContainer {
+    align-items: center;
+    display: flex;
+}

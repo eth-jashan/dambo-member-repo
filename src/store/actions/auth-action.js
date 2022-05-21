@@ -4,6 +4,7 @@ import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 import apiClient from "../../utils/api_client"
+import { setChainInfoAction } from "../../utils/POCPutils"
 
 export const getAuthToken = async (jwt) => {
     const res = await axios.get(
@@ -19,11 +20,11 @@ export const getAuthToken = async (jwt) => {
     }
 }
 
-export const authWithSign = (address, signer) => {
+export const authWithSign = (address, signer, chainId) => {
     return async (dispatch, getState) => {
         try {
             const responseNonce = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}${routes.auth.getNonce}?addr=${address}`
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getNonce}?addr=${address}`
             )
             const signature = await signer.signMessage(
                 `Signing in to drepute.xyz with nonce ${responseNonce.data.data.nonce}`
@@ -31,7 +32,7 @@ export const authWithSign = (address, signer) => {
             try {
                 const data = { addr: address, sig: signature }
                 const responseSignature = await apiClient.post(
-                    `${api.drepute.dev.BASE_URL}${routes.auth.getSignature}`,
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getSignature}`,
                     data
                 )
                 if (responseSignature.data.success) {
@@ -40,6 +41,7 @@ export const authWithSign = (address, signer) => {
                             jwt: responseSignature.data.data.token,
                         })
                     )
+                    setChainInfoAction(chainId)
                     localStorage.setItem(
                         address,
                         JSON.stringify({
@@ -50,11 +52,9 @@ export const authWithSign = (address, signer) => {
                     return 1
                 }
             } catch (error) {
-                // //console.log('error on signing api', error)
                 return 0
             }
         } catch (error) {
-            // //console.log('error on nonce api', error)
             return 0
         }
     }
@@ -63,23 +63,29 @@ export const authWithSign = (address, signer) => {
 export const getJwt = (address, jwt) => {
     return async (dispatch) => {
         const jwtInfo = JSON.parse(localStorage.getItem(address))
-        //console.log("jwt", jwtInfo?.jwt)
-        if (jwtInfo?.jwt) {
-            const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}/auth/ping`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwtInfo?.jwt || jwt}`,
-                    },
-                }
-            )
 
-            if (res.data?.success) {
-                //console.log("Save", jwtInfo?.jwt)
-                dispatch(authActions.set_signing({ jwt: jwtInfo.jwt }))
-                return jwtInfo?.jwt
-            } else {
-                return 0
+        if (jwtInfo?.jwt) {
+            try {
+                const res = await apiClient.get(
+                    `${process.env.REACT_APP_DAO_TOOL_URL}/auth/ping`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwtInfo?.jwt || jwt}`,
+                        },
+                    }
+                )
+
+                if (res.data?.success) {
+                    dispatch(authActions.set_signing({ jwt: jwtInfo.jwt }))
+                    return jwtInfo?.jwt
+                } else {
+                    localStorage.removeItem(address)
+                    dispatch(authActions.set_signing({ jwt: false }))
+                    return 0
+                }
+            } catch (error) {
+                localStorage.removeItem(address)
+                dispatch(authActions.set_signing({ jwt: false }))
             }
         } else {
             localStorage.removeItem(address)
@@ -137,7 +143,7 @@ export const getCommunityRole = () => {
         const jwt = getState().auth.jwt
         try {
             const res = await apiClient.get(
-                `${api.drepute.dev.BASE_URL}/${routes.dao.getCommunityRole}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}/${routes.dao.getCommunityRole}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
@@ -156,7 +162,7 @@ export const getCommunityRole = () => {
     }
 }
 
-export const joinContributor = (id) => {
+export const joinContributor = (id, discordUserId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
@@ -167,11 +173,12 @@ export const joinContributor = (id) => {
             addr: address,
             name: contributorName,
             community_role: role.value,
+            discord_user_id: discordUserId,
         }
 
         try {
             const res = await apiClient.post(
-                `${api.drepute.dev.BASE_URL}${routes.dao.joinContributor}/${id}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.joinContributor}/${id}`,
                 data,
                 {
                     headers: {

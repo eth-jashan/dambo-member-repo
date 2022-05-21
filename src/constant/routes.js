@@ -24,6 +24,11 @@ const routes = {
     pocp: {
         relay: "/eth/relay",
     },
+    discord: {
+        register: "/discord/register",
+        identifierStatus: "/discord/identifier/status",
+        userId: "/discord/user_id",
+    },
 }
 
 export default routes

@@ -4047,7 +4047,7 @@ commander@^2.20.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
-commander@^4.1.1:
+commander@^4.0.0, commander@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
@@ -5048,6 +5048,14 @@ entities@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
   integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
+
+env-cmd@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/env-cmd/-/env-cmd-10.1.0.tgz#c7f5d3b550c9519f137fdac4dd8fb6866a8c8c4b"
+  integrity sha512-mMdWTT9XKN7yNth/6N6g2GuKuJTsKMDHlQFUDacb/heQRRWOTIZ42t1rMHnQu4jYxU1ajdTeJM+9eEETlqToMA==
+  dependencies:
+    commander "^4.0.0"
+    cross-spawn "^7.0.0"
 
 errno@^0.1.3, errno@~0.1.7:
   version "0.1.8"
@@ -9034,10 +9042,10 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-pocp-service-sdk@0.2.8--beta:
-  version "0.2.8--beta"
-  resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-0.2.8--beta.tgz#d37dfa205c26b90a96bf1a094840b26e9c8617fb"
-  integrity sha512-coSFIxYpDMZyjLAo9K5nJpMp4tO/7L5bPOdx1mPPtq2uvKbkrf262L1wgczJHCWWsCzWNjhgle1UINKCFr/SkA==
+pocp-service-sdk@^1.0.0--beta:
+  version "1.0.0--beta"
+  resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-1.0.0--beta.tgz#7f5bdaf83ff571a3798047d3f620192c1e97ac86"
+  integrity sha512-cRQVOereWc7ib+hrUDkMeC1jhjO0EqNxAScS/LmQv3D982gN1uNgt5dpSzLyrhK2oievJzLhY15RaHr4IjwPew==
 
 portfinder@^1.0.26:
   version "1.0.28"

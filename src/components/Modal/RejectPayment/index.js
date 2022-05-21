@@ -15,10 +15,7 @@ import {
     setPayment,
     setRejectModal,
 } from "../../../store/actions/transaction-action"
-
-const serviceClient = new SafeServiceClient(
-    "https://safe-transaction.rinkeby.gnosis.io/"
-)
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 
 const RejectPayment = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -29,6 +26,7 @@ const RejectPayment = ({ onClose, signer }) => {
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
 
     const rejectTransaction = async (hash) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
 

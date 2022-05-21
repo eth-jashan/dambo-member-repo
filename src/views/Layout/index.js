@@ -4,6 +4,7 @@ import BackSvg from "../../assets/Icons/backSvg.svg"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import Lottie from "react-lottie"
 import background from "../../assets/lottie/onboarding_background.json"
+import ProfileModal from "../../components/Modal/ProfileModal"
 
 export default function Layout({
     children,
@@ -38,7 +39,10 @@ export default function Layout({
                 isClickToPauseDisabled={true}
             />
             <div className={styles.content}>
-                <OnboardingHeader signer={signer} />
+                <OnboardingHeader
+                    contributorWallet={contributorWallet}
+                    signer={signer}
+                />
                 {!contributorWallet && (
                     <div className={styles.modal}>
                         {!contributorWallet && checkRoute() && !deploying ? (
