@@ -686,7 +686,7 @@ const PaymentSlideCard = ({ signer }) => {
         <div className={styles.container}>
             <img
                 onClick={() => dispatch(setPayment(null))}
-                src={cross}
+                src={crossSvg}
                 alt="cross"
                 className={styles.cross}
             />

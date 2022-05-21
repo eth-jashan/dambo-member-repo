@@ -40,7 +40,8 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint . --ext .js,.jsx,.css",
-        "lint-and-fix": "eslint . --ext .js,.jsx,.css --fix"
+        "lint-and-fix": "eslint . --ext .js,.jsx,.css --fix",
+        "postinstall": "husky install"
     },
     "eslintConfig": {
         "extends": [
@@ -70,6 +71,12 @@
         "eslint-plugin-promise": "^6.0.0",
         "eslint-plugin-react": "^7.29.4",
         "eslint-plugin-unused-imports": "^2.0.0",
+        "husky": "^8.0.1",
         "prettier": "2.6.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "yarn lint"
+        }
     }
 }

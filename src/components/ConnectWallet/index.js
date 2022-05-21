@@ -246,9 +246,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             {address ? authWallet() : connectWallet()}
         </div>
     )
-    {
-        /* inline style required */
-    }
     const contributorWallet = () => (
         <div className={styles.walletContri}>
             <div className={styles.metaCard}>

@@ -34,8 +34,8 @@ import {
     getPayoutRequest,
     set_contri_filter,
     set_payout_filter,
+
 } from "../../../store/actions/dao-action"
-import POCPProxy from "../../../smartContract/POCP_Contracts/POCP.json"
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
 import * as dayjs from "dayjs"
 import {
@@ -239,8 +239,7 @@ const ContributionSideCard = ({
         </div>
     )
     const getStatusProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Waiting for approval",
@@ -270,8 +269,7 @@ const ContributionSideCard = ({
     }
 
     const getSigningProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Signing",
@@ -301,8 +299,7 @@ const ContributionSideCard = ({
     }
 
     const getExecutionProperty = () => {
-        if (isAdmin) {
-        } else {
+        if (!isAdmin) {
             if (currentTransaction.status === "REQUESTED") {
                 return {
                     title: "Signing",
