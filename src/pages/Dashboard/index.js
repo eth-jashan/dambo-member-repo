@@ -174,41 +174,39 @@ export default function Dashboard() {
     }
 
     const adminContributionFetch = async () => {
-        console.log("herererererereerrerere")
-        dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
+        dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         if (safeSdk) {
             const nonce = await safeSdk.getNonce()
             dispatch(set_active_nonce(nonce))
         }
-        dispatch(setLoadingState(false))
         await dispatch(getPayoutRequest())
         dispatch(set_payout_filter("PENDING", 1))
     }
 
     const contributorFetch = async () => {
-        dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
+        dispatch(setLoadingState(false))
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
         dispatch(getContributorOverview())
-        dispatch(setLoadingState(false))
     }
 
     const initialLoad = useCallback(async () => {
         dispatch(refreshContributionList())
         const account = await onInit()
         if (address === ethers.utils.getAddress(account)) {
+            dispatch(setLoadingState(true))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = await provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            console.log("acount role", accountRole)
             await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
+            // dispatch(setLoadingState(false))
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
             } else {
@@ -241,11 +239,13 @@ export default function Dashboard() {
     }
 
     const accountSwitch = useCallback(async () => {
+        dispatch(setLoadingState(true))
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         await dispatch(getCommunityId())
+        dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
             await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
@@ -278,26 +278,24 @@ export default function Dashboard() {
     const onRouteChange = async (route) => {
         dispatch(refreshContributionList())
         setTab(route)
+        dispatch(setLoadingState(true))
         await dispatch(getCommunityId())
-        await dispatch(getAllApprovedBadges())
+        // await dispatch(getAllApprovedBadges())
         if (role === "ADMIN") {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
             }
-            dispatch(setLoadingState(true))
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter("PENDING", 1))
             if (route !== "payments") {
                 await dispatch(getContriRequest())
                 dispatch(setLoadingState(false))
+                await dispatch(getAllApprovedBadges())
             }
-            dispatch(setLoadingState(false))
         } else {
-            dispatch(setLoadingState(true))
             await contributorFetch()
-            dispatch(setLoadingState(false))
         }
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
