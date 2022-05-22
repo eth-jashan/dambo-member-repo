@@ -33,8 +33,8 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         const serviceClient = new SafeServiceClient(await getSafeServiceUrl()) // change here service
         const transaction_obj = []
         if (approved_request.length > 0) {
-            approved_request.map((item, index) => {
-                item?.payout?.map((item, index) => {
+            approved_request.map(async (item, index) => {
+                item?.payout?.map(async (item, index) => {
                     if (
                         item?.token_type === null ||
                         !item?.token_type ||
@@ -63,27 +63,17 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                         )
                         // const amount =
                         const amount = parseFloat(item?.amount) * 1e18
-                        // console.log(
-                        //     "amount",
-                        //     amount,
-                        //     ethers.utils.getAddress(item?.address),
-                        //     coin.methods
-                        //         .transfer(
-                        //             ethers.utils.getAddress(item?.address),
-                        //             amount.toString()
-                        //         )
-                        //         .encodeABI()
-                        // )
                         transaction_obj.push({
                             to:
                                 item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
-                            data: coin.methods
-                                .transfer(
+                            data: coin.interface.encodeFunctionData(
+                                "transfer",
+                                [
                                     ethers.utils.getAddress(item?.address),
-                                    amount.toString()
-                                )
-                                .encodeABI(),
+                                    amount.toString(),
+                                ]
+                            ),
                             value: "0",
                             operation: 0,
                         })

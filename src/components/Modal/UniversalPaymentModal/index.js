@@ -105,12 +105,10 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
 
                     transaction_obj.push({
                         to: item?.token_type?.tokenAddress,
-                        data: coin.methods
-                            .transfer(
-                                ethers.utils.getAddress(address),
-                                amount.toString()
-                            )
-                            .encodeABI(),
+                        data: coin.interface.encodeFunctionData("transfer", [
+                            ethers.utils.getAddress(item?.address),
+                            amount.toString(),
+                        ]),
                         value: "0",
                         operation: 0,
                     })
