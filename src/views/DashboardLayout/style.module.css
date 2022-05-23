@@ -29,6 +29,25 @@
     text-align: start;
 }
 
+.routeLinks {
+    display: flex;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: "TelegrafMedium";
+}
+
+.routeLinks > div {
+    margin-right: 1.5rem;
+    line-height: 20px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.routeLinks > .activePageLink {
+    color: #ffffff;
+}
+
 .layoutContainer {
     display: flex;
     flex-direction: row;

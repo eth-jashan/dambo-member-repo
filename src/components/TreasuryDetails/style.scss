@@ -1,0 +1,58 @@
+.treasury-details-container {
+    color: #fff;
+    font-size: 16px;
+    line-height: 24px;
+    font-family: "TelegrafMedium";
+    .treasury-info-wrapper {
+        background: rgba(0, 0, 0, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 16px;
+        margin-top: 2rem;
+    }
+    .safe-info-wrapper {
+        background: #242424;
+        border-radius: 16px;
+        display: flex;
+    }
+    .safe-details {
+        padding: 2rem 1.5rem 2.5rem;
+        flex: 2.4;
+        .safe-name-and-avatar-wrapper {
+            display: flex;
+            align-items: center;
+            .safe-avatar {
+                margin-right: 1.25rem;
+                width: 4rem;
+                height: 4rem;
+                border-radius: 50%;
+                background-color: pink;
+            }
+            .safe-name-and-address {
+                text-align: left;
+                .safe-name {
+                    margin-bottom: 0.25rem;
+                    text-align: left;
+                }
+                .safe-address {
+                    font-size: 3rem;
+                    line-height: 3.5rem;
+                    text-align: left;
+                }
+            }
+        }
+        .safe-links {
+            display: flex;
+            align-items: center;
+            margin-left: 5.25rem;
+            margin-top: 1.5rem;
+            opacity: 0.5;
+            .separator {
+                margin: 0 1rem;
+            }
+        }
+    }
+    .safe-owner-details {
+        flex: 1;
+        border-left: 1px solid rgba(255, 255, 255, 0.16);
+    }
+}

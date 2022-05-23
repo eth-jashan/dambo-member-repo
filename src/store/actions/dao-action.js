@@ -1330,3 +1330,39 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
         }
     }
 }
+
+export const getAllTokensOfSafe = () => {
+    return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+        const currentDao = getState().dao.currentDao
+
+        const tokensData = await serviceClient.getUsdBalances(
+            currentDao?.safe_public_address
+        )
+        console.log("tokens are", tokensData)
+    }
+}
+
+export const getAllNFTsOfSafe = () => {
+    return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+        const currentDao = getState().dao.currentDao
+
+        const collectiblesData = await serviceClient.getCollectibles(
+            currentDao?.safe_public_address
+        )
+        console.log("collectibles are", collectiblesData)
+    }
+}
+
+export const getAllTransactionsOfSafe = () => {
+    return async (dispatch, getState) => {
+        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+        const currentDao = getState().dao.currentDao
+
+        const transactionsData = await serviceClient.getMultisigTransactions(
+            currentDao?.safe_public_address
+        )
+        console.log("transactions are", transactionsData)
+    }
+}

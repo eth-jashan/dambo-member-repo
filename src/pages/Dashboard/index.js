@@ -56,9 +56,11 @@ import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import TreasuryDetails from "../../components/TreasuryDetails"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
+    const [currentPage, setCurrentPage] = useState("request")
     const [uniPayHover, setUniPayHover] = useState(false)
 
     const payoutToast = useSelector((x) => x.toast.payout)
@@ -739,55 +741,63 @@ export default function Dashboard() {
             modalBackdrop={setModalBackDropFunc}
             signer={signer}
             route={tab}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
         >
-            <div className={styles.dashView}>
-                {(modalContri || modalPayment || modalUniPayment) && (
-                    <div
-                        onClick={() => {
-                            setModalContri(false)
-                            setModalPayment(false)
-                            setModalUniPayment(false)
-                        }}
-                        style={{
-                            position: "absolute",
-                            background: "#7A7A7A",
-                            opacity: 0.2,
-                            bottom: 0,
-                            right: 0,
-                            top: 0,
-                            left: 0,
-                        }}
-                    />
-                )}
-                {renderTab()}
-                {<DashboardSearchTab route={tab} />}
-                {loadingState
-                    ? renderLoadingScreen()
-                    : role === "ADMIN"
-                    ? adminScreen()
-                    : contributorScreen()}
-                {rejectModal && (
-                    <RejectPayment
-                        signer={signer}
-                        onClose={() => dispatch(setRejectModal(false))}
-                    />
-                )}
-                {approve_contri.length > 0 &&
-                    tab === "contributions" &&
-                    role === "ADMIN" &&
-                    !modalPayment &&
-                    checkoutButton()}
-                {payoutToast && transactionToast()}
-                {modalContri && (
-                    <ContributionRequestModal setVisibility={setModalContri} />
-                )}
-                {modalPayment && approve_contri.length > 0 && (
-                    <PaymentCheckoutModal
-                        signer={signer}
-                        onClose={() => setModalPayment(false)}
-                    />
-                )}
-            </div>
+            {currentPage === "request" ? (
+                <div className={styles.dashView}>
+                    {(modalContri || modalPayment || modalUniPayment) && (
+                        <div
+                            onClick={() => {
+                                setModalContri(false)
+                                setModalPayment(false)
+                                setModalUniPayment(false)
+                            }}
+                            style={{
+                                position: "absolute",
+                                background: "#7A7A7A",
+                                opacity: 0.2,
+                                bottom: 0,
+                                right: 0,
+                                top: 0,
+                                left: 0,
+                            }}
+                        />
+                    )}
+                    {renderTab()}
+                    {<DashboardSearchTab route={tab} />}
+                    {loadingState
+                        ? renderLoadingScreen()
+                        : role === "ADMIN"
+                        ? adminScreen()
+                        : contributorScreen()}
+                    {rejectModal && (
+                        <RejectPayment
+                            signer={signer}
+                            onClose={() => dispatch(setRejectModal(false))}
+                        />
+                    )}
+                    {approve_contri.length > 0 &&
+                        tab === "contributions" &&
+                        role === "ADMIN" &&
+                        !modalPayment &&
+                        checkoutButton()}
+                    {payoutToast && transactionToast()}
+                    {modalContri && (
+                        <ContributionRequestModal
+                            setVisibility={setModalContri}
+                        />
+                    )}
+                    {modalPayment && approve_contri.length > 0 && (
+                        <PaymentCheckoutModal
+                            signer={signer}
+                            onClose={() => setModalPayment(false)}
+                        />
+                    )}
+                </div>
+            ) : (
+                <TreasuryDetails />
+            )}
         </DashboardLayout>
     )
 }

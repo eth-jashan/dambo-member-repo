@@ -21,6 +21,9 @@ import {
     set_dao,
     set_payout_filter,
     syncTxDataWithGnosis,
+    getAllNFTsOfSafe,
+    getAllTokensOfSafe,
+    getAllTransactionsOfSafe,
 } from "../../store/actions/dao-action"
 import { links } from "../../constant/links"
 import logo from "../../assets/dreputeLogo.svg"
@@ -51,6 +54,8 @@ export default function DashboardLayout({
     signer,
     modalBackdrop,
     onRouteChange,
+    currentPage,
+    setCurrentPage,
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -125,6 +130,9 @@ export default function DashboardLayout({
         await dispatch(gnosisDetailsofDao())
         dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
+        dispatch(getAllTokensOfSafe())
+        dispatch(getAllNFTsOfSafe())
+        dispatch(getAllTransactionsOfSafe())
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
@@ -219,6 +227,30 @@ export default function DashboardLayout({
                         )}
                     </div>
                 </div>
+                {role === "ADMIN" && (
+                    <div className={styles.routeLinks}>
+                        <div
+                            className={
+                                currentPage === "request"
+                                    ? styles.activePageLink
+                                    : ""
+                            }
+                            onClick={() => setCurrentPage("request")}
+                        >
+                            Request
+                        </div>
+                        <div
+                            className={
+                                currentPage === "treasury"
+                                    ? styles.activePageLink
+                                    : ""
+                            }
+                            onClick={() => setCurrentPage("treasury")}
+                        >
+                            Treasury
+                        </div>
+                    </div>
+                )}
                 <div className={styles.profileContainer}>
                     {currentChainId === 4 ? (
                         <div
@@ -344,19 +376,23 @@ export default function DashboardLayout({
 
     const renderSideBarComp = () => {
         if (role === "ADMIN") {
-            if (route === "contributions" && currentTransaction) {
-                return contri_filter_key ? (
-                    <TransactionCard signer={signer} />
-                ) : (
-                    <ContributionSideCard
-                        onRouteChange={async () => await onRouteChange()}
-                        signer={signer}
-                    />
-                )
-            } else if (route === "payments" && currentPayment) {
-                return <PaymentSlideCard signer={signer} />
+            if (currentPage === "treasury") {
+                return <div>Treasury Side Bar</div>
             } else {
-                return renderAdminStats()
+                if (route === "contributions" && currentTransaction) {
+                    return contri_filter_key ? (
+                        <TransactionCard signer={signer} />
+                    ) : (
+                        <ContributionSideCard
+                            onRouteChange={async () => await onRouteChange()}
+                            signer={signer}
+                        />
+                    )
+                } else if (route === "payments" && currentPayment) {
+                    return <PaymentSlideCard signer={signer} />
+                } else {
+                    return renderAdminStats()
+                }
             }
         } else {
             if (contribution_detail) {
