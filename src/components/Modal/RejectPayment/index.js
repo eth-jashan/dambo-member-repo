@@ -24,9 +24,8 @@ const RejectPayment = ({ onClose, signer }) => {
     const [loading, setLoading] = useState(false)
 
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
-
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
     const rejectTransaction = async (hash) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
 

@@ -94,12 +94,12 @@ const TokenInput = ({ updateTokenType, tokenInput, onChange, payDetail }) => {
                         // value={tokenInput}
                         onChange={(e) => onInputChange(e)}
                         placeholder="0"
-                        style={{ width: `${input.length}rem` }}
+                        style={{ width: "2.5rem" }}
                         className="token-input"
                     />
                     <div
                         className={textStyles.m_16}
-                        style={{ color: "#ECFFB8" }}
+                        style={{ color: "#ECFFB8", marginLeft: "0.5rem" }}
                     >
                         {tokenSymbol}
                     </div>
@@ -108,7 +108,8 @@ const TokenInput = ({ updateTokenType, tokenInput, onChange, payDetail }) => {
                     style={{ color: "white", textAlign: "start" }}
                     className={textStyles.m_14}
                 >
-                    {`${(parseFloat(input) * tokenUsd).toFixed(2)}`} USD
+                    {input ? `${(parseFloat(input) * tokenUsd).toFixed(2)}` : 0}{" "}
+                    USD
                 </div>
             </div>
         </div>

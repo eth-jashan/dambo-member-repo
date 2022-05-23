@@ -1,6 +1,5 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import apiClient from "../../utils/api_client"
-// import api from "../../constant/api"
 import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { daoAction } from "../reducers/dao-slice"
@@ -11,6 +10,7 @@ import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 import { getSelectedChainId } from "../../utils/POCPutils"
 
 const currentNetwork = getSelectedChainId()
+const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
 export const setChainId = (chainId) => {
     return (dispatch) => {
@@ -292,7 +292,6 @@ export const set_contri_filter = (filter_key, number) => {
 
 export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const currentDao = getState().dao.currentDao
         try {
             const balance = await serviceClient.getBalances(
@@ -474,7 +473,7 @@ export const addActivePaymentBadge = (status) => {
 export const getPayoutRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
 
@@ -500,8 +499,8 @@ export const getPayoutRequest = () => {
                         list: res.data?.data?.payouts,
                     })
                 )
-                res.data?.data?.payouts.map((item, index) => {
-                    pendingTxs.results.map((x, i) => {
+                res.data?.data?.payouts.map((item) => {
+                    pendingTxs.results.map((x) => {
                         if (item.gnosis_reference_id === x.safeTxHash) {
                             list_of_tx.push({ gnosis: x, metaInfo: item })
                         }
@@ -555,7 +554,7 @@ export const getPayoutRequest = () => {
                 })
 
                 const updateTx = []
-                tx.map((item, index) => {
+                tx.map((item) => {
                     updateTx.push({
                         payout_id: item?.metaInfo?.id,
                         gnosis_reference_id: item?.gnosis?.safeTxHash,
@@ -631,7 +630,7 @@ export const set_payout_filter = (filter_key, number) => {
         const jwt = getState().auth.jwt
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+
         const pending_txs = getState().dao.payout_request
 
         if (pending_txs.length > 0) {
@@ -690,8 +689,8 @@ export const set_payout_filter = (filter_key, number) => {
                 const list_of_tx = []
                 if (res.data.success) {
                     // filtering out drepute txs from gnosis
-                    res.data?.data?.payouts.map((item, index) => {
-                        pendingTxs.results.map((x, i) => {
+                    res.data?.data?.payouts.map((item) => {
+                        pendingTxs.results.map((x) => {
                             if (
                                 item.gnosis_reference_id === x.safeTxHash &&
                                 item.is_executed
@@ -779,7 +778,6 @@ export const syncExecuteData = async (id, safeTxHash, status, jwt, uuid) => {
 
 export const syncTxDataWithGnosis = (payout) => {
     return async (dispatch, getState) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const jwt = getState().auth.jwt
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
@@ -858,7 +856,6 @@ export const syncTxDataWithGnosis = (payout) => {
 }
 
 export const getNonceForCreation = async (safe_address) => {
-    const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
     try {
         const pendingTxs = await serviceClient.getPendingTransactions(
             safe_address
@@ -1089,7 +1086,6 @@ export const getContributorOverview = () => {
 
 export const getAllSafeFromAddress = (address) => {
     return async (dispatch, getState) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const list = await serviceClient.getSafesByOwner(address)
         let daos = []
         for (let i = 0; i < list.safes.length; i++) {

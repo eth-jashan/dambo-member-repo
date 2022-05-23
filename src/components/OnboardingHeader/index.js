@@ -3,12 +3,13 @@ import WalletPicker from "../../components/WalletPicker"
 import { useSelector } from "react-redux"
 import styles from "./style.module.css"
 import { ethers } from "ethers"
+import ProfileModal from "../Modal/ProfileModal"
 
 export default function Header({
-    children,
-    decreaseStep,
     signer,
     contributorWallet,
+    onWalletCenterOpen,
+    walletCenter,
 }) {
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
@@ -24,8 +25,6 @@ export default function Header({
         await getNetwork()
     })
 
-    console.log(contributorWallet)
-
     return (
         <div
             align="middle"
@@ -35,7 +34,6 @@ export default function Header({
             }}
         >
             <div className={styles.headerCnt}>
-                {/* <ProfileModal /> */}
                 {contributorWallet ? (
                     <div className={styles.header}>
                         <div className={styles.headerName}>Drepute | </div>
@@ -52,7 +50,7 @@ export default function Header({
                     <div className={styles.headerName}>Drepute</div>
                 )}
                 {jwt && (
-                    <div>
+                    <div onClick={() => onWalletCenterOpen(!walletCenter)}>
                         <WalletPicker signer={signer} />
                     </div>
                 )}

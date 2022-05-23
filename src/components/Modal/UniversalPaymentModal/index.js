@@ -77,11 +77,12 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
             setPayDetail(payDetail)
         }
     }
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const proposeSafeTransaction = async () => {
         const transaction_obj = []
         // //console.log('pay detail', payDetail)
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+
         setLoading(true)
 
         if (payDetail.length > 0) {

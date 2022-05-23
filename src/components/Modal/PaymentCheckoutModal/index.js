@@ -27,10 +27,10 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl()) // change here service
         const transaction_obj = []
         if (approved_request.length > 0) {
             approved_request.map(async (item, index) => {

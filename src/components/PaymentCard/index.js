@@ -46,6 +46,7 @@ export default function PaymentCard({ item, signer }) {
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
     const myContext = useContext(AppContext)
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const setPocpAction = (status, chainId) => {
         // myContext.setPocpActionValue(status, chainId)
@@ -103,7 +104,7 @@ export default function PaymentCard({ item, signer }) {
             tokens.push(`${x?.amount} ${x?.details?.symbol}`)
         })
         // console.log(tokens)
-        tokens = tokens.slice(0, 2)?.toString()
+        tokens = tokens?.slice(0, 2)?.toString()
 
         return (
             <div key={index} className={styles.singleItem}>
@@ -281,7 +282,6 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const confirmTransaction = async () => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         dispatch(setLoading(true))
         if (!safeSdk || !serviceClient) {
             dispatch(setLoading(false))
@@ -333,7 +333,6 @@ export default function PaymentCard({ item, signer }) {
     }
 
     const executeSafeTransaction = async (c_id, to, approveBadge) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         dispatch(setLoading(true, item?.metaInfo?.id))
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)

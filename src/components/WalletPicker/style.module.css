@@ -12,6 +12,7 @@
     padding: 0rem 0.5rem 0rem 0.5rem;
     display: flex;
     justify-content: center;
+    cursor: pointer;
 }
 .icon {
     height: 0.5rem;
