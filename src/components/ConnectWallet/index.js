@@ -282,7 +282,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                             </div>
                         ) : (
                             <div className={styles.connectedText}>
-                                {address.slice(0, 5)}...{address.slice(-3)}
+                                {address?.slice(0, 5)}...{address?.slice(-3)}
                             </div>
                         )}
                     </div>

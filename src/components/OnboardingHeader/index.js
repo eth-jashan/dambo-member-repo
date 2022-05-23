@@ -3,6 +3,7 @@ import WalletPicker from "../../components/WalletPicker"
 import { useSelector } from "react-redux"
 import styles from "./style.module.css"
 import { ethers } from "ethers"
+import ProfileModal from "../Modal/ProfileModal"
 
 export default function Header({
     children,

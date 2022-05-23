@@ -103,7 +103,7 @@ export default function PaymentCard({ item, signer }) {
             tokens.push(`${x?.amount} ${x?.details?.symbol}`)
         })
         // console.log(tokens)
-        tokens = tokens.slice(0, 2)?.toString()
+        tokens = tokens?.slice(0, 2)?.toString()
 
         return (
             <div key={index} className={styles.singleItem}>

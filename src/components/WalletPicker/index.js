@@ -8,6 +8,7 @@ import styles from "./style.module.css"
 import textStyles from "./../../commonStyles/textType/styles.module.css"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import { ethers } from "ethers"
+import ProfileModal from "../Modal/ProfileModal"
 // import chevron_right from "../../../assets/Icons/chevron_right.svg"
 // import email from "../../../assets/Icons/email_black.svg"
 
@@ -199,6 +200,9 @@ export default function WalletPicker({ signer }) {
                 {address?.slice(0, 5) + "....." + address?.slice(-3)}
             </div>
             <img alt="chevron_down" src={chevronDown} className={styles.icon} />
+            {/* <div style={{ top: "20px" }}>
+                
+            </div> */}
         </div>
     )
 }

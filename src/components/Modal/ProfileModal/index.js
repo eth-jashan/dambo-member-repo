@@ -45,7 +45,7 @@ const ProfileModal = ({ isOnboard = false }) => {
                     <div className={styles.dot} />
                     <div>
                         <div className={textStyles.m_14}>
-                            {`${address.slice(0, 5)}...${address.slice(-3)}`}
+                            {`${address?.slice(0, 5)}...${address?.slice(-3)}`}
                         </div>
                         <div
                             onClick={() => onDisconnect()}
@@ -76,22 +76,34 @@ const ProfileModal = ({ isOnboard = false }) => {
 
             <div className={styles.divider} />
 
-            <div className={styles.singleOption}>
-                <div>
-                    <img src={setting} alt="setting" className={styles.icon} />
-                    <div className={textStyles.m_16}>Settings</div>
+            {!isOnboard && (
+                <div className={styles.singleOption}>
+                    <div>
+                        <img
+                            src={setting}
+                            alt="setting"
+                            className={styles.icon}
+                        />
+                        <div className={textStyles.m_16}>Settings</div>
+                    </div>
+                    <img
+                        src={chevron_right}
+                        alt="chevro_right"
+                        className={styles.chevron}
+                    />
                 </div>
-                <img
-                    src={chevron_right}
-                    alt="chevro_right"
-                    className={styles.chevron}
-                />
-            </div>
+            )}
 
-            <div
-                style={{ marginTop: "4px", width: "90%", alignSelf: "center" }}
-                className={styles.divider}
-            />
+            {!isOnboard && (
+                <div
+                    style={{
+                        marginTop: "4px",
+                        width: "90%",
+                        alignSelf: "center",
+                    }}
+                    className={styles.divider}
+                />
+            )}
 
             <div className={styles.singleOption}>
                 <div>
@@ -104,6 +116,7 @@ const ProfileModal = ({ isOnboard = false }) => {
                     className={styles.chevron}
                 />
             </div>
+
             <div onClick={() => onDisconnect()} className={styles.singleOption}>
                 <div>
                     <img src={disconnect} alt="email" className={styles.icon} />
