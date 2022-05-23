@@ -1,9 +1,11 @@
 import { ethers } from "ethers"
+import { getSelectedChainId } from "./POCPutils"
 
-export const getSafeServiceUrl = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = await provider.getSigner()
-    const chainId = await signer.getChainId()
+export const getSafeServiceUrl = () => {
+    // const provider = new ethers.providers.Web3Provider(window.ethereum)
+    // const signer = await provider.getSigner()
+    // const chainId = await signer.getChainId()
+    const chainId = getSelectedChainId()?.chainId
     switch (chainId) {
         case 4:
             return "https://safe-transaction.rinkeby.gnosis.io/"

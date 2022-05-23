@@ -13,13 +13,14 @@ import { message } from "antd"
 import { useNavigate } from "react-router"
 import { getSelectedChainId } from "../../../utils/POCPutils"
 
-const ProfileModal = ({ isOnboard = false }) => {
+const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
     const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
             message.success("Address coppied")
+            onActionComplete()
             return await navigator.clipboard.writeText(address)
         } else {
             return document.execCommand("copy", true, address)
@@ -29,6 +30,7 @@ const ProfileModal = ({ isOnboard = false }) => {
     const navigate = useNavigate()
 
     const onDisconnect = () => {
+        onActionComplete()
         dispatch(signout())
         navigate("/")
     }

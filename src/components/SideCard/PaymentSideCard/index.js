@@ -23,9 +23,7 @@ import {
     setRejectModal,
 } from "../../../store/actions/transaction-action"
 import crossSvg from "../../../assets/Icons/cross_white.svg"
-import {
-    setPayoutToast,
-} from "../../../store/actions/toast-action"
+import { setPayoutToast } from "../../../store/actions/toast-action"
 import {
     getIpfsUrl,
     uploadApproveMetaDataUpload,
@@ -61,9 +59,8 @@ const PaymentSlideCard = ({ signer }) => {
     }
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
-
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
     const confirmTransaction = async (hash) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         if (!safeSdk || !serviceClient) return
         let signature
         try {
@@ -108,7 +105,6 @@ const PaymentSlideCard = ({ signer }) => {
     }
 
     const executeSafeTransaction = async (hash, c_id, to, approveBadge) => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
             to: transaction.to,

@@ -29,9 +29,9 @@ export default function AddOwners({
     const dispatch = useDispatch()
     const safeAddress = useSelector((x) => x.dao.newSafeSetup.safeAddress)
     const [loading, setLoading] = useState(false)
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const getSafeOwners = useCallback(async () => {
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const ownerObj = []
         const safeInfo = await serviceClient.getSafeInfo(safeAddress)
         if (safeInfo.owners) {

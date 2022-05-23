@@ -280,7 +280,6 @@ export default function Dashboard() {
         setTab(route)
         dispatch(setLoadingState(true))
         await dispatch(getCommunityId())
-        // await dispatch(getAllApprovedBadges())
         if (role === "ADMIN") {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
@@ -444,12 +443,10 @@ export default function Dashboard() {
         const amount_total = usd_amount_all.reduce((a, b) => a + b)
         return parseFloat(amount_total).toFixed(2)
     }
-
     const [paymentLoading, setPaymentLoading] = useState(false)
-
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
     const proposeSafeTransaction = async () => {
         setPaymentLoading(true)
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
         const transaction_obj = []
 
         if (approved_request.length > 0) {

@@ -60,7 +60,6 @@ const ContributionSideCard = ({
     const address = currentTransaction?.requested_by?.public_address
     const myContext = useContext(AppContext)
     const setPocpAction = (status, chainId) => {
-        // myContext.setPocpActionValue(status, chainId)
         setChainInfoAction(chainId)
     }
     const jwt = useSelector((x) => x.auth.jwt)
@@ -84,49 +83,10 @@ const ContributionSideCard = ({
         }
     }
 
-    // const getApproveCheck = async () => {
-    //     console.log(currentTransaction?.approved_tx, currentTransaction)
-    //     if (currentTransaction?.approved_tx) {
-    //         const customHttpProvider = new ethers.providers.JsonRpcProvider(
-    //             web3.infura
-    //         )
-    //         const reciept = await customHttpProvider.getTransactionReceipt(
-    //             currentTransaction?.approved_tx
-    //         )
-    //         if (reciept.status) {
-    //             return true
-    //         } else {
-    //             return false
-    //         }
-    //     } else {
-    //         return false
-    //     }
-    // }
-
-    // const getClaimCheck = async () => {
-    //     if (currentTransaction?.claimed_tx) {
-    //         const customHttpProvider = new ethers.providers.JsonRpcProvider(
-    //             web3.infura
-    //         )
-    //         const reciept = await customHttpProvider.getTransactionReceipt(
-    //             currentTransaction?.claimed_tx
-    //         )
-    //         if (reciept.status) {
-    //             return true
-    //         } else {
-    //             return false
-    //         }
-    //     } else {
-    //         return false
-    //     }
-    // }
-
-    // const [approvedBadge, setApprovedBadge] = useState(false)
-    // const [claimBadge, setClaimBadge] = useState(false)
-
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
     const getTransactionInfo = useCallback(async () => {
         let tx
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+
         if (
             currentTransaction?.status !== "REQUESTED" &&
             currentTransaction?.status !== "REJECTED"
@@ -139,11 +99,6 @@ const ContributionSideCard = ({
             currentDao?.safe_public_address
         )
 
-        // const approval = await getApproveCheck()
-        // const claim_status = await getClaimCheck()
-        // console.log("Yo", approval)
-        // setApprovedBadge(approval)
-        // setClaimBadge(claim_status)
         setTxInfo(tx)
         setSafeInfo(safeInfo)
     }, [

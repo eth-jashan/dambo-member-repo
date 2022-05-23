@@ -6,6 +6,8 @@ import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 
+const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+
 export const setTransaction = (item, ethPrice, isPOCPApproved = false) => {
     return (dispatch) => {
         dispatch(
@@ -40,7 +42,7 @@ export const resetApprovedRequest = () => {
 export const getPendingTransaction = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-        const serviceClient = new SafeServiceClient(await getSafeServiceUrl())
+
         const pendingTxs = await serviceClient.getPendingTransactions(
             currentDao?.safe_public_address
         )
@@ -83,7 +85,7 @@ export const approveContriRequest = (
                     },
                 })
             )
-            payout.map((item, index) => {
+            payout.map((item) => {
                 if (!item?.token_type) {
                     newPayout.push({
                         amount: item.amount,
