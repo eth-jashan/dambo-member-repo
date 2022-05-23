@@ -32,7 +32,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         } else if (role !== "ADMIN") {
@@ -42,7 +42,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         }

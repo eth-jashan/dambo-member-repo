@@ -69,7 +69,7 @@ const PaymentSlideCard = ({ signer }) => {
                 await serviceClient.confirmTransaction(hash, signature.data)
                 await dispatch(getPayoutRequest())
                 await dispatch(syncTxDataWithGnosis())
-                await dispatch(set_payout_filter("PENDING", 1))
+                await dispatch(set_payout_filter("PENDING"))
                 dispatch(setPayment(null))
                 dispatch(
                     setPayoutToast("SIGNED", {
@@ -99,7 +99,7 @@ const PaymentSlideCard = ({ signer }) => {
         await dispatch(getAllApprovedBadges())
         await dispatch(getAllClaimedBadges())
         await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING", 1))
+        await dispatch(set_payout_filter("PENDING"))
         dispatch(setPayment(null))
         dispatch(setLoading(false))
     }
@@ -181,8 +181,7 @@ const PaymentSlideCard = ({ signer }) => {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
-                        // await dispatch(getPayoutRequest())
-                        // await dispatch(set_payout_filter("PENDING", 1))
+
                         dispatch(
                             updateListOnExecute(currentPayment?.metaInfo?.id)
                         )

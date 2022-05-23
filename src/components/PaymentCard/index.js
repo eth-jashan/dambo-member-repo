@@ -23,6 +23,7 @@ import {
     getAllClaimedBadges,
     getAllApprovedBadges,
     updateListOnExecute,
+    set_active_nonce,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { setPayoutToast } from "../../store/actions/toast-action"
@@ -295,7 +296,7 @@ export default function PaymentCard({ item, signer }) {
                 await serviceClient.confirmTransaction(hash, signature.data)
                 await dispatch(getPayoutRequest())
                 await dispatch(syncTxDataWithGnosis())
-                await dispatch(set_payout_filter("PENDING", 1))
+                await dispatch(set_payout_filter("PENDING"))
                 dispatch(setPayment(null))
                 dispatch(
                     setPayoutToast("SIGNED", {
@@ -303,7 +304,6 @@ export default function PaymentCard({ item, signer }) {
                         value: getTotalAmount(),
                     })
                 )
-                // await dispatch(set_payout_filter('PENDING'))
             } catch (error) {
                 console.error(error)
                 message.error("Error on confirming sign")
@@ -327,7 +327,10 @@ export default function PaymentCard({ item, signer }) {
         await dispatch(getAllUnclaimedBadges())
         await dispatch(getAllClaimedBadges())
         await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING", 1))
+        await dispatch(set_payout_filter("PENDING"))
+        const nonce = await safeSdk.getNonce()
+        dispatch(set_active_nonce(nonce))
+        console.log("execute after ", nonce)
         dispatch(setPayment(null))
         dispatch(setLoading(false))
     }
@@ -400,6 +403,9 @@ export default function PaymentCard({ item, signer }) {
             dispatch(updateListOnExecute(item?.metaInfo?.id))
             dispatch(setPayment(null))
             dispatch(setLoading(false))
+            const nonce = await safeSdk.getNonce()
+            dispatch(set_active_nonce(nonce))
+            console.log("execute after ", nonce)
         }
 
         if (approveBadge) {
@@ -413,8 +419,7 @@ export default function PaymentCard({ item, signer }) {
                 const interval = setInterval(async () => {
                     if (Date.now() - startTime > 10000) {
                         clearInterval(interval)
-                        // await dispatch(getPayoutRequest())
-                        // await dispatch(set_payout_filter("PENDING", 1))
+
                         dispatch(updateListOnExecute(item?.metaInfo?.id))
                         dispatch(setPayment(null))
                         message.error("failed to get ipfs url")
