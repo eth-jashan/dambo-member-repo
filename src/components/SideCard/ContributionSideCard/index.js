@@ -29,10 +29,6 @@ import {
     getAllClaimedBadges,
     getAllUnclaimedBadges,
     getContributorOverview,
-    getContriRequest,
-    getPayoutRequest,
-    set_contri_filter,
-    set_payout_filter,
 } from "../../../store/actions/dao-action"
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/all"
 import * as dayjs from "dayjs"

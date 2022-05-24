@@ -43,7 +43,6 @@ import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import { MdLink } from "react-icons/md"
-import { assets } from "../../constant/assets"
 import TestnetInfo from "../../components/ToolTip/TestnetInfo"
 
 export default function DashboardLayout({
