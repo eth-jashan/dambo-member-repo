@@ -127,14 +127,14 @@ export default function DashboardLayout({
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
         } else if (role !== "ADMIN") {
             await contributorFetch()
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         }
@@ -149,10 +149,7 @@ export default function DashboardLayout({
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
             message.success("Copied Successfully")
-            return await navigator.clipboard.writeText(
-                // currentDao?.safe_public_address
-                textToCopy
-            )
+            return await navigator.clipboard.writeText(textToCopy)
         } else {
             return document.execCommand("copy", true, address)
         }

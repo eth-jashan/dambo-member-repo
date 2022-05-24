@@ -98,7 +98,6 @@ const daoSlice = createSlice({
             state.payout_request = action.payload.list
         },
         set_filter_list(state, action) {
-            console.log("list", action.payload.list)
             state.payout_filter = action.payload.list
             state.payout_filter_key = action.payload.number
         },

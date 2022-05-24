@@ -56,18 +56,18 @@ const DashboardSearchTab = ({ route }) => {
     const payoutOnClick = ({ key }) => {
         if (key === "1") {
             setPayoutFilter(0)
-            dispatch(set_payout_filter("ALL", 0))
+            dispatch(set_payout_filter("ALL"))
         } else if (key === "2") {
-            dispatch(set_payout_filter("PENDING", 1))
+            dispatch(set_payout_filter("PENDING"))
             setPayoutFilter(1)
         } else if (key === "3") {
-            dispatch(set_payout_filter("APPROVED", 2))
+            dispatch(set_payout_filter("APPROVED"))
             setPayoutFilter(2)
         } else if (key === "4") {
-            dispatch(set_payout_filter("PAID", 3))
+            dispatch(set_payout_filter("PAID"))
             setPayoutFilter(3)
         } else if (key === "5") {
-            dispatch(set_payout_filter("REJECTED", 4))
+            dispatch(set_payout_filter("REJECTED"))
             setPayoutFilter(4)
         }
     }

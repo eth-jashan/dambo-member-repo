@@ -34,6 +34,9 @@ export default function WalletPicker({ signer }) {
                 {address?.slice(0, 5) + "....." + address?.slice(-3)}
             </div>
             <img alt="chevron_down" src={chevronDown} className={styles.icon} />
+            {/* <div style={{ top: "20px" }}>
+                
+            </div> */}
         </div>
     )
 }

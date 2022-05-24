@@ -178,12 +178,8 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
-        if (safeSdk) {
-            const nonce = await safeSdk.getNonce()
-            dispatch(set_active_nonce(nonce))
-        }
         await dispatch(getPayoutRequest())
-        dispatch(set_payout_filter("PENDING", 1))
+        dispatch(set_payout_filter("PENDING"))
     }
 
     const contributorFetch = async () => {
@@ -206,7 +202,7 @@ export default function Dashboard() {
             await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
-            // dispatch(setLoadingState(false))
+
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
             } else {
@@ -232,7 +228,7 @@ export default function Dashboard() {
     const paymentsAdminFetchAccountSwitch = async () => {
         dispatch(setLoadingState(true))
         await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING", 1))
+        await dispatch(set_payout_filter("PENDING"))
         await dispatch(getPendingTransaction())
         await dispatch(syncTxDataWithGnosis())
         dispatch(setLoadingState(false))
@@ -250,10 +246,6 @@ export default function Dashboard() {
             await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
                 await paymentsAdminFetchAccountSwitch()
-            }
-            if (safeSdk) {
-                const nonce = await safeSdk.getNonce()
-                dispatch(set_active_nonce(nonce))
             }
         } else {
             await contributorFetch()
@@ -284,10 +276,11 @@ export default function Dashboard() {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
+                console.log("route change account", nonce)
             }
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             if (route !== "payments") {
                 await dispatch(getContriRequest())
                 dispatch(setLoadingState(false))

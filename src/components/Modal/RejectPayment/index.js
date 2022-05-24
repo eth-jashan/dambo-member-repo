@@ -48,7 +48,7 @@ const RejectPayment = ({ onClose, signer }) => {
             )
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter("PENDING", 1))
+            await dispatch(set_payout_filter("PENDING"))
             dispatch(setRejectModal(false))
             dispatch(setPayment(null))
         } catch (error) {
@@ -133,7 +133,7 @@ const RejectPayment = ({ onClose, signer }) => {
                         className={styles.btnDiv}
                     >
                         <div
-                            style={{ color: "white" }}
+                            style={{ color: "white", cursor: "pointer" }}
                             className={textStyles.ub_16}
                         >
                             {loading
