@@ -149,7 +149,6 @@ export default function Dashboard() {
                 }`
             )
         }
-        // await processDaoToPOCP()
     }
 
     const preventGoingBack = useCallback(() => {

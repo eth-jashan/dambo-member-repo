@@ -70,4 +70,5 @@
 .walletModal {
     right: 14%;
     position: absolute;
+    /* z-index: 1; */
 }
