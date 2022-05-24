@@ -514,7 +514,10 @@ export const getPayoutRequest = () => {
                 // checking rejected tx and updated tx
                 list_of_tx.forEach((item) => {
                     pendingTxs.results.forEach((x) => {
-                        if (item.gnosis.nonce === x.nonce) {
+                        if (
+                            item.gnosis.nonce === x.nonce &&
+                            !item.metaInfo.is_executed
+                        ) {
                             if (x.data === null && x.value === "0") {
                                 if (!nonce_inserted.includes(x.nonce)) {
                                     tx.push({
