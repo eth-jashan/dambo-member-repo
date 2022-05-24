@@ -9,7 +9,7 @@ phases:
     # To give our build server access, we can simply run "npm install"
     install:
         runtime-versions:
-            nodejs: latest
+            nodejs: 14
     pre_build:
         commands:
             - yarn
