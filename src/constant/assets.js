@@ -5,6 +5,7 @@ import downWhite from "../assets/Icons/down_white.svg"
 import faceIcon from "../assets/Icons/face_icon.svg"
 import feedIcon from "../assets/Icons/feed.svg"
 import minusWhite from "../assets/Icons/minus_white.svg"
+import errorIcon from "../assets/Icons/error_icon.svg"
 
 export const assets = {
     icons: {
@@ -15,5 +16,6 @@ export const assets = {
         faceIcon,
         feedIcon,
         minusWhite,
+        errorIcon,
     },
 }

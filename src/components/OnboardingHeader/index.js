@@ -3,7 +3,6 @@ import WalletPicker from "../../components/WalletPicker"
 import { useSelector } from "react-redux"
 import styles from "./style.module.css"
 import { ethers } from "ethers"
-import ProfileModal from "../Modal/ProfileModal"
 
 export default function Header({
     signer,
@@ -38,11 +37,16 @@ export default function Header({
                     <div className={styles.header}>
                         <div className={styles.headerName}>Drepute | </div>
                         {chainId === 4 && role !== "ADMIN" && (
-                            <div
-                                style={{ color: "#FFB22E", marginLeft: "6px" }}
-                                className={styles.headerName}
-                            >
-                                Rinkeby testnet
+                            <div>
+                                <div
+                                    style={{
+                                        color: "#FFB22E",
+                                        marginLeft: "6px",
+                                    }}
+                                    className={styles.headerName}
+                                >
+                                    Rinkeby testnet
+                                </div>
                             </div>
                         )}
                     </div>

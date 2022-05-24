@@ -43,6 +43,8 @@ import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import { MdLink } from "react-icons/md"
+import { assets } from "../../constant/assets"
+import TestnetInfo from "../../components/ToolTip/TestnetInfo"
 
 export default function DashboardLayout({
     children,
@@ -178,6 +180,7 @@ export default function DashboardLayout({
     const currentChainId = getSelectedChainId().chainId
 
     const [safeInfoHover, setSafeInfoHover] = useState(false)
+    const [onTestnetHover, setTestnetHover] = useState(false)
 
     const headerComponent = () => {
         return (
@@ -218,13 +221,19 @@ export default function DashboardLayout({
                     </div>
                 </div>
                 <div className={styles.profileContainer}>
-                    {/* <Tooltip placement="bottom" title="to"> */}
                     {currentChainId === 4 ? (
-                        <div className={styles.testnetText}>
-                            Rinkeby testnet
+                        <div
+                            onMouseLeave={() => setTestnetHover(false)}
+                            onMouseEnter={() => setTestnetHover(true)}
+                            style={{ position: "relative" }}
+                        >
+                            <div className={styles.testnetText}>
+                                Rinkeby testnet
+                            </div>
+                            {onTestnetHover && <TestnetInfo />}
                         </div>
                     ) : null}
-                    {/* </Tooltip> */}
+
                     <div>
                         {account_mode === "ADMIN" && (
                             <div

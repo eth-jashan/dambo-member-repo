@@ -54,6 +54,7 @@ export default function Layout({
                         />
                     </div>
                 )}
+
                 {!contributorWallet && (
                     <div className={styles.modal}>
                         {!contributorWallet && checkRoute() && !deploying ? (
