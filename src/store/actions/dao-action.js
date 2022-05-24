@@ -58,7 +58,7 @@ export const registerDao = () => {
         console.log("chain id", chainId)
         const owner = []
 
-        owners.map((item, index) =>
+        owners.map((item) =>
             owner.push({ public_address: item.address, name: item.name })
         )
 
@@ -114,7 +114,7 @@ export const getAllDaowithAddress = (chainId) => {
                 // console.log(res.data.data)
                 const dao_details = []
 
-                res.data.data.forEach((x, i) => {
+                res.data.data.forEach((x) => {
                     if (x.dao_details.chain_id === chainId) {
                         console.log(x, chainId)
                         dao_details.push(x)
@@ -132,7 +132,7 @@ export const getAllDaowithAddress = (chainId) => {
                     const isLastSelection = lastSelected.filter(
                         (x) => x.address === address
                     )
-                    dao_details.map((item, index) => {
+                    dao_details.forEach((item, index) => {
                         if (
                             isLastSelection.length > 0 &&
                             item?.dao_details?.uuid ===
@@ -299,7 +299,7 @@ export const gnosisDetailsofDao = () => {
             )
 
             const tokenType = []
-            balance.map((item, index) => {
+            balance.forEach((item) => {
                 if (item.tokenAddress === null) {
                     tokenType.push({
                         label: "ETH",
@@ -377,7 +377,7 @@ export const getContriRequest = () => {
             if (res.data.success) {
                 // Approved Request without creating payout
                 const cid = []
-                res?.data?.data?.contributions?.map((item, index) => {
+                res?.data?.data?.contributions?.forEach((item) => {
                     const payout = []
                     cid.push(item)
                     if (
@@ -386,7 +386,7 @@ export const getContriRequest = () => {
                         item?.status === "APPROVED" &&
                         item?.gnosis_reference_id === ""
                     ) {
-                        item?.tokens.map((x, index) => {
+                        item?.tokens.forEach((x) => {
                             payout.push({
                                 amount: x?.amount,
                                 token_type: {
@@ -853,7 +853,7 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
 
         const contri_array = []
 
-        transaction.map((item, index) => {
+        transaction.forEach((item) => {
             contri_array.push(item?.contri_detail?.id)
         })
 
@@ -890,11 +890,11 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
-        const transaction = getState().transaction.approvedContriRequest
+        // const transaction = getState().transaction.approvedContriRequest
 
         const newPayout = []
 
-        payout.map((item, index) => {
+        payout.forEach((item) => {
             if (!item?.token_type) {
                 newPayout.push({
                     amount: item.amount,
@@ -991,8 +991,8 @@ export const filterRequests = (time, verticals, isContribution) => {
         }
         const new_array_contrib_veritcal = []
         if (verticals.length > 0) {
-            verticals.map((x, i) => {
-                new_array_contrib_time.map((y, i) => {
+            verticals.forEach((x) => {
+                new_array_contrib_time.forEach((y) => {
                     if (x.toUpperCase() === y.stream) {
                         new_array_contrib_veritcal.push(y)
                     }
@@ -1014,7 +1014,7 @@ export const filterRequests = (time, verticals, isContribution) => {
 }
 
 export const switchRole = (role) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(daoAction.switch_account_role({ role }))
     }
 }
@@ -1026,10 +1026,10 @@ export const getContributorOverview = () => {
         const type_of_token = []
         let token_info = []
         let totalAmount = 0
-        all_contribution.map((item, index) => {
+        all_contribution.forEach((item) => {
             if (item?.status === "APPROVED" && item?.payout_status === "PAID") {
                 all_paid_contribution.push(item.id)
-                item?.tokens?.map((y, i) => {
+                item?.tokens?.forEach((y) => {
                     if (type_of_token?.includes(y?.details?.symbol)) {
                         const token = token_info.filter(
                             (x) => x.symbol === y?.details?.symbol

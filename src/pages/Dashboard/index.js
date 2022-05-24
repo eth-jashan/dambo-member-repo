@@ -178,13 +178,8 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
-        // if (safeSdk) {
-        //     const nonce = await safeSdk.getNonce()
-        //     dispatch(set_active_nonce(nonce))
-        //     console.log("inititla nounce", nonce)
-        // }
         await dispatch(getPayoutRequest())
-        dispatch(set_payout_filter("PENDING", 1))
+        dispatch(set_payout_filter("PENDING"))
     }
 
     const contributorFetch = async () => {
@@ -252,11 +247,6 @@ export default function Dashboard() {
             if (tab === "payments") {
                 await paymentsAdminFetchAccountSwitch()
             }
-            // if (safeSdk) {
-            //     const nonce = await safeSdk.getNonce()
-            //     dispatch(set_active_nonce(nonce))
-            //     console.log("nounce account", nonce)
-            // }
         } else {
             await contributorFetch()
         }

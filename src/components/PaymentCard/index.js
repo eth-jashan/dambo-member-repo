@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import edit_active from "../../assets/Icons/edit_active.svg"
 import edit_hover from "../../assets/Icons/edit_hover.svg"
 import styles from "./style.module.css"
@@ -38,7 +38,6 @@ import {
     setChainInfoAction,
 } from "../../utils/POCPutils"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
-import AppContext from "../../appContext"
 
 export default function PaymentCard({ item, signer }) {
     const address = useSelector((x) => x.auth.address)
@@ -46,11 +45,10 @@ export default function PaymentCard({ item, signer }) {
     const jwt = useSelector((x) => x.auth.jwt)
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
-    const myContext = useContext(AppContext)
+
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
-    const setPocpAction = (status, chainId) => {
-        // myContext.setPocpActionValue(status, chainId)
+    const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -67,7 +65,7 @@ export default function PaymentCard({ item, signer }) {
 
     const getPayoutTotal = (payout) => {
         const usd_amount = []
-        payout?.map((item, index) => {
+        payout?.forEach((item) => {
             usd_amount.push(item?.usd_amount * parseFloat(item?.amount))
         })
         let amount_total
@@ -80,8 +78,8 @@ export default function PaymentCard({ item, signer }) {
     const getTotalAmount = () => {
         const usd_amount_all = []
 
-        item?.metaInfo?.contributions.map((item, index) => {
-            item.tokens.map((x, i) => {
+        item?.metaInfo?.contributions.forEach((item) => {
+            item.tokens.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
@@ -92,7 +90,7 @@ export default function PaymentCard({ item, signer }) {
 
     const checkApproval = () => {
         const confirm = []
-        item.gnosis?.confirmations.map((item, index) => {
+        item.gnosis?.confirmations.forEach((item) => {
             confirm.push(ethers.utils.getAddress(item.owner))
         })
 
@@ -101,7 +99,7 @@ export default function PaymentCard({ item, signer }) {
 
     const singlePayout = (x, index) => {
         let tokens = []
-        x.tokens.map((x, i) => {
+        x.tokens.forEach((x) => {
             tokens.push(`${x?.amount} ${x?.details?.symbol}`)
         })
         // console.log(tokens)
@@ -164,8 +162,8 @@ export default function PaymentCard({ item, signer }) {
     const bundleTitle = () => {
         const tokenSymbol = []
 
-        item?.metaInfo?.contributions?.map((item, index) => {
-            item.tokens?.map((y, index) => {
+        item?.metaInfo?.contributions?.forEach((item) => {
+            item.tokens?.forEach((y) => {
                 if (!tokenSymbol.includes(y?.details?.symbol)) {
                     tokenSymbol.push(y?.details?.symbol)
                 }
@@ -318,7 +316,6 @@ export default function PaymentCard({ item, signer }) {
         dispatch(setLoading(false))
     }
 
-    const [approveTitle, setApproveTitle] = useState(false)
     const approvalEventCallback = async (a) => {
         let chainId = getSelectedChainId()
         chainId = ethers.utils.hexValue(chainId.chainId)
@@ -437,9 +434,9 @@ export default function PaymentCard({ item, signer }) {
                                 window.ethereum
                             )
                             const { chainId } = await provider.getNetwork()
-                            console.log("chain iddddd", chainId)
-                            setPocpAction(true, chainId)
-                            // setPocpAction(true)
+
+                            setPocpAction(chainId)
+
                             await processBadgeApprovalToPocp(
                                 community_id[0].id,
                                 to,
@@ -458,8 +455,8 @@ export default function PaymentCard({ item, signer }) {
                         window.ethereum
                     )
                     const { chainId } = await provider.getNetwork()
-                    console.log("chain iddddd", chainId)
-                    setPocpAction(true, chainId)
+
+                    setPocpAction(chainId)
                     await processBadgeApprovalToPocp(
                         community_id[0].id,
                         to,
@@ -538,7 +535,7 @@ export default function PaymentCard({ item, signer }) {
         const metaInfo = []
         const cid = []
         const to = []
-        item?.metaInfo?.contributions.map((x, index) => {
+        item?.metaInfo?.contributions.forEach((x) => {
             if (x?.mint_badge) {
                 metaInfo.push({
                     dao_name: currentDao?.name,
@@ -658,10 +655,9 @@ export default function PaymentCard({ item, signer }) {
                                     }}
                                     className={textStyles.ub_14}
                                 >
-                                    {approveTitle ||
-                                        (!showLoading
-                                            ? getButtonProperty()?.title
-                                            : "Processing...")}
+                                    {!showLoading
+                                        ? getButtonProperty()?.title
+                                        : "Processing..."}
                                 </div>
                             </div>
                         )}

@@ -149,10 +149,7 @@ export default function DashboardLayout({
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
             message.success("Copied Successfully")
-            return await navigator.clipboard.writeText(
-                // currentDao?.safe_public_address
-                textToCopy
-            )
+            return await navigator.clipboard.writeText(textToCopy)
         } else {
             return document.execCommand("copy", true, address)
         }

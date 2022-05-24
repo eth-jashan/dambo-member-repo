@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -37,7 +37,6 @@ import {
 import Loader from "../../Loader"
 import * as dayjs from "dayjs"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
-import AppContext from "../../../appContext"
 
 const PaymentSlideCard = ({ signer }) => {
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
@@ -51,10 +50,8 @@ const PaymentSlideCard = ({ signer }) => {
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
-    const myContext = useContext(AppContext)
 
-    const setPocpAction = (status, chainId) => {
-        // myContext.setPocpActionValue(status, chainId)
+    const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
     const dispatch = useDispatch()
@@ -201,7 +198,7 @@ const PaymentSlideCard = ({ signer }) => {
                                 window.ethereum
                             )
                             const { chainId } = await provider.getNetwork()
-                            setPocpAction(true, chainId)
+                            setPocpAction(chainId)
                             await processBadgeApprovalToPocp(
                                 community_id[0].id,
                                 to,
@@ -220,7 +217,7 @@ const PaymentSlideCard = ({ signer }) => {
                         window.ethereum
                     )
                     const { chainId } = await provider.getNetwork()
-                    setPocpAction(true, chainId)
+                    setPocpAction(chainId)
                     await processBadgeApprovalToPocp(
                         community_id[0].id,
                         to,
@@ -237,7 +234,7 @@ const PaymentSlideCard = ({ signer }) => {
 
     const getPayoutTotal = (payout) => {
         const usd_amount = []
-        payout?.map((item, index) => {
+        payout?.forEach((item) => {
             usd_amount.push(item?.usd_amount * parseFloat(item?.amount))
         })
         let amount_total
@@ -250,8 +247,8 @@ const PaymentSlideCard = ({ signer }) => {
     const getTotalAmount = () => {
         const usd_amount_all = []
 
-        currentPayment?.metaInfo?.contributions.map((item, index) => {
-            item.tokens.map((x, i) => {
+        currentPayment?.metaInfo?.contributions.forEach((item) => {
+            item.tokens.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
@@ -259,7 +256,6 @@ const PaymentSlideCard = ({ signer }) => {
         const amount_total = usd_amount_all?.reduce((a, b) => a + b)
         return parseFloat(amount_total)?.toFixed(2)
     }
-    //   }
 
     const getSignerName = (address) => {
         return currentDao?.signers?.filter(
@@ -269,7 +265,7 @@ const PaymentSlideCard = ({ signer }) => {
 
     const checkApproval = () => {
         const confirm = []
-        currentPayment.gnosis?.confirmations?.map((item) => {
+        currentPayment.gnosis?.confirmations?.forEach((item) => {
             confirm.push(ethers.utils.getAddress(item.owner))
         })
 
@@ -576,7 +572,7 @@ const PaymentSlideCard = ({ signer }) => {
         const metaInfo = []
         const cid = []
         const to = []
-        currentPayment?.metaInfo?.contributions.map((x, index) => {
+        currentPayment?.metaInfo?.contributions.forEach((x) => {
             if (x?.mint_badge) {
                 metaInfo.push({
                     dao_name: currentDao?.name,
