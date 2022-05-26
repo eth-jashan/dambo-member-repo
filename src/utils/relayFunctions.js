@@ -3,7 +3,7 @@ import axios from "axios"
 export const uploadApproveMetaDataUpload = async (approveContri, jwt) => {
     const data = {
         contribution_meta_array: approveContri,
-        callbackApi: "https://api.drepute.xyz/dao_tool_server",
+        callbackApi: `${process.env.REACT_APP_DAO_TOOL_URL}`,
     }
     try {
         const res = await axios.post(
