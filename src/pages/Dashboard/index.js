@@ -428,8 +428,8 @@ export default function Dashboard() {
     const getTotalAmount = () => {
         const usd_amount_all = []
 
-        approvedContriRequest.map((item, index) => {
-            item.payout.map((x, i) => {
+        approvedContriRequest.forEach((item) => {
+            item.payout.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
@@ -444,8 +444,8 @@ export default function Dashboard() {
         const transaction_obj = []
 
         if (approved_request.length > 0) {
-            approved_request.map((item, index) => {
-                item?.payout?.map((item, index) => {
+            approved_request.forEach((item) => {
+                item?.payout?.forEach((item) => {
                     if (
                         item?.token_type === null ||
                         !item?.token_type ||
@@ -697,8 +697,6 @@ export default function Dashboard() {
             </div>
         </div>
     )
-    const nonce = useSelector((x) => x.dao.active_nonce)
-    console.log(payout_request)
     const renderPayment = () =>
         payout_request.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>

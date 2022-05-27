@@ -19,7 +19,7 @@ const transactionSlice = createSlice({
         set_current_payment(state, action) {
             state.currentPayment = action.payload.data
         },
-        reset_approved_request(state, action) {
+        reset_approved_request(state) {
             state.approvedContriRequest = []
         },
         set_pendin_txs(state, action) {

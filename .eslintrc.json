@@ -19,7 +19,7 @@
     "plugins": ["react", "unused-imports", "prettier"],
     "rules": {
         "react/prop-types": 0,
-        "no-unused-vars": "off",
+        "no-unused-vars": "warn",
         "unused-imports/no-unused-imports": "warn",
         "prettier/prettier": 0,
         "unused-imports/no-unused-vars": [
@@ -36,9 +36,9 @@
         "no-use-before-define": "error",
         "react/jsx-no-undef": "error",
         "spaced-comment": "warn",
-        "prefer-const": "warn",
+        "prefer-const": "error",
         "array-callback-return": "warn",
-        "no-unreachable": "warn",
+        "no-unreachable": "error",
         "no-useless-escape": "warn",
         "react/no-unescaped-entities": "warn"
     },

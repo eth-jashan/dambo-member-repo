@@ -14,7 +14,7 @@ export const set_invite_id = (id) => {
 }
 
 export const setDiscordOAuth = (address, id, jwt) => {
-    return (dispatch) => {
+    return () => {
         localStorage.setItem("discord", JSON.stringify({ address, id, jwt }))
     }
 }
@@ -192,16 +192,16 @@ export const getAllBadges = (address) => {
         const unclaimed = []
 
         // filtering out current unclaimed token
-        allApproved.map((x, i) => {
+        allApproved.forEach((x) => {
             const isClaimed = claimed.filter((y) => y.id === x?.id)
             if (isClaimed.length === 0) {
-                cid.map((y, index) => {
+                cid.forEach((y) => {
                     if (y.id.toString() === x.identifier) {
                         unclaimed.push(x)
                     }
                 })
             }
-            claimed.filter((z) => {
+            claimed.forEach((z) => {
                 if (x.id === z.id) {
                     claimed_identifier.push({ ...z, identifier: x?.identifier })
                 }

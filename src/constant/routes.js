@@ -23,6 +23,7 @@ const routes = {
     },
     pocp: {
         relay: "/eth/relay",
+        collectibleInfo: "/eth/collectible",
     },
     discord: {
         register: "/discord/register",

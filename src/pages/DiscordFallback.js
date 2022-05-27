@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { useLocation, useNavigate } from "react-router"
 import { signout } from "../store/actions/auth-action"
 import {
@@ -8,7 +8,6 @@ import {
 } from "../store/actions/contibutor-action"
 
 const DiscordFallback = () => {
-    const id = useSelector((x) => x.contributor.invite_code)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const search = useLocation().search

@@ -21,9 +21,6 @@ import {
     set_dao,
     set_payout_filter,
     syncTxDataWithGnosis,
-    getAllNFTsOfSafe,
-    getAllTokensOfSafe,
-    getAllTransactionsOfSafe,
 } from "../../store/actions/dao-action"
 import { links } from "../../constant/links"
 import logo from "../../assets/dreputeLogo.svg"
@@ -47,6 +44,7 @@ import { setContributionDetail } from "../../store/actions/contibutor-action"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import { MdLink } from "react-icons/md"
 import TestnetInfo from "../../components/ToolTip/TestnetInfo"
+import TreasurySideCard from "../../components/SideCard/TreasurySideCard"
 
 export default function DashboardLayout({
     children,
@@ -76,7 +74,6 @@ export default function DashboardLayout({
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
     const [roleContainerHover, setRoleContainerHover] = useState(false)
     const address = useSelector((x) => x.auth.address)
-    const community_id = useSelector((x) => x.dao.communityInfo)
 
     const currentUser = currentDao?.signers.filter(
         (x) => x.public_address === address
@@ -117,7 +114,7 @@ export default function DashboardLayout({
         dispatch(setLoadingState(false))
     }
 
-    const changeAccount = async (item, index) => {
+    const changeAccount = async (item) => {
         dispatch(refreshContributionList())
         dispatch(contributorRefreshList())
         dispatch(resetApprovedRequest())
@@ -130,9 +127,6 @@ export default function DashboardLayout({
         await dispatch(gnosisDetailsofDao())
         dispatch(setLoadingState(true))
         await dispatch(getContriRequest())
-        dispatch(getAllTokensOfSafe())
-        dispatch(getAllNFTsOfSafe())
-        dispatch(getAllTransactionsOfSafe())
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
@@ -179,6 +173,7 @@ export default function DashboardLayout({
     }
 
     const accountSwitchPress = () => {
+        setCurrentPage("request")
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
         setSwitchRoleModal(false)
@@ -377,7 +372,7 @@ export default function DashboardLayout({
     const renderSideBarComp = () => {
         if (role === "ADMIN") {
             if (currentPage === "treasury") {
-                return <div>Treasury Side Bar</div>
+                return <TreasurySideCard />
             } else {
                 if (route === "contributions" && currentTransaction) {
                     return contri_filter_key ? (
