@@ -1,0 +1,85 @@
+.treasury-signer-modal-container {
+    .treasury-signer-modal-backdrop {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        text-align: left;
+        color: #000000;
+    }
+    .treasury-signer-modal {
+        background-color: #fff;
+        color: #333;
+        padding: 2rem;
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
+            0px 2px 4px rgba(0, 0, 0, 0.16);
+        border-radius: 24px;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        font-family: "TelegrafMedium";
+        width: 570px;
+        .close-icon {
+            cursor: pointer;
+        }
+        .heading {
+            font-family: "TelegrafBolder";
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            color: #000000;
+            margin: 1.5rem 0;
+        }
+        .signers-info {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        .signers-wrapper {
+            margin: 1rem 0 1.5rem;
+            padding: 1rem 0 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            .signer-row {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                margin-bottom: 1rem;
+                .signer-name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    color: rgba(0, 0, 0, 0.5);
+                    width: 15%;
+                    margin-right: 0.5rem;
+                }
+                .signer-address {
+                    color: #000;
+                }
+            }
+        }
+        .footer-buttons {
+            display: flex;
+            text-align: center;
+            .okay-btn {
+                flex: 1;
+                background-color: rgba(0, 0, 0, 0.1);
+                font-family: "TelegrafBolder";
+                border-radius: 0.5rem;
+                margin-right: 0.75rem;
+                padding: 0.75rem;
+                cursor: pointer;
+            }
+            .gnosis-btn {
+                flex: 3;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                padding: 0.75rem;
+                color: #000;
+                cursor: pointer;
+            }
+        }
+    }
+}

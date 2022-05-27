@@ -9,6 +9,7 @@ import DashboardSearchTab from "../DashboardSearchTab"
 import PaymentCard from "../PaymentCard"
 import { ethers } from "ethers"
 import { getSelectedChainId } from "../../utils/POCPutils"
+import TreasurySignersModal from "../Modal/TreasurySignersModal"
 
 export default function TreasuryDetails() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -21,6 +22,15 @@ export default function TreasuryDetails() {
 
     const dispatch = useDispatch()
     const currentChainId = getSelectedChainId().chainId
+    const [isModalVisible, setIsModalVisible] = useState(false)
+
+    const showModal = () => {
+        setIsModalVisible(true)
+    }
+
+    const handleClose = () => {
+        setIsModalVisible(false)
+    }
 
     useEffect(() => {
         dispatch(getAllTokensOfSafe())
@@ -90,8 +100,19 @@ export default function TreasuryDetails() {
         )
     }
 
+    const gnosisSignerLink = `https://gnosis-safe.io/app/${
+        currentChainId === 4 ? "rin:" : ""
+    }${currentDao?.safe_public_address}/settings/owners`
+
     return (
         <div className="treasury-details-container">
+            {isModalVisible && (
+                <TreasurySignersModal
+                    onClose={handleClose}
+                    signers={currentDao?.signers}
+                    gnosisSignerLink={gnosisSignerLink}
+                />
+            )}
             <div className="treasury-info-wrapper">
                 <div className="safe-info-wrapper">
                     <div className="safe-details">
@@ -126,6 +147,9 @@ export default function TreasuryDetails() {
                         </div>
                     </div>
                     <div className="safe-owner-details">
+                        <div className="safe-owner-heading">
+                            Multisig Signers
+                        </div>
                         {currentDao?.signers.slice(0, 3).map((signer) => (
                             <div
                                 className="owner-row"
@@ -143,9 +167,21 @@ export default function TreasuryDetails() {
                                 </div>
                             </div>
                         ))}
-                        {currentDao?.signers.length > 3 && (
-                            <div className="more-signers">
+                        {currentDao?.signers.length > 3 ? (
+                            <div className="more-signers" onClick={showModal}>
                                 and {currentDao?.signers.length - 3} more
+                            </div>
+                        ) : (
+                            <div className="manage-signers">
+                                Visit{" "}
+                                <a
+                                    href={gnosisSignerLink}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Gnosis
+                                </a>{" "}
+                                to manage signers
                             </div>
                         )}
                     </div>
