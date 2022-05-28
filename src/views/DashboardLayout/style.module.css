@@ -29,6 +29,25 @@
     text-align: start;
 }
 
+.routeLinks {
+    display: flex;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: "TelegrafMedium";
+}
+
+.routeLinks > div {
+    margin-right: 1.5rem;
+    line-height: 20px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.routeLinks > .activePageLink {
+    color: #ffffff;
+}
+
 .layoutContainer {
     display: flex;
     flex-direction: row;
@@ -76,8 +95,13 @@
     width: 100%;
     overflow: hidden;
     padding-right: 3rem;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none;
 }
-
+.children::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
 .logoContainer {
     /* padding: 0.625rem; */
     margin-top: 0.625rem;

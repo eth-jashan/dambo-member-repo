@@ -19,7 +19,7 @@ export const getAddressMembership = (chainId) => {
             console.log(chainId, res.data.data)
             const dao_details = []
 
-            res.data.data.forEach((x, i) => {
+            res.data.data.forEach((x) => {
                 if (x.dao_details.chain_id === chainId) {
                     dao_details.push(x)
                 }

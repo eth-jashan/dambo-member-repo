@@ -56,9 +56,11 @@ import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import TreasuryDetails from "../../components/TreasuryDetails"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
+    const [currentPage, setCurrentPage] = useState("request")
     const [uniPayHover, setUniPayHover] = useState(false)
 
     const payoutToast = useSelector((x) => x.toast.payout)
@@ -426,8 +428,8 @@ export default function Dashboard() {
     const getTotalAmount = () => {
         const usd_amount_all = []
 
-        approvedContriRequest.map((item, index) => {
-            item.payout.map((x, i) => {
+        approvedContriRequest.forEach((item) => {
+            item.payout.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
@@ -442,8 +444,8 @@ export default function Dashboard() {
         const transaction_obj = []
 
         if (approved_request.length > 0) {
-            approved_request.map((item, index) => {
-                item?.payout?.map((item, index) => {
+            approved_request.forEach((item) => {
+                item?.payout?.forEach((item) => {
                     if (
                         item?.token_type === null ||
                         !item?.token_type ||
@@ -695,8 +697,6 @@ export default function Dashboard() {
             </div>
         </div>
     )
-    const nonce = useSelector((x) => x.dao.active_nonce)
-    console.log(payout_request)
     const renderPayment = () =>
         payout_request.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
@@ -739,55 +739,63 @@ export default function Dashboard() {
             modalBackdrop={setModalBackDropFunc}
             signer={signer}
             route={tab}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
         >
-            <div className={styles.dashView}>
-                {(modalContri || modalPayment || modalUniPayment) && (
-                    <div
-                        onClick={() => {
-                            setModalContri(false)
-                            setModalPayment(false)
-                            setModalUniPayment(false)
-                        }}
-                        style={{
-                            position: "absolute",
-                            background: "#7A7A7A",
-                            opacity: 0.2,
-                            bottom: 0,
-                            right: 0,
-                            top: 0,
-                            left: 0,
-                        }}
-                    />
-                )}
-                {renderTab()}
-                {<DashboardSearchTab route={tab} />}
-                {loadingState
-                    ? renderLoadingScreen()
-                    : role === "ADMIN"
-                    ? adminScreen()
-                    : contributorScreen()}
-                {rejectModal && (
-                    <RejectPayment
-                        signer={signer}
-                        onClose={() => dispatch(setRejectModal(false))}
-                    />
-                )}
-                {approve_contri.length > 0 &&
-                    tab === "contributions" &&
-                    role === "ADMIN" &&
-                    !modalPayment &&
-                    checkoutButton()}
-                {payoutToast && transactionToast()}
-                {modalContri && (
-                    <ContributionRequestModal setVisibility={setModalContri} />
-                )}
-                {modalPayment && approve_contri.length > 0 && (
-                    <PaymentCheckoutModal
-                        signer={signer}
-                        onClose={() => setModalPayment(false)}
-                    />
-                )}
-            </div>
+            {currentPage === "request" ? (
+                <div className={styles.dashView}>
+                    {(modalContri || modalPayment || modalUniPayment) && (
+                        <div
+                            onClick={() => {
+                                setModalContri(false)
+                                setModalPayment(false)
+                                setModalUniPayment(false)
+                            }}
+                            style={{
+                                position: "absolute",
+                                background: "#7A7A7A",
+                                opacity: 0.2,
+                                bottom: 0,
+                                right: 0,
+                                top: 0,
+                                left: 0,
+                            }}
+                        />
+                    )}
+                    {renderTab()}
+                    {<DashboardSearchTab route={tab} />}
+                    {loadingState
+                        ? renderLoadingScreen()
+                        : role === "ADMIN"
+                        ? adminScreen()
+                        : contributorScreen()}
+                    {rejectModal && (
+                        <RejectPayment
+                            signer={signer}
+                            onClose={() => dispatch(setRejectModal(false))}
+                        />
+                    )}
+                    {approve_contri.length > 0 &&
+                        tab === "contributions" &&
+                        role === "ADMIN" &&
+                        !modalPayment &&
+                        checkoutButton()}
+                    {payoutToast && transactionToast()}
+                    {modalContri && (
+                        <ContributionRequestModal
+                            setVisibility={setModalContri}
+                        />
+                    )}
+                    {modalPayment && approve_contri.length > 0 && (
+                        <PaymentCheckoutModal
+                            signer={signer}
+                            onClose={() => setModalPayment(false)}
+                        />
+                    )}
+                </div>
+            ) : (
+                <TreasuryDetails />
+            )}
         </DashboardLayout>
     )
 }

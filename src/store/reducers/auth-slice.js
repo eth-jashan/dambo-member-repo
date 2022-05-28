@@ -46,13 +46,13 @@ const authSlice = createSlice({
         set_admin(state, action) {
             state.isAdmin = action.payload.status
         },
-        reset_web3(state, action) {
+        reset_web3(state) {
             state.provider = null
             state.web3Provider = null
             state.address = null
             state.chainId = null
         },
-        reset_auth(state, action) {
+        reset_auth(state) {
             state.jwt = null
             state.provider = null
             state.web3Provider = null

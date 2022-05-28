@@ -598,8 +598,7 @@ const ContributionSideCard = ({
         }
     }
 
-    const onApprovalSuccess = async (events) => {
-        console.log(events)
+    const onApprovalSuccess = async () => {
         // const provider = new ethers.providers.Web3Provider(window.ethereum)
         // await provider.provider.request({
         //     method: "wallet_switchEthereumChain",
@@ -623,7 +622,6 @@ const ContributionSideCard = ({
 
     const approvePOCPBadgeWithUrl = async () => {
         setLoad(true)
-        console.log(parseInt(communityInfo[0].id))
         if (currentTransaction?.ipfs_url) {
             await processBadgeApprovalToPocp(
                 parseInt(communityInfo[0].id),
@@ -690,7 +688,6 @@ const ContributionSideCard = ({
             }
         }
     }
-    console.log("here", currentTransaction?.mint_badge)
     return (
         <div className={styles.container}>
             <img

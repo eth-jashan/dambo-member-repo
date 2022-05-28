@@ -55,7 +55,6 @@ export const registerDao = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
-        console.log("chain id", chainId)
         const owner = []
 
         owners.map((item) =>
@@ -90,7 +89,7 @@ export const registerDao = () => {
                 return 0
             }
         } catch (error) {
-            console.log("error in registering.....", error)
+            console.error("error in registering.....", error)
         }
     }
 }
@@ -893,7 +892,6 @@ export const createExternalPayment = (tranxid, nonce, payout, description) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
-        // const transaction = getState().transaction.approvedContriRequest
 
         const newPayout = []
 
@@ -1117,14 +1115,12 @@ export const claimUpdate = (id) => {
 export const getCommunityId = () => {
     return async (dispatch, getState) => {
         const daoTxHash = getState().dao.currentDao?.tx_hash
-        console.log(daoTxHash, currentNetwork)
 
         const pocpGetter = new PocpGetters(
             currentNetwork?.chainId === 4 ? 80001 : 137
         )
 
         const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
-        console.log(community)
         dispatch(
             daoAction.set_community_info({
                 communityInfo: community.data.communities,
@@ -1136,7 +1132,6 @@ export const getCommunityId = () => {
 export const getAllApprovedBadges = () => {
     return async (dispatch, getState) => {
         const communityInfo = getState().dao.communityInfo
-        console.log(communityInfo)
         const pocpGetter = new PocpGetters(
             currentNetwork?.chainId === 4 ? 80001 : 137
         )
@@ -1202,9 +1197,8 @@ export const getAllClaimedBadges = () => {
                     claimedTokens: claimedTokens.data.pocpTokens,
                 })
             )
-            console.log("claimed", claimedTokens.data.pocpTokens.length)
         } catch (error) {
-            console.log("claimed", error)
+            console.error(error)
             dispatch(
                 daoAction.set_claimed_badges({
                     claimedTokens: [],
@@ -1240,15 +1234,10 @@ export const getAllUnclaimedBadges = () => {
                 res.data.data.contributions.forEach((contribution) => {
                     unclaimedTokens.forEach((badge) => {
                         if (contribution.id === parseInt(badge.identifier)) {
-                            console.log(contribution.id)
                             unclaimedBadges.push(badge)
                         }
                     })
                 })
-                console.log(
-                    "all unclaimed badges Fetched",
-                    unclaimedTokens.length
-                )
                 dispatch(
                     daoAction.set_unclaimed_badges({
                         unclaimedToken: unclaimedBadges,
@@ -1327,6 +1316,94 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
             }
         } catch (err) {
             return 0
+        }
+    }
+}
+
+export const getAllTokensOfSafe = () => {
+    return async (dispatch, getState) => {
+        const currentDao = getState().dao.currentDao
+
+        const tokensData = await serviceClient.getUsdBalances(
+            currentDao?.safe_public_address
+        )
+        dispatch(
+            daoAction.setTokensBalanceInUsd({
+                balanceInUsd: tokensData,
+            })
+        )
+    }
+}
+
+export const getAllNFTsOfSafe = () => {
+    return async (dispatch, getState) => {
+        const currentDao = getState().dao.currentDao
+        const jwt = getState().auth.jwt
+
+        const collectiblesData = await serviceClient.getCollectibles(
+            currentDao?.safe_public_address
+        )
+        const mappedCollectiblesData = collectiblesData.map(
+            async (collectible) => {
+                const collectibleDetails = await apiClient.post(
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.pocp.collectibleInfo}`,
+                    {
+                        endpoint: collectible.uri,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwt}`,
+                        },
+                    }
+                )
+                return {
+                    ...collectible,
+                    imageUrl: collectibleDetails?.data.data.image,
+                }
+            }
+        )
+
+        const result = await Promise.all(mappedCollectiblesData)
+        dispatch(daoAction.setNFTs({ NFTs: result }))
+    }
+}
+
+export const getAllPastTransactions = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+
+        const uuid = getState().dao.currentDao?.uuid
+
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res?.data?.success) {
+                const payments = res.data?.data?.payouts
+                const pastContributions = []
+                payments.forEach((payment) => {
+                    payment.contributions.forEach((contribution) => {
+                        if (contribution.payout_status === "PAID") {
+                            pastContributions.push({
+                                ...contribution,
+                                created_at: payment.created_at,
+                            })
+                        }
+                    })
+                })
+                dispatch(
+                    daoAction.setPastContributions({
+                        pastContributions,
+                    })
+                )
+            }
+        } catch (err) {
+            console.error(err)
         }
     }
 }

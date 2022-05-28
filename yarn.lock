@@ -9042,7 +9042,7 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-pocp-service-sdk@^1.0.0--beta:
+pocp-service-sdk@1.0.0--beta:
   version "1.0.0--beta"
   resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-1.0.0--beta.tgz#7f5bdaf83ff571a3798047d3f620192c1e97ac86"
   integrity sha512-cRQVOereWc7ib+hrUDkMeC1jhjO0EqNxAScS/LmQv3D982gN1uNgt5dpSzLyrhK2oievJzLhY15RaHr4IjwPew==

@@ -14,7 +14,8 @@ const daoSlice = createSlice({
         community_role: null,
         gnosis_details: null,
         balance: null,
-        balanceUsd: null,
+        tokensBalanceInUsd: [],
+        NFTs: [],
         delegates: [],
         contri_filter: "ACTIVE",
         active_nonce: 0,
@@ -51,6 +52,7 @@ const daoSlice = createSlice({
         executePaymentLoading: false,
         active_payout_notification: false,
         communityInfo: null,
+        pastContributions: [],
     },
     reducers: {
         set_chainId(state, action) {
@@ -159,6 +161,15 @@ const daoSlice = createSlice({
         },
         set_unclaimed_badges(state, action) {
             state.all_unclaimed_badges = action.payload.unclaimedToken
+        },
+        setTokensBalanceInUsd(state, action) {
+            state.tokensBalanceInUsd = action.payload.balanceInUsd
+        },
+        setNFTs(state, action) {
+            state.NFTs = action.payload.NFTs
+        },
+        setPastContributions(state, action) {
+            state.pastContributions = action.payload.pastContributions
         },
     },
 })

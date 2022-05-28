@@ -44,6 +44,7 @@ import { setContributionDetail } from "../../store/actions/contibutor-action"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import { MdLink } from "react-icons/md"
 import TestnetInfo from "../../components/ToolTip/TestnetInfo"
+import TreasurySideCard from "../../components/SideCard/TreasurySideCard"
 
 export default function DashboardLayout({
     children,
@@ -51,6 +52,8 @@ export default function DashboardLayout({
     signer,
     modalBackdrop,
     onRouteChange,
+    currentPage,
+    setCurrentPage,
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -71,7 +74,6 @@ export default function DashboardLayout({
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
     const [roleContainerHover, setRoleContainerHover] = useState(false)
     const address = useSelector((x) => x.auth.address)
-    const community_id = useSelector((x) => x.dao.communityInfo)
 
     const currentUser = currentDao?.signers.filter(
         (x) => x.public_address === address
@@ -112,7 +114,7 @@ export default function DashboardLayout({
         dispatch(setLoadingState(false))
     }
 
-    const changeAccount = async (item, index) => {
+    const changeAccount = async (item) => {
         dispatch(refreshContributionList())
         dispatch(contributorRefreshList())
         dispatch(resetApprovedRequest())
@@ -171,6 +173,7 @@ export default function DashboardLayout({
     }
 
     const accountSwitchPress = () => {
+        setCurrentPage("request")
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
         setSwitchRoleModal(false)
@@ -219,6 +222,30 @@ export default function DashboardLayout({
                         )}
                     </div>
                 </div>
+                {role === "ADMIN" && (
+                    <div className={styles.routeLinks}>
+                        <div
+                            className={
+                                currentPage === "request"
+                                    ? styles.activePageLink
+                                    : ""
+                            }
+                            onClick={() => setCurrentPage("request")}
+                        >
+                            Request
+                        </div>
+                        <div
+                            className={
+                                currentPage === "treasury"
+                                    ? styles.activePageLink
+                                    : ""
+                            }
+                            onClick={() => setCurrentPage("treasury")}
+                        >
+                            Treasury
+                        </div>
+                    </div>
+                )}
                 <div className={styles.profileContainer}>
                     {currentChainId === 4 ? (
                         <div
@@ -344,19 +371,23 @@ export default function DashboardLayout({
 
     const renderSideBarComp = () => {
         if (role === "ADMIN") {
-            if (route === "contributions" && currentTransaction) {
-                return contri_filter_key ? (
-                    <TransactionCard signer={signer} />
-                ) : (
-                    <ContributionSideCard
-                        onRouteChange={async () => await onRouteChange()}
-                        signer={signer}
-                    />
-                )
-            } else if (route === "payments" && currentPayment) {
-                return <PaymentSlideCard signer={signer} />
+            if (currentPage === "treasury") {
+                return <TreasurySideCard />
             } else {
-                return renderAdminStats()
+                if (route === "contributions" && currentTransaction) {
+                    return contri_filter_key ? (
+                        <TransactionCard signer={signer} />
+                    ) : (
+                        <ContributionSideCard
+                            onRouteChange={async () => await onRouteChange()}
+                            signer={signer}
+                        />
+                    )
+                } else if (route === "payments" && currentPayment) {
+                    return <PaymentSlideCard signer={signer} />
+                } else {
+                    return renderAdminStats()
+                }
             }
         } else {
             if (contribution_detail) {

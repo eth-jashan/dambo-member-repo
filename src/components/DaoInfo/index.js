@@ -73,8 +73,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
             method: "GET",
             url: process.env.REACT_APP_S3_UPLOAD,
         })
-        let binary
-        binary = atob(imageObj.image.split(",")[1])
+        const binary = atob(imageObj.image.split(",")[1])
         const array = []
         for (let i = 0; i < binary.length; i++) {
             array.push(binary.charCodeAt(i))
