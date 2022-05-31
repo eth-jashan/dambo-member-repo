@@ -117,7 +117,16 @@ export default function TreasuryDetails() {
                 <div className="safe-info-wrapper">
                     <div className="safe-details">
                         <div className="safe-name-and-avatar-wrapper">
-                            <div className="safe-avatar"></div>
+                            <div className="safe-avatar">
+                                {currentDao?.logo_url ? (
+                                    <img
+                                        src={currentDao?.logo_url}
+                                        alt="logo"
+                                    />
+                                ) : (
+                                    <div></div>
+                                )}
+                            </div>
                             <div className="safe-name-and-address">
                                 <div className="safe-name">
                                     {currentDao?.name}
