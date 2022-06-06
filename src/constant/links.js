@@ -15,8 +15,10 @@ export const links = {
         staging: "https://staging.app.drepute.xyz/discord/fallback",
     },
     discord_add_bot: {
-        local: "https://discord.com/api/oauth2/authorize?client_id=950635095465795615&permissions=8&scope=bot%20applications.commands&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Fadd-bot-fallback&response_type=code",
+        local: "https://discord.com/api/oauth2/authorize?client_id=976410963039371284&permissions=8&redirect_uri=https%3A%2F%2Fstaging.app.drepute.xyz%2Fdiscord%2Fadd-bot-fallback&response_type=code&scope=identify%20bot%20applications.commands",
         staging:
+            "https://discord.com/api/oauth2/authorize?client_id=976409482533961769&permissions=8&redirect_uri=https%3A%2F%2Fstaging.app.drepute.xyz%2Fdiscord%2Fadd-bot-fallback&response_type=code&scope=identify%20bot%20applications.commands",
+        production:
             "https://discord.com/api/oauth2/authorize?client_id=950635095465795615&permissions=8&redirect_uri=https%3A%2F%2Fstaging.app.drepute.xyz%2Fdiscord%2Fadd-bot-fallback&response_type=code&scope=identify%20bot%20applications.commands",
     },
 }
