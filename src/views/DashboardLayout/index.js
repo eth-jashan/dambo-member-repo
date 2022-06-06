@@ -81,7 +81,7 @@ export default function DashboardLayout({
 
     const openDiscordBot = () => {
         localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
-        window.open(links.discord_add_bot.local, "_self")
+        window.open(links.discord_add_bot.staging, "_self")
     }
 
     const getInitialForAccount = () => {
