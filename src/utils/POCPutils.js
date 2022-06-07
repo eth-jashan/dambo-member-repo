@@ -26,7 +26,7 @@ export const processDaoToPOCP = async (
 ) => {
     try {
         const currentNetwork = getSelectedChainId()?.chainId
-        console.log(currentNetwork === 4 ? "0x13881" : "0x89", currentNetwork)
+
         await chainSwitch(currentNetwork === 4 ? "0x13881" : "0x89")
         const provider = new ethers.providers.Web3Provider(window.ethereum)
 
@@ -46,7 +46,7 @@ export const processDaoToPOCP = async (
         }
     } catch (error) {
         errorCallback()
-        console.log("register error", error)
+
         return false
     }
 }
@@ -60,11 +60,11 @@ export const processBadgeApprovalToPocp = async (
     url,
     jwt,
     eventCallbackFunction,
-    errorCallback
+    errorCallback,
+    statusChange = () => {}
 ) => {
     try {
         const currentNetwork = getSelectedChainId()?.chainId
-        // await chainSwitch(currentNetwork === 4 ? "0x89" : "0x89")
         await chainSwitch(currentNetwork === 4 ? "0x13881" : "0x89")
         const provider = new ethers.providers.Web3Provider(window.ethereum)
 
@@ -73,6 +73,7 @@ export const processBadgeApprovalToPocp = async (
             relayer_token: "f1960990-b217-4426-90fd-21802301363f",
             url: process.env.REACT_APP_POCP_SERVER_URL,
         })
+        statusChange("signing")
         await pocp.createInstance()
         const res = await pocp.approveBadgeToContributor(
             parseInt(communityId),
@@ -81,8 +82,9 @@ export const processBadgeApprovalToPocp = async (
             cid,
             eventCallbackFunction
         )
-        console.log(res)
+
         if (res) {
+            statusChange("confirming")
             await updatePocpApproval(jwt, res.hash, cid)
         }
     } catch (error) {
@@ -109,6 +111,7 @@ export const processClaimBadgeToPocp = async (
             relayer_token: "f1960990-b217-4426-90fd-21802301363f",
             url: process.env.REACT_APP_POCP_SERVER_URL,
         })
+
         await pocp.createInstance()
         const res = await pocp.claimBadgesByClaimers(
             [parseInt(tokenId)],

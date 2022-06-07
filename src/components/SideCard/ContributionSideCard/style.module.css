@@ -158,10 +158,9 @@
 }
 
 .claim_container {
-    position: absolute;
-    bottom: 0rem;
+    position: fixed;
+    bottom: 0;
     padding: 1rem 1.5rem 1.5rem 1.5rem;
-    /* background: black; */
     width: 20%;
     flex-direction: row;
     display: flex;

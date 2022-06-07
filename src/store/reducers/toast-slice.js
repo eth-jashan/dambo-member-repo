@@ -21,7 +21,6 @@ const toastSlice = createSlice({
             state.loading_state = action.payload.loading
         },
         set_pocp_action(state, action) {
-            console.log("pocp-action", action.payload.status)
             state.pocp_action = action.payload.status
         },
     },

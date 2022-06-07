@@ -16,7 +16,7 @@ export const getAddressMembership = (chainId) => {
                     },
                 }
             )
-            console.log(chainId, res.data.data)
+
             const dao_details = []
 
             res.data.data.forEach((x) => {

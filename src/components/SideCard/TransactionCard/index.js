@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { message, Typography } from "antd"
+import { Typography } from "antd"
 
 import cross from "../../../assets/Icons/cross_white.svg"
 import deleteIcon from "../../../assets/Icons/delete_icon.svg"
@@ -15,8 +15,11 @@ import {
 import ApprovalSelectionToggle from "../../ApprovalSelectionToggle"
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { assets } from "../../../constant/assets"
+import { approveBadge } from "../../../store/actions/dao-action"
+import dayjs from "dayjs"
+import { uploadApproveMetaDataUpload } from "../../../utils/relayFunctions"
 
-const TransactionCard = ({ signer }) => {
+const TransactionCard = () => {
     const currentTransaction = useSelector(
         (x) => x.transaction.currentTransaction
     )
@@ -24,16 +27,11 @@ const TransactionCard = ({ signer }) => {
     const [mint, setMint] = useState(false)
     const address = currentTransaction?.requested_by?.public_address
     const dispatch = useDispatch()
-    const getEmoji = () => {
-        if (currentTransaction?.stream === "DESIGN") {
-            return "🎨"
-        } else {
-            return "🎨"
-        }
-    }
 
     const [feedBackShow, setFeedBackSow] = useState(false)
     const [feedback, setFeedback] = useState("")
+    const currentDao = useSelector((x) => x.dao.currentDao)
+    const jwt = useSelector((x) => x.auth.jwt)
 
     const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
     const [payDetail, setPayDetail] = useState([
@@ -44,8 +42,6 @@ const TransactionCard = ({ signer }) => {
             usd_amount: ETHprice,
         },
     ])
-
-    const availableToken = useSelector((x) => x.dao.balance)
 
     const addToken = async () => {
         const usdConversion = await convertTokentoUsd("ETH")
@@ -61,9 +57,8 @@ const TransactionCard = ({ signer }) => {
     }
 
     const updatedPayDetail = (e, index) => {
-        console.log(e.target.value, index)
         payDetail[index].amount = e.target.value
-        console.log(payDetail)
+
         setPayDetail(payDetail)
     }
 
@@ -79,21 +74,100 @@ const TransactionCard = ({ signer }) => {
     const onContributionPress = () => {
         dispatch(setTransaction(null))
     }
-    const onApproveTransaction = async () => {
-        if (
-            payDetail[0]?.amount !== 0 &&
-            payDetail[0]?.amount !== "" &&
-            payDetail[0]?.amount !== "0"
-        ) {
-            dispatch(
-                approveContriRequest(payDetail, false, feedback, mint ? 1 : 0)
-            )
-            dispatch(setTransaction(null))
+
+    const uploadApproveMetatoIpfs = async () => {
+        const metaInfo = []
+        const cid = []
+        const to = []
+
+        metaInfo.push({
+            dao_name: currentDao?.name,
+            contri_title: currentTransaction?.title,
+            signer: address,
+            claimer: currentTransaction?.requested_by?.public_address,
+            date_of_approve: dayjs().format("D MMM YYYY"),
+            id: currentTransaction?.id,
+            dao_logo_url:
+                currentDao?.logo_url ||
+                "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
+            work_type: currentTransaction?.stream.toString(),
+        })
+        cid.push(currentTransaction?.id)
+        to.push(currentTransaction?.requested_by?.public_address)
+
+        const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
+        if (response) {
+            return { status: true, cid, to }
         } else {
-            message.error("Please Add Amount")
+            return { status: false, cid: [], to: [] }
         }
     }
-    console.log("MINT", mint, payToken)
+    const onApproveTransaction = async () => {
+        if (mint && !payToken) {
+            const res = await uploadApproveMetatoIpfs()
+            if (res.status) {
+                dispatch(approveBadge(currentTransaction, feedback))
+                dispatch(
+                    approveContriRequest(
+                        payToken ? payDetail : [],
+                        false,
+                        feedback,
+                        mint ? 1 : 0
+                    )
+                )
+            }
+        } else if (mint && payToken) {
+            if (
+                payDetail[0]?.amount !== 0 &&
+                payDetail[0]?.amount !== "" &&
+                payDetail[0]?.amount !== "0"
+            ) {
+                const res = await uploadApproveMetatoIpfs()
+                if (res.status) {
+                    dispatch(
+                        approveBadge(currentTransaction, feedback, payDetail)
+                    )
+                    dispatch(
+                        approveContriRequest(
+                            payToken ? payDetail : [],
+                            false,
+                            feedback,
+                            mint ? 1 : 0
+                        )
+                    )
+                }
+            }
+        } else if (payToken && !mint) {
+            if (
+                payDetail[0]?.amount !== 0 &&
+                payDetail[0]?.amount !== "" &&
+                payDetail[0]?.amount !== "0"
+            ) {
+                dispatch(
+                    approveContriRequest(
+                        payToken ? payDetail : [],
+                        false,
+                        feedback,
+                        mint ? 1 : 0
+                    )
+                )
+            }
+        }
+
+        dispatch(setTransaction(null))
+    }
+
+    const getButtonTitle = () => {
+        if (mint && payToken) {
+            return "Approve Badge and Payment"
+        } else if (mint && !payToken) {
+            return "Approve Badge"
+        } else if (!mint && payToken) {
+            return "Approve Payment"
+        } else {
+            return "Approve Badge"
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -171,19 +245,7 @@ const TransactionCard = ({ signer }) => {
                     setActive={() => setPayToken(!payToken)}
                 />
             </div>
-            <div
-                style={{
-                    width: "20%",
-                    height: "5rem",
-                    position: "absolute",
-                    bottom: 0,
-                    background: "black",
-                    display: "flex",
-                    alignSelf: "center",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                }}
-            >
+            <div className={styles.buttonContainer}>
                 <div
                     onClick={async () => {
                         await dispatch(
@@ -204,7 +266,9 @@ const TransactionCard = ({ signer }) => {
                     onClick={() => onApproveTransaction()}
                     className={styles.payNow}
                 >
-                    <div className={`${textStyle.ub_16}`}>Approve Request</div>
+                    <div className={`${textStyle.ub_16}`}>
+                        {getButtonTitle()}
+                    </div>
                 </div>
             </div>
         </div>

@@ -3,10 +3,8 @@ import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
-import { AiOutlineCaretDown } from "react-icons/all"
+
 import {
-    addActivePaymentBadge,
-    createPayout,
     getAllApprovedBadges,
     getAllClaimedBadges,
     getAllDaowithAddress,
@@ -14,7 +12,6 @@ import {
     getCommunityId,
     getContributorOverview,
     getContriRequest,
-    getNonceForCreation,
     getPayoutRequest,
     gnosisDetailsofDao,
     refreshContributionList,
@@ -30,12 +27,11 @@ import { ethers } from "ethers"
 import DashboardSearchTab from "../../components/DashboardSearchTab"
 import ContributionCard from "../../components/ContributionCard"
 import { useSafeSdk } from "../../hooks"
-import SafeServiceClient from "@gnosis.pm/safe-service-client"
+
 import PaymentCheckoutModal from "../../components/Modal/PaymentCheckoutModal"
 import PaymentCard from "../../components/PaymentCard"
 import {
     getPendingTransaction,
-    resetApprovedRequest,
     setEthPrice,
     setPayment,
     setRejectModal,
@@ -52,10 +48,9 @@ import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
-import ERC20_ABI from "../../smartContract/erc20.json"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
-import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 
 export default function Dashboard() {
@@ -84,14 +79,13 @@ export default function Dashboard() {
     const [modalContri, setModalContri] = useState(false)
     const [modalPayment, setModalPayment] = useState(false)
     const [modalUniPayment, setModalUniPayment] = useState(false)
-    const [switchModal, setSwitchModal] = useState(false)
+
     const rejectModal = useSelector((x) => x.transaction.rejectModal)
-    const approved_request = useSelector(
-        (x) => x.transaction.approvedContriRequest
-    )
+
     const contribution_request = useSelector((x) => x.dao.contribution_request)
     const payout_request = useSelector((x) => x.dao.payout_filter)
     const loadingState = useSelector((x) => x.toast.loading_state)
+    const approvedBadges = useSelector((x) => x.dao.approvedBadges)
     // gnosis setup
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -197,7 +191,7 @@ export default function Dashboard() {
         if (address === ethers.utils.getAddress(account)) {
             dispatch(setLoadingState(true))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = await provider.getSigner()
+            const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
             await dispatch(getCommunityId())
@@ -277,13 +271,12 @@ export default function Dashboard() {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
                 dispatch(set_active_nonce(nonce))
-                console.log("route change account", nonce)
             }
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
             await dispatch(set_payout_filter("PENDING"))
             if (route !== "payments") {
-                await dispatch(getContriRequest())
+                dispatch(getContriRequest())
                 dispatch(setLoadingState(false))
                 await dispatch(getAllApprovedBadges())
             }
@@ -437,139 +430,7 @@ export default function Dashboard() {
         const amount_total = usd_amount_all.reduce((a, b) => a + b)
         return parseFloat(amount_total).toFixed(2)
     }
-    const [paymentLoading, setPaymentLoading] = useState(false)
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
-    const proposeSafeTransaction = async () => {
-        setPaymentLoading(true)
-        const transaction_obj = []
 
-        if (approved_request.length > 0) {
-            approved_request.forEach((item) => {
-                item?.payout?.forEach((item) => {
-                    if (
-                        item?.token_type === null ||
-                        !item?.token_type ||
-                        item?.token_type?.token?.symbol === "ETH"
-                    ) {
-                        transaction_obj.push({
-                            to: ethers.utils.getAddress(item?.address),
-                            data: "0x",
-                            value: ethers.utils
-                                .parseEther(`${item.amount}`)
-                                .toString(),
-                            operation: 0,
-                        })
-                    } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        const coin = new ethers.Contract(
-                            item?.token_type?.tokenAddress,
-                            ERC20_ABI,
-                            signer
-                        )
-                        const amount = parseFloat(item?.amount) * 1e18
-                        transaction_obj.push({
-                            to:
-                                item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address,
-                            data: coin.interface.encodeFunctionData(
-                                "transfer",
-                                [
-                                    ethers.utils.getAddress(item?.address),
-                                    amount.toString(),
-                                ]
-                            ),
-                            value: "0",
-                            operation: 0,
-                        })
-                    }
-                })
-            })
-        }
-
-        if (!safeSdk || !serviceClient) {
-            setPaymentLoading(false)
-            return
-        }
-        let safeTransaction
-        let nonce
-        try {
-            const activeNounce = await safeSdk.getNonce()
-            const nextNonce = await getNonceForCreation(
-                currentDao?.safe_public_address
-            )
-            nonce = nextNonce || activeNounce
-            safeTransaction = await safeSdk.createTransaction(transaction_obj, {
-                nonce,
-            })
-        } catch (error) {
-            console.error("errorrrr", error)
-            message.error("Error on creating Transaction")
-            return
-        }
-
-        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-        let safeSignature
-        try {
-            safeSignature = await safeSdk.signTransactionHash(safeTxHash)
-        } catch (error) {
-            // console.log("error on signing...", error.toString());
-            setPaymentLoading(false)
-        }
-
-        try {
-            await serviceClient.proposeTransaction(
-                currentDao?.safe_public_address,
-                safeTransaction.data,
-                safeTxHash,
-                safeSignature
-            )
-            dispatch(createPayout(safeTxHash, nonce))
-            dispatch(resetApprovedRequest())
-            dispatch(
-                setPayoutToast("ACCEPTED_CONTRI", {
-                    item: approved_request?.length,
-                    value: getTotalAmount(),
-                })
-            )
-            // onClose()
-            dispatch(addActivePaymentBadge(true))
-            setPaymentLoading(false)
-        } catch (error) {
-            // console.log("error.........", error);
-            setPaymentLoading(false)
-        }
-        setPaymentLoading(false)
-        // onClose()
-    }
-
-    const checkoutButton = () => (
-        <div className={styles.payBtnCnt}>
-            <div
-                onClick={() => onPaymentModal()}
-                className={styles.payBtnChild}
-            >
-                <div className={`${styles.whiteText} ${textStyles.ub_16}`}>
-                    {approve_contri?.length} Request approved
-                </div>
-                <AiOutlineCaretDown size={18} color="white" />
-            </div>
-            <div className={`${styles.payBtnLeft} ${styles.border}`}>
-                <div className={`${styles.whiteText} ${textStyles.m_16}`}>
-                    {getTotalAmount()}$
-                </div>
-
-                <div
-                    onClick={
-                        !paymentLoading
-                            ? async () => await proposeSafeTransaction()
-                            : () => {}
-                    }
-                    className={styles.payNow}
-                >
-                    {paymentLoading ? "Signing...." : "Sign and Pay now"}
-                </div>
-            </div>
-        </div>
-    )
     const payoutData = useSelector((x) => x.toast.payout_data)
     const payoutToastInfo = () => {
         if (payoutToast === "EXECUTED") {
@@ -623,8 +484,8 @@ export default function Dashboard() {
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
                         <ContributionCard
-                            community_id={community_id[0]?.id}
-                            signer={signer}
+                            // community_id={community_id[0]?.id}
+                            // signer={signer}
                             item={item}
                             key={index}
                         />
@@ -641,8 +502,8 @@ export default function Dashboard() {
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
                         <ContributionCard
-                            community_id={community_id[0]?.id}
-                            signer={signer}
+                            // community_id={community_id[0]?.id}
+                            // signer={signer}
                             item={item}
                             key={index}
                         />
@@ -731,7 +592,6 @@ export default function Dashboard() {
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
-        setSwitchModal(x)
     }
     return (
         <DashboardLayout
@@ -775,23 +635,35 @@ export default function Dashboard() {
                             onClose={() => dispatch(setRejectModal(false))}
                         />
                     )}
-                    {approve_contri.length > 0 &&
+                    {(approve_contri.length > 0 || approvedBadges.length > 0) &&
                         tab === "contributions" &&
                         role === "ADMIN" &&
-                        !modalPayment &&
-                        checkoutButton()}
+                        !modalPayment && (
+                            <ApproveCheckoutButton
+                                onModalOpen={() => onPaymentModal()}
+                                totalPaymentAmount={
+                                    approve_contri.length !== 0
+                                        ? getTotalAmount()
+                                        : 0
+                                }
+                                paymentApproved={approve_contri}
+                                badgeApproved={approvedBadges}
+                            />
+                        )}
                     {payoutToast && transactionToast()}
                     {modalContri && (
                         <ContributionRequestModal
                             setVisibility={setModalContri}
                         />
                     )}
-                    {modalPayment && approve_contri.length > 0 && (
-                        <PaymentCheckoutModal
-                            signer={signer}
-                            onClose={() => setModalPayment(false)}
-                        />
-                    )}
+                    {modalPayment &&
+                        (approve_contri.length > 0 ||
+                            approvedBadges.length > 0) && (
+                            <PaymentCheckoutModal
+                                signer={signer}
+                                onClose={() => setModalPayment(false)}
+                            />
+                        )}
                 </div>
             ) : (
                 <TreasuryDetails />

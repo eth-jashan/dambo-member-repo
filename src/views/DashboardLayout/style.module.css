@@ -153,16 +153,12 @@
     border: 1px solid #21212b;
     border-top: 0;
     border-bottom: 0;
-    /* display: flex;
-    flex-direction: column; */
     overflow-y: scroll;
     overflow: hidden;
-    /* background: red; */
-    /* justify-content: space-around; */
-    /* background: red; */
     -ms-overflow-style: none;
     scrollbar-width: none;
-    /* position: relative; */
+    position: relative;
+    /* z-index: 0; */
 }
 .adminStats::-webkit-scrollbar {
     display: none;

@@ -7,7 +7,7 @@ export const uploadApproveMetaDataUpload = async (approveContri, jwt) => {
     }
     try {
         const res = await axios.post(
-            `https://staging.api.drepute.xyz:3001/ipfs_server/upload`,
+            `https://test-staging.api.drepute.xyz/ipfs_server/upload`,
             data,
             {
                 headers: {
@@ -18,9 +18,7 @@ export const uploadApproveMetaDataUpload = async (approveContri, jwt) => {
         if (res) {
             return 1
         }
-    } catch (error) {
-        console.log("error on uploading", error.toString())
-    }
+    } catch (error) {}
 }
 
 export const updatePocpRegister = async (jwt, tx_hash, dao_uuid) => {
@@ -102,7 +100,7 @@ export const updatePocpClaim = async (jwt, claim_tx_hash, contribution_ids) => {
 const buildQuery = (cid) => {
     const cid_and_array = []
 
-    cid?.map((x, i) => {
+    cid?.forEach((x) => {
         cid_and_array.push(`cid=${x}`.toString())
     })
     let queryString = cid_and_array.toString()
@@ -125,7 +123,7 @@ export const getIpfsUrl = async (jwt, dao_uuid, cid) => {
             const cid = []
             const url = []
             let status = true
-            res.data?.data?.contributions?.map((item, index) => {
+            res.data?.data?.contributions?.forEach((item) => {
                 if (item?.ipfs_url === null) {
                     status = false
                 } else {

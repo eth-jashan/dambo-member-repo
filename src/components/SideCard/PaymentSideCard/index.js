@@ -9,10 +9,8 @@ import {
     syncTxDataWithGnosis,
     setLoading,
     syncExecuteData,
-    getAllApprovedBadges,
-    getAllUnclaimedBadges,
-    getAllClaimedBadges,
     updateListOnExecute,
+    set_active_nonce,
 } from "../../../store/actions/dao-action"
 import { EthSignSignature } from "../../../utils/EthSignSignature"
 import { message } from "antd"
@@ -24,16 +22,7 @@ import {
 } from "../../../store/actions/transaction-action"
 import crossSvg from "../../../assets/Icons/cross_white.svg"
 import { setPayoutToast } from "../../../store/actions/toast-action"
-import {
-    getIpfsUrl,
-    uploadApproveMetaDataUpload,
-} from "../../../utils/relayFunctions"
-import {
-    chainSwitch,
-    getSelectedChainId,
-    processBadgeApprovalToPocp,
-    setChainInfoAction,
-} from "../../../utils/POCPutils"
+
 import Loader from "../../Loader"
 import * as dayjs from "dayjs"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
@@ -46,14 +35,11 @@ const PaymentSlideCard = ({ signer }) => {
     const delegates = currentDao?.signers
     const isReject = currentPayment?.status === "REJECTED"
     const nonce = useSelector((x) => x.dao.active_nonce)
-    const community_id = useSelector((x) => x.dao.communityInfo)
+
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
 
-    const setPocpAction = (chainId) => {
-        setChainInfoAction(chainId)
-    }
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -88,20 +74,7 @@ const PaymentSlideCard = ({ signer }) => {
         dispatch(setRejectModal(true))
     }
 
-    const approvalEventCallback = async () => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
-        await dispatch(getAllUnclaimedBadges())
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING"))
-        dispatch(setPayment(null))
-        dispatch(setLoading(false))
-    }
-
-    const executeSafeTransaction = async (hash, c_id, to, approveBadge) => {
+    const executeSafeTransaction = async (hash, approveBadge) => {
         const transaction = await serviceClient.getTransaction(hash)
         const safeTransactionData = {
             to: transaction.to,
@@ -155,9 +128,11 @@ const PaymentSlideCard = ({ signer }) => {
                 message.error("Not enough funds in safe")
             } else if (error.code === "TRANSACTION_REPLACED") {
                 message.error("Transaction Replaced")
+            } else {
+                message.error("Execution Reverted!! Cannot estimate gas fee")
             }
             dispatch(setLoading(false))
-            console.log("error", error.code, error.toString())
+
             return
         }
 
@@ -165,70 +140,8 @@ const PaymentSlideCard = ({ signer }) => {
             dispatch(updateListOnExecute(currentPayment?.metaInfo?.id))
             dispatch(setPayment(null))
             dispatch(setLoading(false))
-        }
-
-        if (approveBadge) {
-            const { cid, url, status } = await getIpfsUrl(
-                jwt,
-                currentDao?.uuid,
-                c_id
-            )
-            if (!status) {
-                const startTime = Date.now()
-                const interval = setInterval(async () => {
-                    if (Date.now() - startTime > 10000) {
-                        clearInterval(interval)
-
-                        dispatch(
-                            updateListOnExecute(currentPayment?.metaInfo?.id)
-                        )
-                        dispatch(setPayment(null))
-                        message.error("failed to get ipfs url")
-                        dispatch(setLoading(false))
-                    }
-                    const { cid, url, status } = await getIpfsUrl(
-                        jwt,
-                        currentDao?.uuid,
-                        c_id
-                    )
-                    if (status) {
-                        clearTimeout(interval)
-                        if (cid?.length > 0) {
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            const { chainId } = await provider.getNetwork()
-                            setPocpAction(chainId)
-                            await processBadgeApprovalToPocp(
-                                community_id[0].id,
-                                to,
-                                cid,
-                                url,
-                                jwt,
-                                approvalEventCallback,
-                                approvalEventCallback
-                            )
-                        }
-                    }
-                }, 3000)
-            } else {
-                if (cid?.length > 0) {
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const { chainId } = await provider.getNetwork()
-                    setPocpAction(chainId)
-                    await processBadgeApprovalToPocp(
-                        community_id[0].id,
-                        to,
-                        cid,
-                        url,
-                        jwt,
-                        approvalEventCallback,
-                        approvalEventCallback
-                    )
-                }
-            }
+            const nonce = await safeSdk.getNonce()
+            dispatch(set_active_nonce(nonce))
         }
     }
 
@@ -568,55 +481,8 @@ const PaymentSlideCard = ({ signer }) => {
         }
     }
 
-    const uploadApproveMetatoIpfs = async () => {
-        const metaInfo = []
-        const cid = []
-        const to = []
-        currentPayment?.metaInfo?.contributions.forEach((x) => {
-            if (x?.mint_badge) {
-                metaInfo.push({
-                    dao_name: currentDao?.name,
-                    contri_title: x?.title,
-                    signer: address,
-                    claimer: x?.requested_by?.public_address,
-                    date_of_approve: dayjs().format("D MMM YYYY"),
-                    id: x?.id,
-                    dao_logo_url:
-                        currentDao?.logo_url ||
-                        "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-                    work_type: x?.stream.toString(),
-                })
-                cid.push(x?.id)
-                to.push(x?.requested_by?.public_address)
-            }
-        })
-        if (metaInfo.length > 0) {
-            const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
-            if (response) {
-                return { status: true, cid, to }
-            } else {
-                return { status: false, cid: [], to: [] }
-            }
-        } else {
-            return { status: false, cid: [], to: [] }
-        }
-    }
-
     const executeTransaction = async (hash) => {
-        if (!isReject && community_id[0]?.id) {
-            try {
-                const res = await uploadApproveMetatoIpfs()
-                if (res.status) {
-                    await executeSafeTransaction(hash, res?.cid, res?.to, true)
-                } else {
-                    await executeSafeTransaction(hash, null, null, false)
-                }
-            } catch (error) {
-                setLoading(false)
-            }
-        } else {
-            await executeSafeTransaction(hash, null, null, false)
-        }
+        await executeSafeTransaction(hash, false)
     }
 
     const renderContribution = (item, index) => (
@@ -670,7 +536,7 @@ const PaymentSlideCard = ({ signer }) => {
     const showLoading =
         executePaymentLoading?.loadingStatus &&
         executePaymentLoading?.paymentId === currentPayment?.metaInfo?.id
-    console.log(showLoading)
+
     return (
         <div className={styles.container}>
             <img
@@ -701,7 +567,7 @@ const PaymentSlideCard = ({ signer }) => {
             {renderSigners()}
             <div
                 style={{
-                    width: "20%",
+                    width: "90%",
                     height: showLoading ? "140px" : "80px",
                     position: "absolute",
                     bottom: 0,
@@ -709,7 +575,6 @@ const PaymentSlideCard = ({ signer }) => {
                     display: "flex",
                     alignSelf: "center",
                     alignItems: "center",
-                    //   justifyContent: isReject ? "center" : "space-between",
                     flexDirection: "column",
                     justifyContent: "center",
                 }}

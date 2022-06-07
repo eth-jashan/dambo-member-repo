@@ -16,9 +16,7 @@ import {
     signout,
 } from "./store/actions/auth-action"
 import AppContext from "./appContext"
-import {
-    getSelectedChainId,
-} from "./utils/POCPutils"
+import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
 
 function App() {
@@ -53,11 +51,7 @@ function App() {
             navigate("/")
         }
     })
-    const selectedChainId = getSelectedChainId()
-    console.log(
-        selectedChainId?.chainId === 4 ? "0x13881" : "0x89",
-        selectedChainId
-    )
+
     window.ethereum.on("chainChanged", (x) => {
         const selectedChainId = getSelectedChainId()
         const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
@@ -65,7 +59,6 @@ function App() {
             parseInt(x) !== selectedChainId.chainId &&
             parseInt(x) !== maticNetwork
         ) {
-            console.log(parseInt(x), maticNetwork)
             if (isAdmin) {
                 dispatch(setLoggedIn(false))
                 dispatch(signout())
@@ -78,7 +71,6 @@ function App() {
             }
         }
     })
-    // window.ethereum.on("chainChanged", (x) => onChainChanged(x))
 
     return (
         <AppContext.Provider value={pocpActionSetup}>

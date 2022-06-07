@@ -21,8 +21,6 @@ const ApprovalSelectionToggle = ({
     active,
     setActive,
 }) => {
-    // const [active, setActive] = useState(false)
-
     const availableToken = useSelector((x) => x.dao.balance)
 
     const renderToggle = () => (

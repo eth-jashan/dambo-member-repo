@@ -4,7 +4,7 @@ import textStyles from "../../../commonStyles/textType/styles.module.css"
 import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import {
     getAllApprovedBadges,
     getAllClaimedBadges,
@@ -20,7 +20,6 @@ import {
 import { setLoadingState } from "../../../store/actions/toast-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
-    const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
     const changeRole = async (role) => {
         dispatch(refreshContributionList())

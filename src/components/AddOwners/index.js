@@ -35,7 +35,7 @@ export default function AddOwners({
         const ownerObj = []
         const safeInfo = await serviceClient.getSafeInfo(safeAddress)
         if (safeInfo.owners) {
-            safeInfo.owners.map((item, index) => {
+            safeInfo.owners.forEach((item) => {
                 ownerObj.push({
                     id: uuidv4(),
                     name: "",

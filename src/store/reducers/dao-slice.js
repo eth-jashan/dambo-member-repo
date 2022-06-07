@@ -52,6 +52,7 @@ const daoSlice = createSlice({
         executePaymentLoading: false,
         active_payout_notification: false,
         communityInfo: null,
+        approvedBadges: [],
         pastContributions: [],
     },
     reducers: {
@@ -161,6 +162,14 @@ const daoSlice = createSlice({
         },
         set_unclaimed_badges(state, action) {
             state.all_unclaimed_badges = action.payload.unclaimedToken
+        },
+        add_approved_badges(state, action) {
+            state.approvedBadges = state.approvedBadges.concat([
+                action.payload.contribution,
+            ])
+        },
+        reset_approved_badges(state) {
+            state.approvedBadges = []
         },
         setTokensBalanceInUsd(state, action) {
             state.tokensBalanceInUsd = action.payload.balanceInUsd

@@ -35,7 +35,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
             setAuth(true)
-            if (chainId === 4 || chainId === 1) {
+            if (chainId === 4 || chainId === 1 || chainId === 5) {
                 try {
                     const res = await dispatch(
                         authWithSign(address, signer, chainId)
@@ -46,7 +46,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         message.error("Check metamask popup!")
                     }
                 } catch (error) {
-                    console.log(error)
+                    console.error(error)
                     setAuth(false)
                 }
             } else {
@@ -77,7 +77,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     const onDiscordAuth = () => {
         dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(links.discord_oauth.production)
+        window.location.replace(`${links.discord_oauth.production}`)
     }
 
     const loadWeb3Modal = useCallback(async () => {
@@ -94,7 +94,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             dispatch(setAddress(newAddress))
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            if (res && (chainId === 4 || chainId === 1)) {
+            if (res && (chainId === 4 || chainId === 1 || chainId === 5)) {
                 // has token and chain is selected for rinkeby
                 setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
@@ -133,7 +133,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         }
                     }
                 }
-            } else if (!res && (chainId === 4 || chainId === 1)) {
+            } else if (
+                !res &&
+                (chainId === 4 || chainId === 1 || chainId === 5)
+            ) {
                 // doesn't have valid token and chain is selected one
                 setAuth(false)
                 dispatch(setLoggedIn(false))

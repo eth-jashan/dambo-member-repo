@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { useDispatch, useSelector } from "react-redux"
@@ -26,13 +26,12 @@ import {
     getAllUnclaimedBadges,
     getContributorOverview,
 } from "../../store/actions/dao-action"
-import AppContext from "../../appContext"
 
-export default function ContributionCard({ item, signer, community_id }) {
+export default function ContributionCard({ item }) {
     const dispatch = useDispatch()
-    const address = item?.requested_by?.public_address
+
     const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
-    const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
+
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
     const jwt = useSelector((x) => x.auth.jwt)
     const contri_filter_key = useSelector((x) => x.dao.contri_filter_key)
@@ -43,9 +42,8 @@ export default function ContributionCard({ item, signer, community_id }) {
             ? (x) => x.transaction.currentTransaction
             : (x) => x.contributor.contribution_detail
     )
-    const myContext = useContext(AppContext)
-    const setPocpAction = (status, chainId) => {
-        // myContext.setPocpActionValue(status, chainId)
+
+    const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
     const selectionActive = currentTransaction?.id === item.id
@@ -118,7 +116,7 @@ export default function ContributionCard({ item, signer, community_id }) {
             dispatch(setClaimLoading(true, item?.id))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const { chainId } = await provider.getNetwork()
-            setPocpAction(true, chainId)
+            setPocpAction(chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, item?.id).token[0].id,
                 jwt,
@@ -172,22 +170,44 @@ export default function ContributionCard({ item, signer, community_id }) {
             </div>
             {role === "ADMIN" ? null : (
                 <div className={styles.statusContributorContainer}>
-                    <div
-                        className={textStyles.m_16}
-                        style={{
-                            color: getContributionStatus()?.color,
-                            textAlign: "start",
-                        }}
-                    >
-                        {getContributionStatus()?.title}
-                    </div>
-                    {item?.status === "APPROVED" &&
-                        item?.payout_status === "PAID" &&
+                    {
+                        <div
+                            className={textStyles.m_16}
+                            style={{
+                                color:
+                                    item.tokens.length === 0 && item.approved_tx
+                                        ? "white"
+                                        : getContributionStatus()?.color,
+                                textAlign: "start",
+                            }}
+                        >
+                            {item.tokens.length === 0 && item.approved_tx
+                                ? "executed"
+                                : getContributionStatus()?.title}
+                        </div>
+                    }
+                    {item?.tokens.length === 0 &&
+                        item?.mint_badge &&
                         isApprovedToken(unclaimed, item?.id)?.status && (
                             <div
                                 onClick={async () => await claimBadges()}
-                                style={{ color: "#ECFFB8" }}
-                                className={textStyles.m_16}
+                                className={`${textStyles.m_16} ${styles.greyish}`}
+                            >
+                                {" "}
+                                •{" "}
+                                {claim_loading.status &&
+                                claim_loading?.id === item?.id
+                                    ? "claiming.."
+                                    : "claim badge"}
+                            </div>
+                        )}
+                    {item?.status === "APPROVED" &&
+                        item?.payout_status === "PAID" &&
+                        item?.tokens.length > 0 &&
+                        isApprovedToken(unclaimed, item?.id)?.status && (
+                            <div
+                                onClick={async () => await claimBadges()}
+                                className={`${textStyles.m_16} ${styles.greyish}`}
                             >
                                 {" "}
                                 •{" "}

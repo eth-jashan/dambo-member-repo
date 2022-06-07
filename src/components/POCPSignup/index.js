@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import "./styles.scss"
 import texStyles from "../../commonStyles/textType/styles.module.css"
 import {
@@ -7,27 +7,24 @@ import {
     processDaoToPOCP,
     setChainInfoAction,
 } from "../../utils/POCPutils"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import Lottie from "react-lottie"
 import confetti from ".././../assets/lottie/confett-lottie.json"
 import { ethers } from "ethers"
-import AppContext from "../../appContext"
 
 const POCPSignup = () => {
-    const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const pocpInfo = useSelector((x) => x.dao.pocp_register)
-    const dispatch = useDispatch()
+
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
-    const myContext = useContext(AppContext)
+
     const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
 
     const registerCallback = async (events) => {
-        console.log(events)
         let chainId = getSelectedChainId()
         chainId = ethers.utils.hexValue(chainId.chainId)
         await chainSwitch(chainId)

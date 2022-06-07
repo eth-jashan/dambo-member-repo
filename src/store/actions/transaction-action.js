@@ -76,53 +76,58 @@ export const approveContriRequest = (
                 })
             )
         } else {
-            dispatch(
-                tranactionAction.set_approved_request({
-                    item: {
-                        contri_detail: currentTransaction,
-                        payout,
-                        feedback,
-                    },
+            if (payout.length > 0) {
+                dispatch(
+                    tranactionAction.set_approved_request({
+                        item: {
+                            contri_detail: currentTransaction,
+                            payout,
+                            feedback,
+                        },
+                    })
+                )
+            }
+            if (payout.length > 0) {
+                payout.forEach((item) => {
+                    if (!item?.token_type) {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: "Ethereum",
+                                symbol: "ETH",
+                                decimals: "18",
+                                logo_url:
+                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                                address: "",
+                            },
+                        })
+                    } else {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: item?.token_type?.token?.name,
+                                symbol: item?.token_type?.token?.symbol,
+                                decimals: item?.token_type?.token?.decimals,
+                                logo_url: item?.token_type?.token?.logoUri,
+                                address: item?.token_type?.tokenAddress,
+                            },
+                        })
+                    }
                 })
-            )
-            payout.map((item) => {
-                if (!item?.token_type) {
-                    newPayout.push({
-                        amount: item.amount,
-                        usd_amount: item?.usd_amount,
-                        address: item?.address,
-                        details: {
-                            name: "Ethereum",
-                            symbol: "ETH",
-                            decimals: "18",
-                            logo_url:
-                                "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
-                            address: "",
-                        },
-                    })
-                } else {
-                    newPayout.push({
-                        amount: item.amount,
-                        usd_amount: item?.usd_amount,
-                        address: item?.address,
-                        details: {
-                            name: item?.token_type?.token?.name,
-                            symbol: item?.token_type?.token?.symbol,
-                            decimals: item?.token_type?.token?.decimals,
-                            logo_url: item?.token_type?.token?.logoUri,
-                            address: item?.token_type?.tokenAddress,
-                        },
-                    })
-                }
-            })
+            }
 
             const data = {
                 status: "APPROVED",
-                tokens: newPayout,
+                tokens: payout.length > 0 ? newPayout : [],
                 id: currentTransaction.id,
                 feedback,
                 mint_badge,
             }
+
             try {
                 const res = await apiClient.post(
                     `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}/update`,

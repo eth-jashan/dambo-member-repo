@@ -88,9 +88,7 @@ export const registerDao = () => {
             } else {
                 return 0
             }
-        } catch (error) {
-            console.error("error in registering.....", error)
-        }
+        } catch (error) {}
     }
 }
 
@@ -110,12 +108,10 @@ export const getAllDaowithAddress = (chainId) => {
             )
 
             if (res.data.data.length > 0) {
-                // console.log(res.data.data)
                 const dao_details = []
 
                 res.data.data.forEach((x) => {
                     if (x.dao_details.chain_id === chainId) {
-                        console.log(x, chainId)
                         dao_details.push(x)
                     }
                 })
@@ -225,10 +221,7 @@ export const set_contri_filter = (filter_key, number) => {
                             key: filter_key,
                             number: 1,
                             list: res.data?.data?.contributions?.filter(
-                                (x) =>
-                                    x.payout_status === null &&
-                                    x.status !== "REJECTED" &&
-                                    x.tokens.length === 0
+                                (x) => x.status === "REQUESTED"
                             ),
                         })
                     )
@@ -263,9 +256,6 @@ export const set_contri_filter = (filter_key, number) => {
                 }
                 // return 1
             } else {
-                // dispatch(daoAction.set_contri_list({
-                //   list:[]
-                // }))
                 dispatch(
                     daoAction.set_contribution_filter({
                         key: filter_key,
@@ -358,11 +348,20 @@ export const set_active_nonce = (nonce) => {
     }
 }
 
+export const resetApprovedBadges = () => {
+    return async (dispatch) => {
+        dispatch(daoAction.reset_approved_badges())
+    }
+}
+
 export const getContriRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
+        dispatch(daoAction.reset_approved_badges())
         dispatch(tranactionAction.reset_approved_request())
+        const approvedBadges = getState().dao.approvedBadges
+
         const url =
             getState().dao.role === "ADMIN"
                 ? `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
@@ -374,11 +373,12 @@ export const getContriRequest = () => {
                 },
             })
             if (res.data.success) {
-                // Approved Request without creating payout
                 const cid = []
                 res?.data?.data?.contributions?.forEach((item) => {
                     const payout = []
                     cid.push(item)
+
+                    // Approved Payout Request without creating payout
                     if (
                         item?.tokens?.length > 0 &&
                         item?.payout_status === null &&
@@ -406,6 +406,23 @@ export const getContriRequest = () => {
                             )
                         }
                     }
+
+                    if (
+                        item?.status === "APPROVED" &&
+                        item?.mint_badge &&
+                        !item?.approved_tx
+                    ) {
+                        // Approved Badge Request without pocp interaction
+                        if (approvedBadges.length > 0) {
+                            approvedBadges.forEach((x) => {
+                                if (x?.id !== item?.id) {
+                                    dispatch(approveBadge(item))
+                                }
+                            })
+                        } else {
+                            dispatch(approveBadge(item))
+                        }
+                    }
                 })
 
                 dispatch(daoAction.set_contribution_id({ cid }))
@@ -413,11 +430,7 @@ export const getContriRequest = () => {
                     dispatch(
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
-                                (x) =>
-                                    (x.payout_status === null &&
-                                        x.status !== "REJECTED" &&
-                                        x.tokens.length === 0) ||
-                                    x.status === "REQUESTED"
+                                (x) => x.status === "REQUESTED"
                             ),
                             number: 1,
                         })
@@ -428,12 +441,23 @@ export const getContriRequest = () => {
                         daoAction.set_contri_list({
                             list: res.data?.data?.contributions.filter(
                                 (x) =>
-                                    (x.payout_status === null ||
-                                        x.payout_status === "REQUESTED" ||
-                                        x.payout_status === "PAID") &&
-                                    x.status !== "REJECTED" &&
-                                    !x.claimed_tx &&
-                                    x?.mint_badge
+                                    // newly created contribution
+                                    x.status === "REQUESTED" ||
+                                    // contribution approved as only badge and token
+                                    (x.status === "APPROVED" &&
+                                        x.tokens.length === 0 &&
+                                        x.mint_badge &&
+                                        !x.claimed_tx) ||
+                                    // only created through token in active till payment
+                                    x.payout_status === "REQUESTED" ||
+                                    (x.payout_status === "APPROVED" &&
+                                        !x.mint_badge) ||
+                                    // for both badge and token  active till badge payment
+                                    x.payout_status === "REQUESTED" ||
+                                    x.payout_status === "APPROVED" ||
+                                    (x.payout_status === "PAID" &&
+                                        x.mint_badge &&
+                                        !x.claimed_tx)
                             ),
                             number: 1,
                         })
@@ -786,11 +810,7 @@ export const set_payout_filter = (filter_key) => {
 export const updateListOnExecute = (id) => {
     return (dispatch, getState) => {
         const pendingTxs = getState().dao.payout_request
-        console.log(
-            pendingTxs.length,
-            id,
-            pendingTxs.filter((x) => x.metaInfo?.id !== id)
-        )
+
         if (pendingTxs.length > 0) {
             dispatch(
                 daoAction.set_active_payment_notification({ status: true })
@@ -1141,17 +1161,12 @@ export const getAllApprovedBadges = () => {
                 communityInfo[0]?.id.toString()
             )
 
-            // if (
-            //     approvedToken.data.approvedTokens.length > approvedBadge.length
-            // ) {
             dispatch(
                 daoAction.set_approved_badges({
                     approvedTokens: approvedToken.data.approvedTokens,
                 })
             )
-            // }
         } catch (error) {
-            console.log("error", error)
             dispatch(
                 daoAction.set_approved_badges({
                     approvedTokens: [],
@@ -1198,7 +1213,6 @@ export const getAllClaimedBadges = () => {
                 })
             )
         } catch (error) {
-            console.error(error)
             dispatch(
                 daoAction.set_claimed_badges({
                     claimedTokens: [],
@@ -1251,7 +1265,6 @@ export const getAllUnclaimedBadges = () => {
                 )
             }
         } catch (error) {
-            console.log(error)
             dispatch(
                 daoAction.set_claimed_badges({
                     unclaimedToken: [],
@@ -1320,6 +1333,34 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
     }
 }
 
+export const approveBadge = (contribution, feedback = false, token = false) => {
+    return async (dispatch) => {
+        const updatedContribution = {
+            id: contribution?.id,
+            title: contribution?.title,
+            requested_by: contribution?.requested_by,
+            stream: contribution.stream,
+            time_spent: contribution.time_spent,
+            status: contribution.status,
+            description: contribution.description,
+            feedback: feedback || contribution.feedback,
+            payout_status: contribution.payout_status,
+            tokens: token || contribution.tokens,
+            gnosis_reference_id: contribution.gnosis_reference_id,
+            ipfs_url: contribution.ipfs_url,
+            contribution_badge_id: contribution.contribution_badge_id,
+            badge_status: contribution.badge_status,
+            approved_tx: contribution.approved_tx,
+            approved_tx_status: contribution.approved_tx_status,
+            claimed_tx: contribution.claimed_tx,
+            claimed_tx_status: contribution.claimed_tx_status,
+            mint_badge: contribution.mint_badge,
+        }
+        dispatch(
+            daoAction.add_approved_badges({ contribution: updatedContribution })
+        )
+    }
+}
 export const getAllTokensOfSafe = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao

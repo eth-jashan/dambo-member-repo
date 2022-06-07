@@ -12,29 +12,161 @@ import ERC20_ABI from "../../../smartContract/erc20.json"
 import {
     addActivePaymentBadge,
     createPayout,
+    getAllApprovedBadges,
+    getAllClaimedBadges,
+    getAllUnclaimedBadges,
     getNonceForCreation,
+    resetApprovedBadges,
 } from "../../../store/actions/dao-action"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
-import RequestItem from "./RequestItem"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import {
+    chainSwitch,
+    getSelectedChainId,
+    processBadgeApprovalToPocp,
+    setChainInfoAction,
+} from "../../../utils/POCPutils"
+import { getIpfsUrl } from "../../../utils/relayFunctions"
+import ContributionBadgeItem from "./ContributionBadgeItem"
+import POCPStatusCard from "../../POCPStatusCard"
 
-const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
+const PaymentCheckoutModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const approved_request = useSelector(
         (x) => x.transaction.approvedContriRequest
     )
+
+    const approvedBadges = useSelector((x) => x.dao.approvedBadges)
+
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+    const [checkoutType, setCheckoutType] = useState("contribution")
+    const [approverStatus, setApproverStatus] = useState(false)
+    const [minting, setMinting] = useState(false)
+    const [showOkay, setShowOkay] = useState(false)
+    const [approvingFailed, setApprovingFailed] = useState(false)
+    const jwt = useSelector((x) => x.auth.jwt)
+
+    const setPocpAction = (chainId) => {
+        setChainInfoAction(chainId)
+    }
+
+    // const changeCheckoutType = (route) => {
+    //     setCheckoutType(route)
+    // }
+
+    const onApprovalSuccess = async () => {
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        setApproverStatus("switching-back-success")
+        await chainSwitch(chainId)
+        setShowOkay(true)
+        setMinting(false)
+        await dispatch(getAllApprovedBadges())
+        await dispatch(getAllUnclaimedBadges())
+        await dispatch(getAllClaimedBadges())
+    }
+
+    const onErrorCallBack = async () => {
+        let chainId = getSelectedChainId()
+        chainId = ethers.utils.hexValue(chainId.chainId)
+        setApproverStatus("switching-back-error")
+        await chainSwitch(chainId)
+        setMinting(false)
+        setApprovingFailed(true)
+    }
+    const communityInfo = useSelector((x) => x.dao.communityInfo)
+    // let communityInfo
+
+    const approvePOCPBadgeWithUrl = async () => {
+        const contributionId = []
+        const receiverAddress = []
+        approvedBadges.forEach((item) => {
+            contributionId.push(item?.id)
+            receiverAddress.push(item?.requested_by?.public_address)
+        })
+        setMinting(true)
+        const { cid, url, status } = await getIpfsUrl(
+            jwt,
+            currentDao?.uuid,
+            contributionId
+        )
+
+        if (!status) {
+            const startTime = Date.now()
+            const interval = setInterval(async () => {
+                if (Date.now() - startTime > 10000) {
+                    clearInterval(interval)
+                    setMinting(false)
+                    setLoading(false)
+                    message.error("failed to get ipfs url")
+                }
+                const { cid, url, status } = await getIpfsUrl(
+                    jwt,
+                    currentDao?.uuid,
+                    contributionId
+                )
+                if (status) {
+                    clearTimeout(interval)
+                    if (cid?.length > 0) {
+                        if (communityInfo?.length === 1 && communityInfo) {
+                            const provider = new ethers.providers.Web3Provider(
+                                window.ethereum
+                            )
+                            const { chainId } = await provider.getNetwork()
+                            setPocpAction(chainId)
+                            setApproverStatus("switching")
+                            await processBadgeApprovalToPocp(
+                                communityInfo[0]?.id,
+                                receiverAddress,
+                                cid,
+                                url,
+                                jwt,
+                                onApprovalSuccess,
+                                onErrorCallBack,
+                                (x) => setApproverStatus(x)
+                            )
+                        } else {
+                            setApproverStatus("switching-back-error")
+                        }
+                    }
+                }
+            }, 3000)
+        } else {
+            if (cid?.length > 0) {
+                if (communityInfo?.length === 1 && communityInfo) {
+                    const provider = new ethers.providers.Web3Provider(
+                        window.ethereum
+                    )
+                    const { chainId } = await provider.getNetwork()
+                    setPocpAction(chainId)
+                    setApproverStatus("switching")
+                    await processBadgeApprovalToPocp(
+                        communityInfo[0]?.id,
+                        receiverAddress,
+                        cid,
+                        url,
+                        jwt,
+                        onApprovalSuccess,
+                        onErrorCallBack,
+                        (x) => setApproverStatus(x)
+                    )
+                } else {
+                    setApproverStatus("switching-back-error")
+                }
+            }
+        }
+    }
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
         const transaction_obj = []
         if (approved_request.length > 0) {
-            approved_request.map(async (item, index) => {
-                item?.payout?.map(async (item, index) => {
+            approved_request.map(async (item) => {
+                item?.payout?.map(async (item) => {
                     if (
                         item?.token_type === null ||
                         !item?.token_type ||
@@ -49,19 +181,13 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                             operation: 0,
                         })
                     } else if (item?.token_type?.token?.symbol !== "ETH") {
-                        console.log(
-                            "coin",
-                            item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address,
-                            item?.address
-                        )
                         const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
                                 item?.token_type?.token?.address,
                             ERC20_ABI,
                             signer
                         )
-                        // const amount =
+
                         const amount = parseFloat(item?.amount) * 1e18
                         transaction_obj.push({
                             to:
@@ -98,7 +224,6 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
                 nonce,
             })
         } catch (error) {
-            console.error("error", error)
             message.error("Error on creating Transaction")
             setLoading(false)
             return
@@ -109,7 +234,6 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         try {
             safeSignature = await safeSdk.signTransactionHash(safeTxHash)
         } catch (error) {
-            // //console.log('error on signing...', error.toString())
             setLoading(false)
         }
 
@@ -142,7 +266,8 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
     const modalHeader = () => (
         <div className={styles.header}>
             <div className={textStyles.ub_23}>
-                Approved Requests • {approved_request.length}
+                Approved Requests •{" "}
+                {approved_request.length + approvedBadges.length}
             </div>
             <img
                 alt="chevron_down"
@@ -154,28 +279,11 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         </div>
     )
 
-    const tokenItem = (item) => {
-        return (
-            <div className={styles.tokenDiv}>
-                <div className={`${textStyles.m_16} ${styles.usdText}`}>
-                    {(item?.usd_amount * parseFloat(item?.amount)).toFixed(2)}$
-                    •
-                </div>
-                <div style={{}} className={textStyles.m_16}>
-                    {item?.amount}{" "}
-                    {item?.token_type?.token
-                        ? item?.token_type?.token?.symbol
-                        : "ETH"}
-                </div>
-            </div>
-        )
-    }
-
     const getTotalAmount = () => {
         const usd_amount_all = []
 
-        approved_request.map((item, index) => {
-            item.payout.map((x, i) => {
+        approved_request.forEach((item) => {
+            item.payout.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
@@ -184,33 +292,142 @@ const PaymentCheckoutModal = ({ onClose, signer, onPayNow }) => {
         return parseFloat(amount_total)?.toFixed(2)
     }
 
+    const modalSwitchHeader = () => (
+        <div className={styles.modalSwitch}>
+            <div
+                onClick={() => setCheckoutType("contribution")}
+                className={`${textStyles.m_16} ${
+                    checkoutType === "contribution"
+                        ? styles.contributionSelection
+                        : null
+                } ${styles.cursor}`}
+            >
+                Contribution badge
+            </div>
+            <div
+                onClick={() => setCheckoutType("payment")}
+                className={`${textStyles.m_16} ${styles.paymentRequestTitle} ${
+                    checkoutType === "payment" ? styles.paymentSelection : null
+                }`}
+            >
+                Payment Request
+            </div>
+        </div>
+    )
+
+    const modalActionHeader = () => (
+        <div className={styles.actionHeaderDiv}>
+            <div className={`${textStyles.m_16} ${styles.headerActionTitle}`}>
+                {" "}
+                {checkoutType === "payment"
+                    ? `${approved_request.length} Approved payment request`
+                    : `${approvedBadges.length} Approved request`}
+            </div>
+
+            {approvedBadges.length > 0 && checkoutType === "contribution" && (
+                <div
+                    onClick={async () => await approvePOCPBadgeWithUrl()}
+                    className={styles.mintBtn}
+                >
+                    <div
+                        style={{ opacity: approverStatus && "0.5" }}
+                        className={`${textStyles.ub_16}`}
+                    >
+                        {approverStatus || minting ? "Minting" : "Mint badges"}
+                    </div>
+                </div>
+            )}
+
+            {approved_request.length > 0 && checkoutType === "payment" && (
+                <div
+                    onClick={async () => await proposeSafeTransaction()}
+                    className={styles.mintBtn}
+                >
+                    <div
+                        style={{ opacity: approverStatus && "0.5" }}
+                        className={`${textStyles.ub_16}`}
+                    >
+                        {loading ? "Signing" : "Sign Payment"}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+
     return (
         <div className={styles.backdrop}>
             <div className={styles.modal}>
+                {approverStatus && (
+                    <div className={styles.backdropOnApprover} />
+                )}
                 {modalHeader()}
-                <div style={{ marginBottom: "5rem" }}>
-                    {approved_request.map((item, index) => (
-                        <RequestItem
-                            key={index}
-                            item={item}
-                            tokenItem={tokenItem}
-                            approved_request={approved_request}
-                            onClose={onClose}
-                        />
-                    ))}
+                {modalSwitchHeader()}
+                {approverStatus !== "switching-back-success" &&
+                    modalActionHeader()}
+                {checkoutType === "payment" && (
+                    <div className={styles.cardWrapper}>
+                        {approved_request.map((item, index) => (
+                            <ContributionBadgeItem
+                                index={index}
+                                item={item?.contri_detail}
+                                key={index}
+                                approvedBadgeLength={approvedBadges.length}
+                                checkoutType={checkoutType}
+                                payoutDetail={item?.payout}
+                                onClose={() => onClose()}
+                            />
+                        ))}
+                    </div>
+                )}
+                {checkoutType === "contribution" && (
+                    <div className={styles.cardWrapper}>
+                        {approvedBadges.map((item, index) => (
+                            <ContributionBadgeItem
+                                index={index}
+                                item={item}
+                                key={index}
+                                approvedBadgeLength={approvedBadges.length}
+                                onClose={() => onClose()}
+                            />
+                        ))}
+                    </div>
+                )}
+                <div
+                    onClick={() =>
+                        setCheckoutType(
+                            checkoutType === "contribution"
+                                ? "payment"
+                                : "contribution"
+                        )
+                    }
+                    className={`${textStyles.m_16} ${styles.requestTitle}`}
+                >
+                    {checkoutType === "contribution" &&
+                        approved_request.length > 0 &&
+                        `${approved_request.length} Payment request`}
+                    {checkoutType === "payment" &&
+                        approvedBadges.length > 0 &&
+                        `${approvedBadges.length} Contribution badge`}
                 </div>
-                {approved_request.length > 0 && (
-                    <div
-                        onClick={async () =>
-                            !loading && (await proposeSafeTransaction())
-                        }
-                        className={styles.btnCnt}
-                    >
-                        <div className={styles.payBtn}>
-                            {!loading
-                                ? `${getTotalAmount()}$  •  Sign and Pay`
-                                : "Signing...."}
-                        </div>
+
+                {approverStatus && checkoutType === "contribution" && (
+                    <div className={styles.pocpStatusBanner}>
+                        <POCPStatusCard
+                            approvedBadgeLength={approvedBadges.length}
+                            showOkay={showOkay}
+                            approverStatus={approverStatus}
+                            approvingFailed={approvingFailed}
+                            onOkayClick={() => {
+                                setApproverStatus(false)
+                                setShowOkay(false)
+                                dispatch(resetApprovedBadges())
+
+                                onClose()
+                            }}
+                            onTryAgain={async () =>
+                                await approvePOCPBadgeWithUrl()
+                            }
+                        />
                     </div>
                 )}
             </div>

@@ -376,11 +376,11 @@ export default function DashboardLayout({
             } else {
                 if (route === "contributions" && currentTransaction) {
                     return contri_filter_key ? (
-                        <TransactionCard signer={signer} />
+                        <TransactionCard />
                     ) : (
                         <ContributionSideCard
                             onRouteChange={async () => await onRouteChange()}
-                            signer={signer}
+                            // signer={signer}
                         />
                     )
                 } else if (route === "payments" && currentPayment) {
@@ -395,7 +395,7 @@ export default function DashboardLayout({
                     <ContributionSideCard
                         route={route}
                         isAdmin={false}
-                        signer={signer}
+                        // signer={signer}
                     />
                 )
             } else {

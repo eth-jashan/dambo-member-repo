@@ -19,24 +19,12 @@ import {
     syncExecuteData,
     syncTxDataWithGnosis,
     setLoading,
-    getAllUnclaimedBadges,
-    getAllClaimedBadges,
-    getAllApprovedBadges,
     updateListOnExecute,
     set_active_nonce,
 } from "../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { setPayoutToast } from "../../store/actions/toast-action"
-import {
-    getIpfsUrl,
-    uploadApproveMetaDataUpload,
-} from "../../utils/relayFunctions"
-import {
-    chainSwitch,
-    getSelectedChainId,
-    processBadgeApprovalToPocp,
-    setChainInfoAction,
-} from "../../utils/POCPutils"
+
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 
 export default function PaymentCard({ item, signer }) {
@@ -48,15 +36,10 @@ export default function PaymentCard({ item, signer }) {
 
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
-    const setPocpAction = (chainId) => {
-        setChainInfoAction(chainId)
-    }
     const currentDao = useSelector((x) => x.dao.currentDao)
     const delegates = currentDao?.signers
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === "REJECTED"
-
-    const community_id = useSelector((x) => x.dao.communityInfo)
 
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
@@ -83,9 +66,12 @@ export default function PaymentCard({ item, signer }) {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
-
-        const amount_total = usd_amount_all?.reduce((a, b) => a + b)
-        return parseFloat(amount_total)?.toFixed(2)
+        if (usd_amount_all.length > 0) {
+            const amount_total = usd_amount_all?.reduce((a, b) => a + b)
+            return parseFloat(amount_total)?.toFixed(2)
+        } else {
+            return 0
+        }
     }
 
     const checkApproval = () => {
@@ -102,7 +88,7 @@ export default function PaymentCard({ item, signer }) {
         x.tokens.forEach((x) => {
             tokens.push(`${x?.amount} ${x?.details?.symbol}`)
         })
-        // console.log(tokens)
+
         tokens = tokens?.slice(0, 2)?.toString()
 
         return (
@@ -274,10 +260,8 @@ export default function PaymentCard({ item, signer }) {
     const dispatch = useDispatch()
 
     const onPaymentPress = () => {
-        // if (!executePaymentLoading) {
         dispatch(setTransaction(null))
         dispatch(setPayment(item))
-        // }
     }
 
     const confirmTransaction = async () => {
@@ -316,23 +300,7 @@ export default function PaymentCard({ item, signer }) {
         dispatch(setLoading(false))
     }
 
-    const approvalEventCallback = async (a) => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING"))
-        const nonce = await safeSdk.getNonce()
-        dispatch(set_active_nonce(nonce))
-        console.log("execute after ", nonce)
-        dispatch(setPayment(null))
-        dispatch(setLoading(false))
-    }
-
-    const executeSafeTransaction = async (c_id, to, approveBadge) => {
+    const executeSafeTransaction = async (approveBadge) => {
         dispatch(setLoading(true, item?.metaInfo?.id))
         const hash = item?.gnosis?.safeTxHash
         const transaction = await serviceClient.getTransaction(hash)
@@ -386,12 +354,11 @@ export default function PaymentCard({ item, signer }) {
         } catch (error) {
             if (error.toString() === "Error: Not enough Ether funds") {
                 message.error("Not enough funds in safe")
+            } else if (error.code === "TRANSACTION_REPLACED") {
+                message.error("Transaction Replaced")
+            } else {
+                message.error("Execution Reverted!! Cannot estimate gas fee")
             }
-            console.log(
-                "error",
-                error.toString() === "Error: Not enough Ether funds",
-                error.code
-            )
             dispatch(setLoading(false, item?.metaInfo?.id))
             return
         }
@@ -402,72 +369,6 @@ export default function PaymentCard({ item, signer }) {
             dispatch(setLoading(false))
             const nonce = await safeSdk.getNonce()
             dispatch(set_active_nonce(nonce))
-            console.log("execute after ", nonce)
-        }
-
-        if (approveBadge) {
-            const { cid, url, status } = await getIpfsUrl(
-                jwt,
-                currentDao?.uuid,
-                c_id
-            )
-            if (!status) {
-                const startTime = Date.now()
-                const interval = setInterval(async () => {
-                    if (Date.now() - startTime > 10000) {
-                        clearInterval(interval)
-
-                        dispatch(updateListOnExecute(item?.metaInfo?.id))
-                        dispatch(setPayment(null))
-                        message.error("failed to get ipfs url")
-                        dispatch(setLoading(false))
-                    }
-                    const { cid, url, status } = await getIpfsUrl(
-                        jwt,
-                        currentDao?.uuid,
-                        c_id
-                    )
-                    if (status) {
-                        clearTimeout(interval)
-                        if (cid?.length > 0) {
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            const { chainId } = await provider.getNetwork()
-
-                            setPocpAction(chainId)
-
-                            await processBadgeApprovalToPocp(
-                                community_id[0].id,
-                                to,
-                                cid,
-                                url,
-                                jwt,
-                                approvalEventCallback,
-                                approvalEventCallback
-                            )
-                        }
-                    }
-                }, 3000)
-            } else {
-                if (cid?.length > 0) {
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const { chainId } = await provider.getNetwork()
-
-                    setPocpAction(chainId)
-                    await processBadgeApprovalToPocp(
-                        community_id[0].id,
-                        to,
-                        cid,
-                        url,
-                        jwt,
-                        approvalEventCallback,
-                        approvalEventCallback
-                    )
-                }
-            }
         }
     }
     const getButtonProperty = () => {
@@ -531,55 +432,8 @@ export default function PaymentCard({ item, signer }) {
         }
     }
 
-    const uploadApproveMetatoIpfs = async () => {
-        const metaInfo = []
-        const cid = []
-        const to = []
-        item?.metaInfo?.contributions.forEach((x) => {
-            if (x?.mint_badge) {
-                metaInfo.push({
-                    dao_name: currentDao?.name,
-                    contri_title: x?.title,
-                    signer: address,
-                    claimer: x?.requested_by?.public_address,
-                    date_of_approve: dayjs().format("D MMM YYYY"),
-                    id: x?.id,
-                    dao_logo_url:
-                        currentDao?.logo_url ||
-                        "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-                    work_type: x?.stream.toString(),
-                })
-                cid.push(x?.id)
-                to.push(x?.requested_by?.public_address)
-            }
-        })
-        if (metaInfo.length > 0) {
-            const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
-            if (response) {
-                return { status: true, cid, to }
-            } else {
-                return { status: false, cid: [], to: [] }
-            }
-        } else {
-            return { status: false, cid: [], to: [] }
-        }
-    }
-
     const executeFunction = async () => {
-        if (!isReject && community_id[0]?.id) {
-            try {
-                const res = await uploadApproveMetatoIpfs()
-                if (res.status) {
-                    await executeSafeTransaction(res?.cid, res?.to, true)
-                } else {
-                    await executeSafeTransaction(null, null, false)
-                    // dispatch(setLoading(false, item?.metaInfo?.id))
-                }
-            } catch (error) {}
-        } else {
-            console.log("no pocp", isReject, community_id[0]?.id)
-            await executeSafeTransaction(null, null, false)
-        }
+        await executeSafeTransaction(false)
     }
 
     const buttonFunc = async (tranx) => {
@@ -636,7 +490,7 @@ export default function PaymentCard({ item, signer }) {
                         }}
                     >
                         <div
-                            style={{ marginRight: 0 }}
+                            // style={{ marginRight: 0 }}
                             className={styles.priceContainer}
                         />
                         {!item?.gnosis?.isExecuted && (

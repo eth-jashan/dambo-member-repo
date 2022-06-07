@@ -1,0 +1,130 @@
+.pocp-status-card {
+    .container {
+        padding: 1rem;
+        background-color: #ecffb8;
+        width: 100%;
+        // position: sticky;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .indicator-circle-border {
+        border: 2px solid black;
+        height: 1rem;
+        width: 1rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .indicator-inner-circle {
+        height: 0.5rem;
+        width: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: black;
+    }
+
+    .indicator-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .indicator-connector {
+        width: 0.625rem;
+        height: 2px;
+        background-color: black;
+    }
+
+    .step-info {
+        font-family: "TelegrafMedium";
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: black;
+        text-align: start;
+    }
+
+    .step-stage {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 20px;
+        color: #000000;
+    }
+    .step-stage-try {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 20px;
+        color: #000000;
+        text-decoration: underline;
+        margin-left: 4px;
+        cursor: pointer;
+    }
+
+    .stage-info-container {
+        margin-left: 1rem;
+    }
+
+    .info-icon {
+        height: 1rem;
+        width: 1rem;
+    }
+
+    .indicator-div {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .success-message {
+        padding: 1.25rem 1rem;
+        background-color: #ecffb8;
+        width: 100%;
+        border-bottom: 1px solid #d0e1a3;
+        position: static;
+        bottom: 4.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .success-message > div {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1.75rem;
+        line-height: 2.25rem;
+        text-align: start;
+    }
+
+    .okay-btn {
+        padding: 0.875rem 2.375rem;
+        background-color: black;
+        border-radius: 0.5rem;
+        height: 3rem;
+        cursor: pointer;
+    }
+
+    .okay-btn > div {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: white;
+    }
+
+    .flex-container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .greyed-text {
+        color: rgba(0, 0, 0, 0.5);
+    }
+}

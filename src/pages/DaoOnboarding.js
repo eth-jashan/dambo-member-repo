@@ -99,7 +99,7 @@ export default function Onboarding() {
                 return
             }
             const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
-            console.log(newSafeAddress)
+
             setSafeAddress(newSafeAddress)
             dispatch(addSafeAddress(newSafeAddress))
             // setDeploying(true)
@@ -153,7 +153,7 @@ export default function Onboarding() {
             const { dao_uuid, name, owners } = await dispatch(registerDao())
             const owner = [address]
             if (owners.length > 1) {
-                owners.map((x, i) => {
+                owners.forEach((x) => {
                     if (x?.address !== address) {
                         owner.push(x?.address)
                     }
@@ -184,7 +184,7 @@ export default function Onboarding() {
             try {
                 try {
                     const owner = []
-                    owners.map((item) => {
+                    owners.forEach((item) => {
                         owner.push(item.address)
                     })
                     await deploySafe(owner)

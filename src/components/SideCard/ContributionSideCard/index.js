@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { message, Typography } from "antd"
 import cross from "../../../assets/Icons/cross_white.svg"
@@ -37,14 +37,8 @@ import {
     uploadApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
-import AppContext from "../../../appContext"
 
-const ContributionSideCard = ({
-    signer,
-    isAdmin = true,
-    route,
-    onRouteChange,
-}) => {
+const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const currentTransaction = useSelector(
         isAdmin
             ? (x) => x.transaction.currentTransaction
@@ -54,8 +48,8 @@ const ContributionSideCard = ({
     const role = useSelector((x) => x.dao.role)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const address = currentTransaction?.requested_by?.public_address
-    const myContext = useContext(AppContext)
-    const setPocpAction = (status, chainId) => {
+
+    const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
     const jwt = useSelector((x) => x.auth.jwt)
@@ -85,7 +79,8 @@ const ContributionSideCard = ({
 
         if (
             currentTransaction?.status !== "REQUESTED" &&
-            currentTransaction?.status !== "REJECTED"
+            currentTransaction?.status !== "REJECTED" &&
+            currentTransaction?.tokens.length > 0
         ) {
             tx = await serviceClient.getTransaction(
                 currentTransaction?.gnosis_reference_id
@@ -110,7 +105,7 @@ const ContributionSideCard = ({
     const getTotalAmount = () => {
         const usd_amount_all = []
         if (currentTransaction?.status !== "REQUESTED") {
-            currentTransaction.tokens.map((x, i) => {
+            currentTransaction.tokens.forEach((x) => {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
             const amount_total = usd_amount_all?.reduce((a, b) => a + b)
@@ -557,7 +552,7 @@ const ContributionSideCard = ({
             dispatch(setClaimLoading(true, currentTransaction?.id))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const { chainId } = await provider.getNetwork()
-            setPocpAction(true, chainId)
+            setPocpAction(chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
                 jwt,
@@ -598,16 +593,7 @@ const ContributionSideCard = ({
         }
     }
 
-    const onApprovalSuccess = async () => {
-        // const provider = new ethers.providers.Web3Provider(window.ethereum)
-        // await provider.provider.request({
-        //     method: "wallet_switchEthereumChain",
-        //     params: [
-        //         {
-        //             chainId: process.env.REACT_APP_ETHEREUM_CHAIN_ID,
-        //         },
-        //     ],
-        // })
+    const onApprovalSuccess = async (events) => {
         let chainId = getSelectedChainId()
         chainId = ethers.utils.hexValue(chainId.chainId)
         await chainSwitch(chainId)
@@ -624,7 +610,7 @@ const ContributionSideCard = ({
         setLoad(true)
         if (currentTransaction?.ipfs_url) {
             await processBadgeApprovalToPocp(
-                parseInt(communityInfo[0].id),
+                parseInt(communityInfo[0]?.id),
                 [currentTransaction?.requested_by?.public_address],
                 [currentTransaction?.id?.toString()],
                 [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
@@ -658,7 +644,7 @@ const ContributionSideCard = ({
                             clearTimeout(interval)
                             if (cid?.length > 0) {
                                 await processBadgeApprovalToPocp(
-                                    parseInt(communityInfo[0].id),
+                                    parseInt(communityInfo[0]?.id),
                                     [
                                         currentTransaction?.requested_by
                                             ?.public_address,
@@ -675,7 +661,7 @@ const ContributionSideCard = ({
                 } else {
                     if (cid?.length > 0) {
                         await processBadgeApprovalToPocp(
-                            parseInt(communityInfo[0].id),
+                            parseInt(communityInfo[0]?.id),
                             [currentTransaction?.requested_by?.public_address],
                             [currentTransaction?.id?.toString()],
                             url,
@@ -688,6 +674,7 @@ const ContributionSideCard = ({
             }
         }
     }
+
     return (
         <div className={styles.container}>
             <img
@@ -774,7 +761,9 @@ const ContributionSideCard = ({
                 currentTransaction?.payout_status === "PAID" && (
                     <div className={styles.divider} />
                 )}
-            {currentTransaction?.status !== "REQUESTED" && tokenInfo()}
+            {currentTransaction?.status !== "REQUESTED" &&
+                currentTransaction.tokens.length > 0 &&
+                tokenInfo()}
             {!isAdmin &&
                 currentTransaction?.status === "APPROVED" &&
                 currentTransaction?.payout_status === "PAID" &&
@@ -856,7 +845,8 @@ const ContributionSideCard = ({
             {role === "ADMIN" &&
                 currentTransaction?.status === "APPROVED" &&
                 (currentTransaction?.payout_status === null ||
-                    currentTransaction?.payout_status === "REQUESTED") && (
+                    (currentTransaction?.payout_status === "REQUESTED" &&
+                        currentTransaction?.token.length > 0)) && (
                     <div
                         style={{ justifyContent: "center" }}
                         className={styles.claim_container}
@@ -873,9 +863,12 @@ const ContributionSideCard = ({
                 )}
             {isApprovedToken(unclaimed, currentTransaction?.id).status &&
                 !isAdmin &&
-                currentTransaction?.status !== "REQUESTED" &&
-                currentTransaction?.status !== "REJECTED" &&
-                txInfo?.isExecuted && (
+                // currentTransaction?.status !== "REQUESTED" &&
+                // currentTransaction?.status !== "REJECTED" &&
+                (txInfo
+                    ? txInfo?.isExecuted
+                    : isApprovedToken(unclaimed, currentTransaction?.id)
+                          .status) && (
                     <div className={styles.claim_container}>
                         <div className={styles.deletContainer}>
                             <img

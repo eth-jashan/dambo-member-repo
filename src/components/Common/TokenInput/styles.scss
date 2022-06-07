@@ -83,6 +83,8 @@
         border: none;
         outline: none;
         color: #ecffb8;
+        max-width: 6rem;
+        min-width: 1rem;
     }
 
     .token-input::placeholder {
@@ -97,5 +99,44 @@
     .token-input-container {
         display: flex;
         flex-direction: row;
+    }
+
+    .token-select-symbol {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: white;
+    }
+
+    .avl-balance-text {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 0.875rem;
+        line-height: 1.5rem;
+        color: gray;
+        text-align: start;
+    }
+
+    .token-symbol-text {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: #ecffb8;
+        margin-left: 0.5rem;
+    }
+
+    .amount-conversion {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 0.875rem;
+        line-height: 1.5rem;
+        color: white;
+        text-align: start;
     }
 }
