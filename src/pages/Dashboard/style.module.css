@@ -212,3 +212,43 @@
 .emptySlot {
     color: gray;
 }
+
+.layoutContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    padding: 0rem 0rem 0rem 2rem;
+}
+
+.children {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    padding-right: 3rem;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none;
+}
+.children::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+.adminStats {
+    width: 34%;
+    border: 1px solid #21212b;
+    border-top: 0;
+    border-bottom: 0;
+    /* display: flex;
+    flex-direction: column; */
+    overflow-y: scroll;
+    overflow: hidden;
+    /* background: red; */
+    /* justify-content: space-around; */
+    /* background: red; */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* position: relative; */
+}
+.adminStats::-webkit-scrollbar {
+    display: none;
+}
