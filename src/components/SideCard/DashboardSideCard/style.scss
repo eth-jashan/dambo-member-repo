@@ -1,0 +1,52 @@
+.dashboard-side-card-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* position: relative; */
+
+    .selectContriText {
+        color: gray;
+        text-align: start;
+        margin-left: 2rem;
+        margin-top: 10rem;
+        line-height: 36px;
+    }
+    .copyLink {
+        width: 100%;
+        border: 1px solid #21212b;
+        padding: 1.5rem 0rem 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        /* position: absolute; */
+        /* bottom: 50px; */
+    }
+    .copyLinkdiv {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1rem;
+        line-height: 1.25rem;
+        color: #ffffff;
+        margin-left: 0.75rem;
+    }
+
+    .enableDiscord {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+        font-family: "TelegrafMedium";
+        font-size: 1rem;
+        line-height: 1.25rem;
+        cursor: pointer;
+    }
+    .enableDiscord > svg {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+    }
+}

@@ -1407,3 +1407,75 @@ export const getAllPastTransactions = () => {
         }
     }
 }
+
+export const updateDaoInfo = (daoInfo) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.updateDao}`,
+                { ...daoInfo },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res from update dao", res)
+            const currentDao = getState().dao.currentDao
+            dispatch(
+                daoAction.set_current_dao({
+                    ...currentDao,
+                    dao: res.data.data,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const updateUserInfo = (name, daoUuid) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.updateUser}`,
+                {
+                    name,
+                    dao_uuid: daoUuid,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res from update user", res)
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const toggleBot = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.discord.toggleBot}`,
+                {
+                    dao_uuid: "abc",
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res from toggle bot", res)
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}

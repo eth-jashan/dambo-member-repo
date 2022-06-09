@@ -13,13 +13,17 @@ import { message } from "antd"
 import { useNavigate } from "react-router"
 import { getSelectedChainId } from "../../../utils/POCPutils"
 
-const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
+const ProfileModal = ({
+    isOnboard = false,
+    onActionComplete = () => {},
+    setShowSettings,
+}) => {
     const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
-            message.success("Address coppied")
+            message.success("Address copied")
             onActionComplete()
             return await navigator.clipboard.writeText(address)
         } else {
@@ -79,7 +83,13 @@ const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
             <div className={styles.divider} />
 
             {!isOnboard && (
-                <div className={styles.singleOption}>
+                <div
+                    className={styles.singleOption}
+                    onClick={() => {
+                        setShowSettings(true)
+                        onActionComplete()
+                    }}
+                >
                     <div>
                         <img
                             src={setting}
@@ -90,7 +100,7 @@ const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
                     </div>
                     <img
                         src={chevron_right}
-                        alt="chevro_right"
+                        alt="chevron_right"
                         className={styles.chevron}
                     />
                 </div>
@@ -114,7 +124,7 @@ const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
                 </div>
                 <img
                     src={chevron_right}
-                    alt="chevro_right"
+                    alt="chevron_right"
                     className={styles.chevron}
                 />
             </div>
@@ -130,7 +140,7 @@ const ProfileModal = ({ isOnboard = false, onActionComplete = () => {} }) => {
                 </div>
                 <img
                     src={chevron_right}
-                    alt="chevro_right"
+                    alt="chevron_right"
                     className={styles.chevron}
                 />
             </div>
