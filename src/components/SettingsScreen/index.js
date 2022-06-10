@@ -79,7 +79,11 @@ export default function SettingsScreen() {
         setBotStatus(checked)
         setBotStatusLoading(true)
         console.log(`switch to ${checked}`)
-        await dispatch(toggleBot())
+        const success = await dispatch(toggleBot())
+        if (!success) {
+            setBotStatus(!checked)
+            message.error("Something went wrong please try again later")
+        }
         setBotStatusLoading(false)
     }
 

@@ -1516,8 +1516,10 @@ export const toggleBot = () => {
                 }
             )
             console.log("res from toggle bot", res)
+            return res.data.data.success
         } catch (err) {
             console.error(err)
+            return false
         }
     }
 }
