@@ -31,7 +31,7 @@ const routes = {
         register: "/discord/register",
         identifierStatus: "/discord/identifier/status",
         userId: "/discord/user_id",
-        toggleBot: "/discord/toggle_bot",
+        toggleBot: "/discord/toggle_active",
     },
 }
 

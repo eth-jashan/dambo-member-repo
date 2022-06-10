@@ -224,6 +224,12 @@
                     }
                 }
             }
+            .enable-discord-btn {
+                cursor: pointer;
+                padding: 0.5rem 1rem;
+                margin-top: 1rem;
+                border: 1px solid rgb(255, 1, 134);
+            }
         }
     }
 }

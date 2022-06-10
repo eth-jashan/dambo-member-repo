@@ -391,7 +391,10 @@ export default function SettingsScreen() {
                                 </div>
                             </>
                         ) : (
-                            <div onClick={() => openDiscordBot()}>
+                            <div
+                                onClick={() => openDiscordBot()}
+                                className="enable-discord-btn"
+                            >
                                 Enable Discord bot
                             </div>
                         )}

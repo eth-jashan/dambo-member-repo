@@ -1502,11 +1502,12 @@ export const updateUserInfo = (name, daoUuid) => {
 export const toggleBot = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
+        const dao_uuid = getState().dao?.currentDao?.uuid
         try {
             const res = await apiClient.post(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.discord.toggleBot}`,
                 {
-                    dao_uuid: "abc",
+                    dao_uuid,
                 },
                 {
                     headers: {
