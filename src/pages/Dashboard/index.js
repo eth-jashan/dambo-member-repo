@@ -674,7 +674,8 @@ export default function Dashboard() {
                                         />
                                     )}
                                     {modalPayment &&
-                                        approve_contri.length > 0 && (
+                                        (approve_contri.length > 0 ||
+                                            approvedBadges.length > 0) && (
                                             <PaymentCheckoutModal
                                                 signer={signer}
                                                 onClose={() =>

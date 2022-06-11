@@ -247,7 +247,8 @@
     /* background: red; */
     -ms-overflow-style: none;
     scrollbar-width: none;
-    /* position: relative; */
+    position: relative;
+    height: 91vh;
 }
 .adminStats::-webkit-scrollbar {
     display: none;
