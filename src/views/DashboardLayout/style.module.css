@@ -1,61 +1,3 @@
-.header {
-    width: 100%;
-    border: 1px solid #21212b;
-    padding: 0.75rem 1.5rem 0.75rem 2.5rem;
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #010001;
-}
-.safe_addr {
-    font-family: "SFMono";
-    font-weight: 400;
-    line-height: 20px;
-    font-size: 14px;
-    color: gray;
-}
-
-.headerText {
-    font-family: "TelegrafBolder";
-    font-style: normal;
-    font-weight: 800;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    color: #ffffff;
-    text-align: start;
-}
-
-.routeLinks {
-    display: flex;
-    color: rgba(255, 255, 255, 0.5);
-    font-family: "TelegrafMedium";
-}
-
-.routeLinks > div {
-    margin-right: 1.5rem;
-    line-height: 20px;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-}
-
-.routeLinks > .activePageLink {
-    color: #ffffff;
-}
-
-.layoutContainer {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    padding: 0rem 0rem 0rem 2rem;
-}
-
 .layout {
     width: 100vw;
     height: 100vh;
@@ -90,18 +32,6 @@
     scrollbar-width: none; /* Firefox */
 }
 
-.children {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    padding-right: 3rem;
-    overflow-y: auto;
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-    scrollbar-width: none;
-}
-.children::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
-}
 .logoContainer {
     /* padding: 0.625rem; */
     margin-top: 0.625rem;
@@ -148,57 +78,6 @@
     justify-content: center;
     margin-top: 0.625rem;
 }
-.adminStats {
-    width: 34%;
-    border: 1px solid #21212b;
-    border-top: 0;
-    border-bottom: 0;
-    overflow-y: scroll;
-    overflow: hidden;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    position: relative;
-    /* z-index: 0; */
-}
-.adminStats::-webkit-scrollbar {
-    display: none;
-}
-.copyLink {
-    width: 100%;
-    border: 1px solid #21212b;
-    padding: 1.5rem 0rem 1.5rem 1.25rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    /* position: absolute; */
-    /* bottom: 50px; */
-}
-.copyLinkdiv {
-    font-family: "TelegrafMedium";
-    font-style: normal;
-    font-weight: normal;
-    font-size: 1rem;
-    line-height: 1.25rem;
-    color: #ffffff;
-    margin-left: 0.75rem;
-}
-
-.enableDiscord {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-    color: #ffffff;
-    font-family: "TelegrafMedium";
-    font-size: 1rem;
-    line-height: 1.25rem;
-    cursor: pointer;
-}
-.enableDiscord > svg {
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-}
 .childrenLayout {
     width: 100%;
     height: 100%;
@@ -212,19 +91,6 @@
     width: 1.5rem;
 }
 
-.roleSwitchContainer {
-    width: 7.875rem;
-    padding: 0.375rem 0.5rem 0.375rem 1rem;
-    flex-direction: row;
-    justify-content: space-between;
-    display: flex;
-    background: #5d5c5d;
-    border-radius: 1rem;
-    align-items: center;
-}
-.roleSwitchContainer:hover {
-    background-color: white;
-}
 .accountContainer > div {
     color: white;
 }
@@ -232,96 +98,4 @@
 .chevron {
     height: 1.25rem;
     width: 1.25rem;
-}
-
-.accountIcon {
-    height: 2.125rem;
-    width: 2.125rem;
-    background-color: #1f1f1f;
-    margin-left: 0.5rem;
-    border-radius: 2rem;
-    flex-direction: row;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-.accountIcon:hover {
-    background-color: white;
-}
-
-.initialText {
-    color: white;
-}
-
-.profileContainer {
-    flex-direction: row;
-    display: flex;
-    align-items: center;
-}
-
-.backdrop {
-    position: absolute;
-    background: #7a7a7a;
-    opacity: 0.2;
-    bottom: 0;
-    right: 0;
-    top: 0;
-    left: 0;
-}
-
-.emptySideCard {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    /* position: relative; */
-}
-
-.selectContriText {
-    color: gray;
-    text-align: start;
-    margin-left: 2rem;
-    margin-top: 10rem;
-    line-height: 36px;
-}
-
-.testnetText {
-    color: #ffb22e;
-    font-family: "SFMono";
-    font-weight: 400;
-    line-height: 20px;
-    font-size: 14px;
-    margin-right: 1.5rem;
-    cursor: pointer;
-}
-
-.testnetText:hover {
-    text-decoration: underline;
-}
-
-.safeCopy {
-    font-family: "SFMono";
-    font-weight: 400;
-    line-height: 20px;
-    font-size: 14px;
-    color: gray;
-    text-decoration: underline;
-}
-
-.dot {
-    margin-right: 0.75rem;
-    margin-left: 0.75rem;
-    font-family: "SFMono";
-    font-weight: 400;
-    line-height: 20px;
-    font-size: 14px;
-    color: gray;
-}
-
-.safeContainer {
-    display: flex;
-    flex-direction: row;
-    cursor: pointer;
 }

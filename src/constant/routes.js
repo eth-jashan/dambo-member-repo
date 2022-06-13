@@ -11,6 +11,8 @@ const routes = {
         joinContributor: "/dao/join",
         getDaoMembership: "/dao/memberships",
         getRole: "/dao/my-role",
+        updateDao: "/dao/update",
+        updateUser: "/dao/update/user",
     },
     contribution: {
         createContri: "/contrib",
@@ -29,6 +31,7 @@ const routes = {
         register: "/discord/register",
         identifierStatus: "/discord/identifier/status",
         userId: "/discord/user_id",
+        toggleBot: "/discord/toggle_active",
     },
 }
 

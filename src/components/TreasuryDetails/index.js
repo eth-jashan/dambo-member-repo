@@ -35,7 +35,7 @@ export default function TreasuryDetails() {
     useEffect(() => {
         dispatch(getAllTokensOfSafe())
         dispatch(getAllNFTsOfSafe())
-    }, [])
+    }, [currentDao?.uuid])
 
     const setProvider = async () => {
         const provider = new ethers.providers.Web3Provider(

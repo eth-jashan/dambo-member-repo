@@ -1,0 +1,235 @@
+.settings-screen-container {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-family: "TelegrafMedium";
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 5rem;
+    color: #fff;
+    text-align: left;
+    .settings-temp {
+        width: 100%;
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+    .settings-main-wrapper {
+        width: 45%;
+        min-width: 640px;
+        .settings-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .title {
+            font-weight: 800;
+            font-size: 1.75rem;
+            line-height: 2.25rem;
+            font-family: "TelegrafBolder";
+            padding-bottom: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+            background: black;
+        }
+        .navbar {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+            background: black;
+            .nav-item {
+                padding: 1rem 0;
+                margin-right: 2rem;
+                color: rgba(255, 255, 255, 0.64);
+                &.active-nav-item {
+                    color: rgba(255, 255, 255, 1);
+                    border-bottom: 1px solid #fff;
+                }
+            }
+        }
+        .settings-item {
+            margin-top: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.12);
+            border-radius: 1.25rem;
+            width: 100%;
+            padding: 1.5rem 1.25rem;
+            .safe-details {
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+                padding-bottom: 1.5rem;
+                .safe-name-and-avatar-wrapper {
+                    display: flex;
+                    align-items: center;
+                    .safe-avatar {
+                        margin-right: 1.25rem;
+                        width: 8.75rem;
+                        height: 8.75rem;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 1rem;
+                        }
+                        div {
+                            border-radius: 1rem;
+                            background-color: rgb(255, 1, 134);
+                            height: 100%;
+                        }
+                    }
+                    .safe-name-and-address {
+                        text-align: left;
+                        .safe-name {
+                            margin-bottom: 0.25rem;
+                            text-align: left;
+                        }
+                        .safe-address {
+                            font-size: 3rem;
+                            line-height: 3.5rem;
+                            text-align: left;
+                        }
+                    }
+                }
+                .safe-links {
+                    display: flex;
+                    align-items: center;
+                    margin-top: 1.5rem;
+                    opacity: 0.5;
+                    .separator {
+                        margin: 0 1rem;
+                    }
+                    .link {
+                        cursor: pointer;
+                    }
+                    .link:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+            .setting-row {
+                padding: 1.5rem 0;
+                .row-heading {
+                    color: rgba(255, 255, 255, 0.5);
+                }
+                .row-content {
+                    display: flex;
+                    justify-content: space-between;
+                    .action-button {
+                        text-decoration: underline;
+                        cursor: pointer;
+                    }
+                }
+                .edit-input {
+                    width: 100%;
+                    position: relative;
+                    input {
+                        padding: 0.75rem 3rem 0.75rem 1rem;
+                        border-radius: 0.675rem;
+                        width: 100%;
+                        background: #333333;
+                        border: 0;
+                        outline: none;
+                    }
+                    .confirm-btn {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        background-color: #fff;
+                        width: 3rem;
+                        height: 3rem;
+                        border-radius: 0.675rem;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                    }
+                }
+                &.border-bottom {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+                }
+                &:last-of-type {
+                    padding-bottom: 0;
+                }
+            }
+            .discord-switch-row {
+                font-family: "TelegrafBolder";
+                font-weight: 800;
+                padding-bottom: 1.5rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+                .ant-switch-checked {
+                    background: rgba(236, 255, 184, 0.5);
+                }
+                .ant-switch {
+                    width: 2.25rem;
+                    margin-right: 1rem;
+                    min-width: 2.25rem;
+                    .ant-switch-handle {
+                        &::before {
+                            background: rgba(236, 255, 184, 1);
+                        }
+                    }
+                }
+            }
+            .discord-info {
+                display: flex;
+                padding-top: 1.5rem;
+                .avatar {
+                    margin-right: 1rem;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        width: 2.25rem;
+                        height: 2.25rem;
+                        border-radius: 50%;
+                    }
+                    div {
+                        height: 100%;
+                        width: 100%;
+                        background-color: rgb(255, 1, 134);
+                        width: 2.25rem;
+                        height: 2.25rem;
+                        border-radius: 50%;
+                    }
+                }
+                .discord-info-content {
+                    width: 100%;
+                    .discord-link-row {
+                        display: flex;
+                        justify-content: space-between;
+                        color: rgba(255, 255, 255, 0.5);
+                        .action-button {
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+                    }
+                    .discord-commands-container {
+                        background-color: rgba(255, 255, 255, 0.2);
+                        border-radius: 0.75rem;
+                        padding: 1.25rem;
+                        margin-top: 1rem;
+                        .discord-commands-wrapper {
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+                            .discord-command-row {
+                                margin-bottom: 1.25rem;
+                            }
+                        }
+                        .discord-copy-commands {
+                            margin-top: 1.25rem;
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            .enable-discord-btn {
+                cursor: pointer;
+                padding: 0.5rem 1rem;
+                margin-top: 1rem;
+                border: 1px solid rgb(255, 1, 134);
+            }
+        }
+    }
+}

@@ -52,6 +52,8 @@ import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
+import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
+import SettingsScreen from "../../components/SettingsScreen"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -89,6 +91,7 @@ export default function Dashboard() {
     // gnosis setup
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
+    const [showSettings, setShowSettings] = useState(false)
 
     const defaultOptions = {
         loop: true,
@@ -601,73 +604,103 @@ export default function Dashboard() {
             route={tab}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            setShowSettings={setShowSettings}
         >
-            {currentPage === "request" ? (
-                <div className={styles.dashView}>
-                    {(modalContri || modalPayment || modalUniPayment) && (
-                        <div
-                            onClick={() => {
-                                setModalContri(false)
-                                setModalPayment(false)
-                                setModalUniPayment(false)
-                            }}
-                            style={{
-                                position: "absolute",
-                                background: "#7A7A7A",
-                                opacity: 0.2,
-                                bottom: 0,
-                                right: 0,
-                                top: 0,
-                                left: 0,
-                            }}
-                        />
-                    )}
-                    {renderTab()}
-                    {<DashboardSearchTab route={tab} />}
-                    {loadingState
-                        ? renderLoadingScreen()
-                        : role === "ADMIN"
-                        ? adminScreen()
-                        : contributorScreen()}
-                    {rejectModal && (
-                        <RejectPayment
-                            signer={signer}
-                            onClose={() => dispatch(setRejectModal(false))}
-                        />
-                    )}
-                    {(approve_contri.length > 0 || approvedBadges.length > 0) &&
-                        tab === "contributions" &&
-                        role === "ADMIN" &&
-                        !modalPayment && (
-                            <ApproveCheckoutButton
-                                onModalOpen={() => onPaymentModal()}
-                                totalPaymentAmount={
-                                    approve_contri.length !== 0
-                                        ? getTotalAmount()
-                                        : 0
+            <div className={styles.layoutContainer}>
+                {showSettings ? (
+                    <SettingsScreen />
+                ) : (
+                    <>
+                        <div className={styles.children}>
+                            {currentPage === "request" ? (
+                                <div className={styles.dashView}>
+                                    {(modalContri ||
+                                        modalPayment ||
+                                        modalUniPayment) && (
+                                        <div
+                                            onClick={() => {
+                                                setModalContri(false)
+                                                setModalPayment(false)
+                                                setModalUniPayment(false)
+                                            }}
+                                            style={{
+                                                position: "absolute",
+                                                background: "#7A7A7A",
+                                                opacity: 0.2,
+                                                bottom: 0,
+                                                right: 0,
+                                                top: 0,
+                                                left: 0,
+                                            }}
+                                        />
+                                    )}
+                                    {renderTab()}
+                                    {<DashboardSearchTab route={tab} />}
+                                    {loadingState
+                                        ? renderLoadingScreen()
+                                        : role === "ADMIN"
+                                        ? adminScreen()
+                                        : contributorScreen()}
+                                    {rejectModal && (
+                                        <RejectPayment
+                                            signer={signer}
+                                            onClose={() =>
+                                                dispatch(setRejectModal(false))
+                                            }
+                                        />
+                                    )}
+                                    {(approve_contri.length > 0 ||
+                                        approvedBadges.length > 0) &&
+                                        tab === "contributions" &&
+                                        role === "ADMIN" &&
+                                        !modalPayment && (
+                                            <ApproveCheckoutButton
+                                                onModalOpen={() =>
+                                                    onPaymentModal()
+                                                }
+                                                totalPaymentAmount={
+                                                    approve_contri.length !== 0
+                                                        ? getTotalAmount()
+                                                        : 0
+                                                }
+                                                paymentApproved={approve_contri}
+                                                badgeApproved={approvedBadges}
+                                            />
+                                        )}
+                                    {payoutToast && transactionToast()}
+                                    {modalContri && (
+                                        <ContributionRequestModal
+                                            setVisibility={setModalContri}
+                                        />
+                                    )}
+                                    {modalPayment &&
+                                        (approve_contri.length > 0 ||
+                                            approvedBadges.length > 0) && (
+                                            <PaymentCheckoutModal
+                                                signer={signer}
+                                                onClose={() =>
+                                                    setModalPayment(false)
+                                                }
+                                            />
+                                        )}
+                                </div>
+                            ) : (
+                                <TreasuryDetails />
+                            )}
+                        </div>
+                        <div className={styles.adminStats}>
+                            <DashboardSideCard
+                                onRouteChange={async () =>
+                                    await onRouteChange("payments")
                                 }
-                                paymentApproved={approve_contri}
-                                badgeApproved={approvedBadges}
-                            />
-                        )}
-                    {payoutToast && transactionToast()}
-                    {modalContri && (
-                        <ContributionRequestModal
-                            setVisibility={setModalContri}
-                        />
-                    )}
-                    {modalPayment &&
-                        (approve_contri.length > 0 ||
-                            approvedBadges.length > 0) && (
-                            <PaymentCheckoutModal
                                 signer={signer}
-                                onClose={() => setModalPayment(false)}
+                                route={tab}
+                                currentPage={currentPage}
                             />
-                        )}
-                </div>
-            ) : (
-                <TreasuryDetails />
-            )}
+                        </div>
+                    </>
+                )}
+            </div>
         </DashboardLayout>
     )
 }
