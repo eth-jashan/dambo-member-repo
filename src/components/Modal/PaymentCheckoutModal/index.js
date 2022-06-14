@@ -17,6 +17,7 @@ import {
     getAllUnclaimedBadges,
     getNonceForCreation,
     resetApprovedBadges,
+    getCommunityId,
 } from "../../../store/actions/dao-action"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
@@ -131,6 +132,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                             )
                         } else {
                             setApproverStatus("switching-back-error")
+                            await dispatch(getCommunityId())
                         }
                     }
                 }
@@ -156,6 +158,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     )
                 } else {
                     setApproverStatus("switching-back-error")
+                    await dispatch(getCommunityId())
                 }
             }
         }
