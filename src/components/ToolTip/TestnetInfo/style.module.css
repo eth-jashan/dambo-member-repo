@@ -4,7 +4,7 @@
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     border-bottom: 12px solid #ffb22e;
-    z-index: 1;
+    z-index: 4;
     position: absolute;
     right: 3rem;
 }
