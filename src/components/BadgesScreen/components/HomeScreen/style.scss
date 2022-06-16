@@ -1,0 +1,33 @@
+.badges-home-screen-container {
+    text-align: left;
+    .membership-badge-wrapper {
+        border-radius: 14px;
+        overflow: hidden;
+        color: #fff;
+        .membership-empty {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
+                0px 3px 6px rgba(0, 0, 0, 0.08);
+            display: flex;
+            padding: 1.5rem;
+            font-family: "TelegrafBolder";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 1.75rem;
+            line-height: 2.25rem;
+            .membership-badge-icon {
+                margin-right: 1rem;
+            }
+            button {
+                margin-top: 1.25rem;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                color: #6852ff;
+                background: #fff;
+                width: fit-content;
+                padding: 0.5rem 1.5rem;
+                cursor: pointer;
+            }
+        }
+    }
+}
