@@ -100,8 +100,12 @@ const ContributionOverview = () => {
             >
                 Overview
             </div>
-            {payoutInfo()}
-            {contributionStats()}
+            <div className={styles.overviewText}>
+                All your membership, contribution, and payout overview will come
+                here.
+            </div>
+            {/* {payoutInfo()} */}
+            {/* {contributionStats()} */}
         </div>
     )
 }
