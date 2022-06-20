@@ -54,6 +54,7 @@ import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
+import magic_button from "../../assets/Icons/magic_button.svg"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -339,26 +340,28 @@ export default function Dashboard() {
                 </div>
             </div>
             <div>
-                <div
-                    onMouseEnter={() => setUniPayHover(true)}
-                    onMouseLeave={() => setUniPayHover(false)}
-                    style={{ background: modalUniPayment ? "white" : null }}
-                    onClick={
-                        role === "ADMIN"
-                            ? async () => await onUniModalOpen()
-                            : () => setModalContri(true)
-                    }
-                    className={styles.addPaymentContainer}
-                >
-                    <img
-                        src={
-                            uniPayHover || modalUniPayment
-                                ? plus_black
-                                : plus_gray
+                {role === "ADMIN" && (
+                    <div
+                        onMouseEnter={() => setUniPayHover(true)}
+                        onMouseLeave={() => setUniPayHover(false)}
+                        style={{ background: modalUniPayment ? "white" : null }}
+                        onClick={
+                            role === "ADMIN"
+                                ? async () => await onUniModalOpen()
+                                : () => setModalContri(true)
                         }
-                        alt="plus"
-                    />
-                </div>
+                        className={styles.addPaymentContainer}
+                    >
+                        <img
+                            src={
+                                uniPayHover || modalUniPayment
+                                    ? plus_black
+                                    : plus_gray
+                            }
+                            alt="plus"
+                        />
+                    </div>
+                )}
 
                 {modalUniPayment && (
                     <UniversalPaymentModal
@@ -503,14 +506,31 @@ export default function Dashboard() {
         contribution_request.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {contribution_request.map((item, index) => (
+                    {/* {contribution_request.map((item, index) => (
                         <ContributionCard
                             // community_id={community_id[0]?.id}
                             // signer={signer}
                             item={item}
                             key={index}
                         />
-                    ))}
+                    ))} */}
+                    <div className={styles.newMembershipBadge}>
+                        <img src="https://i.imgur.com/M8ycfjL.png" alt="" />
+                        <div className={styles.congratsAndClaim}>
+                            <div className={styles.congratulationsText}>
+                                Congratulations
+                            </div>
+                            <div className={styles.badgeName}>
+                                You received Pony Pioneer badge
+                            </div>
+                            <div>
+                                <button className={styles.claimBadgeBtn}>
+                                    Claim Badge{" "}
+                                    <img src={magic_button} alt="" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         ) : (
