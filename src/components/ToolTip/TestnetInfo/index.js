@@ -11,7 +11,7 @@ const TestnetInfo = () => {
             <div className={styles.tooltip}>
                 <div className={textStyles.m_14}>
                     You are active on testnet(rinkeby), switch to ethereum to
-                    use drepute on mainnet.{" "}
+                    use rep3 on mainnet.{" "}
                 </div>
                 <img className={styles.icon} src={assets.icons.errorIcon} />
             </div>
