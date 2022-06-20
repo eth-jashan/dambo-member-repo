@@ -6,15 +6,27 @@ import BadgesScreenSearchTab from "../BadgesScreenSearchTab"
 // import EmptyScreen from "./components/EmptyScreen"
 import Modal from "./components/Modal"
 import HomeScreen from "./components/HomeScreen"
+import MintingModal from "./components/MintingModal"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
     const [selectedNav, setSelectedNav] = useState("badges")
     const [showModal, setShowModal] = useState(false)
-    const [membershipBadges, setMembershipBadges] = useState([])
+    const [membershipBadges, setMembershipBadges] = useState([
+        {
+            name: "badge 1",
+            imgUrl: "https://i.imgur.com/mufSVRW.jpg",
+            holders: 2,
+        },
+    ])
+    const [showMintingModal, setShowMintingModal] = useState(false)
 
     const closeModal = () => {
         setShowModal(false)
+    }
+
+    const closeMintingModal = () => {
+        setShowMintingModal(false)
     }
 
     return (
@@ -53,8 +65,18 @@ export default function BadgesScreen() {
                 </div>
             </div>
             <BadgesScreenSearchTab />
-            <HomeScreen setShowModal={setShowModal} />
+            <HomeScreen
+                setShowModal={setShowModal}
+                membershipBadges={membershipBadges}
+                setShowMintingModal={setShowMintingModal}
+            />
             {showModal && <Modal closeModal={closeModal} />}
+            {showMintingModal && (
+                <MintingModal
+                    closeMintingModal={closeMintingModal}
+                    membershipBadges={membershipBadges}
+                />
+            )}
         </div>
     )
 }
