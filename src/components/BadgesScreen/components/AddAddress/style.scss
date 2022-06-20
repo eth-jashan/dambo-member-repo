@@ -1,0 +1,52 @@
+.add-address-screen-container {
+    font-family: "TelegrafMedium";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    .close-minting-modal {
+    }
+    .mint-membership-badge-header {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        .mint-membership-badge-left {
+            font-family: "TelegrafBolder";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 1.75rem;
+            line-height: 2.25rem;
+            color: rgba(0, 0, 0, 0.5);
+            .mint-membership-badge-name {
+                color: #000;
+            }
+        }
+        .mint-membership-badge-right {
+            width: 6.75rem;
+            img {
+                width: 100%;
+            }
+        }
+    }
+    .mint-membership-badge-addresses-wrapper {
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        padding-top: 1.5rem;
+        .address-row {
+            display: flex;
+            margin-bottom: 1rem;
+            .address-input {
+                flex: 1;
+                padding: 0.75rem 1rem;
+            }
+            .address-delete {
+                width: 3rem;
+                height: 3rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #eeeef0;
+                border-radius: 8px;
+            }
+        }
+    }
+}
