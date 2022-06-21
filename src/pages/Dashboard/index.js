@@ -102,8 +102,13 @@ export default function Dashboard() {
     const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
     const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
     // const voucherInfo = allMembershipBadges?.filter(
-    //     (badge) => badge.uuid === membershipVoucher.membership_uuid
+    //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
     // )
+    console.log(
+        "All membership voucher",
+        allMembershipBadges,
+        membershipVoucher
+    )
     const voucherInfo = [
         {
             image_url: "https://i.imgur.com/Gw1enp3.png",
