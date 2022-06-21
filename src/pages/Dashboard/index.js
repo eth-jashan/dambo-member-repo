@@ -21,6 +21,7 @@ import {
     getAllMembershipBadgesList,
     getMembershipVoucher,
     claimMembershipVoucher,
+    getAllMembershipBadgesForAddress,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -60,6 +61,7 @@ import SettingsScreen from "../../components/SettingsScreen"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
+import { getAllMembershipBadges } from "../../utils/POCPServiceSdk"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -101,6 +103,7 @@ export default function Dashboard() {
 
     const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
     const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
+
     // const voucherInfo = allMembershipBadges?.filter(
     //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
     // )
@@ -235,11 +238,16 @@ export default function Dashboard() {
             await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
             const voucher = await dispatch(getMembershipVoucher())
+            const allNfts = await dispatch(
+                getAllMembershipBadgesForAddress(address)
+            )
 
-            if (!voucher) {
-                message.error("You are not a member of this DAO")
-                navigate("/")
-            }
+            // console.log("voucher and allNFts", voucher, allNfts.data.membershipNfts)
+
+            // if (!voucher) {
+            //     message.error("You are not a member of this DAO")
+            //     navigate("/")
+            // }
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
