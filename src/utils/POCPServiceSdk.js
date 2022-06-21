@@ -1,4 +1,4 @@
-import POCP, { PocpGetters } from "pocp-service-sdk"
+import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 import { ethers } from "ethers"
 
@@ -9,7 +9,7 @@ export const init = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
 
-    pocpInstance = new POCP(signer, provider, {
+    pocpInstance = new Pocp(signer, provider, window.ethereum, {
         biconomyInstance: Biconomy,
         url: "",
         relayNetwork: 80001,
@@ -21,12 +21,18 @@ export const init = async () => {
     console.log("created instance")
 }
 
-export const claimVoucher = (contractAddress, voucher, claimerAddressIndex) => {
-    console.log("Pocp instance", pocpInstance)
-    return pocpInstance.claimVoucher(
+export const claimVoucher = async (
+    contractAddress,
+    voucher,
+    claimerAddressIndex,
+    callbackFn
+) => {
+    console.log("Pocp instance", pocpInstance, callbackFn)
+    await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
-        claimerAddressIndex
+        claimerAddressIndex,
+        callbackFn
     )
 }
 

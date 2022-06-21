@@ -17,6 +17,7 @@
         "env-cmd": "^10.1.0",
         "ethers": "^5.5.2",
         "graphql": "^16.4.0",
+        "pocp-service-sdk": "^2.0.1--beta",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-icons": "^4.3.1",

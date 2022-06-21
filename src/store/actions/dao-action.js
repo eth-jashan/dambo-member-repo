@@ -10,7 +10,7 @@ import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 import { getSelectedChainId } from "../../utils/POCPutils"
 import {
     claimVoucher,
-    getAllMembershipBadges,
+    getMembershipBadgeFromTxHash,
 } from "../../utils/POCPServiceSdk"
 
 const currentNetwork = getSelectedChainId()
@@ -1612,20 +1612,21 @@ export const claimMembershipVoucher = () => {
             await claimVoucher(
                 "0x079339fD856d1e5B1D5BeF10CCda0B05C6cbebFe",
                 {
-                    levelCategory: [0],
+                    levelCategory: [513],
                     end: [],
                     to: ["0xc9F225D5E88c5169317aA17a692EF37E8F0Badb3"],
                     tokenUris: "abcdefghijklmnopqrstuvwxyz123456,",
                     signature:
-                        "0x6fcefcd2398dcd1cffdd25bce00d03e430df5aba9a673ef6619f61791c8fb6e127c987c6c7e2e1533fce00c61622f1e97981cb5ef69c383d184f4e85d723dbc81c",
+                        "0xc374fcde81d7524829ea7fc93bbe9379692e4e7f8c8822cb1195b733c94b9a750f22282bb73259b5d217e2dcee9097397d6c4e3c1dd02a48ed961601473985d81b",
                 },
                 0,
                 async (x) => {
                     console.log("event emitted is", x)
                     const fetchNFT = () =>
-                        getAllMembershipBadges(claimerAddress)
+                        getMembershipBadgeFromTxHash(x.transactionHash)
                     const validate = (result) => !result.length
                     const response = await poll(fetchNFT, validate, 3000)
+                    console.log("fetched the badge", response)
                 }
             )
             console.log("voucher claimed maybe")
