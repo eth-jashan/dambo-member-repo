@@ -54,6 +54,8 @@ const daoSlice = createSlice({
         communityInfo: null,
         approvedBadges: [],
         pastContributions: [],
+        membershipBadges: [],
+        membershipVoucher: null,
     },
     reducers: {
         set_chainId(state, action) {
@@ -179,6 +181,12 @@ const daoSlice = createSlice({
         },
         setPastContributions(state, action) {
             state.pastContributions = action.payload.pastContributions
+        },
+        setMembershipBadges(state, action) {
+            state.membershipBadges = action.payload.membershipBadges
+        },
+        setMembershipVoucher(state, action) {
+            state.membershipVoucher = action.payload.membershipVoucher
         },
     },
 })

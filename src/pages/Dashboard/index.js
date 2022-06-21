@@ -18,6 +18,9 @@ import {
     set_active_nonce,
     set_payout_filter,
     syncTxDataWithGnosis,
+    getAllMembershipBadgesList,
+    getMembershipVoucher,
+    claimMembershipVoucher,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -55,6 +58,8 @@ import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
 import magic_button from "../../assets/Icons/magic_button.svg"
+import etherscan_white from "../../assets/Icons/etherscan-white.svg"
+import opensea_white from "../../assets/Icons/opensea-white.svg"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -93,6 +98,22 @@ export default function Dashboard() {
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
+
+    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
+    const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
+    // const voucherInfo = allMembershipBadges?.filter(
+    //     (badge) => badge.uuid === membershipVoucher.membership_uuid
+    // )
+    const voucherInfo = [
+        {
+            image_url: "https://i.imgur.com/Gw1enp3.png",
+            name: "Pioneer",
+        },
+    ]
+
+    const [claimBadgeLoading, setClaimBadgeLoading] = useState(false)
+    const [showSuccessfullyClaimed, setShowSuccessfullyClaimed] =
+        useState(false)
 
     const defaultOptions = {
         loop: true,
@@ -183,6 +204,12 @@ export default function Dashboard() {
 
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
+        const voucher = await dispatch(getMembershipVoucher())
+
+        if (!voucher) {
+            message.error("You are not a member of this DAO")
+            navigate("/")
+        }
         dispatch(setLoadingState(false))
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
@@ -201,6 +228,13 @@ export default function Dashboard() {
             await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
+            await dispatch(getAllMembershipBadgesList())
+            const voucher = await dispatch(getMembershipVoucher())
+
+            if (!voucher) {
+                message.error("You are not a member of this DAO")
+                navigate("/")
+            }
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
@@ -240,6 +274,7 @@ export default function Dashboard() {
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         await dispatch(getCommunityId())
+        await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
             await contributionAdminFetchAccountSwitch()
@@ -502,29 +537,47 @@ export default function Dashboard() {
             renderEmptyScreen()
         )
 
-    const renderContributorContribution = () =>
-        contribution_request.length > 0 ? (
-            <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
+    const claimBadge = async () => {
+        setClaimBadgeLoading(true)
+        const res = await dispatch(claimMembershipVoucher())
+        if (res) {
+            message.success("Membership claimed")
+        } else {
+            message.error(
+                "There was some error while claiming membership please try again"
+            )
+        }
+        setClaimBadgeLoading(false)
+    }
+
+    const renderContributorContribution = () => (
+        // contribution_request.length > 0 ? (
+        <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
+            {voucherInfo?.length ? (
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {/* {contribution_request.map((item, index) => (
-                        <ContributionCard
-                            // community_id={community_id[0]?.id}
-                            // signer={signer}
-                            item={item}
-                            key={index}
-                        />
-                    ))} */}
+                                            <ContributionCard
+                                                // community_id={community_id[0]?.id}
+                                                // signer={signer}
+                                                item={item}
+                                                key={index}
+                                            />
+                                        ))} */}
+
                     <div className={styles.newMembershipBadge}>
-                        <img src="https://i.imgur.com/M8ycfjL.png" alt="" />
+                        <img src={voucherInfo?.[0]?.image_url} alt="" />
                         <div className={styles.congratsAndClaim}>
                             <div className={styles.congratulationsText}>
                                 Congratulations
                             </div>
                             <div className={styles.badgeName}>
-                                You received Pony Pioneer badge
+                                You received {voucherInfo?.[0]?.name} badge
                             </div>
                             <div>
-                                <button className={styles.claimBadgeBtn}>
+                                <button
+                                    className={styles.claimBadgeBtn}
+                                    onClick={claimBadge}
+                                >
                                     Claim Badge{" "}
                                     <img src={magic_button} alt="" />
                                 </button>
@@ -532,10 +585,50 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            </div>
-        ) : (
-            renderEmptyScreen()
-        )
+            ) : (
+                <div className={styles.noMembershipBadge}>
+                    <div>
+                        <div className={styles.noMembershipHeading}>
+                            A new beginning! ✨
+                        </div>
+                        <div className={styles.noMembershipContent}>
+                            Welcome to {currentDao?.name}, we’re glad to have
+                            you here. This space will fill up with badges and
+                            rewards as you participate in the community.
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showSuccessfullyClaimed && (
+                <div className={styles.successfullyClaimedModalBackdrop}>
+                    <div className={styles.successfullyClaimedModalMain}>
+                        <img src={voucherInfo?.[0]?.image_url} alt="" />
+                        <div>
+                            Congratulations on becoming {voucherInfo?.[0]?.name}
+                        </div>
+                        <div
+                            className={
+                                styles.successfullyClaimedModalFooterBtns
+                            }
+                        >
+                            <button>Share Badge</button>
+                            <div>
+                                <div>
+                                    <img src={opensea_white} alt="" />
+                                </div>
+                                <div>
+                                    <img src={etherscan_white} alt="" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+    // ) : (
+    //     renderEmptyScreen()
+    // )
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const renderBadges = () => (
         <div

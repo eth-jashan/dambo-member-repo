@@ -301,3 +301,30 @@
 .claimBadgeBtn > img {
     margin-left: 0.675rem;
 }
+
+.noMembershipBadge {
+    display: flex;
+    height: 100%;
+    text-align: left;
+    align-items: center;
+    font-family: "TelegrafMedium";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 23px;
+    line-height: 32px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.noMembershipHeading {
+    font-family: "TelegrafBolder";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 44px;
+    line-height: 52px;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.noMembershipContent {
+    max-width: 50%;
+}
