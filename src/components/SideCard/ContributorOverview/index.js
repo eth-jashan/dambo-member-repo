@@ -57,7 +57,7 @@ const ContributionOverview = () => {
     const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
     const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
     const voucherInfo = allMembershipBadges?.filter(
-        (badge) => badge.uuid === membershipVoucher.membership_uuid
+        (badge) => badge.uuid === membershipVoucher?.membership_uuid
     )
 
     const contributionStats = () => (

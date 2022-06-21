@@ -1590,6 +1590,7 @@ const poll = async function (fn, fnCondition, ms) {
     while (fnCondition(result)) {
         await wait(ms)
         result = await fn()
+        console.log("result in while loop", result)
     }
     return result
 }
@@ -1612,19 +1613,24 @@ export const claimMembershipVoucher = () => {
             await claimVoucher(
                 "0x079339fD856d1e5B1D5BeF10CCda0B05C6cbebFe",
                 {
-                    levelCategory: [513],
+                    levelCategory: [0],
                     end: [],
-                    to: ["0xc9F225D5E88c5169317aA17a692EF37E8F0Badb3"],
-                    tokenUris: "abcdefghijklmnopqrstuvwxyz123456,",
+                    to: [
+                        "0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8",
+                        "0xc9F225D5E88c5169317aA17a692EF37E8F0Badb3",
+                    ],
+                    tokenUris:
+                        "https://firebasestorage.googleapis.com/v0/b/eveels-c43bb.appspot.com/o/Animation_Pony_2.mp4?alt=media&token=50e65723-b116-4869-80b7-5a2ae5e61ca8,",
                     signature:
-                        "0xc374fcde81d7524829ea7fc93bbe9379692e4e7f8c8822cb1195b733c94b9a750f22282bb73259b5d217e2dcee9097397d6c4e3c1dd02a48ed961601473985d81b",
+                        "0x1f407f2710d08dadca817e2b3f43cfc37cc38ed3a8519eaf6c3d1c19a95815183bba5ae6b77ddb61ae307a2c57aa8953a125bf32412923b5b9aeb6bd01dbac171c",
                 },
                 0,
                 async (x) => {
                     console.log("event emitted is", x)
                     const fetchNFT = () =>
                         getMembershipBadgeFromTxHash(x.transactionHash)
-                    const validate = (result) => !result.length
+                    const validate = (result) =>
+                        !result?.data?.membershipNfts?.length
                     const response = await poll(fetchNFT, validate, 3000)
                     console.log("fetched the badge", response)
                 }
