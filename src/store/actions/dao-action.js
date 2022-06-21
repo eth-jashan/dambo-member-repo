@@ -11,6 +11,7 @@ import { getSelectedChainId } from "../../utils/POCPutils"
 import {
     claimVoucher,
     getMembershipBadgeFromTxHash,
+    getAllMembershipBadges,
 } from "../../utils/POCPServiceSdk"
 
 const currentNetwork = getSelectedChainId()
@@ -1576,10 +1577,10 @@ export const getMembershipVoucher = () => {
             if (res.data?.data?.length) {
                 return 1
             }
-            return -1
+            return 0
         } catch (err) {
             console.error(err)
-            return -1
+            return 0
         }
     }
 }
@@ -1638,7 +1639,20 @@ export const claimMembershipVoucher = () => {
             console.log("voucher claimed maybe")
             return 1
         } catch (err) {
-            return -1
+            return 0
+        }
+    }
+}
+
+export const getAllMembershipBadgesForAddress = (address) => {
+    return async (dispatch, getState) => {
+        try {
+            const membershipBadges = await getAllMembershipBadges(address)
+            console.log("membership badges are ", membershipBadges)
+            return membershipBadges
+        } catch (err) {
+            console.error(err)
+            return []
         }
     }
 }
