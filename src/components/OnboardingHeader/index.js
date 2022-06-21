@@ -35,7 +35,7 @@ export default function Header({
             <div className={styles.headerCnt}>
                 {contributorWallet ? (
                     <div className={styles.header}>
-                        <div className={styles.headerName}>Drepute | </div>
+                        <div className={styles.headerName}>Rep3 | </div>
                         {chainId === 4 && role !== "ADMIN" && (
                             <div>
                                 <div
@@ -51,7 +51,7 @@ export default function Header({
                         )}
                     </div>
                 ) : (
-                    <div className={styles.headerName}>Drepute</div>
+                    <div className={styles.headerName}>Rep3</div>
                 )}
                 {jwt && (
                     <div onClick={() => onWalletCenterOpen(!walletCenter)}>

@@ -26,7 +26,7 @@ export const authWithSign = (address, signer, chainId) => {
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getNonce}?addr=${address}`
             )
             const signature = await signer.signMessage(
-                `Signing in to drepute.xyz with nonce ${responseNonce.data.data.nonce}`
+                `Signing in to rep3.gg with nonce ${responseNonce.data.data.nonce}`
             )
             try {
                 const data = { addr: address, sig: signature }
