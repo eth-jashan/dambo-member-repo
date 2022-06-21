@@ -268,11 +268,11 @@
 }
 
 .newMembershipBadge > img {
-    flex: 2;
+    width: 30%;
 }
 
 .congratsAndClaim {
-    flex: 5;
+    width: 70%;
     text-align: left;
     margin: 2.5rem;
 }
