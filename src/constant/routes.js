@@ -33,6 +33,10 @@ const routes = {
         userId: "/discord/user_id",
         toggleBot: "/discord/toggle_active",
     },
+    membership: {
+        getMembershipBadgesList: "/membership",
+        getMembershipVoucher: "/membership/voucher",
+    },
 }
 
 export default routes
