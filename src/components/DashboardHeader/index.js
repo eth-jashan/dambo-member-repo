@@ -155,6 +155,17 @@ const DashboardHeader = ({
                     >
                         Treasury
                     </div>
+                    <div
+                        className={
+                            currentPage === "badges" ? "activePageLink" : ""
+                        }
+                        onClick={() => {
+                            setCurrentPage("badges")
+                            setShowSettings(false)
+                        }}
+                    >
+                        Badges
+                    </div>
                 </div>
             )}
             <div className="profileContainer">
