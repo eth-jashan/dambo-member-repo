@@ -53,11 +53,13 @@ export default function DashboardSideCard({
                 <div
                     onClick={() =>
                         copyTextToClipboard(
-                            `${
-                                window.location.origin
-                            }/contributor/invite/${currentDao?.name.toLowerCase()}/${
-                                currentDao?.uuid
-                            }`
+                            encodeURI(
+                                `${
+                                    window.location.origin
+                                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                                    currentDao?.uuid
+                                }`
+                            )
                         )
                     }
                     className="copyLink"
