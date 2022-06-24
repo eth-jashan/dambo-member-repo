@@ -192,10 +192,10 @@ export default function Dashboard() {
             getAllMembershipBadgesForAddress(address, web3.contractAddress)
         )
 
-        if (!voucher) {
-            message.error("You are not a member of this DAO")
-            navigate("/")
-        }
+        // if (!voucher) {
+        //     message.error("You are not a member of this DAO")
+        //     navigate("/")
+        // }
         dispatch(setLoadingState(false))
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
@@ -511,7 +511,7 @@ export default function Dashboard() {
     )
 
     const renderContribution = () =>
-        contribution_request.length > 0 ? (
+        contribution_request?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
@@ -574,7 +574,7 @@ export default function Dashboard() {
         </div>
     )
     const renderPayment = () =>
-        payout_request.length > 0 ? (
+        payout_request?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {/* {nonce !== payout_request[0]?.gnosis?.nonce && (
@@ -640,7 +640,7 @@ export default function Dashboard() {
                     adminScreen()
                 ) : tab === "contributions" ? (
                     <ContributorContributionScreen />
-                ) : dataSource.length > 0 ? (
+                ) : dataSource?.length > 0 ? (
                     renderBadges()
                 ) : (
                     renderEmptyBadgesScreen()
@@ -651,14 +651,14 @@ export default function Dashboard() {
                         onClose={() => dispatch(setRejectModal(false))}
                     />
                 )}
-                {(approve_contri.length > 0 || approvedBadges.length > 0) &&
+                {(approve_contri?.length > 0 || approvedBadges?.length > 0) &&
                     tab === "contributions" &&
                     role === "ADMIN" &&
                     !modalPayment && (
                         <ApproveCheckoutButton
                             onModalOpen={() => onPaymentModal()}
                             totalPaymentAmount={
-                                approve_contri.length !== 0
+                                approve_contri?.length !== 0
                                     ? getTotalAmount()
                                     : 0
                             }
@@ -671,8 +671,8 @@ export default function Dashboard() {
                     <ContributionRequestModal setVisibility={setModalContri} />
                 )}
                 {modalPayment &&
-                    (approve_contri.length > 0 ||
-                        approvedBadges.length > 0) && (
+                    (approve_contri?.length > 0 ||
+                        approvedBadges?.length > 0) && (
                         <PaymentCheckoutModal
                             signer={signer}
                             onClose={() => setModalPayment(false)}

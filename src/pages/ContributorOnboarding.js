@@ -35,7 +35,7 @@ const ContributorOnbording = () => {
         <Layout>
             <ContributorSignup
                 isDao={false}
-                discordUserId={state.discordUserId}
+                discordUserId={state?.discordUserId}
             />
         </Layout>
     )

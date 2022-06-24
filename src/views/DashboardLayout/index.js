@@ -165,7 +165,7 @@ export default function DashboardLayout({
                     </div>
                 ))}
                 <div className={styles.addContainer}>
-                    <div
+                    {/* <div
                         className={styles.addButton}
                         onClick={() => navigate("/onboard/dao")}
                     >
@@ -174,7 +174,7 @@ export default function DashboardLayout({
                             className={styles.addIcon}
                             src={add_white}
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
 

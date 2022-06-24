@@ -106,7 +106,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         navigate(`/dashboard`)
                     } else {
                         setAuth(false)
-                        navigate("/onboard/dao")
+                        message.error("Closed For Beta Test")
+                        // navigate("/onboard/dao")
                     }
                 } else {
                     setAuth(false)
@@ -124,9 +125,17 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    navigate("/onboard/dao")
+                                    message.error("Closed For Beta Test")
+                                    // navigate("/onboard/dao")
                                 }
                                 // navigate(`/dashboard`)
+                            } else {
+                                // console.log("hereeee", uuid)
+                                navigate(`/onboard/contributor/${uuid}`, {
+                                    state: {
+                                        discordUserId: "userId",
+                                    },
+                                })
                             }
                         } catch (error) {
                             message.error("Error on getting role")
@@ -233,16 +242,17 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         dispatch(signout())
         dispatch(setAdminStatus(false))
     }
+    //Cozy corner for all your communities
 
     const daoWallet = () => (
         <div style={{ width: "100%" }}>
             <div className={styles.headingCnt}>
                 <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                    Connect wallet
+                    welcome to rep3
                 </div>
                 <div className={`${styles.greyHeading} ${textStyles.ub_53}`}>
-                    First step towards
-                    <br /> streamlining your DAO
+                    Cozy corner for all your
+                    <br /> communities
                 </div>
             </div>
             {address ? authWallet() : connectWallet()}
@@ -360,7 +370,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         </div>
     )
 
-    return isAdmin ? daoWallet() : contributorWallet()
+    return isAdmin ? daoWallet() : daoWallet()
 }
 
 export default ConnectWallet

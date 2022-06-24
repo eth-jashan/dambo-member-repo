@@ -171,9 +171,10 @@ export const joinContributor = (id, discordUserId) => {
         const data = {
             addr: address,
             name: contributorName,
-            community_role: role.value,
-            discord_user_id: discordUserId,
+            // community_role: "CONTRIBUTOR",
+            // discord_user_id: "discordUserId",
         }
+        console.log("JOINER", data)
 
         try {
             const res = await apiClient.post(
