@@ -1623,8 +1623,14 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     //     "http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
                     // )
                     console.log("fetched the badge", response)
-                    // if (response) {
-                    dispatch(setMembershipBadgeClaimed(membershipVoucherInfo))
+                    const membershipNFT = response?.data?.membershipNFTs?.[0]
+                    dispatch(
+                        setMembershipBadgeClaimed({
+                            ...membershipVoucherInfo,
+                            contractAddress: membershipNFT?.contractAddress,
+                            tokenID: membershipNFT?.tokenID,
+                        })
+                    )
                     dispatch(
                         getAllMembershipBadgesForAddress(
                             claimerAddress,
@@ -1637,8 +1643,6 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                             membership_uuid: null,
                         })
                     )
-                    // } else {
-                    // }
                 }
             )
             console.log("voucher claimed maybe")

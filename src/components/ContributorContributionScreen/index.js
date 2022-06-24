@@ -81,10 +81,10 @@ export default function ContributorContributionScreen() {
                 membership_uuid: membershipVoucherInfo.uuid,
             })
         )
+        await dispatch(claimMembershipVoucher(membershipVoucherInfo))
         setTimeout(() => {
             setShowClaimTakingTime(true)
         }, 18000)
-        await dispatch(claimMembershipVoucher(membershipVoucherInfo))
     }
 
     const closeClaimedModal = () => {
@@ -99,6 +99,13 @@ export default function ContributorContributionScreen() {
             spin
         />
     )
+
+    const openEtherscan = () => {
+        window.open(
+            `https://mumbai.polygonscan.com/token/${membershipBadgeClaimed?.contractAddress?.id}?a=${membershipBadgeClaimed?.tokenID}`,
+            "_blank"
+        )
+    }
 
     // contribution_request.length > 0 ? (
     return (
@@ -211,7 +218,10 @@ export default function ContributorContributionScreen() {
                                     <div className="openseaImg">
                                         <img src={opensea_white} alt="" />
                                     </div>
-                                    <div className="etherscanImg">
+                                    <div
+                                        className="etherscanImg"
+                                        onClick={openEtherscan}
+                                    >
                                         <img src={etherscan_white} alt="" />
                                     </div>
                                 </div>

@@ -55,22 +55,28 @@ const ContributionOverview = () => {
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
     const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
-    const voucherInfo = allMembershipBadges?.filter(
-        (badge) => badge.uuid === membershipVoucher?.membership_uuid
-    )
+    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
+    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
+        const badgeInfo = allMembershipBadges.find(
+            (ele) => ele.uuid === badge.membership_uuid
+        )
+        return {
+            ...badge,
+            ...badgeInfo,
+        }
+    })
     const membershipBadgesForAddress = useSelector(
         (x) => x.dao.membershipBadgesForAddress
     )
 
-    const unClaimedBadges = voucherInfo.filter((badge) => {
-        const indexOfBadge = membershipBadgesForAddress.findIndex(
-            (ele) =>
-                ele.level.toString() === badge.level.toString() &&
-                ele.category.toString() === badge.category.toString()
-        )
-        return indexOfBadge === -1
-    })
+    // const unClaimedBadges = voucherInfo.filter((badge) => {
+    //     const indexOfBadge = membershipBadgesForAddress.findIndex(
+    //         (ele) =>
+    //             ele.level.toString() === badge.level.toString() &&
+    //             ele.category.toString() === badge.category.toString()
+    //     )
+    //     return indexOfBadge === -1
+    // })
 
     let currentMembershipBadge = null
     if (membershipBadgesForAddress?.length) {
@@ -134,6 +140,14 @@ const ContributionOverview = () => {
         setIsToggleOpen((isToggleOpen) => !isToggleOpen)
     }
 
+    const openEtherscan = () => {
+        console.log("current membership badge is", currentMembershipBadge)
+        window.open(
+            `https://mumbai.polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
+            "_blank"
+        )
+    }
+
     return (
         <div className={styles.container}>
             <div
@@ -149,16 +163,19 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    <img
+                    {/* <img
                         src={currentMembershipBadge?.image_url}
                         alt=""
                         className={styles.badgeImage}
-                    />
+                    /> */}
+                    <video autoPlay loop className={styles.badgeImage}>
+                        <source src={currentMembershipBadge?.image_url} />
+                    </video>
                     <div>
                         <div className={styles.toggleHeader} onClick={toggle}>
                             <div>
                                 <div>{currentMembershipBadge?.name}</div>
-                                <div>2 months ago</div>
+                                {/* <div>2 months ago</div> */}
                             </div>
                             <div>
                                 <img
@@ -181,7 +198,10 @@ const ContributionOverview = () => {
                             <img src={openseaIcon} alt="" />
                         </div>
                         <div className={styles.lineBreak}></div>
-                        <div className={styles.toggleContentRow}>
+                        <div
+                            className={styles.toggleContentRow}
+                            onClick={openEtherscan}
+                        >
                             View on Etherscan
                             <img src={etherscanIcon} alt="" />
                         </div>
