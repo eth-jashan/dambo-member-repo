@@ -107,6 +107,13 @@ export default function ContributorContributionScreen() {
         )
     }
 
+    const openOpensea = () => {
+        window.open(
+            `https://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`,
+            "_blank"
+        )
+    }
+
     // contribution_request.length > 0 ? (
     return (
         <div className="contributor-contribution-screen-container">
@@ -215,7 +222,10 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>Share Badge</button>
                                 <div className="linksWrapper">
-                                    <div className="openseaImg">
+                                    <div
+                                        className="openseaImg"
+                                        onClick={openOpensea}
+                                    >
                                         <img src={opensea_white} alt="" />
                                     </div>
                                     <div

@@ -148,6 +148,13 @@ const ContributionOverview = () => {
         )
     }
 
+    const openOpensea = () => {
+        window.open(
+            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
+            "_blank"
+        )
+    }
+
     return (
         <div className={styles.container}>
             <div
@@ -193,7 +200,10 @@ const ContributionOverview = () => {
                         } ${styles.toggleContent}`}
                     >
                         <div className={styles.lineBreak}></div>
-                        <div className={styles.toggleContentRow}>
+                        <div
+                            className={styles.toggleContentRow}
+                            onClick={openOpensea}
+                        >
                             View on Opensea
                             <img src={openseaIcon} alt="" />
                         </div>

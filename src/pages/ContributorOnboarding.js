@@ -32,7 +32,7 @@ const ContributorOnbording = () => {
     // },[checkAuth])
 
     return (
-        <Layout>
+        <Layout contributorWallet={true}>
             <ContributorSignup
                 isDao={false}
                 discordUserId={state?.discordUserId}
