@@ -77,7 +77,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     const onDiscordAuth = () => {
         dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(`${links.discord_oauth.production}`)
+        window.location.replace(`${links.discord_oauth.local}`)
     }
 
     const loadWeb3Modal = useCallback(async () => {

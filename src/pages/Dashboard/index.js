@@ -63,7 +63,8 @@ import SettingsScreen from "../../components/SettingsScreen"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
-import BadgesScreen from "../../components/BadgesScreen"
+// import BadgesScreen from "../../components/BadgesScreen"
+import cross from "../../assets/Icons/cross.svg"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -601,7 +602,11 @@ export default function Dashboard() {
     }
 
     const closeClaimedModal = () => {
-        dispatch(setMembershipBadgeClaimed(null))
+        dispatch(
+            setMembershipBadgeClaimed({
+                membershipBadgeClaimed: null,
+            })
+        )
     }
 
     const antIcon = (
@@ -678,24 +683,42 @@ export default function Dashboard() {
                         className={styles.successfullyClaimedModalMain}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        <div
+                            className={styles.closeClaimedBtn}
+                            onClick={closeClaimedModal}
+                        >
+                            <img src={cross} alt="" />
+                        </div>
+
                         <img
                             src={membershipBadgeClaimed?.[0]?.image_url}
                             alt=""
+                            className={styles.claimedBadgeImg}
                         />
-                        <div>
-                            Congratulations on becoming{" "}
-                            {membershipBadgeClaimed?.[0]?.name}
-                        </div>
-                        <div
-                            className={styles.successfullyClaimedModalFooterBtn}
-                        >
-                            <button>Share Badge</button>
-                            <div>
-                                <div>
-                                    <img src={opensea_white} alt="" />
-                                </div>
-                                <div>
-                                    <img src={etherscan_white} alt="" />
+                        {/* <img
+                        src="https://i.imgur.com/Fa9KFiM.png"
+                        alt=""
+                        className={styles.claimedBadgeImg}
+                    /> */}
+
+                        <div className={styles.claimedBadgeContent}>
+                            <div className={styles.claimedBadgeText}>
+                                Congratulations on becoming{" "}
+                                {membershipBadgeClaimed?.[0]?.name}
+                            </div>
+                            <div
+                                className={
+                                    styles.successfullyClaimedModalFooterBtn
+                                }
+                            >
+                                <button>Share Badge</button>
+                                <div className={styles.linksWrapper}>
+                                    <div className={styles.openseaImg}>
+                                        <img src={opensea_white} alt="" />
+                                    </div>
+                                    <div className={styles.etherscanImg}>
+                                        <img src={etherscan_white} alt="" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
