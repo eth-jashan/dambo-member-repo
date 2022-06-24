@@ -136,21 +136,25 @@ export default function Dashboard() {
         if ("clipboard" in navigator) {
             message.success("invite link copied successfully!")
             return await navigator.clipboard.writeText(
-                `${
-                    window.location.origin
-                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
-                    currentDao?.uuid
-                }`
+                encodeURI(
+                    `${
+                        window.location.origin
+                    }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                        currentDao?.uuid
+                    }`
+                )
             )
         } else {
             return document.execCommand(
                 "copy",
                 true,
-                `${
-                    window.location.origin
-                }/contributor/invite/${currentDao?.name.toLowerCase()}/${
-                    currentDao?.uuid
-                }`
+                encodeURI(
+                    `${
+                        window.location.origin
+                    }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                        currentDao?.uuid
+                    }`
+                )
             )
         }
     }

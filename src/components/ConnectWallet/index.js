@@ -22,6 +22,7 @@ import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { setChainInfoAction } from "../../utils/POCPutils"
+// import { ConnectButton } from "@rainbow-me/rainbowkit"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const address = useSelector((x) => x.auth.address)
@@ -371,6 +372,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     )
 
     return isAdmin ? daoWallet() : daoWallet()
+    // return <ConnectButton />
 }
 
 export default ConnectWallet

@@ -1,11 +1,12 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 import { ethers } from "ethers"
-import { getSelectedChainId } from "./POCPutils"
-const currentNetwork = getSelectedChainId()
+// import { getSelectedChainId } from "./POCPutils"
+// const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
-const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
+// const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
+const pocpGetter = new PocpGetters(137)
 
 export const init = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -15,11 +16,13 @@ export const init = async () => {
         signer,
         provider,
         window.ethereum,
-        currentNetwork?.chainId === 4 ? 80001 : 137,
+        // currentNetwork?.chainId === 4 ? 80001 : 137,
+        137,
         {
             biconomyInstance: Biconomy,
             url: "",
-            relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
+            // relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
+            relayNetwork: 137,
         }
     )
 
