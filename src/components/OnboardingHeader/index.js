@@ -13,6 +13,7 @@ export default function Header({
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
     const [chainId, setChainId] = useState(false)
+    const daoName = useSelector((x) => x.contributor.daoName)
 
     const getNetwork = async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -23,6 +24,8 @@ export default function Header({
     useEffect(async () => {
         await getNetwork()
     })
+
+    console.log("contributorWalletr ", contributorWallet, daoName)
 
     return (
         <div
@@ -35,7 +38,7 @@ export default function Header({
             <div className={styles.headerCnt}>
                 {contributorWallet ? (
                     <div className={styles.header}>
-                        <div className={styles.headerName}>Rep3 | </div>
+                        <div className={styles.headerName}>Rep3</div>
                         {chainId === 4 && role !== "ADMIN" && (
                             <div>
                                 <div
@@ -51,7 +54,9 @@ export default function Header({
                         )}
                     </div>
                 ) : (
-                    <div className={styles.headerName}>Rep3</div>
+                    <div className={styles.headerName}>
+                        Rep3 {daoName && <span> | {daoName}</span>}
+                    </div>
                 )}
                 {jwt && (
                     <div onClick={() => onWalletCenterOpen(!walletCenter)}>

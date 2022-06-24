@@ -222,3 +222,9 @@ export const setClaimLoading = (status, id) => {
         dispatch(contributorAction.set_claim_loading({ status, id }))
     }
 }
+
+export const setDaoName = (name) => {
+    return (dispatch) => {
+        dispatch(contributorAction.setDaoName({ name }))
+    }
+}

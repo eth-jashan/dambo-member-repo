@@ -8,6 +8,12 @@ import { PocpGetters } from "pocp-service-sdk"
 import { ethers } from "ethers"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 import { getSelectedChainId } from "../../utils/POCPutils"
+import {
+    claimVoucher,
+    getMembershipBadgeFromTxHash,
+    getAllMembershipBadges,
+} from "../../utils/POCPServiceSdk"
+import { web3 } from "../../constant/web3"
 
 const currentNetwork = getSelectedChainId()
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -1093,7 +1099,7 @@ export const getAllSafeFromAddress = (address) => {
         for (let i = 0; i < list.safes.length; i++) {
             daos.push(`safe=${list.safes[i]}`)
         }
-        daos = daos.toString()
+        daos = daos?.toString()
         daos = daos.replace(/,/g, "&")
         const jwt = getState().auth.jwt
         const res = await apiClient.get(
@@ -1133,20 +1139,18 @@ export const claimUpdate = (id) => {
 }
 
 export const getCommunityId = () => {
-    return async (dispatch, getState) => {
-        const daoTxHash = getState().dao.currentDao?.tx_hash
-
-        const pocpGetter = new PocpGetters(
-            currentNetwork?.chainId === 4 ? 80001 : 137
-        )
-
-        const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
-        dispatch(
-            daoAction.set_community_info({
-                communityInfo: community.data.communities,
-            })
-        )
-    }
+    // return async (dispatch, getState) => {
+    //     const daoTxHash = getState().dao.currentDao?.tx_hash
+    //     const pocpGetter = new PocpGetters(
+    //         currentNetwork?.chainId === 4 ? 80001 : 137
+    //     )
+    //     const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
+    //     dispatch(
+    //         daoAction.set_community_info({
+    //             communityInfo: community.data?.communities,
+    //         })
+    //     )
+    // }
 }
 
 export const getAllApprovedBadges = () => {
@@ -1158,7 +1162,7 @@ export const getAllApprovedBadges = () => {
 
         try {
             const approvedToken = await pocpGetter.getApproveBadges(
-                communityInfo[0]?.id.toString()
+                communityInfo[0]?.id?.toString()
             )
 
             dispatch(
@@ -1202,7 +1206,7 @@ export const getAllClaimedBadges = () => {
         )
         try {
             const claimedTokens = await pocpGetter.getClaimedBadgesOfClaimers(
-                communityInfo[0]?.id.toString(),
+                communityInfo[0]?.id?.toString(),
 
                 address
             )
@@ -1242,7 +1246,7 @@ export const getAllUnclaimedBadges = () => {
             )
             if (res.data.success) {
                 const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
-                    communityInfo[0]?.id.toString()
+                    communityInfo[0]?.id?.toString()
                 )
                 const unclaimedBadges = []
                 res.data.data.contributions.forEach((contribution) => {
@@ -1520,6 +1524,187 @@ export const toggleBot = () => {
         } catch (err) {
             console.error(err)
             return false
+        }
+    }
+}
+
+export const getAllMembershipBadgesList = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.getMembershipBadgesList}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res.data is", res.data)
+            dispatch(
+                daoAction.setMembershipBadges({
+                    membershipBadges: res?.data?.data?.memberships,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const getMembershipVoucher = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.getMembershipVoucher}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res.data is", res.data)
+            dispatch(
+                daoAction.setMembershipVoucher({
+                    membershipVoucher: res?.data?.data,
+                })
+            )
+            if (res.data?.data?.length) {
+                return 1
+            }
+            return 0
+        } catch (err) {
+            console.error(err)
+            return 0
+        }
+    }
+}
+
+const poll = async function (fn, fnCondition, ms) {
+    let result = await fn()
+    console.log("result of polling fn", result)
+    while (fnCondition(result)) {
+        await wait(ms)
+        result = await fn()
+        console.log("result in while loop", result)
+    }
+    return result
+}
+
+const wait = function (ms = 1000) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
+}
+
+export const claimMembershipVoucher = (membershipVoucherInfo) => {
+    return async (dispatch, getState) => {
+        try {
+            const claimerAddress = getState().auth.address
+            console.log("claiming voucher")
+            await claimVoucher(
+                web3.contractAddress,
+                membershipVoucherInfo?.signed_voucher,
+                membershipVoucherInfo?.voucher_address_index,
+                async (x) => {
+                    console.log("event emitted is", x)
+                    const fetchNFT = () =>
+                        getMembershipBadgeFromTxHash(x.transactionHash)
+                    const validate = (result) =>
+                        !result?.data?.membershipNFTs?.length
+
+                    const response = await poll(fetchNFT, validate, 3000)
+                    // const metadata = await axios.get(
+                    //     // response?.data?.membershipNFTs?.[0]?.metadataUri
+                    //     "http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
+                    // )
+                    console.log("fetched the badge", response)
+                    const membershipNFT = response?.data?.membershipNFTs?.[0]
+                    dispatch(
+                        setMembershipBadgeClaimed({
+                            ...membershipVoucherInfo,
+                            contractAddress: membershipNFT?.contractAddress,
+                            tokenID: membershipNFT?.tokenID,
+                        })
+                    )
+                    dispatch(
+                        getAllMembershipBadgesForAddress(
+                            claimerAddress,
+                            web3.contractAddress
+                        )
+                    )
+                    dispatch(
+                        setClaimMembershipLoading({
+                            status: false,
+                            membership_uuid: null,
+                        })
+                    )
+                }
+            )
+            console.log("voucher claimed maybe")
+            return 1
+        } catch (err) {
+            return 0
+        }
+    }
+}
+
+export const getAllMembershipBadgesForAddress = (address, contractAddress) => {
+    return async (dispatch, getState) => {
+        try {
+            const membershipBadges = await getAllMembershipBadges(
+                address,
+                contractAddress
+            )
+            console.log(
+                "membership badges are ",
+                membershipBadges,
+                membershipBadges?.data?.membershipNFTs
+            )
+            dispatch(
+                daoAction.setMembershipBadgesForAddress({
+                    membershipBadgesForAddress:
+                        membershipBadges?.data?.membershipNFTs,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setMembershipBadgeClaimed = (membershipBadgeClaimed) => {
+    return async (dispatch, getState) => {
+        try {
+            console.log(
+                "dispatching set membership badge claimed with ",
+                membershipBadgeClaimed
+            )
+            dispatch(
+                daoAction.setMembershipBadgeClaimed({
+                    membershipBadgeClaimed,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setClaimMembershipLoading = (loadingStatus) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.setClaimMembershipLoading({
+                    claimMembershipLoading: loadingStatus,
+                })
+            )
+        } catch (err) {
+            console.error(err)
         }
     }
 }

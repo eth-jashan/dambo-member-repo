@@ -1,9 +1,15 @@
-import React from "react"
+import React, { useState } from "react"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useSelector } from "react-redux"
+import chevron_down from "../../../assets/Icons/chevron_down.svg"
+import chevron_up from "../../../assets/Icons/chevron_up.svg"
+import etherscanIcon from "../../../assets/Icons/etherscanIcon.svg"
+import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
 
 const ContributionOverview = () => {
+    const [isToggleOpen, setIsToggleOpen] = useState(false)
+
     const payoutInfo = () => (
         <div className={styles.payoutContainer}>
             <div
@@ -48,6 +54,44 @@ const ContributionOverview = () => {
     const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
+    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
+    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
+    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
+        const badgeInfo = allMembershipBadges.find(
+            (ele) => ele.uuid === badge.membership_uuid
+        )
+        return {
+            ...badge,
+            ...badgeInfo,
+        }
+    })
+    const membershipBadgesForAddress = useSelector(
+        (x) => x.dao.membershipBadgesForAddress
+    )
+
+    // const unClaimedBadges = voucherInfo.filter((badge) => {
+    //     const indexOfBadge = membershipBadgesForAddress.findIndex(
+    //         (ele) =>
+    //             ele.level.toString() === badge.level.toString() &&
+    //             ele.category.toString() === badge.category.toString()
+    //     )
+    //     return indexOfBadge === -1
+    // })
+
+    let currentMembershipBadge = null
+    if (membershipBadgesForAddress?.length) {
+        const temp = allMembershipBadges.filter(
+            (badge) =>
+                badge?.level?.toString() ===
+                    membershipBadgesForAddress[0]?.level?.toString() &&
+                badge?.category?.toString() ===
+                    membershipBadgesForAddress[0]?.category?.toString()
+        )
+        currentMembershipBadge = {
+            ...temp[0],
+            ...membershipBadgesForAddress[0],
+        }
+    }
 
     const contributionStats = () => (
         <div className={styles.contributionContainer}>
@@ -92,6 +136,25 @@ const ContributionOverview = () => {
         </div>
     )
 
+    const toggle = () => {
+        setIsToggleOpen((isToggleOpen) => !isToggleOpen)
+    }
+
+    const openEtherscan = () => {
+        console.log("current membership badge is", currentMembershipBadge)
+        window.open(
+            `https://mumbai.polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
+            "_blank"
+        )
+    }
+
+    const openOpensea = () => {
+        window.open(
+            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
+            "_blank"
+        )
+    }
+
     return (
         <div className={styles.container}>
             <div
@@ -100,8 +163,63 @@ const ContributionOverview = () => {
             >
                 Overview
             </div>
-            {payoutInfo()}
-            {contributionStats()}
+            {!currentMembershipBadge ? (
+                <div className={styles.overviewText}>
+                    All your membership, contribution, and payout overview will
+                    come here.
+                </div>
+            ) : (
+                <div className={styles.badgeOverview}>
+                    {/* <img
+                        src={currentMembershipBadge?.image_url}
+                        alt=""
+                        className={styles.badgeImage}
+                    /> */}
+                    <video autoPlay loop className={styles.badgeImage}>
+                        <source src={currentMembershipBadge?.image_url} />
+                    </video>
+                    <div>
+                        <div className={styles.toggleHeader} onClick={toggle}>
+                            <div>
+                                <div>{currentMembershipBadge?.name}</div>
+                                {/* <div>2 months ago</div> */}
+                            </div>
+                            <div>
+                                <img
+                                    src={
+                                        isToggleOpen ? chevron_up : chevron_down
+                                    }
+                                    alt=""
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        className={`${
+                            isToggleOpen ? styles.toggleContentShown : ""
+                        } ${styles.toggleContent}`}
+                    >
+                        <div className={styles.lineBreak}></div>
+                        <div
+                            className={styles.toggleContentRow}
+                            onClick={openOpensea}
+                        >
+                            View on Opensea
+                            <img src={openseaIcon} alt="" />
+                        </div>
+                        <div className={styles.lineBreak}></div>
+                        <div
+                            className={styles.toggleContentRow}
+                            onClick={openEtherscan}
+                        >
+                            View on Etherscan
+                            <img src={etherscanIcon} alt="" />
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* {payoutInfo()} */}
+            {/* {contributionStats()} */}
         </div>
     )
 }

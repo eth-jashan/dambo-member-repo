@@ -25,7 +25,7 @@ const AuthWallet = () => {
                 navigate(`/dashboard`)
             } else {
                 setAuth(false)
-                navigate("/onboard/dao")
+                // navigate("/onboard/dao")
             }
         } else {
             setAuth(false)
@@ -45,7 +45,7 @@ const AuthWallet = () => {
     }
 
     return (
-        <Layout contributorWallet={!isAdmin}>
+        <Layout>
             <ConnectWallet
                 isAdmin={isAdmin}
                 afterConnectWalletCallback={afterConnectWalletCallback}

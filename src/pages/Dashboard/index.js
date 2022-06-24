@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
-
 import {
     getAllApprovedBadges,
     getAllClaimedBadges,
@@ -18,6 +17,9 @@ import {
     set_active_nonce,
     set_payout_filter,
     syncTxDataWithGnosis,
+    getAllMembershipBadgesList,
+    getMembershipVoucher,
+    getAllMembershipBadgesForAddress,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -54,6 +56,9 @@ import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
+import { web3 } from "../../constant/web3"
+// import BadgesScreen from "../../components/BadgesScreen"
+import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -182,6 +187,15 @@ export default function Dashboard() {
 
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
+        const voucher = await dispatch(getMembershipVoucher())
+        await dispatch(
+            getAllMembershipBadgesForAddress(address, web3.contractAddress)
+        )
+
+        // if (!voucher) {
+        //     message.error("You are not a member of this DAO")
+        //     navigate("/")
+        // }
         dispatch(setLoadingState(false))
         await dispatch(getAllClaimedBadges())
         await dispatch(getAllUnclaimedBadges())
@@ -197,9 +211,21 @@ export default function Dashboard() {
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            await dispatch(getCommunityId())
+            // await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
+            await dispatch(getAllMembershipBadgesList())
+            const voucher = await dispatch(getMembershipVoucher())
+            await dispatch(
+                getAllMembershipBadgesForAddress(address, web3.contractAddress)
+            )
+
+            // console.log("voucher and allNFts", voucher, allNfts.data.membershipNfts)
+
+            // if (!voucher) {
+            //     message.error("You are not a member of this DAO")
+            //     navigate("/")
+            // }
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
@@ -238,7 +264,8 @@ export default function Dashboard() {
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
-        await dispatch(getCommunityId())
+        // await dispatch(getCommunityId())
+        await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
             await contributionAdminFetchAccountSwitch()
@@ -269,7 +296,7 @@ export default function Dashboard() {
         dispatch(refreshContributionList())
         setTab(route)
         dispatch(setLoadingState(true))
-        await dispatch(getCommunityId())
+        // await dispatch(getCommunityId())
         if (role === "ADMIN") {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
@@ -339,26 +366,28 @@ export default function Dashboard() {
                 </div>
             </div>
             <div>
-                <div
-                    onMouseEnter={() => setUniPayHover(true)}
-                    onMouseLeave={() => setUniPayHover(false)}
-                    style={{ background: modalUniPayment ? "white" : null }}
-                    onClick={
-                        role === "ADMIN"
-                            ? async () => await onUniModalOpen()
-                            : () => setModalContri(true)
-                    }
-                    className={styles.addPaymentContainer}
-                >
-                    <img
-                        src={
-                            uniPayHover || modalUniPayment
-                                ? plus_black
-                                : plus_gray
+                {role === "ADMIN" && (
+                    <div
+                        onMouseEnter={() => setUniPayHover(true)}
+                        onMouseLeave={() => setUniPayHover(false)}
+                        style={{ background: modalUniPayment ? "white" : null }}
+                        onClick={
+                            role === "ADMIN"
+                                ? async () => await onUniModalOpen()
+                                : () => setModalContri(true)
                         }
-                        alt="plus"
-                    />
-                </div>
+                        className={styles.addPaymentContainer}
+                    >
+                        <img
+                            src={
+                                uniPayHover || modalUniPayment
+                                    ? plus_black
+                                    : plus_gray
+                            }
+                            alt="plus"
+                        />
+                    </div>
+                )}
 
                 {modalUniPayment && (
                     <UniversalPaymentModal
@@ -482,7 +511,7 @@ export default function Dashboard() {
     )
 
     const renderContribution = () =>
-        contribution_request.length > 0 ? (
+        contribution_request?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {contribution_request.map((item, index) => (
@@ -499,23 +528,6 @@ export default function Dashboard() {
             renderEmptyScreen()
         )
 
-    const renderContributorContribution = () =>
-        contribution_request.length > 0 ? (
-            <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
-                <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {contribution_request.map((item, index) => (
-                        <ContributionCard
-                            // community_id={community_id[0]?.id}
-                            // signer={signer}
-                            item={item}
-                            key={index}
-                        />
-                    ))}
-                </div>
-            </div>
-        ) : (
-            renderEmptyScreen()
-        )
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const renderBadges = () => (
         <div
@@ -562,7 +574,7 @@ export default function Dashboard() {
         </div>
     )
     const renderPayment = () =>
-        payout_request.length > 0 ? (
+        payout_request?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {/* {nonce !== payout_request[0]?.gnosis?.nonce && (
@@ -584,18 +596,92 @@ export default function Dashboard() {
 
     const adminScreen = () =>
         tab === "contributions" ? renderContribution() : renderPayment()
-    const contributorScreen = () =>
-        tab === "contributions"
-            ? renderContributorContribution()
-            : dataSource.length > 0
-            ? renderBadges()
-            : renderEmptyBadgesScreen()
+    // const contributorScreen = () =>
+    //     tab === "contributions" ? (
+    //         <ContributorContributionScreen />
+    //     ) : dataSource.length > 0 ? (
+    //         renderBadges()
+    //     ) : (
+    //         renderEmptyBadgesScreen()
+    //     )
 
     const setModalBackDropFunc = (x) => {
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
     }
+
+    const RequestScreen = () => {
+        return (
+            <div className={styles.dashView}>
+                {(modalContri || modalPayment || modalUniPayment) && (
+                    <div
+                        onClick={() => {
+                            setModalContri(false)
+                            setModalPayment(false)
+                            setModalUniPayment(false)
+                        }}
+                        style={{
+                            position: "absolute",
+                            background: "#7A7A7A",
+                            opacity: 0.2,
+                            bottom: 0,
+                            right: 0,
+                            top: 0,
+                            left: 0,
+                        }}
+                    />
+                )}
+                {renderTab()}
+                {<DashboardSearchTab route={tab} />}
+                {loadingState ? (
+                    renderLoadingScreen()
+                ) : role === "ADMIN" ? (
+                    adminScreen()
+                ) : tab === "contributions" ? (
+                    <ContributorContributionScreen />
+                ) : dataSource?.length > 0 ? (
+                    renderBadges()
+                ) : (
+                    renderEmptyBadgesScreen()
+                )}
+                {rejectModal && (
+                    <RejectPayment
+                        signer={signer}
+                        onClose={() => dispatch(setRejectModal(false))}
+                    />
+                )}
+                {(approve_contri?.length > 0 || approvedBadges?.length > 0) &&
+                    tab === "contributions" &&
+                    role === "ADMIN" &&
+                    !modalPayment && (
+                        <ApproveCheckoutButton
+                            onModalOpen={() => onPaymentModal()}
+                            totalPaymentAmount={
+                                approve_contri?.length !== 0
+                                    ? getTotalAmount()
+                                    : 0
+                            }
+                            paymentApproved={approve_contri}
+                            badgeApproved={approvedBadges}
+                        />
+                    )}
+                {payoutToast && transactionToast()}
+                {modalContri && (
+                    <ContributionRequestModal setVisibility={setModalContri} />
+                )}
+                {modalPayment &&
+                    (approve_contri?.length > 0 ||
+                        approvedBadges?.length > 0) && (
+                        <PaymentCheckoutModal
+                            signer={signer}
+                            onClose={() => setModalPayment(false)}
+                        />
+                    )}
+            </div>
+        )
+    }
+
     return (
         <DashboardLayout
             onRouteChange={async () => await onRouteChange("payments")}
@@ -613,78 +699,11 @@ export default function Dashboard() {
                     <>
                         <div className={styles.children}>
                             {currentPage === "request" ? (
-                                <div className={styles.dashView}>
-                                    {(modalContri ||
-                                        modalPayment ||
-                                        modalUniPayment) && (
-                                        <div
-                                            onClick={() => {
-                                                setModalContri(false)
-                                                setModalPayment(false)
-                                                setModalUniPayment(false)
-                                            }}
-                                            style={{
-                                                position: "absolute",
-                                                background: "#7A7A7A",
-                                                opacity: 0.2,
-                                                bottom: 0,
-                                                right: 0,
-                                                top: 0,
-                                                left: 0,
-                                            }}
-                                        />
-                                    )}
-                                    {renderTab()}
-                                    {<DashboardSearchTab route={tab} />}
-                                    {loadingState
-                                        ? renderLoadingScreen()
-                                        : role === "ADMIN"
-                                        ? adminScreen()
-                                        : contributorScreen()}
-                                    {rejectModal && (
-                                        <RejectPayment
-                                            signer={signer}
-                                            onClose={() =>
-                                                dispatch(setRejectModal(false))
-                                            }
-                                        />
-                                    )}
-                                    {(approve_contri.length > 0 ||
-                                        approvedBadges.length > 0) &&
-                                        tab === "contributions" &&
-                                        role === "ADMIN" &&
-                                        !modalPayment && (
-                                            <ApproveCheckoutButton
-                                                onModalOpen={() =>
-                                                    onPaymentModal()
-                                                }
-                                                totalPaymentAmount={
-                                                    approve_contri.length !== 0
-                                                        ? getTotalAmount()
-                                                        : 0
-                                                }
-                                                paymentApproved={approve_contri}
-                                                badgeApproved={approvedBadges}
-                                            />
-                                        )}
-                                    {payoutToast && transactionToast()}
-                                    {modalContri && (
-                                        <ContributionRequestModal
-                                            setVisibility={setModalContri}
-                                        />
-                                    )}
-                                    {modalPayment &&
-                                        (approve_contri.length > 0 ||
-                                            approvedBadges.length > 0) && (
-                                            <PaymentCheckoutModal
-                                                signer={signer}
-                                                onClose={() =>
-                                                    setModalPayment(false)
-                                                }
-                                            />
-                                        )}
-                                </div>
+                                <RequestScreen />
                             ) : (
+                                //  : currentPage === "badges" ? (
+                                //     <BadgesScreen />
+                                // )
                                 <TreasuryDetails />
                             )}
                         </div>

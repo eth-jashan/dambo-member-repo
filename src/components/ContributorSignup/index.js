@@ -32,6 +32,7 @@ const ContributorSignup = ({ discordUserId }) => {
     }, [fetchRoles])
 
     const onSubmit = async () => {
+        console.log(name, id)
         dispatch(setContriInfo(name, role))
         try {
             const res = await dispatch(joinContributor(id, discordUserId))
@@ -141,9 +142,9 @@ const ContributorSignup = ({ discordUserId }) => {
                         </div>
                     </div>
                     {/* <Select mode="tags" style={{ width: '100%' }} onChange={handleChange} tokenSeparators={[',']}> */}
-                    <div style={{ marginTop: "20px" }}>
-                        {/* <Typography.Text className={styles.helperTextSec}>How we can reach you</Typography.Text> */}
-                        <div>
+                    {/* <div style={{ marginTop: "20px" }}> */}
+                    {/* <Typography.Text className={styles.helperTextSec}>How we can reach you</Typography.Text> */}
+                    {/* <div>
                             <Select
                                 // components={{Option: CustomOption}}
                                 className="basic-single"
@@ -156,8 +157,8 @@ const ContributorSignup = ({ discordUserId }) => {
                                 options={roleOption}
                                 placeholder="Role"
                             />
-                        </div>
-                    </div>
+                        </div> */}
+                    {/* </div> */}
                     {/* </Select> */}
                 </div>
             </div>
