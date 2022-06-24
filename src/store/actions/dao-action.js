@@ -13,6 +13,7 @@ import {
     getMembershipBadgeFromTxHash,
     getAllMembershipBadges,
 } from "../../utils/POCPServiceSdk"
+import { web3 } from "../../constant/web3"
 
 const currentNetwork = getSelectedChainId()
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -1098,7 +1099,7 @@ export const getAllSafeFromAddress = (address) => {
         for (let i = 0; i < list.safes.length; i++) {
             daos.push(`safe=${list.safes[i]}`)
         }
-        daos = daos.toString()
+        daos = daos?.toString()
         daos = daos.replace(/,/g, "&")
         const jwt = getState().auth.jwt
         const res = await apiClient.get(
@@ -1161,7 +1162,7 @@ export const getAllApprovedBadges = () => {
 
         try {
             const approvedToken = await pocpGetter.getApproveBadges(
-                communityInfo[0]?.id.toString()
+                communityInfo[0]?.id?.toString()
             )
 
             dispatch(
@@ -1205,7 +1206,7 @@ export const getAllClaimedBadges = () => {
         )
         try {
             const claimedTokens = await pocpGetter.getClaimedBadgesOfClaimers(
-                communityInfo[0]?.id.toString(),
+                communityInfo[0]?.id?.toString(),
 
                 address
             )
@@ -1245,7 +1246,7 @@ export const getAllUnclaimedBadges = () => {
             )
             if (res.data.success) {
                 const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
-                    communityInfo[0]?.id.toString()
+                    communityInfo[0]?.id?.toString()
                 )
                 const unclaimedBadges = []
                 res.data.data.contributions.forEach((contribution) => {
@@ -1586,12 +1587,10 @@ export const getMembershipVoucher = () => {
 const poll = async function (fn, fnCondition, ms) {
     let result = await fn()
     console.log("result of polling fn", result)
-    let retrying = 0
-    while (fnCondition(result) && retrying < 20) {
+    while (fnCondition(result)) {
         await wait(ms)
         result = await fn()
         console.log("result in while loop", result)
-        retrying = retrying + 1
     }
     return result
 }
@@ -1608,7 +1607,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
             const claimerAddress = getState().auth.address
             console.log("claiming voucher")
             await claimVoucher(
-                "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15",
+                web3.contractAddress,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
                 async (x) => {
@@ -1616,14 +1615,20 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     const fetchNFT = () =>
                         getMembershipBadgeFromTxHash(x.transactionHash)
                     const validate = (result) =>
-                        !result?.data?.membershipNfts?.length
+                        !result?.data?.membershipNFTs?.length
+
                     const response = await poll(fetchNFT, validate, 3000)
+                    // const metadata = await axios.get(
+                    //     // response?.data?.membershipNFTs?.[0]?.metadataUri
+                    //     "http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
+                    // )
                     console.log("fetched the badge", response)
+                    // if (response) {
                     dispatch(setMembershipBadgeClaimed(membershipVoucherInfo))
                     dispatch(
                         getAllMembershipBadgesForAddress(
                             claimerAddress,
-                            "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
+                            web3.contractAddress
                         )
                     )
                     dispatch(
@@ -1632,6 +1637,8 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                             membership_uuid: null,
                         })
                     )
+                    // } else {
+                    // }
                 }
             )
             console.log("voucher claimed maybe")
@@ -1654,10 +1661,6 @@ export const getAllMembershipBadgesForAddress = (address, contractAddress) => {
                 membershipBadges,
                 membershipBadges?.data?.membershipNFTs
             )
-            const fromHash = await getMembershipBadgeFromTxHash(
-                "0x6e3fe1f0ec087e34bf38793a2eb0c8490d088b2479fea93308fb896a49432b31"
-            )
-            console.log("from hash membership is", fromHash)
             dispatch(
                 daoAction.setMembershipBadgesForAddress({
                     membershipBadgesForAddress:

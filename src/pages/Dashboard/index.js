@@ -1,9 +1,8 @@
-import { message, Spin } from "antd"
+import { message } from "antd"
 import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
-import { LoadingOutlined } from "@ant-design/icons"
 import {
     getAllApprovedBadges,
     getAllClaimedBadges,
@@ -20,10 +19,7 @@ import {
     syncTxDataWithGnosis,
     getAllMembershipBadgesList,
     getMembershipVoucher,
-    claimMembershipVoucher,
     getAllMembershipBadgesForAddress,
-    setMembershipBadgeClaimed,
-    setClaimMembershipLoading,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -60,11 +56,9 @@ import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
-import magic_button from "../../assets/Icons/magic_button.svg"
-import etherscan_white from "../../assets/Icons/etherscan-white.svg"
-import opensea_white from "../../assets/Icons/opensea-white.svg"
+import { web3 } from "../../constant/web3"
 // import BadgesScreen from "../../components/BadgesScreen"
-import cross from "../../assets/Icons/cross.svg"
+import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -103,57 +97,6 @@ export default function Dashboard() {
     const [signer, setSigner] = useState()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
-
-    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
-
-    // const voucherInfo = allMembershipBadges?.filter(
-    //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
-    // )
-    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
-        const badgeInfo = allMembershipBadges.find(
-            (ele) => ele.uuid === badge.membership_uuid
-        )
-        return {
-            ...badge,
-            ...badgeInfo,
-        }
-    })
-    console.log("All membership badges are", allMembershipBadges)
-    console.log(
-        "membership vouchers for this address from backend are",
-        membershipVouchersWithInfo
-    )
-
-    // console.log("voucher info is ", voucherInfo)
-
-    const membershipBadgesForAddress = useSelector(
-        (x) => x.dao.membershipBadgesForAddress
-    )
-
-    console.log(
-        "membership badges for address from Subgraph are",
-        membershipBadgesForAddress
-    )
-
-    const unClaimedBadges = membershipVouchersWithInfo?.filter((badge) => {
-        const indexOfBadge = membershipBadgesForAddress?.findIndex(
-            (ele) =>
-                ele.level.toString() === badge.level.toString() &&
-                ele.category.toString() === badge.category.toString()
-        )
-        return indexOfBadge === -1
-    })
-
-    console.log("unclaimed badges are", unClaimedBadges)
-
-    const membershipBadgeClaimed = useSelector(
-        (x) => x.dao.membershipBadgeClaimed
-    )
-
-    const claimMembershipLoading = useSelector(
-        (x) => x.dao.claimMembershipLoading
-    )
 
     const defaultOptions = {
         loop: true,
@@ -246,10 +189,7 @@ export default function Dashboard() {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
         await dispatch(
-            getAllMembershipBadgesForAddress(
-                address,
-                "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
-            )
+            getAllMembershipBadgesForAddress(address, web3.contractAddress)
         )
 
         if (!voucher) {
@@ -277,10 +217,7 @@ export default function Dashboard() {
             await dispatch(getAllMembershipBadgesList())
             const voucher = await dispatch(getMembershipVoucher())
             await dispatch(
-                getAllMembershipBadgesForAddress(
-                    address,
-                    "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
-                )
+                getAllMembershipBadgesForAddress(address, web3.contractAddress)
             )
 
             // console.log("voucher and allNFts", voucher, allNfts.data.membershipNfts)
@@ -591,145 +528,6 @@ export default function Dashboard() {
             renderEmptyScreen()
         )
 
-    const claimBadge = async (membershipVoucherInfo) => {
-        dispatch(
-            setClaimMembershipLoading({
-                status: true,
-                membership_uuid: membershipVoucherInfo.uuid,
-            })
-        )
-        await dispatch(claimMembershipVoucher(membershipVoucherInfo))
-    }
-
-    const closeClaimedModal = () => {
-        dispatch(
-            setMembershipBadgeClaimed({
-                membershipBadgeClaimed: null,
-            })
-        )
-    }
-
-    const antIcon = (
-        <LoadingOutlined
-            style={{
-                fontSize: 24,
-            }}
-            spin
-        />
-    )
-
-    const renderContributorContribution = () => (
-        // contribution_request.length > 0 ? (
-        <div className={styles.newMembershipBadgeWrapper}>
-            {unClaimedBadges?.length ? (
-                <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {/* {contribution_request.map((item, index) => (
-                                            <ContributionCard
-                                                // community_id={community_id[0]?.id}
-                                                // signer={signer}
-                                                item={item}
-                                                key={index}
-                                            />
-                                        ))} */}
-                    {unClaimedBadges.map((badge, index) => (
-                        <div className={styles.newMembershipBadge} key={index}>
-                            <img src={badge.image_url} alt="" />
-                            <div className={styles.congratsAndClaim}>
-                                <div className={styles.congratulationsText}>
-                                    Congratulations
-                                </div>
-                                <div className={styles.badgeName}>
-                                    You received {badge.name} badge
-                                </div>
-                                <div>
-                                    <button
-                                        className={styles.claimBadgeBtn}
-                                        onClick={() => claimBadge(badge)}
-                                    >
-                                        Claim Badge{" "}
-                                        {claimMembershipLoading.status &&
-                                        claimMembershipLoading.membership_uuid ===
-                                            badge.membership_uuid ? (
-                                            <Spin indicator={antIcon} />
-                                        ) : (
-                                            <img src={magic_button} alt="" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className={styles.noMembershipBadge}>
-                    <div>
-                        <div className={styles.noMembershipHeading}>
-                            A new beginning! ✨
-                        </div>
-                        <div className={styles.noMembershipContent}>
-                            Welcome to {currentDao?.name}, we’re glad to have
-                            you here. This space will fill up with badges and
-                            rewards as you participate in the community.
-                        </div>
-                    </div>
-                </div>
-            )}
-            {membershipBadgeClaimed && (
-                <div
-                    className={styles.successfullyClaimedModalBackdrop}
-                    onClick={closeClaimedModal}
-                >
-                    <div
-                        className={styles.successfullyClaimedModalMain}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div
-                            className={styles.closeClaimedBtn}
-                            onClick={closeClaimedModal}
-                        >
-                            <img src={cross} alt="" />
-                        </div>
-
-                        <img
-                            src={membershipBadgeClaimed?.[0]?.image_url}
-                            alt=""
-                            className={styles.claimedBadgeImg}
-                        />
-                        {/* <img
-                        src="https://i.imgur.com/Fa9KFiM.png"
-                        alt=""
-                        className={styles.claimedBadgeImg}
-                    /> */}
-
-                        <div className={styles.claimedBadgeContent}>
-                            <div className={styles.claimedBadgeText}>
-                                Congratulations on becoming{" "}
-                                {membershipBadgeClaimed?.[0]?.name}
-                            </div>
-                            <div
-                                className={
-                                    styles.successfullyClaimedModalFooterBtn
-                                }
-                            >
-                                <button>Share Badge</button>
-                                <div className={styles.linksWrapper}>
-                                    <div className={styles.openseaImg}>
-                                        <img src={opensea_white} alt="" />
-                                    </div>
-                                    <div className={styles.etherscanImg}>
-                                        <img src={etherscan_white} alt="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    )
-    // ) : (
-    //     renderEmptyScreen()
-    // )
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const renderBadges = () => (
         <div
@@ -798,12 +596,14 @@ export default function Dashboard() {
 
     const adminScreen = () =>
         tab === "contributions" ? renderContribution() : renderPayment()
-    const contributorScreen = () =>
-        tab === "contributions"
-            ? renderContributorContribution()
-            : dataSource.length > 0
-            ? renderBadges()
-            : renderEmptyBadgesScreen()
+    // const contributorScreen = () =>
+    //     tab === "contributions" ? (
+    //         <ContributorContributionScreen />
+    //     ) : dataSource.length > 0 ? (
+    //         renderBadges()
+    //     ) : (
+    //         renderEmptyBadgesScreen()
+    //     )
 
     const setModalBackDropFunc = (x) => {
         dispatch(setPayment(null))
@@ -834,11 +634,17 @@ export default function Dashboard() {
                 )}
                 {renderTab()}
                 {<DashboardSearchTab route={tab} />}
-                {loadingState
-                    ? renderLoadingScreen()
-                    : role === "ADMIN"
-                    ? adminScreen()
-                    : contributorScreen()}
+                {loadingState ? (
+                    renderLoadingScreen()
+                ) : role === "ADMIN" ? (
+                    adminScreen()
+                ) : tab === "contributions" ? (
+                    <ContributorContributionScreen />
+                ) : dataSource.length > 0 ? (
+                    renderBadges()
+                ) : (
+                    renderEmptyBadgesScreen()
+                )}
                 {rejectModal && (
                     <RejectPayment
                         signer={signer}
