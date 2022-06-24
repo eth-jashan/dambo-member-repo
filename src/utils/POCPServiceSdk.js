@@ -9,16 +9,13 @@ export const init = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
 
-    pocpInstance = new Pocp(signer, provider, window.ethereum, {
+    pocpInstance = new Pocp(signer, provider, window.ethereum, 80001, {
         biconomyInstance: Biconomy,
         url: "",
         relayNetwork: 80001,
     })
 
-    console.log("creating instance")
-
     await pocpInstance.createInstance()
-    console.log("created instance")
 }
 
 export const claimVoucher = async (
@@ -27,7 +24,6 @@ export const claimVoucher = async (
     claimerAddressIndex,
     callbackFn
 ) => {
-    console.log("Pocp instance", pocpInstance, callbackFn)
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
@@ -36,8 +32,11 @@ export const claimVoucher = async (
     )
 }
 
-export const getAllMembershipBadges = (accountAddress) => {
-    return pocpGetter.getMembershipNfts(accountAddress)
+export const getAllMembershipBadges = (accountAddress, contractAddress) => {
+    return pocpGetter.membershipNftWithClaimerOfDao(
+        accountAddress,
+        contractAddress
+    )
 }
 
 export const getMembershipBadgeFromTxHash = (txHash) => {

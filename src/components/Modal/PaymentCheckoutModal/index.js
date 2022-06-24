@@ -132,7 +132,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                             )
                         } else {
                             setApproverStatus("switching-back-error")
-                            await dispatch(getCommunityId())
+                            // await dispatch(getCommunityId())
                         }
                     }
                 }
@@ -158,7 +158,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     )
                 } else {
                     setApproverStatus("switching-back-error")
-                    await dispatch(getCommunityId())
+                    // await dispatch(getCommunityId())
                 }
             }
         }

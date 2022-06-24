@@ -1138,20 +1138,18 @@ export const claimUpdate = (id) => {
 }
 
 export const getCommunityId = () => {
-    return async (dispatch, getState) => {
-        const daoTxHash = getState().dao.currentDao?.tx_hash
-
-        const pocpGetter = new PocpGetters(
-            currentNetwork?.chainId === 4 ? 80001 : 137
-        )
-
-        const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
-        dispatch(
-            daoAction.set_community_info({
-                communityInfo: community.data?.communities,
-            })
-        )
-    }
+    // return async (dispatch, getState) => {
+    //     const daoTxHash = getState().dao.currentDao?.tx_hash
+    //     const pocpGetter = new PocpGetters(
+    //         currentNetwork?.chainId === 4 ? 80001 : 137
+    //     )
+    //     const community = await pocpGetter.getCommunityIdOfHash(daoTxHash)
+    //     dispatch(
+    //         daoAction.set_community_info({
+    //             communityInfo: community.data?.communities,
+    //         })
+    //     )
+    // }
 }
 
 export const getAllApprovedBadges = () => {
@@ -1571,7 +1569,7 @@ export const getMembershipVoucher = () => {
             console.log("res.data is", res.data)
             dispatch(
                 daoAction.setMembershipVoucher({
-                    membershipVoucher: res?.data?.data?.[0],
+                    membershipVoucher: res?.data?.data,
                 })
             )
             if (res.data?.data?.length) {
@@ -1588,10 +1586,12 @@ export const getMembershipVoucher = () => {
 const poll = async function (fn, fnCondition, ms) {
     let result = await fn()
     console.log("result of polling fn", result)
-    while (fnCondition(result)) {
+    let retrying = 0
+    while (fnCondition(result) && retrying < 20) {
         await wait(ms)
         result = await fn()
         console.log("result in while loop", result)
+        retrying = retrying + 1
     }
     return result
 }
@@ -1602,30 +1602,15 @@ const wait = function (ms = 1000) {
     })
 }
 
-export const claimMembershipVoucher = () => {
+export const claimMembershipVoucher = (membershipVoucherInfo) => {
     return async (dispatch, getState) => {
         try {
-            const signedVoucher =
-                getState().dao.membershipVoucher?.signed_voucher
-            const claimerAddressIndex =
-                getState().dao.membershipVoucher?.voucher_address_index
             const claimerAddress = getState().auth.address
             console.log("claiming voucher")
             await claimVoucher(
-                "0x079339fD856d1e5B1D5BeF10CCda0B05C6cbebFe",
-                {
-                    levelCategory: [0],
-                    end: [],
-                    to: [
-                        "0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8",
-                        "0xc9F225D5E88c5169317aA17a692EF37E8F0Badb3",
-                    ],
-                    tokenUris:
-                        "https://firebasestorage.googleapis.com/v0/b/eveels-c43bb.appspot.com/o/Animation_Pony_2.mp4?alt=media&token=50e65723-b116-4869-80b7-5a2ae5e61ca8,",
-                    signature:
-                        "0x1f407f2710d08dadca817e2b3f43cfc37cc38ed3a8519eaf6c3d1c19a95815183bba5ae6b77ddb61ae307a2c57aa8953a125bf32412923b5b9aeb6bd01dbac171c",
-                },
-                0,
+                "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15",
+                membershipVoucherInfo?.signed_voucher,
+                membershipVoucherInfo?.voucher_address_index,
                 async (x) => {
                     console.log("event emitted is", x)
                     const fetchNFT = () =>
@@ -1634,6 +1619,19 @@ export const claimMembershipVoucher = () => {
                         !result?.data?.membershipNfts?.length
                     const response = await poll(fetchNFT, validate, 3000)
                     console.log("fetched the badge", response)
+                    dispatch(setMembershipBadgeClaimed(membershipVoucherInfo))
+                    dispatch(
+                        getAllMembershipBadgesForAddress(
+                            claimerAddress,
+                            "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
+                        )
+                    )
+                    dispatch(
+                        setClaimMembershipLoading({
+                            status: false,
+                            membership_uuid: null,
+                        })
+                    )
                 }
             )
             console.log("voucher claimed maybe")
@@ -1644,15 +1642,62 @@ export const claimMembershipVoucher = () => {
     }
 }
 
-export const getAllMembershipBadgesForAddress = (address) => {
+export const getAllMembershipBadgesForAddress = (address, contractAddress) => {
     return async (dispatch, getState) => {
         try {
-            const membershipBadges = await getAllMembershipBadges(address)
-            console.log("membership badges are ", membershipBadges)
-            return membershipBadges
+            const membershipBadges = await getAllMembershipBadges(
+                address,
+                contractAddress
+            )
+            console.log(
+                "membership badges are ",
+                membershipBadges,
+                membershipBadges?.data?.membershipNFTs
+            )
+            const fromHash = await getMembershipBadgeFromTxHash(
+                "0x6e3fe1f0ec087e34bf38793a2eb0c8490d088b2479fea93308fb896a49432b31"
+            )
+            console.log("from hash membership is", fromHash)
+            dispatch(
+                daoAction.setMembershipBadgesForAddress({
+                    membershipBadgesForAddress:
+                        membershipBadges?.data?.membershipNFTs,
+                })
+            )
         } catch (err) {
             console.error(err)
-            return []
+        }
+    }
+}
+
+export const setMembershipBadgeClaimed = (membershipBadgeClaimed) => {
+    return async (dispatch, getState) => {
+        try {
+            console.log(
+                "dispatching set membership badge claimed with ",
+                membershipBadgeClaimed
+            )
+            dispatch(
+                daoAction.setMembershipBadgeClaimed({
+                    membershipBadgeClaimed,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setClaimMembershipLoading = (loadingStatus) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.setClaimMembershipLoading({
+                    claimMembershipLoading: loadingStatus,
+                })
+            )
+        } catch (err) {
+            console.error(err)
         }
     }
 }

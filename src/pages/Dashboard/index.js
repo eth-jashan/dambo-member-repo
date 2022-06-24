@@ -1,9 +1,9 @@
-import { message } from "antd"
+import { message, Spin } from "antd"
 import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
-
+import { LoadingOutlined } from "@ant-design/icons"
 import {
     getAllApprovedBadges,
     getAllClaimedBadges,
@@ -22,6 +22,8 @@ import {
     getMembershipVoucher,
     claimMembershipVoucher,
     getAllMembershipBadgesForAddress,
+    setMembershipBadgeClaimed,
+    setClaimMembershipLoading,
 } from "../../store/actions/dao-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -61,7 +63,6 @@ import SettingsScreen from "../../components/SettingsScreen"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
-import { getAllMembershipBadges } from "../../utils/POCPServiceSdk"
 import BadgesScreen from "../../components/BadgesScreen"
 
 export default function Dashboard() {
@@ -103,26 +104,55 @@ export default function Dashboard() {
     const [showSettings, setShowSettings] = useState(false)
 
     const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVoucher = useSelector((x) => x.dao.membershipVoucher)
+    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
 
     // const voucherInfo = allMembershipBadges?.filter(
     //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
     // )
+    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
+        const badgeInfo = allMembershipBadges.find(
+            (ele) => ele.uuid === badge.membership_uuid
+        )
+        return {
+            ...badge,
+            ...badgeInfo,
+        }
+    })
+    console.log("All membership badges are", allMembershipBadges)
     console.log(
-        "All membership voucher",
-        allMembershipBadges,
-        membershipVoucher
+        "membership vouchers for this address from backend are",
+        membershipVouchersWithInfo
     )
-    const voucherInfo = [
-        {
-            image_url: "https://i.imgur.com/Gw1enp3.png",
-            name: "Pioneer",
-        },
-    ]
 
-    const [claimBadgeLoading, setClaimBadgeLoading] = useState(false)
-    const [showSuccessfullyClaimed, setShowSuccessfullyClaimed] =
-        useState(false)
+    // console.log("voucher info is ", voucherInfo)
+
+    const membershipBadgesForAddress = useSelector(
+        (x) => x.dao.membershipBadgesForAddress
+    )
+
+    console.log(
+        "membership badges for address from Subgraph are",
+        membershipBadgesForAddress
+    )
+
+    const unClaimedBadges = membershipVouchersWithInfo?.filter((badge) => {
+        const indexOfBadge = membershipBadgesForAddress?.findIndex(
+            (ele) =>
+                ele.level.toString() === badge.level.toString() &&
+                ele.category.toString() === badge.category.toString()
+        )
+        return indexOfBadge === -1
+    })
+
+    console.log("unclaimed badges are", unClaimedBadges)
+
+    const membershipBadgeClaimed = useSelector(
+        (x) => x.dao.membershipBadgeClaimed
+    )
+
+    const claimMembershipLoading = useSelector(
+        (x) => x.dao.claimMembershipLoading
+    )
 
     const defaultOptions = {
         loop: true,
@@ -214,6 +244,12 @@ export default function Dashboard() {
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
+        await dispatch(
+            getAllMembershipBadgesForAddress(
+                address,
+                "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
+            )
+        )
 
         if (!voucher) {
             message.error("You are not a member of this DAO")
@@ -234,13 +270,16 @@ export default function Dashboard() {
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            await dispatch(getCommunityId())
+            // await dispatch(getCommunityId())
             await dispatch(gnosisDetailsofDao())
             await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
             const voucher = await dispatch(getMembershipVoucher())
-            const allNfts = await dispatch(
-                getAllMembershipBadgesForAddress(address)
+            await dispatch(
+                getAllMembershipBadgesForAddress(
+                    address,
+                    "0xa3320dbddd2493da82b8af0edb6af5ec5b7eaa15"
+                )
             )
 
             // console.log("voucher and allNFts", voucher, allNfts.data.membershipNfts)
@@ -287,7 +326,7 @@ export default function Dashboard() {
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
-        await dispatch(getCommunityId())
+        // await dispatch(getCommunityId())
         await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
@@ -319,7 +358,7 @@ export default function Dashboard() {
         dispatch(refreshContributionList())
         setTab(route)
         dispatch(setLoadingState(true))
-        await dispatch(getCommunityId())
+        // await dispatch(getCommunityId())
         if (role === "ADMIN") {
             if (safeSdk) {
                 const nonce = await safeSdk.getNonce()
@@ -551,23 +590,33 @@ export default function Dashboard() {
             renderEmptyScreen()
         )
 
-    const claimBadge = async () => {
-        setClaimBadgeLoading(true)
-        const res = await dispatch(claimMembershipVoucher())
-        if (res) {
-            message.success("Membership claimed")
-        } else {
-            message.error(
-                "There was some error while claiming membership please try again"
-            )
-        }
-        setClaimBadgeLoading(false)
+    const claimBadge = async (membershipVoucherInfo) => {
+        dispatch(
+            setClaimMembershipLoading({
+                status: true,
+                membership_uuid: membershipVoucherInfo.uuid,
+            })
+        )
+        await dispatch(claimMembershipVoucher(membershipVoucherInfo))
     }
+
+    const closeClaimedModal = () => {
+        dispatch(setMembershipBadgeClaimed(null))
+    }
+
+    const antIcon = (
+        <LoadingOutlined
+            style={{
+                fontSize: 24,
+            }}
+            spin
+        />
+    )
 
     const renderContributorContribution = () => (
         // contribution_request.length > 0 ? (
-        <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
-            {voucherInfo?.length ? (
+        <div className={styles.newMembershipBadgeWrapper}>
+            {unClaimedBadges?.length ? (
                 <div style={{ width: "100%", marginBottom: "100px" }}>
                     {/* {contribution_request.map((item, index) => (
                                             <ContributionCard
@@ -577,27 +626,34 @@ export default function Dashboard() {
                                                 key={index}
                                             />
                                         ))} */}
-
-                    <div className={styles.newMembershipBadge}>
-                        <img src={voucherInfo?.[0]?.image_url} alt="" />
-                        <div className={styles.congratsAndClaim}>
-                            <div className={styles.congratulationsText}>
-                                Congratulations
-                            </div>
-                            <div className={styles.badgeName}>
-                                You received {voucherInfo?.[0]?.name} badge
-                            </div>
-                            <div>
-                                <button
-                                    className={styles.claimBadgeBtn}
-                                    onClick={claimBadge}
-                                >
-                                    Claim Badge{" "}
-                                    <img src={magic_button} alt="" />
-                                </button>
+                    {unClaimedBadges.map((badge, index) => (
+                        <div className={styles.newMembershipBadge} key={index}>
+                            <img src={badge.image_url} alt="" />
+                            <div className={styles.congratsAndClaim}>
+                                <div className={styles.congratulationsText}>
+                                    Congratulations
+                                </div>
+                                <div className={styles.badgeName}>
+                                    You received {badge.name} badge
+                                </div>
+                                <div>
+                                    <button
+                                        className={styles.claimBadgeBtn}
+                                        onClick={() => claimBadge(badge)}
+                                    >
+                                        Claim Badge{" "}
+                                        {claimMembershipLoading.status &&
+                                        claimMembershipLoading.membership_uuid ===
+                                            badge.membership_uuid ? (
+                                            <Spin indicator={antIcon} />
+                                        ) : (
+                                            <img src={magic_button} alt="" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             ) : (
                 <div className={styles.noMembershipBadge}>
@@ -613,17 +669,25 @@ export default function Dashboard() {
                     </div>
                 </div>
             )}
-            {showSuccessfullyClaimed && (
-                <div className={styles.successfullyClaimedModalBackdrop}>
-                    <div className={styles.successfullyClaimedModalMain}>
-                        <img src={voucherInfo?.[0]?.image_url} alt="" />
+            {membershipBadgeClaimed && (
+                <div
+                    className={styles.successfullyClaimedModalBackdrop}
+                    onClick={closeClaimedModal}
+                >
+                    <div
+                        className={styles.successfullyClaimedModalMain}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src={membershipBadgeClaimed?.[0]?.image_url}
+                            alt=""
+                        />
                         <div>
-                            Congratulations on becoming {voucherInfo?.[0]?.name}
+                            Congratulations on becoming{" "}
+                            {membershipBadgeClaimed?.[0]?.name}
                         </div>
                         <div
-                            className={
-                                styles.successfullyClaimedModalFooterBtns
-                            }
+                            className={styles.successfullyClaimedModalFooterBtn}
                         >
                             <button>Share Badge</button>
                             <div>
@@ -807,9 +871,10 @@ export default function Dashboard() {
                         <div className={styles.children}>
                             {currentPage === "request" ? (
                                 <RequestScreen />
-                            ) : currentPage === "badges" ? (
-                                <BadgesScreen />
                             ) : (
+                                //  : currentPage === "badges" ? (
+                                //     <BadgesScreen />
+                                // )
                                 <TreasuryDetails />
                             )}
                         </div>
