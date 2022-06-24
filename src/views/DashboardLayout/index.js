@@ -63,7 +63,7 @@ export default function DashboardLayout({
         dispatch(contributorRefreshList())
         dispatch(resetApprovedRequest())
         dispatch(set_dao(item))
-        await dispatch(getCommunityId())
+        // await dispatch(getCommunityId())
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
