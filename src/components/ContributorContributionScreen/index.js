@@ -180,8 +180,8 @@ export default function ContributorContributionScreen() {
                                         claimMembershipLoading.membership_uuid ===
                                             badge.membership_uuid && (
                                             <span className="takingTimeText">
-                                                Its taking some time to claim
-                                                please come back later
+                                                Takes around 10sec, please don’t
+                                                leave the page
                                             </span>
                                         )}
                                 </div>
