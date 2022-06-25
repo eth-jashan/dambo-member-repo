@@ -114,6 +114,21 @@ export default function ContributorContributionScreen() {
         )
     }
 
+    // useEffect(() => {
+    //     const script = document.createElement("script")
+
+    //     script.src = "https://platform.twitter.com/widgets.js"
+    //     script.async = true
+
+    //     document.body.appendChild(script)
+
+    //     console.log("script tag created successfully")
+
+    //     return () => {
+    //         document.body.removeChild(script)
+    //     }
+    // }, [])
+
     // contribution_request.length > 0 ? (
     return (
         <div className="contributor-contribution-screen-container">
@@ -220,7 +235,11 @@ export default function ContributorContributionScreen() {
                                 {membershipBadgeClaimed?.name}
                             </div>
                             <div className="successfullyClaimedModalFooterBtn">
-                                <button>Share Badge</button>
+                                <button>
+                                    <a href="https://twitter.com/intent/tweet?text=POV: you support early web3 projects 😌 https://opensea.io/assets/matic/0x60d30a73191096ee5ff42297666a5ad9d5b5711a/1  \n  h/t @rep3gg for the amazing NFT! ">
+                                        Share Badge on twitter
+                                    </a>{" "}
+                                </button>
                                 <div className="linksWrapper">
                                     <div
                                         className="openseaImg"
