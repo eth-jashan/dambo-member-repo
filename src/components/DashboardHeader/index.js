@@ -35,9 +35,9 @@ const DashboardHeader = ({
     const currentChainId = getSelectedChainId().chainId
     const dispatch = useDispatch()
 
-    const currentUser = currentDao?.signers.filter(
-        (x) => x.public_address === address
-    )
+    const currentUser = useSelector((x) => x.dao.username)
+
+    console.log("current dao is", currentDao)
 
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
@@ -71,8 +71,9 @@ const DashboardHeader = ({
     }
 
     const getInitialForAccount = () => {
+        console.log("current user is", currentUser)
         if (currentUser) {
-            const nameArray = currentUser[0]?.metadata?.name?.split(" ")
+            const nameArray = currentUser.split(" ")
             if (nameArray?.length > 1) {
                 return {
                     first: nameArray[0].charAt(0)?.toUpperCase(),
@@ -104,7 +105,7 @@ const DashboardHeader = ({
                 <div className={`${textStyles.ub_14} dao-name`}>
                     {currentDao?.name}
                 </div>
-                <div
+                {/* <div
                     className="safeContainer"
                     onMouseLeave={() => setSafeInfoHover(false)}
                     onMouseEnter={() => setSafeInfoHover(true)}
@@ -129,7 +130,7 @@ const DashboardHeader = ({
                             <div className="safeCopy">etherscan</div>
                         </div>
                     )}
-                </div>
+                </div> */}
             </div>
             {role === "ADMIN" && (
                 <div className="routeLinks">

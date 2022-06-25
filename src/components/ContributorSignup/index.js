@@ -132,7 +132,7 @@ const ContributorSignup = ({ discordUserId }) => {
                                 width={"60%"}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Your Name"
+                                placeholder="What should we call you"
                                 className={
                                     name === ""
                                         ? styles.input

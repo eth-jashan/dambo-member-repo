@@ -59,6 +59,8 @@ const daoSlice = createSlice({
         membershipBadgesForAddress: [],
         membershipBadgeClaimed: null,
         claimMembershipLoading: false,
+        username: "",
+        claimTakingTime: false,
     },
     reducers: {
         set_chainId(state, action) {
@@ -97,6 +99,7 @@ const daoSlice = createSlice({
             state.community_role = action.payload.community_role
             state.account_mode = action.payload.account_mode
             state.account_index = action.payload.index
+            state.username = action.payload.username
         },
         set_contri_list(state, action) {
             state.contribution_request = action.payload.list
@@ -200,6 +203,9 @@ const daoSlice = createSlice({
         },
         setClaimMembershipLoading(state, action) {
             state.claimMembershipLoading = action.payload.claimMembershipLoading
+        },
+        setClaimTakingTime(state, action) {
+            state.claimTakingTime = action.payload.claimTakingTime
         },
     },
 })

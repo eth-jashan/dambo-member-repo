@@ -143,7 +143,7 @@ const ContributionOverview = () => {
     const openEtherscan = () => {
         console.log("current membership badge is", currentMembershipBadge)
         window.open(
-            `https://mumbai.polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
+            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }

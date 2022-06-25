@@ -41,6 +41,10 @@ const ProfileModal = ({
 
     const currentChainId = getSelectedChainId().chainId
 
+    const openTwitter = () => {
+        window.open(`https://twitter.com/rep3gg`, "_blank")
+    }
+
     return (
         <div className={styles.modal}>
             <div
@@ -54,7 +58,7 @@ const ProfileModal = ({
                             {`${address?.slice(0, 5)}...${address?.slice(-3)}`}
                         </div>
                         <div
-                            onClick={() => onDisconnect()}
+                            // onClick={() => onDisconnect()}
                             className={`${textStyles.m_14} ${styles.disconnect}`}
                         >
                             {currentChainId === 4
@@ -64,13 +68,13 @@ const ProfileModal = ({
                     </div>
                 </div>
                 <div>
-                    <img
+                    {/* <img
                         onClick={async () => await copyTextToClipboard()}
                         src={open_link}
                         className={styles.copy}
                         style={{ marginRight: "12px" }}
                         alt="cross"
-                    />
+                    /> */}
                     <img
                         onClick={async () => await copyTextToClipboard()}
                         src={copy_black}
@@ -82,7 +86,7 @@ const ProfileModal = ({
 
             <div className={styles.divider} />
 
-            {!isOnboard && (
+            {/* {!isOnboard && (
                 <div
                     className={styles.singleOption}
                     onClick={() => {
@@ -104,9 +108,9 @@ const ProfileModal = ({
                         className={styles.chevron}
                     />
                 </div>
-            )}
+            )} */}
 
-            {!isOnboard && (
+            {/* {!isOnboard && (
                 <div
                     style={{
                         marginTop: "4px",
@@ -115,9 +119,9 @@ const ProfileModal = ({
                     }}
                     className={styles.divider}
                 />
-            )}
+            )} */}
 
-            <div className={styles.singleOption}>
+            <div className={styles.singleOption} onClick={openTwitter}>
                 <div>
                     <img src={email} alt="email" className={styles.icon} />
                     <div className={textStyles.m_16}>Contact Us</div>
@@ -128,6 +132,8 @@ const ProfileModal = ({
                     className={styles.chevron}
                 />
             </div>
+
+            <div className={styles.divider} />
 
             <div onClick={() => onDisconnect()} className={styles.singleOption}>
                 <div>
