@@ -145,8 +145,11 @@ export default function ContributorContributionScreen() {
                     {unClaimedBadges.map((badge, index) => (
                         <div className="newMembershipBadge" key={index}>
                             {/* <img src={badge.image_url} alt="" /> */}
-                            <video autoPlay loop>
-                                <source src={badge.image_url} />
+                            <video autoPlay loop muted>
+                                <source
+                                    src={badge.image_url}
+                                    // src="http://arweave.net/fzjtljsZMX_oDM1tsXtU2HcXa2TkA0c5Iyjp-loOYKg"
+                                />
                             </video>
                             <div className="congratsAndClaim">
                                 <div className="congratulationsText">
@@ -213,10 +216,11 @@ export default function ContributorContributionScreen() {
                             <img src={cross} alt="" />
                         </div>
 
-                        <video className="claimedBadgeImg" autoPlay loop>
+                        <video className="claimedBadgeImg" autoPlay loop muted>
                             <source
                                 src={membershipBadgeClaimed?.image_url}
                                 // src="http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
+                                type="video/mp4"
                             />
                         </video>
                         {/* <img
@@ -236,8 +240,12 @@ export default function ContributorContributionScreen() {
                             </div>
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
-                                    <a href="https://twitter.com/intent/tweet?text=POV: you support early web3 projects 😌 https://opensea.io/assets/matic/0x60d30a73191096ee5ff42297666a5ad9d5b5711a/1  \n  h/t @rep3gg for the amazing NFT! ">
-                                        Share Badge on twitter
+                                    <a
+                                        href={`https://twitter.com/intent/tweet?text=POV: you support early web3 projects 😌 %0A%0Ah/t @rep3gg for the amazing NFT!🥳 %0A%0Ahttps://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        Share Badge
                                     </a>{" "}
                                 </button>
                                 <div className="linksWrapper">

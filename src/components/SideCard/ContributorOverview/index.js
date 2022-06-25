@@ -175,7 +175,7 @@ const ContributionOverview = () => {
                         alt=""
                         className={styles.badgeImage}
                     /> */}
-                    <video autoPlay loop className={styles.badgeImage}>
+                    <video autoPlay loop className={styles.badgeImage} muted>
                         <source src={currentMembershipBadge?.image_url} />
                     </video>
                     <div>
