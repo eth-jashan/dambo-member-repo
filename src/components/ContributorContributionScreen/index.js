@@ -7,6 +7,7 @@ import {
     claimMembershipVoucher,
     setMembershipBadgeClaimed,
     setClaimMembershipLoading,
+    setClaimTakingTime,
 } from "../../store/actions/dao-action"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
@@ -70,7 +71,8 @@ export default function ContributorContributionScreen() {
         (x) => x.dao.claimMembershipLoading
     )
 
-    const [showClaimTakingTime, setShowClaimTakingTime] = useState(false)
+    // const [showClaimTakingTime, setShowClaimTakingTime] = useState(false)
+    const showClaimTakingTime = useSelector((x) => x.dao.claimTakingTime)
 
     const dispatch = useDispatch()
 
@@ -83,7 +85,8 @@ export default function ContributorContributionScreen() {
         )
         await dispatch(claimMembershipVoucher(membershipVoucherInfo))
         setTimeout(() => {
-            setShowClaimTakingTime(true)
+            // setShowClaimTakingTime(true)
+            dispatch(setClaimTakingTime(true))
         }, 18000)
     }
 
@@ -102,7 +105,7 @@ export default function ContributorContributionScreen() {
 
     const openEtherscan = () => {
         window.open(
-            `https://mumbai.polygonscan.com/token/${membershipBadgeClaimed?.contractAddress?.id}?a=${membershipBadgeClaimed?.tokenID}`,
+            `https://polygonscan.com/token/${membershipBadgeClaimed?.contractAddress?.id}?a=${membershipBadgeClaimed?.tokenID}`,
             "_blank"
         )
     }

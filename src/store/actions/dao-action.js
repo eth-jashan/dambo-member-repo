@@ -154,6 +154,7 @@ export const getAllDaowithAddress = (chainId) => {
                             dao_details[selectionIndex].community_role,
                         account_mode: dao_details[selectionIndex].access_role,
                         index: selectionIndex,
+                        username: dao_details[selectionIndex].name,
                     })
                 )
                 return dao_details[selectionIndex].access_role
@@ -1648,6 +1649,14 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
             console.log("voucher claimed maybe")
             return 1
         } catch (err) {
+            console.log("claiming signing error")
+            dispatch(
+                setClaimMembershipLoading({
+                    status: false,
+                    membership_uuid: null,
+                })
+            )
+            dispatch(setClaimTakingTime(false))
             return 0
         }
     }
@@ -1701,6 +1710,20 @@ export const setClaimMembershipLoading = (loadingStatus) => {
             dispatch(
                 daoAction.setClaimMembershipLoading({
                     claimMembershipLoading: loadingStatus,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setClaimTakingTime = (status) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.setClaimTakingTime({
+                    claimTakingTime: status,
                 })
             )
         } catch (err) {

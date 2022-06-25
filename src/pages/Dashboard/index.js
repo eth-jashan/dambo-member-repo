@@ -637,7 +637,7 @@ export default function Dashboard() {
                     />
                 )}
                 {renderTab()}
-                {<DashboardSearchTab route={tab} />}
+                {/* {<DashboardSearchTab route={tab} />} */}
                 {loadingState ? (
                     renderLoadingScreen()
                 ) : role === "ADMIN" ? (
