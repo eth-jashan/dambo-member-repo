@@ -42,7 +42,40 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         authWithSign(address, signer, chainId)
                     )
                     if (res) {
-                        await afterConnectWalletCallback(setAuth)
+                        if (!isAdmin) {
+                            // console.log("contributor", uuid)
+                            // navigate(`/onboard/contributor/${uuid}`, {
+                            //     state: {
+                            //         discordUserId: "userId",
+                            //     },
+                            // })
+                            const res = await dispatch(getRole(uuid))
+                            if (res) {
+                                message.success("Already a member")
+                                dispatch(setAdminStatus(true))
+                                const isMember = await dispatch(
+                                    getAddressMembership(chainId)
+                                )
+                                if (isMember) {
+                                    setAuth(false)
+                                    navigate(`/dashboard`)
+                                } else {
+                                    setAuth(false)
+                                    message.error("Closed For Beta Test")
+                                    // navigate("/onboard/dao")
+                                }
+                                // navigate(`/dashboard`)
+                            } else {
+                                // console.log("hereeee", uuid)
+                                navigate(`/onboard/contributor/${uuid}`, {
+                                    state: {
+                                        discordUserId: "userId",
+                                    },
+                                })
+                            }
+                        } else {
+                            await afterConnectWalletCallback(setAuth)
+                        }
                     } else {
                         message.error("Check metamask popup!")
                     }
@@ -82,6 +115,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     }
 
     const loadWeb3Modal = useCallback(async () => {
+        console.log(isAdmin)
         setAuth(true)
         try {
             await window.ethereum.request({
@@ -111,7 +145,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         // navigate("/onboard/dao")
                     }
                 } else {
-                    setAuth(false)
+                    // setAuth(false)
                     if (!isAdmin) {
                         try {
                             const res = await dispatch(getRole(uuid))
@@ -147,10 +181,14 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 !res &&
                 (chainId === 4 || chainId === 1 || chainId === 5)
             ) {
+                // if (!isAdmin) {
+                //     await authWithWallet(newAddress, chainId, signer)
+                // } else {
                 // doesn't have valid token and chain is selected one
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 await authWithWallet(newAddress, chainId, signer)
+                // }
             } else {
                 // chain is wrong
                 setAuth(false)
@@ -239,10 +277,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         </div>
     )
 
-    const disconnectContributor = () => {
-        dispatch(signout())
-        dispatch(setAdminStatus(false))
-    }
+    // const disconnectContributor = () => {
+    //     dispatch(signout())
+    //     dispatch(setAdminStatus(false))
+    // }
     //Cozy corner for all your communities
 
     const daoWallet = () => (
@@ -259,117 +297,117 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             {address ? authWallet() : connectWallet()}
         </div>
     )
-    const contributorWallet = () => (
-        <div className={styles.walletContri}>
-            <div className={styles.metaCard}>
-                <div style={{ height: "100%" }}>
-                    <div
-                        style={{
-                            height: "64px",
-                            width: "64px",
-                            borderRadius: "64px",
-                            border: "1px solid #c2c2c2",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <img
-                            src={!jwt ? walletIcon : tickIcon}
-                            alt="wallet"
-                            height={32}
-                            width={32}
-                        />
-                    </div>
-                </div>
+    // const contributorWallet = () => (
+    //     <div className={styles.walletContri}>
+    //         <div className={styles.metaCard}>
+    //             <div style={{ height: "100%" }}>
+    //                 <div
+    //                     style={{
+    //                         height: "64px",
+    //                         width: "64px",
+    //                         borderRadius: "64px",
+    //                         border: "1px solid #c2c2c2",
+    //                         display: "flex",
+    //                         alignItems: "center",
+    //                         justifyContent: "center",
+    //                     }}
+    //                 >
+    //                     <img
+    //                         src={!jwt ? walletIcon : tickIcon}
+    //                         alt="wallet"
+    //                         height={32}
+    //                         width={32}
+    //                     />
+    //                 </div>
+    //             </div>
 
-                <div className={styles.rightContent}>
-                    <div>
-                        <div className={styles.walletHeading}>
-                            {!jwt ? "Connect your Wallet" : "Wallet Connected"}
-                        </div>
-                        {!jwt ? (
-                            <div className={styles.walletsubHeading}>
-                                Lorem ipsum dolor sit amet,
-                                <br />
-                                consectetur adipiscing elit.
-                            </div>
-                        ) : (
-                            <div className={styles.connectedText}>
-                                {address?.slice(0, 5)}...{address?.slice(-3)}
-                            </div>
-                        )}
-                    </div>
-                    {!jwt && (
-                        <div
-                            onClick={() => loadWeb3Modal()}
-                            className={styles.connectBtn}
-                        >
-                            <span className={styles.btnTitle}>
-                                {auth ? "Conecting..." : "Connect Wallet"}
-                            </span>
-                        </div>
-                    )}
-                    {address && jwt && (
-                        <div
-                            onClick={() => disconnectContributor()}
-                            className={styles.disconnectDiv}
-                        >
-                            <div className={styles.divider} />
-                            <span className={styles.disconnectTitle}>
-                                Disconnect Wallet
-                            </span>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {/* inline style required */}
-            <div className={styles.metaCard}>
-                <div style={{ height: "100%" }}>
-                    <div
-                        style={{
-                            height: "64px",
-                            width: "64px",
-                            borderRadius: "64px",
-                            border: "1px solid #c2c2c2",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <FaDiscord
-                            size={32}
-                            color={!jwt ? "#B3B3B3" : "#5865F2"}
-                        />
-                    </div>
-                </div>
+    //             <div className={styles.rightContent}>
+    //                 <div>
+    //                     <div className={styles.walletHeading}>
+    //                         {!jwt ? "Connect your Wallet" : "Wallet Connected"}
+    //                     </div>
+    //                     {!jwt ? (
+    //                         <div className={styles.walletsubHeading}>
+    //                             Lorem ipsum dolor sit amet,
+    //                             <br />
+    //                             consectetur adipiscing elit.
+    //                         </div>
+    //                     ) : (
+    //                         <div className={styles.connectedText}>
+    //                             {address?.slice(0, 5)}...{address?.slice(-3)}
+    //                         </div>
+    //                     )}
+    //                 </div>
+    //                 {!jwt && (
+    //                     <div
+    //                         onClick={() => loadWeb3Modal()}
+    //                         className={styles.connectBtn}
+    //                     >
+    //                         <span className={styles.btnTitle}>
+    //                             {auth ? "Conecting..." : "Connect Wallet"}
+    //                         </span>
+    //                     </div>
+    //                 )}
+    //                 {address && jwt && (
+    //                     <div
+    //                         onClick={() => disconnectContributor()}
+    //                         className={styles.disconnectDiv}
+    //                     >
+    //                         <div className={styles.divider} />
+    //                         <span className={styles.disconnectTitle}>
+    //                             Disconnect Wallet
+    //                         </span>
+    //                     </div>
+    //                 )}
+    //             </div>
+    //         </div>
+    //         {/* inline style required */}
+    //         <div className={styles.metaCard}>
+    //             <div style={{ height: "100%" }}>
+    //                 <div
+    //                     style={{
+    //                         height: "64px",
+    //                         width: "64px",
+    //                         borderRadius: "64px",
+    //                         border: "1px solid #c2c2c2",
+    //                         display: "flex",
+    //                         alignItems: "center",
+    //                         justifyContent: "center",
+    //                     }}
+    //                 >
+    //                     <FaDiscord
+    //                         size={32}
+    //                         color={!jwt ? "#B3B3B3" : "#5865F2"}
+    //                     />
+    //                 </div>
+    //             </div>
 
-                <div className={styles.rightContentDown}>
-                    <div>
-                        <div
-                            style={{ color: !jwt && "#B3B3B3" }}
-                            className={styles.walletHeading}
-                        >
-                            Connect Discord
-                        </div>
-                        <div className={styles.walletsubHeading}>
-                            We use Discord to check your name
-                            <br />
-                            and servers you've joined
-                        </div>
-                    </div>
-                    <div
-                        onClick={() => onDiscordAuth()}
-                        className={
-                            !jwt ? styles.connectBtnGrey : styles.connectBtn
-                        }
-                    >
-                        <span className={styles.btnTitle}>Connect Discord</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+    //             <div className={styles.rightContentDown}>
+    //                 <div>
+    //                     <div
+    //                         style={{ color: !jwt && "#B3B3B3" }}
+    //                         className={styles.walletHeading}
+    //                     >
+    //                         Connect Discord
+    //                     </div>
+    //                     <div className={styles.walletsubHeading}>
+    //                         We use Discord to check your name
+    //                         <br />
+    //                         and servers you've joined
+    //                     </div>
+    //                 </div>
+    //                 <div
+    //                     onClick={() => onDiscordAuth()}
+    //                     className={
+    //                         !jwt ? styles.connectBtnGrey : styles.connectBtn
+    //                     }
+    //                 >
+    //                     <span className={styles.btnTitle}>Connect Discord</span>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // )
 
     return isAdmin ? daoWallet() : daoWallet()
     // return <ConnectButton />

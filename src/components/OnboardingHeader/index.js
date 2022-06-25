@@ -25,8 +25,6 @@ export default function Header({
         await getNetwork()
     })
 
-    console.log("contributorWalletr ", contributorWallet, daoName)
-
     return (
         <div
             align="middle"
