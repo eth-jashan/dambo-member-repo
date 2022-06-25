@@ -61,12 +61,9 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    message.error("Closed For Beta Test")
-                                    // navigate("/onboard/dao")
+                                    setAccess(false)
                                 }
-                                // navigate(`/dashboard`)
                             } else {
-                                // console.log("hereeee", uuid)
                                 navigate(`/onboard/contributor/${uuid}`, {
                                     state: {
                                         discordUserId: "userId",
@@ -85,7 +82,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 }
             } else {
                 try {
-                    // await chainSwitch(process.env.REACT_APP_ETHEREUM_CHAIN_ID)
                     message.error(
                         "You are in a wrong chain, We are live in rinkeby and mainnet"
                     )
@@ -114,6 +110,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         window.location.replace(`${links.discord_oauth.local}`)
     }
 
+    const [isAccess, setAccess] = useState(true)
+
     const loadWeb3Modal = useCallback(async () => {
         console.log(isAdmin)
         setAuth(true)
@@ -141,7 +139,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         navigate(`/dashboard`)
                     } else {
                         setAuth(false)
-                        message.error("Closed For Beta Test")
+                        setAccess(false)
+                        // message.error("Closed For Beta Test")
                         // navigate("/onboard/dao")
                     }
                 } else {
@@ -160,7 +159,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    message.error("Closed For Beta Test")
+                                    setAccess(false)
+                                    // message.error("Closed For Beta Test")
                                     // navigate("/onboard/dao")
                                 }
                                 // navigate(`/dashboard`)
@@ -173,6 +173,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } catch (error) {
+                            setAccess(false)
                             message.error("Error on getting role")
                         }
                     }
@@ -239,7 +240,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 <div className={styles.addresCnt}>
                     <div className={styles.address}>{address}</div>
                     <div
-                        onClick={() => dispatch(signout())}
+                        onClick={() => {
+                            setAccess(true)
+                            dispatch(signout())
+                        }}
                         className={styles.disconnectLink}
                     >
                         Disconnect
@@ -261,18 +265,22 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     <br /> import your safes
                 </div>
 
-                <div
-                    onClick={
-                        auth
-                            ? () => {}
-                            : async () => await authenticateWallet(address)
-                    }
-                    className={styles.authBtn}
-                >
-                    <div className={styles.btnTextAuth}>
-                        {auth ? "Authenticating...." : "Authenticate wallet"}
+                {isAccess && (
+                    <div
+                        onClick={
+                            auth
+                                ? () => {}
+                                : async () => await authenticateWallet(address)
+                        }
+                        className={styles.authBtn}
+                    >
+                        <div className={styles.btnTextAuth}>
+                            {auth
+                                ? "Authenticating...."
+                                : "Authenticate wallet"}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     )
@@ -285,15 +293,31 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     const daoWallet = () => (
         <div style={{ width: "100%" }}>
-            <div className={styles.headingCnt}>
-                <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                    welcome to rep3
+            {isAccess ? (
+                <div className={styles.headingCnt}>
+                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                        welcome to rep3
+                    </div>
+                    <div
+                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
+                    >
+                        Cozy corner for all your
+                        <br /> communities
+                    </div>
                 </div>
-                <div className={`${styles.greyHeading} ${textStyles.ub_53}`}>
-                    Cozy corner for all your
-                    <br /> communities
+            ) : (
+                <div className={styles.headingCnt}>
+                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                        Hmm...🤔
+                    </div>
+                    <div
+                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
+                    >
+                        seems like you don't have access to this page
+                        {/* <br /> communities */}
+                    </div>
                 </div>
-            </div>
+            )}
             {address ? authWallet() : connectWallet()}
         </div>
     )
