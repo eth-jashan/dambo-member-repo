@@ -71,6 +71,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } else {
+                            setAccess(false)
                             await afterConnectWalletCallback(setAuth)
                         }
                     } else {
