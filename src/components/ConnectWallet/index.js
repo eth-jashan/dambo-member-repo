@@ -252,19 +252,23 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 </div>
 
                 <Divider />
-                <div
-                    style={{ color: "black", paddingLeft: "1.25rem" }}
-                    className={textStyles.m_23}
-                >
-                    Authenticate your wallet
-                </div>
-                <div
-                    style={{ color: "#999999", paddingLeft: "1.25rem" }}
-                    className={styles.authGreyHeading}
-                >
-                    This is required to login, create or
-                    <br /> import your safes
-                </div>
+                {isAccess && (
+                    <>
+                        <div
+                            style={{ color: "black", paddingLeft: "1.25rem" }}
+                            className={textStyles.m_23}
+                        >
+                            Authenticate your wallet
+                        </div>
+                        <div
+                            style={{ color: "#999999", paddingLeft: "1.25rem" }}
+                            className={styles.authGreyHeading}
+                        >
+                            This is required to login, create or
+                            <br /> import your safes
+                        </div>
+                    </>
+                )}
 
                 {isAccess && (
                     <div
