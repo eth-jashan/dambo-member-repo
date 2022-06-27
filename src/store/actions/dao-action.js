@@ -1618,6 +1618,43 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     const validate = (result) =>
                         !result?.data?.membershipNFTs?.length
 
+                    dispatch(setTxHashFetched(true))
+
+                    dispatch(
+                        setClaimMembershipLoading({
+                            status: true,
+                            membership_uuid: membershipVoucherInfo.uuid,
+                        })
+                    )
+
+                    dispatch(
+                        setClaimTakingTime({
+                            claimText:
+                                "Takes around 10sec, please don’t leave the page",
+                            claimColor: "#fff",
+                        })
+                    )
+
+                    setTimeout(() => {
+                        dispatch(
+                            setClaimTakingTime({
+                                claimText:
+                                    "Oops, polygon seems to be a bit slow at the moment, please give it a bit longer",
+                                claimColor: "#FFB22E",
+                            })
+                        )
+                    }, 30000)
+
+                    setTimeout(() => {
+                        dispatch(
+                            setClaimTakingTime({
+                                claimText:
+                                    "This is highly unusual, your badge will be minted once you get back",
+                                claimColor: "#FF6262",
+                            })
+                        )
+                    }, 60000)
+
                     const response = await poll(fetchNFT, validate, 3000)
                     // const metadata = await axios.get(
                     //     // response?.data?.membershipNFTs?.[0]?.metadataUri
@@ -1644,11 +1681,12 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                             membership_uuid: null,
                         })
                     )
+                    dispatch(setDisableClaimBtn(false))
                 }
             )
             return 1
         } catch (err) {
-            console.log("claiming signing error")
+            console.log("claiming signing error", err)
             dispatch(
                 setClaimMembershipLoading({
                     status: false,
@@ -1656,6 +1694,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                 })
             )
             dispatch(setClaimTakingTime(false))
+            dispatch(setDisableClaimBtn(false))
             return 0
         }
     }
@@ -1717,12 +1756,54 @@ export const setClaimMembershipLoading = (loadingStatus) => {
     }
 }
 
-export const setClaimTakingTime = (status) => {
+export const setClaimTakingTime = (claimTakingTimeInfo) => {
     return async (dispatch, getState) => {
         try {
             dispatch(
                 daoAction.setClaimTakingTime({
-                    claimTakingTime: status,
+                    claimTakingTime: claimTakingTimeInfo,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setDisableClaimBtn = (status) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.setDisableClaimBtn({
+                    disableClaimBtn: status,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setShowMetamaskSignText = (status) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.showMetamaskSignText({
+                    showMetamaskSignText: status,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
+export const setTxHashFetched = (status) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(
+                daoAction.setTxHashFetched({
+                    txHashFetched: status,
                 })
             )
         } catch (err) {

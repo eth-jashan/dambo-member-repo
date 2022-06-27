@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux"
 import { useNavigate, useParams } from "react-router"
 import { setAdminStatus, signout } from "../store/actions/auth-action"
 import { set_invite_id, setDaoName } from "../store/actions/contibutor-action"
+import AuthWallet from "./AuthWallet"
 
 const ContributorSignupFallback = () => {
     const navigate = useNavigate()
@@ -15,14 +16,14 @@ const ContributorSignupFallback = () => {
         dispatch(signout())
         dispatch(setAdminStatus(false))
         dispatch(setDaoName(name))
-        navigate("/")
+        // navigate("/")
     }, [dispatch, id, navigate])
 
     useEffect(() => {
         linkCheck()
     }, [linkCheck])
 
-    return <div />
+    return <AuthWallet />
 }
 
 export default ContributorSignupFallback
