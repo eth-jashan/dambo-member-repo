@@ -83,7 +83,7 @@ export default function ContributorContributionScreen() {
         if (!disableClaimBtn) {
             dispatch(setDisableClaimBtn(true))
             setTimeout(() => {
-                dispatch(setShowMetamaskSignText())
+                dispatch(setShowMetamaskSignText(true))
             }, 10000)
 
             await dispatch(claimMembershipVoucher(membershipVoucherInfo))
@@ -116,6 +116,11 @@ export default function ContributorContributionScreen() {
             "_blank"
         )
     }
+
+    console.log("txhasfetched", txHashFetched)
+    console.log("disableClaimBtn", disableClaimBtn)
+    console.log("showMetamasktext", showMetamaskSignText)
+    console.log("claim taking time", showClaimTakingTime)
 
     // useEffect(() => {
     //     const script = document.createElement("script")
@@ -318,7 +323,7 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A Congrats to the team and partners @beefyfinance, @defipulse & @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0A h/t @rep3gg https://ponyfinance.xyz`}
+                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0Ahttps://ponyfinance.xyz`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >

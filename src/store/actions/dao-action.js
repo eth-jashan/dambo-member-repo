@@ -1627,6 +1627,8 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                         })
                     )
 
+                    dispatch(setShowMetamaskSignText(false))
+
                     dispatch(
                         setClaimTakingTime({
                             claimText:
