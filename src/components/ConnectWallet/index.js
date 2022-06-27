@@ -264,7 +264,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                             style={{ color: "#999999", paddingLeft: "1.25rem" }}
                             className={styles.authGreyHeading}
                         >
-                            Please sign the transaction in your wallet.
+                            Please sign the metamask message to continue.
                         </div>
                     </>
                 )}
