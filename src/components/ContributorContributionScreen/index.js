@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { Spin } from "antd"
@@ -13,6 +13,7 @@ import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
 import cross from "../../assets/Icons/cross.svg"
+// import axios from "axios"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -131,6 +132,46 @@ export default function ContributorContributionScreen() {
     // }, [])
 
     // contribution_request.length > 0 ? (
+
+    // const poll = async function (fn, fnCondition, ms) {
+    //     let result = await fn()
+    //     console.log("result of polling fn", result)
+    //     while (fnCondition(result)) {
+    //         await wait(ms)
+    //         result = await fn()
+    //         console.log("result in while loop", result)
+    //     }
+    //     return result
+    // }
+
+    // const wait = function (ms = 1000) {
+    //     return new Promise((resolve) => {
+    //         setTimeout(resolve, ms)
+    //     })
+    // }
+
+    // const [hasMetadata, setHasMetadata] = useState(false)
+
+    // useEffect(async () => {
+    //     if (membershipBadgeClaimed) {
+    //         // const res = await axios.get(
+    //         //     "https://opensea.io/assets/matic/0x9094c08fc1a0e4ffd03e2b80eef68af914a74f56/3"
+    //         // )
+    //         // console.log("res", res)
+    //         const fetchNFT = () =>
+    //             axios.get(
+    //                 `https://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`
+    //             )
+    //         const validate = (result) => !result?.data?.metadata
+
+    //         const response = await poll(fetchNFT, validate, 1000)
+
+    //         if (response) {
+    //             setHasMetadata(true)
+    //         }
+    //     }
+    // }, [])
+
     return (
         <div className="contributor-contribution-screen-container">
             {unClaimedBadges?.length ? (

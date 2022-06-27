@@ -32,6 +32,8 @@ import { useSafeSdk } from "../../hooks"
 import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 import DashboardHeader from "../../components/DashboardHeader"
+import OnboardingHeader from "../../components/OnboardingHeader"
+
 export default function DashboardLayout({
     children,
     route,
@@ -95,77 +97,80 @@ export default function DashboardLayout({
 
     const text = (item) => <span>{item}</span>
     return (
-        <div className={styles.layout}>
-            <div className={styles.accountsLayout}>
-                <div className={styles.logoContainer}>
-                    <img
-                        src={logo}
-                        alt="logo"
-                        style={{ height: "2.25rem", width: "2.25rem" }}
-                    />
-                </div>
-
-                {accounts.map((item, index) => (
-                    <div
-                        className={styles.accountContainer}
-                        key={item.dao_details?.uuid}
-                    >
-                        <Tooltip
-                            placement="right"
-                            title={() => text(item?.dao_details?.name)}
-                        >
-                            <div
-                                onClick={async () =>
-                                    await changeAccount(item, index)
-                                }
-                                style={{
-                                    height: "2.25rem",
-                                    width: "100%",
-                                    background: "transparent",
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    position: "relative",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                {currentDao?.uuid ===
-                                    item.dao_details?.uuid && (
-                                    <div className={styles.selectedDao}></div>
-                                )}
-
-                                {item?.dao_details?.logo_url ? (
-                                    <img
-                                        src={item?.dao_details?.logo_url}
-                                        alt="logo"
-                                        height="100%"
-                                        style={{
-                                            borderRadius: "2.25rem",
-                                            background: "black",
-                                            width: "2.25rem",
-                                            margin: "0 auto",
-                                        }}
-                                    />
-                                ) : (
-                                    <div
-                                        style={{
-                                            height: "2.25rem",
-                                            borderRadius: "2.25rem",
-                                            width: "2.25rem",
-                                            background: "#FF0186",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            margin: "0 auto",
-                                        }}
-                                    />
-                                )}
-                            </div>
-                        </Tooltip>
+        <>
+            <div className={styles.layout}>
+                <div className={styles.accountsLayout}>
+                    <div className={styles.logoContainer}>
+                        <img
+                            src={logo}
+                            alt="logo"
+                            style={{ height: "2.25rem", width: "2.25rem" }}
+                        />
                     </div>
-                ))}
-                <div className={styles.addContainer}>
-                    {/* <div
+
+                    {accounts.map((item, index) => (
+                        <div
+                            className={styles.accountContainer}
+                            key={item.dao_details?.uuid}
+                        >
+                            <Tooltip
+                                placement="right"
+                                title={() => text(item?.dao_details?.name)}
+                            >
+                                <div
+                                    onClick={async () =>
+                                        await changeAccount(item, index)
+                                    }
+                                    style={{
+                                        height: "2.25rem",
+                                        width: "100%",
+                                        background: "transparent",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        position: "relative",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    {currentDao?.uuid ===
+                                        item.dao_details?.uuid && (
+                                        <div
+                                            className={styles.selectedDao}
+                                        ></div>
+                                    )}
+
+                                    {item?.dao_details?.logo_url ? (
+                                        <img
+                                            src={item?.dao_details?.logo_url}
+                                            alt="logo"
+                                            height="100%"
+                                            style={{
+                                                borderRadius: "2.25rem",
+                                                background: "black",
+                                                width: "2.25rem",
+                                                margin: "0 auto",
+                                            }}
+                                        />
+                                    ) : (
+                                        <div
+                                            style={{
+                                                height: "2.25rem",
+                                                borderRadius: "2.25rem",
+                                                width: "2.25rem",
+                                                background: "#FF0186",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                margin: "0 auto",
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                            </Tooltip>
+                        </div>
+                    ))}
+                    <div className={styles.addContainer}>
+                        {/* <div
                         className={styles.addButton}
                         onClick={() => navigate("/onboard/dao")}
                     >
@@ -175,19 +180,36 @@ export default function DashboardLayout({
                             src={add_white}
                         />
                     </div> */}
+                    </div>
+                </div>
+
+                <div className={styles.childrenLayout}>
+                    <DashboardHeader
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        modalBackdrop={modalBackdrop}
+                        route={route}
+                        setShowSettings={setShowSettings}
+                    />
+                    {children}
                 </div>
             </div>
-
-            <div className={styles.childrenLayout}>
-                <DashboardHeader
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    modalBackdrop={modalBackdrop}
-                    route={route}
-                    setShowSettings={setShowSettings}
+            <div className={styles.mobileLayout}>
+                <OnboardingHeader
+                    signer={signer}
+                    onWalletCenterOpen={() => {}}
+                    showWalletPicker={false}
                 />
-                {children}
+                <div className={styles.mobileContent}>
+                    <div className={styles.mobileContentHeading}>
+                        You’re early
+                    </div>
+                    <div>
+                        We're yet to support mobile, please try again on
+                        desktop.
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     )
 }
