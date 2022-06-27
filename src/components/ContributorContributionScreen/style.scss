@@ -200,7 +200,7 @@
 
     .claimBadgeBtnWrapper {
         display: flex;
-        // justify-content: space-between;
+        justify-content: space-between;
         align-items: center;
         margin-top: 2rem;
     }
@@ -208,7 +208,7 @@
     .takingTimeText {
         font-size: 0.875rem;
         line-height: 1rem;
-        width: 35%;
+        width: 45%;
         font-family: "TelegrafMedium";
         font-weight: 500;
         color: rgba(255, 255, 255, 0.5);
