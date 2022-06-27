@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
@@ -18,6 +18,7 @@ import {
 import AppContext from "./appContext"
 import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
+import MetamaskError from "./pages/MetamaskError"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
@@ -39,26 +40,8 @@ function App() {
         setPocpActionValue,
     }
 
-    window.ethereum.on("accountsChanged", () => {
-        if (isAdmin) {
-            dispatch(setLoggedIn(false))
-            dispatch(signout())
-            navigate("/")
-        } else {
-            dispatch(setLoggedIn(false))
-            dispatch(signout())
-            dispatch(setAdminStatus(false))
-            navigate("/")
-        }
-    })
-
-    window.ethereum.on("chainChanged", (x) => {
-        const selectedChainId = getSelectedChainId()
-        const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
-        if (
-            parseInt(x) !== selectedChainId.chainId &&
-            parseInt(x) !== maticNetwork
-        ) {
+    if (window.ethereum) {
+        window.ethereum.on("accountsChanged", () => {
             if (isAdmin) {
                 dispatch(setLoggedIn(false))
                 dispatch(signout())
@@ -69,8 +52,34 @@ function App() {
                 dispatch(setAdminStatus(false))
                 navigate("/")
             }
+        })
+
+        window.ethereum.on("chainChanged", (x) => {
+            const selectedChainId = getSelectedChainId()
+            const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
+            if (
+                parseInt(x) !== selectedChainId.chainId &&
+                parseInt(x) !== maticNetwork
+            ) {
+                if (isAdmin) {
+                    dispatch(setLoggedIn(false))
+                    dispatch(signout())
+                    navigate("/")
+                } else {
+                    dispatch(setLoggedIn(false))
+                    dispatch(signout())
+                    dispatch(setAdminStatus(false))
+                    navigate("/")
+                }
+            }
+        })
+    }
+
+    useEffect(() => {
+        if (!window.ethereum) {
+            navigate("/metamask-error")
         }
-    })
+    }, [])
 
     return (
         <AppContext.Provider value={pocpActionSetup}>
@@ -95,6 +104,10 @@ function App() {
                         <Route
                             path="/discord/add-bot-fallback"
                             element={<AddBotFallback />}
+                        />
+                        <Route
+                            path="/metamask-error"
+                            element={<MetamaskError />}
                         />
                     </Routes>
                 </div>

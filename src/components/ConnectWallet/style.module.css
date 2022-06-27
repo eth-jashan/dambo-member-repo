@@ -260,3 +260,22 @@
 .greyedText {
     background: #b3b3b3;
 }
+
+.contactText {
+    font-family: "TelegrafMedium";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.contactText > a {
+    text-decoration: underline;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.contactText > a:hover {
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: underline;
+}

@@ -32,46 +32,70 @@ export default function Layout({
     }
 
     return (
-        <div className={styles.layout}>
-            <Lottie
-                options={defaultOptions}
-                style={{ position: "absolute", height: "70vh", bottom: 0 }}
-                className={styles.layoutImage}
-                isClickToPauseDisabled={true}
-            />
-            <div className={styles.content}>
+        <>
+            <div className={styles.layout}>
+                <Lottie
+                    options={defaultOptions}
+                    style={{ position: "absolute", height: "70vh", bottom: 0 }}
+                    className={styles.layoutImage}
+                    isClickToPauseDisabled={true}
+                />
+                <div className={styles.content}>
+                    <OnboardingHeader
+                        contributorWallet={contributorWallet}
+                        signer={signer}
+                        onWalletCenterOpen={(x) => setWalletCenterModal(x)}
+                        walletCenter={walletCenter}
+                    />
+                    {walletCenter && (
+                        <div className={styles.walletModal}>
+                            <ProfileModal
+                                onActionComplete={() =>
+                                    setWalletCenterModal(false)
+                                }
+                                isOnboard={true}
+                            />
+                        </div>
+                    )}
+
+                    {!contributorWallet && (
+                        <div className={styles.modal}>
+                            {!contributorWallet &&
+                            checkRoute() &&
+                            !deploying ? (
+                                <img
+                                    className={styles.backImg}
+                                    onClick={decreaseStep}
+                                    src={BackSvg}
+                                    alt="back"
+                                />
+                            ) : (
+                                <div className={styles.backImg} />
+                            )}
+                            {children}
+                        </div>
+                    )}
+                    {contributorWallet && children}
+                </div>
+            </div>
+            <div className={styles.mobileLayout}>
                 <OnboardingHeader
                     contributorWallet={contributorWallet}
                     signer={signer}
                     onWalletCenterOpen={(x) => setWalletCenterModal(x)}
                     walletCenter={walletCenter}
+                    showWalletPicker={false}
                 />
-                {walletCenter && (
-                    <div className={styles.walletModal}>
-                        <ProfileModal
-                            onActionComplete={() => setWalletCenterModal(false)}
-                            isOnboard={true}
-                        />
+                <div className={styles.mobileContent}>
+                    <div className={styles.mobileContentHeading}>
+                        You’re early
                     </div>
-                )}
-
-                {!contributorWallet && (
-                    <div className={styles.modal}>
-                        {!contributorWallet && checkRoute() && !deploying ? (
-                            <img
-                                className={styles.backImg}
-                                onClick={decreaseStep}
-                                src={BackSvg}
-                                alt="back"
-                            />
-                        ) : (
-                            <div className={styles.backImg} />
-                        )}
-                        {children}
+                    <div>
+                        We're yet to support mobile, please try again on
+                        desktop.
                     </div>
-                )}
-                {contributorWallet && children}
+                </div>
             </div>
-        </div>
+        </>
     )
 }

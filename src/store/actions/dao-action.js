@@ -1646,7 +1646,6 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     )
                 }
             )
-            console.log("voucher claimed maybe")
             return 1
         } catch (err) {
             console.log("claiming signing error")

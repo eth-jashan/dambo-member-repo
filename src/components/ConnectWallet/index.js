@@ -321,6 +321,20 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         seems like you don't have access to this page
                         {/* <br /> communities */}
                     </div>
+                    <div className={styles.contactText}>
+                        Please reach out to Pony finance on{" "}
+                        <a href="" target="_blank" rel="noreferrer">
+                            discord
+                        </a>{" "}
+                        or reach out to us{" "}
+                        <a
+                            href="https://twitter.com/rep3gg"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            here.
+                        </a>
+                    </div>
                 </div>
             )}
             {address ? authWallet() : connectWallet()}

@@ -9,6 +9,7 @@ export default function Header({
     contributorWallet,
     onWalletCenterOpen,
     walletCenter,
+    showWalletPicker = true,
 }) {
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
@@ -56,7 +57,7 @@ export default function Header({
                         Rep3 {daoName && <span> | {daoName}</span>}
                     </div>
                 )}
-                {jwt && (
+                {jwt && showWalletPicker && (
                     <div onClick={() => onWalletCenterOpen(!walletCenter)}>
                         <WalletPicker signer={signer} />
                     </div>
