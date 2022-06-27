@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
@@ -18,7 +18,6 @@ import {
 import AppContext from "./appContext"
 import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
-import { init } from "./utils/POCPServiceSdk"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
@@ -72,10 +71,6 @@ function App() {
             }
         }
     })
-
-    useEffect(() => {
-        init()
-    }, [])
 
     return (
         <AppContext.Provider value={pocpActionSetup}>

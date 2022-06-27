@@ -8,7 +8,7 @@ let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
 const pocpGetter = new PocpGetters(137)
 
-export const init = async () => {
+export const initPOCP = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
 

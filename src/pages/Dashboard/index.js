@@ -59,6 +59,7 @@ import SettingsScreen from "../../components/SettingsScreen"
 import { web3 } from "../../constant/web3"
 // import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
+import { initPOCP } from "../../utils/POCPServiceSdk"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -210,6 +211,7 @@ export default function Dashboard() {
         dispatch(refreshContributionList())
         const account = await onInit()
         if (address === ethers.utils.getAddress(account)) {
+            initPOCP()
             dispatch(setLoadingState(true))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
