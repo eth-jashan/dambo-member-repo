@@ -32,12 +32,10 @@ const DashboardHeader = ({
     const [profile_modal, setProfileModal] = useState(false)
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
 
-    const currentChainId = getSelectedChainId().chainId
+    const currentChainId = getSelectedChainId()?.chainId
     const dispatch = useDispatch()
 
     const currentUser = useSelector((x) => x.dao.username)
-
-    console.log("current dao is", currentDao)
 
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
@@ -71,7 +69,6 @@ const DashboardHeader = ({
     }
 
     const getInitialForAccount = () => {
-        console.log("current user is", currentUser)
         if (currentUser) {
             const nameArray = currentUser.split(" ")
             if (nameArray?.length > 1) {

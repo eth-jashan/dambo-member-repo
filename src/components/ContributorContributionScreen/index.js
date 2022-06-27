@@ -65,8 +65,6 @@ export default function ContributorContributionScreen() {
         (x) => x.dao.membershipBadgeClaimed
     )
 
-    console.log("membership badge claimed is", membershipBadgeClaimed)
-
     const claimMembershipLoading = useSelector(
         (x) => x.dao.claimMembershipLoading
     )
