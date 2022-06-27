@@ -258,14 +258,13 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                             style={{ color: "black", paddingLeft: "1.25rem" }}
                             className={textStyles.m_23}
                         >
-                            Authenticate your wallet
+                            Signature please! ✍️
                         </div>
                         <div
                             style={{ color: "#999999", paddingLeft: "1.25rem" }}
                             className={styles.authGreyHeading}
                         >
-                            This is required to login, create or
-                            <br /> import your safes
+                            Please sign the transaction in your wallet.
                         </div>
                     </>
                 )}
