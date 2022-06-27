@@ -208,7 +208,10 @@ export default function ContributorContributionScreen() {
                                 </div>
                                 <div className="claimBadgeBtnWrapper">
                                     <button
-                                        className="claimBadgeBtn"
+                                        className={`claimBadgeBtn ${
+                                            claimMembershipLoading.status &&
+                                            "pinkColor"
+                                        }`}
                                         onClick={() => claimBadge(badge)}
                                         disabled={disableClaimBtn}
                                     >

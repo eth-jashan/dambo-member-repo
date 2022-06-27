@@ -1632,7 +1632,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     dispatch(
                         setClaimTakingTime({
                             claimText:
-                                "Takes around 10sec, please don’t leave the page",
+                                "Takes around 20sec, please don’t leave the page",
                             claimColor: "#fff",
                         })
                     )
@@ -1651,11 +1651,11 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                         dispatch(
                             setClaimTakingTime({
                                 claimText:
-                                    "This is highly unusual, your badge will be minted once you get back",
+                                    "It’s taking longer than expected. Why not have some water in the mean time? 🚰 ",
                                 claimColor: "#FF6262",
                             })
                         )
-                    }, 60000)
+                    }, 90000)
 
                     const response = await poll(fetchNFT, validate, 3000)
                     // const metadata = await axios.get(

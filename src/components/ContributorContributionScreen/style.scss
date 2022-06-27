@@ -57,6 +57,10 @@
         &:disabled {
             opacity: 0.5;
         }
+        &.pinkColor {
+            background: #d1caff;
+            color: #6852ff;
+        }
     }
 
     .badgeName {
