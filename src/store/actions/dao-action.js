@@ -1788,7 +1788,7 @@ export const setShowMetamaskSignText = (status) => {
     return async (dispatch, getState) => {
         try {
             dispatch(
-                daoAction.showMetamaskSignText({
+                daoAction.setShowMetamaskSignText({
                     showMetamaskSignText: status,
                 })
             )

@@ -318,7 +318,7 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=POV: you support early web3 projects 😌 %0A%0Ah/t @rep3gg for the amazing NFT!🥳 %0A%0Ahttps://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`}
+                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A Congrats to the team and partners @beefyfinance, @defipulse & @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0A h/t @rep3gg https://ponyfinance.xyz`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >
