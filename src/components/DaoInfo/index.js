@@ -13,6 +13,7 @@ import Lottie from "react-lottie"
 import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
+import { assets } from "../../constant/assets"
 
 const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
     const [name, setName] = useState("")
@@ -136,7 +137,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                         <Typography.Text
                                             className={styles.helperText}
                                         >
-                                            What should we call your DAO
+                                            What is your Community called?
                                         </Typography.Text>
                                         <div>
                                             <InputText
@@ -145,11 +146,11 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                                 onChange={(e) =>
                                                     setName(e.target.value)
                                                 }
-                                                placeholder="DAO Name"
+                                                placeholder="Community Name"
                                             />
                                         </div>
                                     </div>
-                                    <div>
+                                    {/* <div>
                                         <Typography.Text
                                             className={styles.helperTextSec}
                                         >
@@ -170,8 +171,8 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                                 }
                                             />
                                         </div>
-                                    </div>
-                                    <div>
+                                    </div> */}
+                                    {/* <div>
                                         <Typography.Text
                                             className={styles.helperTextSec}
                                         >
@@ -192,7 +193,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                                 }
                                             />
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div
                                     style={{
@@ -314,11 +315,19 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                         </div>
                     </div>
                     <div className={styles.bottomBar}>
+                        <div className={styles.backDiv}>
+                            <img
+                                src={assets.icons.backArrowBlack}
+                                alt="right"
+                                className={styles.backIcon}
+                            />
+                            <div className={styles.backTitle}>Back</div>
+                        </div>
                         <NextButton
                             text={
-                                hasMultiSignWallet
-                                    ? "Register Dao"
-                                    : "Create Multisig"
+                                // hasMultiSignWallet
+                                "Register people"
+                                // : "Create Multisig"
                             }
                             nextButtonCallback={onSubmit}
                             isDisabled={name === "" || deploying || loading}

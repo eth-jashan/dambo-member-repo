@@ -20,14 +20,16 @@ import { message } from "antd"
 import POCPSignup from "../components/POCPSignup"
 import DiscordRegister from "../components/DiscordRegister"
 import OnboardingError from "../components/OnboardingError"
+import OnboardingOverview from "../components/OnboardingOverview"
 
 export default function Onboarding() {
-    const [currentStep, setCurrentStep] = useState(0)
+    const [currentStep, setCurrentStep] = useState(1)
     const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const [deploying, setDeploying] = useState(false)
     const [signer, setSigner] = useState()
     const [safeAddress, setSafeAddress] = useState()
+    const [isPayout, setIsPayout] = useState(false)
     const { safeFactory } = useSafeSdk(signer, safeAddress)
 
     const owners = useSelector((x) => x.dao.newSafeSetup.owners)
@@ -46,6 +48,7 @@ export default function Onboarding() {
 
     const steps = [
         "connectWallet",
+        "onboardingSteps",
         "gnosisSafeList",
         "addOwners",
         "approveTransaction",
@@ -208,6 +211,14 @@ export default function Onboarding() {
         increaseStep()
     }
 
+    const increaseFromOverview = () => {
+        if (isPayout) {
+            console.log("Payout Flow")
+        } else {
+            setCurrentStep(5)
+        }
+    }
+
     const getComponentFromName = (name, hasMultiSignWallet = false) => {
         switch (name) {
             case "connectWallet": {
@@ -218,6 +229,11 @@ export default function Onboarding() {
                         afterConnectWalletCallback={afterConnectWalletCallback}
                         isAdmin={isAdmin}
                     />
+                )
+            }
+            case "onboardingSteps": {
+                return (
+                    <OnboardingOverview increaseStep={increaseFromOverview} />
                 )
             }
             case "gnosisSafeList": {
@@ -293,6 +309,12 @@ export default function Onboarding() {
                 deploying={deploying}
                 steps={steps}
             >
+                {/* <DaoInfo
+                    hasMultiSignWallet={hasMultiSignWallet}
+                    increaseStep={increaseStep}
+                    deploying={deploying}
+                    createDao={createDao}
+                /> */}
                 {getComponentFromName(steps[currentStep], hasMultiSignWallet)}
             </Layout>
         </div>

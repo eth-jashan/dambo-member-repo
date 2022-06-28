@@ -32,6 +32,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const [auth, setAuth] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [isAccess, setAccess] = useState(true)
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -61,7 +62,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    setAccess(false)
+                                    // setAccess(false)
                                 }
                             } else {
                                 navigate(`/onboard/contributor/${uuid}`, {
@@ -71,7 +72,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } else {
-                            setAccess(false)
+                            // setAccess(false)
                             await afterConnectWalletCallback(setAuth)
                         }
                     } else {
@@ -111,8 +112,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         window.location.replace(`${links.discord_oauth.local}`)
     }
 
-    const [isAccess, setAccess] = useState(true)
-
     const loadWeb3Modal = useCallback(async () => {
         console.log(isAdmin)
         setAuth(true)
@@ -142,7 +141,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         setAuth(false)
                         setAccess(false)
                         // message.error("Closed For Beta Test")
-                        // navigate("/onboard/dao")
+                        navigate("/onboard/dao")
                     }
                 } else {
                     // setAuth(false)

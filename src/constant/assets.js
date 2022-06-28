@@ -13,6 +13,8 @@ import upBlack from "../assets/Icons/up_black.svg"
 import feedbackCardIcon from "../assets/Icons/feedback_card_icon.svg"
 import clockIcon from "../assets/Icons/clock_icon.svg"
 import infoIcon from "../assets/Icons/info.svg"
+import checkoBoxOutline from "../assets/Icons/check_box_outline_blank.svg"
+import backArrowBlack from "../assets/Icons/arrow_back_black_24dp.svg"
 
 export const assets = {
     icons: {
@@ -31,5 +33,7 @@ export const assets = {
         feedIconBlack,
         upBlack,
         infoIcon,
+        checkoBoxOutline,
+        backArrowBlack,
     },
 }
