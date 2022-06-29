@@ -15,7 +15,12 @@ import axios from "axios"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { assets } from "../../constant/assets"
 
-const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
+const DaoInfo = ({
+    deploying,
+    hasMultiSignWallet,
+    createDao,
+    increaseStep,
+}) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [discord, setDiscord] = useState("")
@@ -329,7 +334,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                 "Register people"
                                 // : "Create Multisig"
                             }
-                            nextButtonCallback={onSubmit}
+                            nextButtonCallback={increaseStep}
                             isDisabled={name === "" || deploying || loading}
                         />
                     </div>

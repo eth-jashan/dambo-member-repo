@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react"
 import styles from "./style.module.css"
 import CrossSvg from "../../assets/Icons/cross.svg"
-import PlusSvg from "../../assets/Icons/plus.svg"
+import PlusSvg from "../../assets/Icons/plusBlack.svg"
 import { v4 as uuidv4 } from "uuid"
 import NextButton from "../NextButton"
 import { useDispatch, useSelector } from "react-redux"
@@ -10,11 +10,13 @@ import InputText from "../Input"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { addOwners, addThreshold } from "../../store/actions/dao-action"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { assets } from "../../constant/assets"
 
 export default function AddOwners({
     increaseStep,
     hasMultiSignWallet,
     setStep,
+    rep3Setup,
 }) {
     const address = useSelector((x) => x.auth.address)
     const [owners, setOwners] = useState([
@@ -29,6 +31,7 @@ export default function AddOwners({
     const dispatch = useDispatch()
     const safeAddress = useSelector((x) => x.dao.newSafeSetup.safeAddress)
     const [loading, setLoading] = useState(false)
+    const [safeSigners, setSafeOwners] = useState([])
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const getSafeOwners = useCallback(async () => {
@@ -43,10 +46,25 @@ export default function AddOwners({
                 })
             })
             setOwners(ownerObj)
+            setSafeOwners(ownerObj)
             setThreshold(safeInfo.threshold)
             // }
         }
     }, [safeAddress])
+
+    const checkSafeOwner = (address) => {
+        if (hasMultiSignWallet) {
+            safeSigners.forEach((x) => {
+                if (x === address) {
+                    return true
+                } else {
+                    return false
+                }
+            })
+        } else {
+            return false
+        }
+    }
 
     useEffect(() => {
         if (hasMultiSignWallet) {
@@ -107,29 +125,49 @@ export default function AddOwners({
         }
     }
 
+    const renderHeader = () =>
+        rep3Setup ? (
+            <div>
+                <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                    Register people
+                </div>
+                <div className={`${textStyles.m_36} ${styles.helperHeading}`}>
+                    need to have some copy to talk about the protocol, bla bla
+                    bla bla
+                </div>
+            </div>
+        ) : (
+            <>
+                {hasMultiSignWallet ? (
+                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                        Review your owners
+                    </div>
+                ) : (
+                    <div className={styles.heading}>Add vault owners</div>
+                )}
+                {hasMultiSignWallet ? (
+                    <div
+                        className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
+                    >
+                        Tell us what to call your team
+                        <br /> members.
+                    </div>
+                ) : (
+                    <div
+                        className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
+                    >
+                        have more than one owner to <br /> maximize security
+                    </div>
+                )}
+            </>
+        )
+
+    console.log(safeSigners)
+
     return (
         <div className={styles.wrapper}>
-            {hasMultiSignWallet ? (
-                <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                    Review your owners
-                </div>
-            ) : (
-                <div className={styles.heading}>Add vault owners</div>
-            )}
-            {hasMultiSignWallet ? (
-                <div
-                    className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
-                >
-                    Tell us what to call your team
-                    <br /> members.
-                </div>
-            ) : (
-                <div
-                    className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
-                >
-                    have more than one owner to <br /> maximize security
-                </div>
-            )}
+            {renderHeader()}
+
             <div className={styles.ownerContainer}>
                 {!loading &&
                     owners.length > 0 &&
@@ -138,7 +176,7 @@ export default function AddOwners({
                             <div style={{ width: "32%", border: 0 }}>
                                 <InputText
                                     type="text"
-                                    placeholder={"Owner Name"}
+                                    placeholder={"Username"}
                                     width={"100%"}
                                     value={owner?.name}
                                     onChange={(e) =>
@@ -167,33 +205,47 @@ export default function AddOwners({
                             </div>
                             <div
                                 onClick={() =>
-                                    !hasMultiSignWallet &&
-                                    index !== 0 &&
-                                    deleteOwner(owner.id)
+                                    !checkSafeOwner(owner.address) ||
+                                    (index !== 0 && deleteOwner(owner.id))
                                 }
                             >
-                                <img src={CrossSvg} alt="delete" />
+                                {!checkSafeOwner(owner.address) ? (
+                                    <img src={CrossSvg} alt="delete" />
+                                ) : (
+                                    <img
+                                        src={assets.icons.infoIcon}
+                                        alt="info"
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
-
-                <div className={styles.bottomBar}>
-                    <NextButton
-                        text={
-                            hasMultiSignWallet
-                                ? "Add DAO details"
-                                : "Add Permissions"
-                        }
-                        nextButtonCallback={onNext}
-                        isDisabled={!areValidOwners()}
-                    />
-                </div>
             </div>
             <div
-                onClick={!hasMultiSignWallet ? () => addOwner() : () => {}}
+                onClick={
+                    !hasMultiSignWallet || rep3Setup
+                        ? () => addOwner()
+                        : () => {}
+                }
                 className={styles.addOwner}
             >
                 Add Owner <img src={PlusSvg} alt="add" />
+            </div>
+
+            <div className={styles.bottomBarAbsolute}>
+                <div className={styles.backDiv}>
+                    <img
+                        src={assets.icons.backArrowBlack}
+                        alt="right"
+                        className={styles.backIcon}
+                    />
+                    <div className={styles.backTitle}>Back</div>
+                </div>
+                <NextButton
+                    text={rep3Setup ? "Sign Transaction" : "Add Permissions"}
+                    nextButtonCallback={onNext}
+                    isDisabled={!areValidOwners()}
+                />
             </div>
         </div>
     )

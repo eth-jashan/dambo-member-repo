@@ -52,8 +52,46 @@
 }
 
 .bottomBar {
-    position: fixed;
-    bottom: 1.25rem;
+    position: absolute;
+    bottom: 1rem;
     /* background: red; */
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.backIcon {
+    align-self: center;
+    justify-content: center;
+    /* margin-top: 4px; */
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 8px;
+}
+
+.buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.backTitle {
+    font-family: "SFMono";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.backDiv {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+
+.loaderLayout {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }

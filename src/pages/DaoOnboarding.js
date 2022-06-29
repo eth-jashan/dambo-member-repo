@@ -12,15 +12,16 @@ import {
     pocpRegistrationInfo,
     registerDao,
     connectDaoToDiscord,
+    getAllSafeFromAddress,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { message } from "antd"
-import POCPSignup from "../components/POCPSignup"
 import DiscordRegister from "../components/DiscordRegister"
 import OnboardingError from "../components/OnboardingError"
 import OnboardingOverview from "../components/OnboardingOverview"
+import GnosisSuccess from "../components/GnosisSuccess"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(1)
@@ -29,6 +30,7 @@ export default function Onboarding() {
     const [deploying, setDeploying] = useState(false)
     const [signer, setSigner] = useState()
     const [safeAddress, setSafeAddress] = useState()
+    const [rep3Setup, setrep3Setup] = useState(false)
     const [isPayout, setIsPayout] = useState(false)
     const { safeFactory } = useSafeSdk(signer, safeAddress)
 
@@ -106,28 +108,28 @@ export default function Onboarding() {
             setSafeAddress(newSafeAddress)
             dispatch(addSafeAddress(newSafeAddress))
             // setDeploying(true)
-            const { dao_uuid, name } = await dispatch(registerDao())
-            dispatch(lastSelectedId(dao_uuid))
-            if (dao_uuid) {
-                if (guildId) {
-                    const res = await dispatch(
-                        connectDaoToDiscord(dao_uuid, guildId, discordUserId)
-                    )
-                    if (res) {
-                        message.success(
-                            "Discord registered to dao successfully"
-                        )
-                    } else {
-                        message.error(
-                            "Something went wrong please try again later"
-                        )
-                    }
-                }
-                dispatch(pocpRegistrationInfo(dao_uuid, name, owners))
-                setCurrentStep(currentStep + 1)
-            } else {
-                navigate(`/`)
-            }
+            // const { dao_uuid, name } = await dispatch(registerDao())
+            // dispatch(lastSelectedId(dao_uuid))
+            // if (dao_uuid) {
+            //     if (guildId) {
+            //         const res = await dispatch(
+            //             connectDaoToDiscord(dao_uuid, guildId, discordUserId)
+            //         )
+            //         if (res) {
+            //             message.success(
+            //                 "Discord registered to dao successfully"
+            //             )
+            //         } else {
+            //             message.error(
+            //                 "Something went wrong please try again later"
+            //             )
+            //         }
+            //     }
+            //     dispatch(pocpRegistrationInfo(dao_uuid, name, owners))
+            //     setCurrentStep(currentStep + 1)
+            // } else {
+            //     navigate(`/`)
+            // }
         },
         [address, dispatch, navigate, safeFactory, threshold]
     )
@@ -200,6 +202,34 @@ export default function Onboarding() {
         }
     }
 
+    const deployNewSafe = async () => {
+        try {
+            try {
+                const owner = []
+                owners.forEach((item) => {
+                    owner.push(item.address)
+                })
+                console.log("owners", owner, threshold)
+                // await deploySafe(owner)
+                setCurrentStep(6)
+            } catch (error) {
+                // console.log("error.... on deploying", error);
+            }
+        } catch (error) {
+            // console.log("error.......", error);
+        }
+    }
+
+    const fetchAllSafe = useCallback(async () => {
+        try {
+            dispatch(getAllSafeFromAddress())
+            return 1
+        } catch (error) {
+            // //console.log('error on safe fetch.......', error)
+            return 0
+        }
+    }, [address, dispatch])
+
     const decreaseStep = () => {
         if (hasMultiSignWallet && steps[currentStep] === "daoInfo") {
             setCurrentStep(steps.indexOf("addOwners"))
@@ -212,10 +242,26 @@ export default function Onboarding() {
     }
 
     const increaseFromOverview = () => {
+        setCurrentStep(5)
+    }
+
+    const increaseFromGnosisSetup = () => {
+        console.log("here")
+        setrep3Setup(true)
+        setCurrentStep(3)
+    }
+
+    const increaseFromDaoInfo = async () => {
         if (isPayout) {
-            console.log("Payout Flow")
+            const res = await fetchAllSafe()
+            if (res) {
+                setCurrentStep(2)
+            } else {
+                message.error("Error Fetching Safe List !")
+            }
         } else {
-            setCurrentStep(5)
+            setrep3Setup(true)
+            setCurrentStep(3)
         }
     }
 
@@ -233,7 +279,11 @@ export default function Onboarding() {
             }
             case "onboardingSteps": {
                 return (
-                    <OnboardingOverview increaseStep={increaseFromOverview} />
+                    <OnboardingOverview
+                        increaseStep={increaseFromOverview}
+                        isPayout={isPayout}
+                        setPayout={() => setIsPayout(!isPayout)}
+                    />
                 )
             }
             case "gnosisSafeList": {
@@ -244,6 +294,8 @@ export default function Onboarding() {
                         setHasMultiSignWallet={setHasMultiSignWallet}
                         guildId={guildId}
                         discordUserId={discordUserId}
+                        rep3Setup={rep3Setup}
+                        setrep3Setup={(x) => setrep3Setup(x)}
                     />
                 )
             }
@@ -256,33 +308,35 @@ export default function Onboarding() {
                         hasMultiSignWallet={hasMultiSignWallet}
                         increaseStep={increaseStep}
                         setStep={(x) => setCurrentStep(steps.indexOf(x))}
+                        rep3Setup={rep3Setup}
                     />
                 )
             }
             case "approveTransaction":
                 return (
                     <ApproveTransaction
-                        increaseStep={increaseStep}
+                        increaseStep={deployNewSafe}
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
                         hasMultiSignWallet={hasMultiSignWallet}
                         setProvider={setProvider}
+                        deploying={deploying}
                     />
                 )
             case "daoInfo":
                 return (
                     <DaoInfo
                         hasMultiSignWallet={hasMultiSignWallet}
-                        increaseStep={increaseStep}
+                        increaseStep={increaseFromDaoInfo}
                         deploying={deploying}
                         createDao={createDao}
                     />
                 )
             case "pocpSignup":
                 return (
-                    <POCPSignup
+                    <GnosisSuccess
                         hasMultiSignWallet={hasMultiSignWallet}
-                        increaseStep={increaseStep}
+                        increaseStep={increaseFromGnosisSetup}
                         deploying={deploying}
                     />
                 )
@@ -309,12 +363,6 @@ export default function Onboarding() {
                 deploying={deploying}
                 steps={steps}
             >
-                {/* <DaoInfo
-                    hasMultiSignWallet={hasMultiSignWallet}
-                    increaseStep={increaseStep}
-                    deploying={deploying}
-                    createDao={createDao}
-                /> */}
                 {getComponentFromName(steps[currentStep], hasMultiSignWallet)}
             </Layout>
         </div>

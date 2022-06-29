@@ -12,15 +12,16 @@
         font-size: 3.375rem;
         line-height: 3.5rem;
         /* margin-bottom: 96px; */
-        margin-bottom: 13.12%;
+        // margin-bottom: 13.12%;
     }
-    .headingSecondary {
+    .headingSecondaries {
         color: black;
         font-family: "TelegrafBolder";
         font-style: normal;
         font-weight: 800;
         font-size: 3.375rem;
         line-height: 3.5rem;
+        margin-bottom: 0rem;
     }
     .greyHeading {
         color: #818081;
@@ -29,7 +30,7 @@
         font-weight: 800;
         font-size: 3.375rem;
         line-height: 3.5rem;
-        margin-bottom: 13.12%;
+        // margin-bottom: 13.12%;
     }
 
     .content {
@@ -124,8 +125,8 @@
         line-height: 32px;
     } */
     .multiSigCtn {
-        display: flex;
-        margin-top: 2.04%;
+        // display: flex;
+        // margin-top: 2.04%;
         cursor: pointer;
     }
     .multiSigBtn {
@@ -151,4 +152,32 @@
     color: #000000;
     opacity: 0.5;
     font-family: "TelegrafMedium";
+}
+.backIcon {
+    align-self: center;
+    justify-content: center;
+    /* margin-top: 4px; */
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 8px;
+}
+
+.buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.backTitle {
+    font-family: "SFMono";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.backDiv {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
 }

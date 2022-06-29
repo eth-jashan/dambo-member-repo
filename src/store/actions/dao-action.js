@@ -1093,8 +1093,9 @@ export const getContributorOverview = () => {
     }
 }
 
-export const getAllSafeFromAddress = (address) => {
+export const getAllSafeFromAddress = () => {
     return async (dispatch, getState) => {
+        const address = getState().auth.address
         const list = await serviceClient.getSafesByOwner(address)
         let daos = []
         for (let i = 0; i < list.safes.length; i++) {

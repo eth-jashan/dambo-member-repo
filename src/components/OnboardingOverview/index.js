@@ -1,59 +1,10 @@
-import { Typography, Popover, message, Steps } from "antd"
-import React, { useCallback, useEffect } from "react"
-// import styles from "./style.module.css"
+import React from "react"
 import "./style.scss"
-import { MdOutlineAdd } from "react-icons/md"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import chevron_right from "../../assets/Icons/chevron_right.svg"
-import info from "../../assets/Icons/info.svg"
-import plus from "../../assets/Icons/plus_black.svg"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import {
-    addSafeAddress,
-    getAllSafeFromAddress,
-    connectDaoToDiscord,
-} from "../../store/actions/dao-action"
 import { assets } from "../../constant/assets"
 import NextButton from "../NextButton"
-// import assets from '../../constant/assets'
 
-// const { Step } = Steps
-
-const OnboardingOverview = ({ increaseStep }) => {
-    // const [searchParams, _setSearchParams] = useSearchParams()
-    // const setCurrentStep = () => {
-    //     setStep(2)
-    // }
-    // let safeList = useSelector((x) => x.dao.allSafeList)
-    // if (!guildId) {
-    //     safeList = safeList?.filter((x) => x.name === "")
-    // }
-
-    // const navigate = useNavigate()
-    // const setGnosisWallet = async (x) => {
-    //     if (x.guild_id) return
-    //     if (guildId && x.name) {
-    //         const res = await dispatch(
-    //             connectDaoToDiscord(x.uuid, guildId, discordUserId)
-    //         )
-    //         if (res) {
-    //             message.success("Discord registered to dao successfully")
-    //             navigate("/dashboard")
-    //         } else {
-    //             message.error("Something went wrong please try again later")
-    //         }
-    //     } else {
-    //         dispatch(addSafeAddress(x.addr))
-    //         if (x.name !== "") {
-    //             navigate("/dashboard")
-    //         } else {
-    //             setHasMultiSignWallet(true)
-    //             setCurrentStep()
-    //         }
-    //     }
-    // }
-
+const OnboardingOverview = ({ increaseStep, setPayout, isPayout }) => {
     const renderOnboardingSteps = () => (
         <div className="onboardOverview">
             <div
@@ -88,8 +39,13 @@ const OnboardingOverview = ({ increaseStep }) => {
         <div>
             <div className="selectionContainer">
                 <img
+                    onClick={setPayout}
                     className="checkboxOutline"
-                    src={assets.icons.checkoBoxOutline}
+                    src={
+                        isPayout
+                            ? assets.icons.checkBoxActive
+                            : assets.icons.checkoBoxOutline
+                    }
                 />
                 <div className={`${textStyles.ub_19}`}>
                     I will be using rep3 for payouts as well

@@ -9,9 +9,9 @@ import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import info from "../../../assets/Icons/info.svg"
 import plus from "../../../assets/Icons/plus_black.svg"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
+import { assets } from "../../../constant/assets"
 import {
     addSafeAddress,
-    getAllSafeFromAddress,
     connectDaoToDiscord,
 } from "../../../store/actions/dao-action"
 
@@ -21,12 +21,14 @@ const GnosisSafeList = ({
     increaseStep,
     setHasMultiSignWallet,
     discordUserId,
+    setrep3Setup,
 }) => {
-    // const [searchParams, _setSearchParams] = useSearchParams()
     const setCurrentStep = () => {
-        setStep(2)
+        setStep(3)
+        setrep3Setup(true)
     }
     let safeList = useSelector((x) => x.dao.allSafeList)
+    // let safeList = []
     if (!guildId) {
         safeList = safeList?.filter((x) => x.name === "")
     }
@@ -49,23 +51,12 @@ const GnosisSafeList = ({
             if (x.name !== "") {
                 navigate("/dashboard")
             } else {
+                console.log("here")
                 setHasMultiSignWallet(true)
                 setCurrentStep()
             }
         }
     }
-    const address = useSelector((x) => x.auth.address)
-    const fetchAllSafe = useCallback(async () => {
-        try {
-            dispatch(getAllSafeFromAddress(address))
-        } catch (error) {
-            // //console.log('error on safe fetch.......', error)
-        }
-    }, [address, dispatch])
-
-    useEffect(() => {
-        fetchAllSafe()
-    }, [fetchAllSafe])
 
     const popoverContent = () => {
         return (
@@ -132,33 +123,35 @@ const GnosisSafeList = ({
         </div>
     )
 
-    return (
-        <div className="gnosisSafeListContainer layout">
-            {safeList.length > 0 ? (
-                <div className={`heading ${textStyles.ub_53}`}>
-                    Select the safe you
-                    <br /> want to continue with
-                </div>
-            ) : (
-                <div className={`headingSecondary ${textStyles.ub_53}`}>
+    const renderHeading = () =>
+        safeList.length === 0 ? (
+            <>
+                <div className={`${textStyles.ub_53}`}>
                     Couldn’t find multisig
-                </div>
-            )}
-            {!safeList.length > 0 && (
-                <div className={`headingSecondary greyHeading`}>
+                    <br />
                     Create a new one
                 </div>
+            </>
+        ) : (
+            <div className={`heading ${textStyles.ub_53}`}>
+                Select the safe you
+                <br /> want to continue with
+            </div>
+        )
+
+    return (
+        <div className="gnosisSafeListContainer layout">
+            {renderHeading()}
+            {safeList.length > 0 ? (
+                <div className="listContent">
+                    {safeList.map((item, index) => (
+                        <RenderSafe key={index} item={item} />
+                    ))}
+                </div>
+            ) : (
+                renderNoWallet()
             )}
             <div className="content">
-                {safeList.length > 0 ? (
-                    <div className="listContent">
-                        {safeList.map((item, index) => (
-                            <RenderSafe key={index} item={item} />
-                        ))}
-                    </div>
-                ) : (
-                    renderNoWallet()
-                )}
                 {safeList.length > 0 && (
                     <div
                         onClick={() => createNewMulti()}
@@ -171,6 +164,16 @@ const GnosisSafeList = ({
                         <div className="multiSigBtn">Create New Multisig</div>
                     </div>
                 )}
+            </div>
+            <div className="bottomBar">
+                <div className="backDiv">
+                    <img
+                        src={assets.icons.backArrowBlack}
+                        alt="right"
+                        className="backIcon"
+                    />
+                    <div className="backTitle">Back</div>
+                </div>
             </div>
         </div>
     )
