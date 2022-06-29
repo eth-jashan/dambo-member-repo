@@ -7,7 +7,8 @@ import {
     claimMembershipVoucher,
     setMembershipBadgeClaimed,
     setClaimMembershipLoading,
-    setClaimTakingTime,
+    setDisableClaimBtn,
+    setShowMetamaskSignText,
 } from "../../store/actions/dao-action"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
@@ -72,21 +73,21 @@ export default function ContributorContributionScreen() {
 
     // const [showClaimTakingTime, setShowClaimTakingTime] = useState(false)
     const showClaimTakingTime = useSelector((x) => x.dao.claimTakingTime)
+    const disableClaimBtn = useSelector((x) => x.dao.disableClaimBtn)
+    const showMetamaskSignText = useSelector((x) => x.dao.showMetamaskSignText)
+    const txHashFetched = useSelector((x) => x.dao.txHashFetched)
 
     const dispatch = useDispatch()
 
     const claimBadge = async (membershipVoucherInfo) => {
-        dispatch(
-            setClaimMembershipLoading({
-                status: true,
-                membership_uuid: membershipVoucherInfo.uuid,
-            })
-        )
-        await dispatch(claimMembershipVoucher(membershipVoucherInfo))
-        setTimeout(() => {
-            // setShowClaimTakingTime(true)
-            dispatch(setClaimTakingTime(true))
-        }, 18000)
+        if (!disableClaimBtn) {
+            dispatch(setDisableClaimBtn(true))
+            setTimeout(() => {
+                dispatch(setShowMetamaskSignText(true))
+            }, 10000)
+
+            await dispatch(claimMembershipVoucher(membershipVoucherInfo))
+        }
     }
 
     const closeClaimedModal = () => {
@@ -115,6 +116,11 @@ export default function ContributorContributionScreen() {
             "_blank"
         )
     }
+
+    // console.log("txhasfetched", txHashFetched)
+    // console.log("disableClaimBtn", disableClaimBtn)
+    // console.log("showMetamasktext", showMetamaskSignText)
+    // console.log("claim taking time", showClaimTakingTime)
 
     // useEffect(() => {
     //     const script = document.createElement("script")
@@ -202,19 +208,37 @@ export default function ContributorContributionScreen() {
                                 </div>
                                 <div className="claimBadgeBtnWrapper">
                                     <button
-                                        className="claimBadgeBtn"
+                                        className={`claimBadgeBtn ${
+                                            claimMembershipLoading.status &&
+                                            "pinkColor"
+                                        }`}
                                         onClick={() => claimBadge(badge)}
+                                        disabled={disableClaimBtn}
                                     >
-                                        Claim Badge{" "}
-                                        {claimMembershipLoading.status &&
-                                        claimMembershipLoading.membership_uuid ===
-                                            badge.membership_uuid ? (
-                                            <Spin indicator={antIcon} />
+                                        {disableClaimBtn
+                                            ? claimMembershipLoading.status
+                                                ? "Minting... "
+                                                : "Sign on Metamask"
+                                            : "Claim Badge "}
+                                        {disableClaimBtn ? (
+                                            claimMembershipLoading.status ? (
+                                                <Spin indicator={antIcon} />
+                                            ) : (
+                                                <></>
+                                            )
                                         ) : (
                                             <img src={magic_button} alt="" />
                                         )}
+                                        {/* {claimMembershipLoading.status &&
+                                        claimMembershipLoading.membership_uuid ===
+                                            badge.membership_uuid ? (
+                                                disableClaimBtn ?
+                                            <Spin indicator={antIcon} />
+                                        ) : (
+                                            <img src={magic_button} alt="" />
+                                        )} */}
                                     </button>
-                                    {showClaimTakingTime &&
+                                    {/* {showClaimTakingTime &&
                                         claimMembershipLoading?.status &&
                                         claimMembershipLoading.membership_uuid ===
                                             badge.membership_uuid && (
@@ -222,7 +246,26 @@ export default function ContributorContributionScreen() {
                                                 Takes around 10sec, please don’t
                                                 leave the page
                                             </span>
-                                        )}
+                                        )} */}
+
+                                    {!txHashFetched && showMetamaskSignText && (
+                                        <span className="takingTimeText">
+                                            Something doesn’t seem right. Try
+                                            refreshing this page and signing
+                                            again.
+                                        </span>
+                                    )}
+
+                                    {txHashFetched && showClaimTakingTime && (
+                                        <span
+                                            className="takingTimeText"
+                                            style={{
+                                                color: showClaimTakingTime.claimColor,
+                                            }}
+                                        >
+                                            {showClaimTakingTime.claimText}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -283,7 +326,7 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=POV: you support early web3 projects 😌 %0A%0Ah/t @rep3gg for the amazing NFT!🥳 %0A%0Ahttps://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`}
+                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0Ahttps://ponyfinance.xyz`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >

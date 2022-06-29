@@ -60,7 +60,10 @@ const daoSlice = createSlice({
         membershipBadgeClaimed: null,
         claimMembershipLoading: false,
         username: "",
-        claimTakingTime: false,
+        claimTakingTime: null,
+        disableClaimBtn: false,
+        showMetamaskSignText: false,
+        txHashFetched: false,
     },
     reducers: {
         set_chainId(state, action) {
@@ -206,6 +209,15 @@ const daoSlice = createSlice({
         },
         setClaimTakingTime(state, action) {
             state.claimTakingTime = action.payload.claimTakingTime
+        },
+        setDisableClaimBtn(state, action) {
+            state.disableClaimBtn = action.payload.disableClaimBtn
+        },
+        setShowMetamaskSignText(state, action) {
+            state.showMetamaskSignText = action.payload.showMetamaskSignText
+        },
+        setTxHashFetched(state, action) {
+            state.txHashFetched = action.payload.txHashFetched
         },
     },
 })
