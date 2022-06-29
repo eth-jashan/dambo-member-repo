@@ -77,7 +77,8 @@
                         height: 100%;
                         display: flex;
                         align-items: center;
-                        img {
+                        img,
+                        video {
                             height: 100%;
                             &.upload-btn {
                                 height: 1.5rem;

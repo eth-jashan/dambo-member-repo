@@ -23,9 +23,20 @@ export default function MembershipCreationStep2({
         const files = e.target.files || e.dataTransfer.files
         if (!files.length) return
         const copyOfBadges = [...membershipBadges]
+        console.log("file selected is", files[0])
         copyOfBadges[badgeIndex].imgUrl = URL.createObjectURL(files[0])
+        copyOfBadges[badgeIndex].isVideo = false
+        if (files[0].type === "video/mp4") {
+            copyOfBadges[badgeIndex].isVideo = true
+        }
+        // const formData = new FormData()
+        // formData.append("file", files[0])
+        copyOfBadges[badgeIndex].file = files[0]
+
         setMembershipBadges(copyOfBadges)
     }
+
+    console.log("membership badges ", membershipBadges)
 
     return (
         <div className="membership-creation-step2-container">
@@ -64,7 +75,13 @@ export default function MembershipCreationStep2({
                                 </div>
                                 <div className="badge-image-wrapper">
                                     {badge.imgUrl ? (
-                                        <img src={badge.imgUrl} alt="" />
+                                        badge.isVideo ? (
+                                            <video autoPlay muted loop>
+                                                <source src={badge.imgUrl} />
+                                            </video>
+                                        ) : (
+                                            <img src={badge.imgUrl} alt="" />
+                                        )
                                     ) : (
                                         <>
                                             <label
@@ -80,7 +97,7 @@ export default function MembershipCreationStep2({
                                     )}
                                     <input
                                         type="file"
-                                        accept="image/png, image/gif, image/jpeg"
+                                        accept="image/png, image/gif, image/jpeg, video/mp4, video/"
                                         id={`upload-file-input-${index}`}
                                         className="upload-file-input-hidden"
                                         onChange={(e) => onFileChange(e, index)}

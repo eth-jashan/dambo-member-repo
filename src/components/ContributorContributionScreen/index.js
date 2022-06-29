@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { Spin } from "antd"
@@ -6,10 +6,9 @@ import { LoadingOutlined } from "@ant-design/icons"
 import {
     claimMembershipVoucher,
     setMembershipBadgeClaimed,
-    setClaimMembershipLoading,
     setDisableClaimBtn,
     setShowMetamaskSignText,
-} from "../../store/actions/dao-action"
+} from "../../store/actions/membership-action"
 import magic_button from "../../assets/Icons/magic_button.svg"
 import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
@@ -18,8 +17,12 @@ import cross from "../../assets/Icons/cross.svg"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
+    const allMembershipBadges = useSelector(
+        (x) => x.membership.membershipBadges
+    )
+    const membershipVouchers = useSelector(
+        (x) => x.membership.membershipVoucher
+    )
 
     // const voucherInfo = allMembershipBadges?.filter(
     //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
@@ -42,7 +45,7 @@ export default function ContributorContributionScreen() {
     // console.log("voucher info is ", voucherInfo)
 
     const membershipBadgesForAddress = useSelector(
-        (x) => x.dao.membershipBadgesForAddress
+        (x) => x.membership.membershipBadgesForAddress
     )
 
     console.log(
@@ -64,18 +67,20 @@ export default function ContributorContributionScreen() {
     console.log("unclaimed badges are", unClaimedBadges)
 
     const membershipBadgeClaimed = useSelector(
-        (x) => x.dao.membershipBadgeClaimed
+        (x) => x.membership.membershipBadgeClaimed
     )
 
     const claimMembershipLoading = useSelector(
-        (x) => x.dao.claimMembershipLoading
+        (x) => x.membership.claimMembershipLoading
     )
 
     // const [showClaimTakingTime, setShowClaimTakingTime] = useState(false)
-    const showClaimTakingTime = useSelector((x) => x.dao.claimTakingTime)
-    const disableClaimBtn = useSelector((x) => x.dao.disableClaimBtn)
-    const showMetamaskSignText = useSelector((x) => x.dao.showMetamaskSignText)
-    const txHashFetched = useSelector((x) => x.dao.txHashFetched)
+    const showClaimTakingTime = useSelector((x) => x.membership.claimTakingTime)
+    const disableClaimBtn = useSelector((x) => x.membership.disableClaimBtn)
+    const showMetamaskSignText = useSelector(
+        (x) => x.membership.showMetamaskSignText
+    )
+    const txHashFetched = useSelector((x) => x.membership.txHashFetched)
 
     const dispatch = useDispatch()
 

@@ -7,6 +7,8 @@ import BadgesScreenSearchTab from "../BadgesScreenSearchTab"
 import Modal from "./components/Modal"
 import HomeScreen from "./components/HomeScreen"
 import MintingModal from "./components/MintingModal"
+import CommunityScreen from "./components/CommunityScreen"
+import MembershipOverviewModal from "./components/MembershipOverviewModal"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
@@ -17,9 +19,16 @@ export default function BadgesScreen() {
             name: "badge 1",
             imgUrl: "https://i.imgur.com/mufSVRW.jpg",
             holders: 2,
+            isVideo: false,
         },
     ])
+    // const [membershipBadges, setMembershipBadges] = useState([])
+
     const [showMintingModal, setShowMintingModal] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+
+    const [showMembershipOverviewModal, setShowMembershipOverviewModal] =
+        useState(false)
 
     const closeModal = () => {
         setShowModal(false)
@@ -27,6 +36,16 @@ export default function BadgesScreen() {
 
     const closeMintingModal = () => {
         setShowMintingModal(false)
+    }
+
+    const closeMembershipOverviewModal = () => {
+        setShowMembershipOverviewModal(false)
+    }
+
+    const editMembership = () => {
+        setShowMembershipOverviewModal(false)
+        setIsEditing(true)
+        setShowModal(true)
     }
 
     return (
@@ -65,16 +84,37 @@ export default function BadgesScreen() {
                 </div>
             </div>
             <BadgesScreenSearchTab />
-            <HomeScreen
-                setShowModal={setShowModal}
-                membershipBadges={membershipBadges}
-                setShowMintingModal={setShowMintingModal}
-            />
-            {showModal && <Modal closeModal={closeModal} />}
+            {selectedNav === "badges" ? (
+                <HomeScreen
+                    setShowModal={setShowModal}
+                    membershipBadges={membershipBadges}
+                    setShowMintingModal={setShowMintingModal}
+                    setShowMembershipOverviewModal={
+                        setShowMembershipOverviewModal
+                    }
+                />
+            ) : (
+                <CommunityScreen />
+            )}
+            {showModal && (
+                <Modal
+                    closeModal={closeModal}
+                    membershipBadges={membershipBadges}
+                    setMembershipBadges={setMembershipBadges}
+                    isEditing={isEditing}
+                />
+            )}
             {showMintingModal && (
                 <MintingModal
                     closeMintingModal={closeMintingModal}
                     membershipBadges={membershipBadges}
+                />
+            )}
+            {showMembershipOverviewModal && (
+                <MembershipOverviewModal
+                    closeMembershipOverviewModal={closeMembershipOverviewModal}
+                    membershipBadges={membershipBadges}
+                    editMembership={editMembership}
                 />
             )}
         </div>

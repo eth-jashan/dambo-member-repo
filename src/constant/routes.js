@@ -36,6 +36,7 @@ const routes = {
     membership: {
         getMembershipBadgesList: "/membership",
         getMembershipVoucher: "/membership/voucher",
+        createMembershipBadges: "/membership",
     },
 }
 

@@ -54,16 +54,7 @@ const daoSlice = createSlice({
         communityInfo: null,
         approvedBadges: [],
         pastContributions: [],
-        membershipBadges: [],
-        membershipVoucher: null,
-        membershipBadgesForAddress: [],
-        membershipBadgeClaimed: null,
-        claimMembershipLoading: false,
         username: "",
-        claimTakingTime: null,
-        disableClaimBtn: false,
-        showMetamaskSignText: false,
-        txHashFetched: false,
     },
     reducers: {
         set_chainId(state, action) {
@@ -190,34 +181,6 @@ const daoSlice = createSlice({
         },
         setPastContributions(state, action) {
             state.pastContributions = action.payload.pastContributions
-        },
-        setMembershipBadges(state, action) {
-            state.membershipBadges = action.payload.membershipBadges
-        },
-        setMembershipVoucher(state, action) {
-            state.membershipVoucher = action.payload.membershipVoucher
-        },
-        setMembershipBadgesForAddress(state, action) {
-            state.membershipBadgesForAddress =
-                action.payload.membershipBadgesForAddress
-        },
-        setMembershipBadgeClaimed(state, action) {
-            state.membershipBadgeClaimed = action.payload.membershipBadgeClaimed
-        },
-        setClaimMembershipLoading(state, action) {
-            state.claimMembershipLoading = action.payload.claimMembershipLoading
-        },
-        setClaimTakingTime(state, action) {
-            state.claimTakingTime = action.payload.claimTakingTime
-        },
-        setDisableClaimBtn(state, action) {
-            state.disableClaimBtn = action.payload.disableClaimBtn
-        },
-        setShowMetamaskSignText(state, action) {
-            state.showMetamaskSignText = action.payload.showMetamaskSignText
-        },
-        setTxHashFetched(state, action) {
-            state.txHashFetched = action.payload.txHashFetched
         },
     },
 })

@@ -12,5 +12,5 @@ export const web3 = {
     infura: {
         url: "https://polygon-mumbai.infura.io/v3/3706497c69ef40b0a5160e55a6f73a4c",
     },
-    contractAddress: "0x9e00c9a53e71073cee827d54db9e32005d1b95ac",
+    contractAddress: "0x9094c08fc1a0e4ffd03e2b80eef68af914a74f56",
 }

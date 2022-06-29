@@ -321,11 +321,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         {/* <br /> communities */}
                     </div>
                     <div className={styles.contactText}>
-                        Please reach out to Pony finance on{" "}
-                        <a href="" target="_blank" rel="noreferrer">
-                            discord
-                        </a>{" "}
-                        or reach out to us{" "}
+                        Please reach out to us{" "}
                         <a
                             href="https://twitter.com/rep3gg"
                             target="_blank"

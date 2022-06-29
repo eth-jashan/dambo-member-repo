@@ -10,6 +10,7 @@ export default function HomeScreen({
     setShowModal,
     membershipBadges,
     setShowMintingModal,
+    setShowMembershipOverviewModal,
 }) {
     return (
         <div className="badges-home-screen-container">
@@ -52,7 +53,11 @@ export default function HomeScreen({
                                     >
                                         Mint Badges
                                     </button>
-                                    <div>
+                                    <div
+                                        onClick={() =>
+                                            setShowMembershipOverviewModal(true)
+                                        }
+                                    >
                                         <img src={edit_active} alt="" />
                                     </div>
                                 </div>

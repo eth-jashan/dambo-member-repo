@@ -33,6 +33,7 @@ import { setLoadingState } from "../../store/actions/toast-action"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
 import DashboardHeader from "../../components/DashboardHeader"
 import OnboardingHeader from "../../components/OnboardingHeader"
+import AntdToast from "../../components/Toast/AntdToast"
 
 export default function DashboardLayout({
     children,
@@ -98,6 +99,7 @@ export default function DashboardLayout({
     const text = (item) => <span>{item}</span>
     return (
         <>
+            <AntdToast />
             <div className={styles.layout}>
                 <div className={styles.accountsLayout}>
                     <div className={styles.logoContainer}>
