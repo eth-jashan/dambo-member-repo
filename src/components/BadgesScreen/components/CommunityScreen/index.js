@@ -1,8 +1,10 @@
 import React from "react"
 import "./style.scss"
+import { setSelectedMember } from "../../../../store/actions/membership-action"
+import { useDispatch } from "react-redux"
 
 export default function CommunityScreen() {
-    const contributions = [
+    const members = [
         {
             name: "shaurya",
             contributions: 12,
@@ -10,16 +12,22 @@ export default function CommunityScreen() {
             currentBadge: "Pioneer",
         },
     ]
+
+    const dispatch = useDispatch()
+
     return (
         <div className="community-screen-container">
-            {contributions.map((contribution) => (
-                <div className="contribution-row" key={contribution.name}>
-                    <div>{contribution.name}</div>
-                    <div>
-                        {contribution.contributions} Contributions •{" "}
-                        {contribution.startDate}
+            {members.map((member) => (
+                <div
+                    className="member-row"
+                    key={member.name}
+                    onClick={() => dispatch(setSelectedMember(member))}
+                >
+                    <div>{member.name}</div>
+                    <div className="member-info">
+                        {member.contributions} members • {member.startDate}
                     </div>
-                    <div>{contribution.currentBadge}</div>
+                    <div className="member-badge">{member.currentBadge}</div>
                 </div>
             ))}
         </div>

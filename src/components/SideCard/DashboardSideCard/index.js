@@ -11,6 +11,7 @@ import { message } from "antd"
 import { FaDiscord } from "react-icons/fa"
 import { links } from "../../../constant/links"
 import "./style.scss"
+import BadgesSideCard from "../BadgesSideCard"
 
 export default function DashboardSideCard({
     onRouteChange,
@@ -83,6 +84,8 @@ export default function DashboardSideCard({
     if (role === "ADMIN") {
         if (currentPage === "treasury") {
             return <TreasurySideCard />
+        } else if (currentPage === "badges") {
+            return <BadgesSideCard />
         } else {
             if (route === "contributions" && currentTransaction) {
                 return contri_filter_key ? (

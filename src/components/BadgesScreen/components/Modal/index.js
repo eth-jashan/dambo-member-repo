@@ -10,12 +10,7 @@ import MembershipCreationStep2 from "../MembershipCreationStep2"
 import { useDispatch } from "react-redux"
 import { createMembershipBadges } from "../../../../store/actions/membership-action"
 
-export default function Modal({
-    closeModal,
-    membershipBadges,
-    setMembershipBadges,
-    isEditing,
-}) {
+export default function Modal({ closeModal, membershipBadges, isEditing }) {
     const [membershipStep, setMembershipStep] = useState(1)
     const [badgeType, setBadgeType] = useState(null)
     const [localMembershipBadges, setLocalMembershipBadges] = useState(
@@ -24,7 +19,8 @@ export default function Modal({
             : [
                   {
                       name: "",
-                      imgUrl: "",
+                      image_url: "",
+                      description: "",
                   },
               ]
     )
@@ -34,20 +30,26 @@ export default function Modal({
     const increaseStep = () => {
         console.log("membership step is", membershipStep)
         if (membershipStep >= 2) {
-            setMembershipBadges(localMembershipBadges)
+            // setMembershipBadges(localMembershipBadges)
             closeModal()
             setMembershipStep(1)
-            const mappedBadges = membershipBadges.map((badge) => {
-                const formData = new FormData()
-                formData.append("file", badge.file)
 
-                return {
-                    media: formData,
-                    name: badge.name,
-                }
+            const formData = new FormData()
+            localMembershipBadges.forEach((badge, index) => {
+                formData.append("file", badge.file)
+                formData.append("name", badge.name)
+                formData.append("level", badge.level || index + 1)
+                formData.append("category", 1)
+                formData.append("description", badge.description)
             })
 
-            dispatch(createMembershipBadges("abc", mappedBadges))
+            dispatch(
+                createMembershipBadges(
+                    formData,
+                    localMembershipBadges,
+                    isEditing
+                )
+            )
         } else {
             setMembershipStep((membershipStep) => membershipStep + 1)
         }

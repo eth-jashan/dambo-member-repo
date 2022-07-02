@@ -34,7 +34,7 @@ export default function MintingModal({ closeMintingModal, membershipBadges }) {
                             }}
                         >
                             <div className="select-badge-row-left">
-                                <img src={badge.imgUrl} alt="" />
+                                <img src={badge.image_url} alt="" />
                                 <div>
                                     <div className="badge-name">
                                         {badge.name}

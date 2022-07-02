@@ -5,6 +5,8 @@ import plus_black from "../../../../assets/Icons/plus_black.svg"
 import upload_file_colored from "../../../../assets/Icons/upload_file_colored.svg"
 import tick from "../../../../assets/Icons/tick.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
+import { mintBadges } from "../../../../store/actions/membership-action"
+import { useDispatch } from "react-redux"
 
 export default function AddAddress({ selectedMembershipBadge }) {
     const [isBulkMinting, setIsBulkMinting] = useState(false)
@@ -12,6 +14,8 @@ export default function AddAddress({ selectedMembershipBadge }) {
     const [bulkMintingStep, setBulkMintingStep] = useState(0)
     const [isCsvUploaded, setIsCsvUploaded] = useState(false)
     const [bulkAddresses, setBulkAddresses] = useState([])
+
+    const dispatch = useDispatch()
 
     const addAddress = () => {
         setAddresses((addresses) => [...addresses, ""])
@@ -50,9 +54,34 @@ export default function AddAddress({ selectedMembershipBadge }) {
     const increaseStep = () => {
         if (bulkMintingStep >= 1) {
             setBulkMintingStep(1)
+            mintVouchers()
         } else {
             setBulkMintingStep((bulkMintingStep) => bulkMintingStep + 1)
         }
+    }
+
+    const mintVouchers = async () => {
+        console.log("minting badges")
+        const mintAddresses = isBulkMinting ? bulkAddresses : addresses
+        dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
+    }
+
+    const checkIsDisabled = () => {
+        let isDisabled = false
+        if (isBulkMinting) {
+            bulkAddresses.forEach((address) => {
+                if (!address) {
+                    isDisabled = true
+                }
+            })
+        } else {
+            addresses.forEach((address) => {
+                if (!address) {
+                    isDisabled = true
+                }
+            })
+        }
+        return isDisabled
     }
 
     return (
@@ -69,7 +98,7 @@ export default function AddAddress({ selectedMembershipBadge }) {
                     </div>
                 </div>
                 <div className="mint-membership-badge-right">
-                    <img src={selectedMembershipBadge.imgUrl} alt="" />
+                    <img src={selectedMembershipBadge.image_url} alt="" />
                 </div>
             </div>
             {isBulkMinting ? (
@@ -133,7 +162,10 @@ export default function AddAddress({ selectedMembershipBadge }) {
                         )}
                     </div>
                     <div className="bulk-minting-btn">
-                        <button onClick={increaseStep}>
+                        <button
+                            onClick={increaseStep}
+                            disabled={checkIsDisabled()}
+                        >
                             {bulkMintingStep === 0
                                 ? "Review Addresses"
                                 : "Mint Badges"}
@@ -169,7 +201,12 @@ export default function AddAddress({ selectedMembershipBadge }) {
                         Add another Address
                     </div>
                     <div className="minting-buttons-wrapper">
-                        <button>Mint Badges • {addresses.length}</button>
+                        <button
+                            onClick={mintVouchers}
+                            disabled={checkIsDisabled()}
+                        >
+                            Mint Badges • {addresses.length}
+                        </button>
                         <div
                             onClick={() => setIsBulkMinting(true)}
                             className="bulk-minting-text"

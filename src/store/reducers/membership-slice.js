@@ -12,6 +12,13 @@ const membershipSlice = createSlice({
         disableClaimBtn: false,
         showMetamaskSignText: false,
         txHashFetched: false,
+        selectedMember: null,
+        communityMembers: [],
+        selectedNav: "badges",
+        showMembershipChangeModal: false,
+        membershipCreateLoading: false,
+        showMembershipCreateModal: false,
+        showMembershipMintingModal: false,
     },
     reducers: {
         setMembershipBadges(state, action) {
@@ -41,6 +48,31 @@ const membershipSlice = createSlice({
         },
         setTxHashFetched(state, action) {
             state.txHashFetched = action.payload.txHashFetched
+        },
+        setSelectedMember(state, action) {
+            state.selectedMember = action.payload.selectedMember
+        },
+        setCommunityMembers(state, action) {
+            state.communityMembers = action.payload.communityMembers
+        },
+        setSelectedNav(state, action) {
+            state.selectedNav = action.payload.selectedNav
+        },
+        setShowMembershipChangeModal(state, action) {
+            state.showMembershipChangeModal =
+                action.payload.showMembershipChangeModal
+        },
+        setMembershipCreateLoading(state, action) {
+            state.membershipCreateLoading =
+                action.payload.membershipCreateLoading
+        },
+        setShowMembershipCreateModal(state, action) {
+            state.showMembershipCreateModal =
+                action.payload.showMembershipCreateModal
+        },
+        setShowMembershipMintingModal(state, action) {
+            state.showMembershipMintingModal =
+                action.payload.showMembershipMintingModal
         },
     },
 })

@@ -56,15 +56,15 @@ export default function MembershipOverviewModal({
                                 {membershipBadges.map((badge, index) => (
                                     <div className="badge-row" key={index}>
                                         <div className="badge-image-wrapper">
-                                            {badge.isVideo ? (
+                                            {badge.is_video ? (
                                                 <video autoPlay muted loop>
                                                     <source
-                                                        src={badge.imgUrl}
+                                                        src={badge.image_url}
                                                     />
                                                 </video>
                                             ) : (
                                                 <img
-                                                    src={badge.imgUrl}
+                                                    src={badge.image_url}
                                                     alt=""
                                                 />
                                             )}

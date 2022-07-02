@@ -4,6 +4,7 @@ import {
     claimVoucher,
     getMembershipBadgeFromTxHash,
     getAllMembershipBadges,
+    createMembershipVoucher,
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
@@ -294,45 +295,88 @@ export const setTxHashFetched = (status) => {
     }
 }
 
-export const createMembershipBadges = (memberships, formData) => {
+export const createMembershipBadges = (formData, memberships, isEditing) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
 
         try {
             const response = await apiClient.post(
-                `http://localhost:3001/arweave_server/membership`,
-                {
-                    media: formData,
-                    name: "test",
-                }
+                `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
+                formData
             )
             console.log("response is ", response.data)
             if (response?.data?.success) {
-                // const res = await apiClient.post(
-                //     `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
-                //     {
-                //         dao_uuid: uuid,
-                //         memberships,
-                //     },
-                //     {
-                //         headers: {
-                //             Authorization: `Bearer ${jwt}`,
-                //         },
-                //     }
-                // )
-                // if (res.data.success) {
-                //     dispatch(
-                //         toastAction.setToastInfo({
-                //             toastInfo: {
-                //                 content: "Created successfully",
-                //                 toastType: "success",
-                //             },
-                //         })
-                //     )
-                //     dispatch(toastAction.setShowToast({ status: true }))
-                //     dispatch(getAllMembershipBadgesList())
-                // }
+                const arweaveHashArray = response.data?.data
+                let arweaveArrayIndex = 0
+
+                const membershipsUpdated = memberships.map(
+                    (membership, index) => {
+                        const image_url = membership?.file
+                            ? arweaveHashArray[index].media
+                            : membership?.image_url
+
+                        const metadata_hash = membership?.file
+                            ? arweaveHashArray[index].metadata
+                            : membership?.metadata_hash
+
+                        if (membership?.file) {
+                            arweaveArrayIndex = arweaveArrayIndex + 1
+                        }
+
+                        return {
+                            ...membership,
+                            image_url,
+                            metadata_hash,
+                            level: membership?.level || index + 1,
+                            category: 1,
+                        }
+                    }
+                )
+                let res
+                if (isEditing) {
+                    res = await apiClient.put(
+                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
+                        {
+                            dao_uuid: uuid,
+                            memberships: membershipsUpdated,
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${jwt}`,
+                            },
+                        }
+                    )
+                } else {
+                    res = await apiClient.post(
+                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
+                        {
+                            dao_uuid: uuid,
+                            memberships: membershipsUpdated,
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${jwt}`,
+                            },
+                        }
+                    )
+                }
+                if (res.data.success) {
+                    setMembershipCreateLoading(false)
+                    dispatch(
+                        toastAction.setToastInfo({
+                            toastInfo: {
+                                content: isEditing
+                                    ? "Updated successfully"
+                                    : "Created successfully",
+                                toastType: "success",
+                            },
+                        })
+                    )
+                    dispatch(toastAction.setShowToast({ status: true }))
+                    dispatch(getAllMembershipBadgesList())
+                    dispatch(setShowMembershipCreateModal(false))
+                }
             }
             // dispatch(showDefaultToastError())
         } catch (err) {
@@ -353,5 +397,149 @@ const showDefaultToastError = () => {
             })
         )
         dispatch(toastAction.setShowToast({ status: true }))
+    }
+}
+
+export const setSelectedMember = (member) => {
+    return (dispatch) => {
+        dispatch(
+            membershipAction.setSelectedMember({
+                selectedMember: member,
+            })
+        )
+    }
+}
+
+export const getCommunityMembers = () => {
+    return async (dispatch, getState) => {
+        const res = await apiClient.get(
+            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.getCommunityMembers}`
+        )
+        if (res?.data?.success) {
+            dispatch(
+                membershipAction.setCommunityMembers({
+                    communityMembers: res.data.communityMembers,
+                })
+            )
+        }
+    }
+}
+
+export const setSelectedNav = (selectedNav) => {
+    return async (dispatch) => {
+        dispatch(
+            membershipAction.setSelectedNav({
+                selectedNav,
+            })
+        )
+    }
+}
+
+export const setShowMembershipChangeModal = (showMembershipChangeModal) => {
+    return async (dispatch) => {
+        dispatch(
+            membershipAction.setShowMembershipChangeModal({
+                showMembershipChangeModal,
+            })
+        )
+    }
+}
+
+export const setMembershipCreateLoading = (membershipCreateLoading) => {
+    return (dispatch) => {
+        dispatch(
+            membershipAction.setMembershipCreateLoading({
+                membershipCreateLoading,
+            })
+        )
+    }
+}
+
+export const setShowMembershipCreateModal = (showMembershipCreateModal) => {
+    return (dispatch) => {
+        dispatch(
+            membershipAction.setShowMembershipCreateModal({
+                showMembershipCreateModal,
+            })
+        )
+    }
+}
+
+export const setShowMembershipMintingModal = (showMembershipMintingModal) => {
+    return (dispatch) => {
+        dispatch(
+            membershipAction.setShowMembershipMintingModal({
+                showMembershipMintingModal,
+            })
+        )
+    }
+}
+
+export const mintBadges = (selectedMembershipBadge, addresses) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        // const uuid = getState().dao.currentDao?.uuid
+
+        const mapArr = addresses.reduce(
+            (acc, curr) => {
+                if (acc[acc.length - 1].length < 24) {
+                    acc[acc.length - 1].push(curr)
+                } else {
+                    acc.push([curr])
+                }
+                return acc
+            },
+            [[]]
+        )
+
+        console.log("mapArr", mapArr)
+
+        try {
+            const mapArrWithSignedVoucher = mapArr.map(async (ele) => {
+                const signedObject = await createMembershipVoucher(
+                    web3.contractAddress,
+                    [selectedMembershipBadge?.level],
+                    [selectedMembershipBadge?.category],
+                    [],
+                    ele,
+                    selectedMembershipBadge?.metadata_hash
+                )
+                return {
+                    addresses: [...ele],
+                    signed_voucher: signedObject,
+                }
+            })
+
+            const arrWithApiCall = mapArrWithSignedVoucher.map((ele) =>
+                apiClient.post(
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipVoucher}`,
+                    {
+                        addresses: ele.addresses,
+                        signed_voucher: ele.signed_voucher,
+                        membership_uuid: selectedMembershipBadge?.uuid,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwt}`,
+                        },
+                    }
+                )
+            )
+
+            const res = await Promise.all(arrWithApiCall)
+            if (res.data?.success) {
+                dispatch(
+                    toastAction.setToastInfo({
+                        toastInfo: {
+                            content: "Created successfully",
+                            toastType: "success",
+                        },
+                    })
+                )
+                dispatch(toastAction.setShowToast({ status: true }))
+            }
+        } catch (err) {}
+
+        const res = await apiClient.post()
     }
 }
