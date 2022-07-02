@@ -46,16 +46,9 @@ const DaoInfo = ({
         },
     }
 
-    const onSubmit = async () => {
-        dispatch(addDaoInfo(name, email, discord, image?.url))
-        createDao()
-    }
     const createImage = (file) => {
         const reader = new FileReader()
         reader.onload = (e) => {
-            // if (e.target.result.length > MAX_IMAGE_SIZE) {
-            //   return alert("Image is loo large.");
-            // }
             const imageObj = {
                 url: false,
                 image: e.target.result,
@@ -155,50 +148,6 @@ const DaoInfo = ({
                                             />
                                         </div>
                                     </div>
-                                    {/* <div>
-                                        <Typography.Text
-                                            className={styles.helperTextSec}
-                                        >
-                                            How we can reach you
-                                        </Typography.Text>
-                                        <div>
-                                            <InputText
-                                                width={"90%"}
-                                                value={email}
-                                                onChange={(e) =>
-                                                    setEmail(e.target.value)
-                                                }
-                                                placeholder="Your email address (optional)"
-                                                className={
-                                                    email === ""
-                                                        ? styles.input
-                                                        : styles.inputText
-                                                }
-                                            />
-                                        </div>
-                                    </div> */}
-                                    {/* <div>
-                                        <Typography.Text
-                                            className={styles.helperTextSec}
-                                        >
-                                            Can you link your discord
-                                        </Typography.Text>
-                                        <div>
-                                            <InputText
-                                                width={"90%"}
-                                                value={discord}
-                                                onChange={(e) =>
-                                                    setDiscord(e.target.value)
-                                                }
-                                                placeholder="Your discord link (optional)"
-                                                className={
-                                                    email === ""
-                                                        ? styles.input
-                                                        : styles.inputText
-                                                }
-                                            />
-                                        </div>
-                                    </div> */}
                                 </div>
                                 <div
                                     style={{
@@ -329,13 +278,13 @@ const DaoInfo = ({
                             <div className={styles.backTitle}>Back</div>
                         </div>
                         <NextButton
-                            text={
-                                // hasMultiSignWallet
-                                "Register people"
-                                // : "Create Multisig"
+                            text={"Register people"}
+                            nextButtonCallback={() =>
+                                increaseStep(name, image?.url)
                             }
-                            nextButtonCallback={increaseStep}
-                            isDisabled={name === "" || deploying || loading}
+                            isDisabled={
+                                name === "" || deploying || loading || !image
+                            }
                         />
                     </div>
                 </>

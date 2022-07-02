@@ -81,8 +81,7 @@ const OnboardingOverview = ({ increaseStep, setPayout, isPayout }) => {
                 </div>
                 <NextButton
                     text={"Community Details"}
-                    nextButtonCallback={increaseStep}
-                    // isDisabled={!areValidOwners()}
+                    nextButtonCallback={async () => await increaseStep()}
                 />
             </div>
         </div>

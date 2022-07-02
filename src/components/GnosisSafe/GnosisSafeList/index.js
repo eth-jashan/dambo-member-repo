@@ -22,6 +22,7 @@ const GnosisSafeList = ({
     setHasMultiSignWallet,
     discordUserId,
     setrep3Setup,
+    setNewSafe,
 }) => {
     const setCurrentStep = () => {
         setStep(3)
@@ -53,6 +54,7 @@ const GnosisSafeList = ({
             } else {
                 console.log("here")
                 setHasMultiSignWallet(true)
+                setNewSafe(false)
                 setCurrentStep()
             }
         }
@@ -103,6 +105,7 @@ const GnosisSafeList = ({
     const createNewMulti = () => {
         increaseStep()
         setHasMultiSignWallet(false)
+        setNewSafe(true)
     }
 
     const renderNoWallet = () => (

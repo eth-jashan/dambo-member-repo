@@ -12,6 +12,7 @@ import {
     claimVoucher,
     getMembershipBadgeFromTxHash,
     getAllMembershipBadges,
+    deployDaoContract,
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
 
@@ -61,40 +62,50 @@ export const registerDao = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
-        const owner = []
-
-        owners.map((item) =>
-            owner.push({ public_address: item.address, name: item.name })
-        )
+        const ownerMeta = []
+        const approvers = []
+        owners.forEach((item) => {
+            ownerMeta.push({ public_address: item.address, name: item.name })
+            approvers.push(item.address)
+        })
 
         const data = {
             dao_name: name,
-            safe_addr: safeAddress,
             by: address,
-            signers: owner,
-            signs_required: threshold,
+            safe_addr: safeAddress || "",
+            // proxy_txn_hash: tx_hash,
+            approvers: ownerMeta,
             logo_url: logo,
-            discord_link: discord,
             chain_id: chainId,
         }
 
-        try {
-            const res = await apiClient.post(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
+        console.log(data)
 
-            if (res.data.success) {
-                return { dao_uuid: res.data.data.dao_uuid, name, owners }
-            } else {
-                return 0
-            }
-        } catch (error) {}
+        await deployDaoContract(
+            name,
+            "JT",
+            approvers,
+            (x) => console.log("Hash is", x),
+            (x) => console.log("hash is confirmed", x)
+        )
+
+        // try {
+        //     const res = await apiClient.post(
+        //         `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
+        //         data,
+        //         {
+        //             headers: {
+        //                 Authorization: `Bearer ${jwt}`,
+        //             },
+        //         }
+        //     )
+
+        //     if (res.data.success) {
+        //         return { dao_uuid: res.data.data.dao_uuid, name, owners }
+        //     } else {
+        //         return 0
+        //     }
+        // } catch (error) {}
     }
 }
 
@@ -1096,7 +1107,14 @@ export const getContributorOverview = () => {
 export const getAllSafeFromAddress = () => {
     return async (dispatch, getState) => {
         const address = getState().auth.address
-        const list = await serviceClient.getSafesByOwner(address)
+        let list
+        try {
+            list = await serviceClient.getSafesByOwner(address)
+        } catch (error) {
+            console.log(error)
+            list = []
+        }
+
         let daos = []
         for (let i = 0; i < list.safes.length; i++) {
             daos.push(`safe=${list.safes[i]}`)

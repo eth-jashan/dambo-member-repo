@@ -16,6 +16,7 @@ export default function AddOwners({
     increaseStep,
     hasMultiSignWallet,
     setStep,
+    safeOwners,
     rep3Setup,
 }) {
     const address = useSelector((x) => x.auth.address)
@@ -33,44 +34,61 @@ export default function AddOwners({
     const [loading, setLoading] = useState(false)
     const [safeSigners, setSafeOwners] = useState([])
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
-
+    console.log(safeOwners)
     const getSafeOwners = useCallback(async () => {
         const ownerObj = []
-        const safeInfo = await serviceClient.getSafeInfo(safeAddress)
-        if (safeInfo.owners) {
-            safeInfo.owners.forEach((item) => {
+        if (hasMultiSignWallet) {
+            const safeInfo = await serviceClient.getSafeInfo(safeAddress)
+            if (safeInfo.owners) {
+                safeInfo.owners.forEach((item) => {
+                    ownerObj.push({
+                        id: uuidv4(),
+                        name: "",
+                        address: item,
+                    })
+                })
+                setOwners(ownerObj)
+                setSafeOwners(ownerObj)
+                setThreshold(safeInfo.threshold)
+                // }
+            }
+        } else if (safeOwners?.length > 0) {
+            safeOwners.forEach((x, i) => {
+                console.log(x)
                 ownerObj.push({
                     id: uuidv4(),
-                    name: "",
-                    address: item,
+                    name: x.name,
+                    address: x.address,
                 })
+                setOwners(ownerObj)
+                setSafeOwners(ownerObj)
             })
-            setOwners(ownerObj)
-            setSafeOwners(ownerObj)
-            setThreshold(safeInfo.threshold)
-            // }
         }
     }, [safeAddress])
 
     const checkSafeOwner = (address) => {
-        if (hasMultiSignWallet) {
-            safeSigners.forEach((x) => {
-                if (x === address) {
-                    return true
-                } else {
-                    return false
-                }
-            })
-        } else {
-            return false
-        }
+        // if (hasMultiSignWallet) {
+        safeSigners.forEach((x) => {
+            if (x.address === address) {
+                console.log(address, x, "true")
+                return true
+            } else {
+                console.log(address, x, "false")
+                return false
+            }
+        })
+        // } else {
+        //     return false
+        // }
     }
 
+    console.log(safeSigners.length)
+
     useEffect(() => {
-        if (hasMultiSignWallet) {
-            getSafeOwners()
-        }
-    }, [getSafeOwners, hasMultiSignWallet])
+        // if (hasMultiSignWallet) {
+        getSafeOwners()
+        // }
+    }, [getSafeOwners])
 
     const updateOwner = (e, id, key) => {
         const updatedOwners = owners.map((owner) => {
@@ -117,12 +135,14 @@ export default function AddOwners({
 
     const onNext = () => {
         dispatch(addOwners(owners))
-        if (hasMultiSignWallet) {
-            dispatch(addThreshold(threshold))
-            setStep("daoInfo")
-        } else {
-            increaseStep()
-        }
+        // if (hasMultiSignWallet) {
+        //     dispatch(addThreshold(threshold))
+        //     setStep("daoInfo")
+        // } else {
+        //     // increaseStep()
+        // }
+        increaseStep()
+        console.log("hereeee")
     }
 
     const renderHeader = () =>
@@ -162,7 +182,7 @@ export default function AddOwners({
             </>
         )
 
-    console.log(safeSigners)
+    console.log(safeSigners.length)
 
     return (
         <div className={styles.wrapper}>
@@ -187,7 +207,11 @@ export default function AddOwners({
                             <div style={{ width: "60%", border: 0 }}>
                                 <InputText
                                     width={"100%"}
-                                    disabled={hasMultiSignWallet || index === 0}
+                                    disabled={
+                                        (safeSigners.length > 0 &&
+                                            index + 1 <= safeSigners.length) ||
+                                        index === 0
+                                    }
                                     type="text"
                                     placeholder={"Owner Address"}
                                     value={owner?.address}
@@ -205,18 +229,30 @@ export default function AddOwners({
                             </div>
                             <div
                                 onClick={() =>
-                                    !checkSafeOwner(owner.address) ||
+                                    // hasMultiSignWallet ||
+                                    // (!rep3Setup &&
+                                    (safeSigners.length > 0 &&
+                                        index + 1 <= safeSigners.length) ||
                                     (index !== 0 && deleteOwner(owner.id))
                                 }
                             >
-                                {!checkSafeOwner(owner.address) ? (
+                                {
+                                    // !rep3Setup &&
+                                    !(
+                                        safeSigners.length > 0 &&
+                                        index + 1 <= safeSigners.length
+                                    ) ? (
+                                        <img src={CrossSvg} alt="delete" />
+                                    ) : (
+                                        <img
+                                            src={assets.icons.infoIcon}
+                                            alt="info"
+                                        />
+                                    )
+                                }
+                                {/* {rep3Setup && !hasMultiSignWallet && (
                                     <img src={CrossSvg} alt="delete" />
-                                ) : (
-                                    <img
-                                        src={assets.icons.infoIcon}
-                                        alt="info"
-                                    />
-                                )}
+                                )} */}
                             </div>
                         </div>
                     ))}

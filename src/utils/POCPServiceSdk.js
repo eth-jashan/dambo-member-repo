@@ -12,19 +12,11 @@ export const initPOCP = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
 
-    pocpInstance = new Pocp(
-        signer,
-        provider,
-        window.ethereum,
-        // currentNetwork?.chainId === 4 ? 80001 : 137,
-        137,
-        {
-            biconomyInstance: Biconomy,
-            url: "",
-            // relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
-            relayNetwork: 137,
-        }
-    )
+    pocpInstance = new Pocp(signer, provider, window.ethereum, 80001, {
+        biconomyInstance: Biconomy,
+        url: "",
+        relayNetwork: 80001,
+    })
 
     await pocpInstance.createInstance()
 }
@@ -40,6 +32,25 @@ export const claimVoucher = async (
         voucher,
         claimerAddressIndex,
         callbackFn
+    )
+}
+
+export const deployDaoContract = async (
+    daoName,
+    daoSymbol,
+    approverAddress,
+    hashCallbackFn,
+    confirmCallbackFn
+) => {
+    console.log(daoName, daoSymbol, approverAddress)
+    await pocpInstance.daoDeploy(
+        daoName,
+        daoSymbol,
+        approverAddress,
+        "0xDcc7133abBA15B8f4Bf155A372C17744E0941f28",
+        "0x1C6D20042bfc8474051Aba9FB4Ff85880089A669",
+        hashCallbackFn,
+        confirmCallbackFn
     )
 }
 

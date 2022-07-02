@@ -13,6 +13,7 @@ import {
     registerDao,
     connectDaoToDiscord,
     getAllSafeFromAddress,
+    addDaoInfo,
 } from "../store/actions/dao-action"
 import { useSafeSdk } from "../hooks"
 import { ethers } from "ethers"
@@ -22,10 +23,12 @@ import DiscordRegister from "../components/DiscordRegister"
 import OnboardingError from "../components/OnboardingError"
 import OnboardingOverview from "../components/OnboardingOverview"
 import GnosisSuccess from "../components/GnosisSuccess"
+import { deployDaoContract, initPOCP } from "../utils/POCPServiceSdk"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(1)
     const [hasMultiSignWallet, setHasMultiSignWallet] = useState(false)
+    const [newSafeSetup, setNewSafeSetup] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const [deploying, setDeploying] = useState(false)
     const [signer, setSigner] = useState()
@@ -33,8 +36,7 @@ export default function Onboarding() {
     const [rep3Setup, setrep3Setup] = useState(false)
     const [isPayout, setIsPayout] = useState(false)
     const { safeFactory } = useSafeSdk(signer, safeAddress)
-
-    const owners = useSelector((x) => x.dao.newSafeSetup.owners)
+    const daoSetupInfo = useSelector((x) => x.dao.newSafeSetup)
     const threshold = useSelector((x) => x.dao.newSafeSetup.threshold)
 
     const dispatch = useDispatch()
@@ -42,6 +44,7 @@ export default function Onboarding() {
 
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
+    const owners = useSelector((x) => x.dao.newSafeSetup.owners)
     const accounts = useSelector((x) => x.dao.dao_list)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const [searchParams, _setSearchParams] = useSearchParams()
@@ -134,6 +137,23 @@ export default function Onboarding() {
         [address, dispatch, navigate, safeFactory, threshold]
     )
 
+    const onDaoDeploy = async () => {
+        if (newSafeSetup) {
+            setCurrentStep(4)
+        } else {
+            await dispatch(registerDao())
+        }
+        // console.log(daoSetupInfo)
+
+        // await deployDaoContract(
+        //     daoSetupInfo.dao_name,
+        //     "JRT",
+        //     owner,
+        // (x) => console.log("Hash is", x),
+        // (x) => console.log("hash is confirmed", x)
+        // )
+    }
+
     const setProvider = async () => {
         const provider = new ethers.providers.Web3Provider(
             window.ethereum,
@@ -210,7 +230,7 @@ export default function Onboarding() {
                     owner.push(item.address)
                 })
                 console.log("owners", owner, threshold)
-                // await deploySafe(owner)
+                await deploySafe(owner)
                 setCurrentStep(6)
             } catch (error) {
                 // console.log("error.... on deploying", error);
@@ -241,17 +261,25 @@ export default function Onboarding() {
         increaseStep()
     }
 
-    const increaseFromOverview = () => {
-        setCurrentStep(5)
+    const increaseFromOverview = async () => {
+        try {
+            await initPOCP()
+            setCurrentStep(5)
+        } catch (error) {
+            message.error("error on creating instance")
+        }
     }
 
     const increaseFromGnosisSetup = () => {
-        console.log("here")
+        // console.log("here")
+        setNewSafeSetup(false)
+        setHasMultiSignWallet(false)
         setrep3Setup(true)
         setCurrentStep(3)
     }
 
-    const increaseFromDaoInfo = async () => {
+    const increaseFromDaoInfo = async (name, logoUrl) => {
+        dispatch(addDaoInfo(name, logoUrl))
         if (isPayout) {
             const res = await fetchAllSafe()
             if (res) {
@@ -280,7 +308,7 @@ export default function Onboarding() {
             case "onboardingSteps": {
                 return (
                     <OnboardingOverview
-                        increaseStep={increaseFromOverview}
+                        increaseStep={async () => await increaseFromOverview()}
                         isPayout={isPayout}
                         setPayout={() => setIsPayout(!isPayout)}
                     />
@@ -296,6 +324,7 @@ export default function Onboarding() {
                         discordUserId={discordUserId}
                         rep3Setup={rep3Setup}
                         setrep3Setup={(x) => setrep3Setup(x)}
+                        setNewSafe={(x) => setNewSafeSetup(x)}
                     />
                 )
             }
@@ -306,9 +335,10 @@ export default function Onboarding() {
                 return (
                     <AddOwners
                         hasMultiSignWallet={hasMultiSignWallet}
-                        increaseStep={increaseStep}
+                        increaseStep={async () => await onDaoDeploy()}
                         setStep={(x) => setCurrentStep(steps.indexOf(x))}
                         rep3Setup={rep3Setup}
+                        safeOwners={owners}
                     />
                 )
             }
@@ -327,7 +357,9 @@ export default function Onboarding() {
                 return (
                     <DaoInfo
                         hasMultiSignWallet={hasMultiSignWallet}
-                        increaseStep={increaseFromDaoInfo}
+                        increaseStep={(name, image) =>
+                            increaseFromDaoInfo(name, image)
+                        }
                         deploying={deploying}
                         createDao={createDao}
                     />

@@ -123,13 +123,8 @@ const GnosisSuccess = ({ increaseStep }) => {
                     <div className="backTitle">Back</div>
                 </div>
                 <NextButton
-                    text={
-                        // hasMultiSignWallet
-                        "Register people"
-                        // : "Create Multisig"
-                    }
+                    text={"Register people"}
                     nextButtonCallback={increaseStep}
-                    // isDisabled={name === "" || deploying || loading}
                 />
             </div>
         </div>
