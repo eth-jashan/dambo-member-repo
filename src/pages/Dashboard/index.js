@@ -17,10 +17,12 @@ import {
     set_active_nonce,
     set_payout_filter,
     syncTxDataWithGnosis,
+} from "../../store/actions/dao-action"
+import {
     getAllMembershipBadgesList,
     getMembershipVoucher,
     getAllMembershipBadgesForAddress,
-} from "../../store/actions/dao-action"
+} from "../../store/actions/membership-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
@@ -57,7 +59,7 @@ import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
 import { web3 } from "../../constant/web3"
-// import BadgesScreen from "../../components/BadgesScreen"
+import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 
@@ -706,10 +708,9 @@ export default function Dashboard() {
                         <div className={styles.children}>
                             {currentPage === "request" ? (
                                 <RequestScreen />
+                            ) : currentPage === "badges" ? (
+                                <BadgesScreen />
                             ) : (
-                                //  : currentPage === "badges" ? (
-                                //     <BadgesScreen />
-                                // )
                                 <TreasuryDetails />
                             )}
                         </div>

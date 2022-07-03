@@ -7,26 +7,78 @@ import BadgesScreenSearchTab from "../BadgesScreenSearchTab"
 import Modal from "./components/Modal"
 import HomeScreen from "./components/HomeScreen"
 import MintingModal from "./components/MintingModal"
+import CommunityScreen from "./components/CommunityScreen"
+import MembershipOverviewModal from "./components/MembershipOverviewModal"
+import MembershipChangeModal from "./components/MembershipChangeModal"
+import { useSelector, useDispatch } from "react-redux"
+import {
+    setSelectedNav,
+    setShowMembershipChangeModal,
+    setShowMembershipCreateModal,
+    setShowMembershipMintingModal,
+} from "../../store/actions/membership-action"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
-    const [selectedNav, setSelectedNav] = useState("badges")
-    const [showModal, setShowModal] = useState(false)
-    const [membershipBadges, setMembershipBadges] = useState([
-        {
-            name: "badge 1",
-            imgUrl: "https://i.imgur.com/mufSVRW.jpg",
-            holders: 2,
-        },
-    ])
-    const [showMintingModal, setShowMintingModal] = useState(false)
+    // const [selectedNav, setSelectedNav] = useState("badges")
+    // const [showModal, setShowModal] = useState(false)
+    // const [membershipBadges, setMembershipBadges] = useState([
+    //     {
+    //         name: "badge 1",
+    //         image_url: "https://i.imgur.com/mufSVRW.jpg",
+    //         holders: 2,
+    //         is_video: false,
+    //     },
+    // ])
+    // const [membershipBadges, setMembershipBadges] = useState([])
+
+    // const [showMintingModal, setShowMintingModal] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const selectedNav = useSelector((x) => x.membership.selectedNav)
+    const dispatch = useDispatch()
+
+    const [showMembershipOverviewModal, setShowMembershipOverviewModal] =
+        useState(false)
+
+    // const [showMembershipChangeModal, setShowMembershipChangeModal] =
+    //     useState(true)
+
+    const showMembershipChangeModal = useSelector(
+        (x) => x.membership.showMembershipChangeModal
+    )
+
+    const showMembershipCreateModal = useSelector(
+        (x) => x.membership.showMembershipCreateModal
+    )
+
+    const showMembershipMintingModal = useSelector(
+        (x) => x.membership.showMembershipMintingModal
+    )
+
+    const membershipBadges = useSelector((x) => x.membership.membershipBadges)
 
     const closeModal = () => {
-        setShowModal(false)
+        // setShowModal(false)
+        dispatch(setShowMembershipCreateModal(false))
     }
 
     const closeMintingModal = () => {
-        setShowMintingModal(false)
+        // setShowMintingModal(false)
+        dispatch(setShowMembershipMintingModal(false))
+    }
+
+    const closeMembershipOverviewModal = () => {
+        setShowMembershipOverviewModal(false)
+    }
+
+    const editMembership = () => {
+        setShowMembershipOverviewModal(false)
+        setIsEditing(true)
+        dispatch(setShowMembershipCreateModal(true))
+    }
+
+    const closeMembershipChangeModal = () => {
+        dispatch(setShowMembershipChangeModal(false))
     }
 
     return (
@@ -38,7 +90,7 @@ export default function BadgesScreen() {
                             className={`nav-link ${
                                 selectedNav === "badges" && "active-nav-link"
                             }`}
-                            onClick={() => setSelectedNav("badges")}
+                            onClick={() => dispatch(setSelectedNav("badges"))}
                         >
                             Badges
                         </div>
@@ -46,7 +98,9 @@ export default function BadgesScreen() {
                             className={`nav-link ${
                                 selectedNav === "community" && "active-nav-link"
                             }`}
-                            onClick={() => setSelectedNav("community")}
+                            onClick={() =>
+                                dispatch(setSelectedNav("community"))
+                            }
                         >
                             Community
                         </div>
@@ -65,15 +119,41 @@ export default function BadgesScreen() {
                 </div>
             </div>
             <BadgesScreenSearchTab />
-            <HomeScreen
-                setShowModal={setShowModal}
-                membershipBadges={membershipBadges}
-                setShowMintingModal={setShowMintingModal}
-            />
-            {showModal && <Modal closeModal={closeModal} />}
-            {showMintingModal && (
+            {selectedNav === "badges" ? (
+                <HomeScreen
+                    membershipBadges={membershipBadges}
+                    setShowMembershipOverviewModal={
+                        setShowMembershipOverviewModal
+                    }
+                />
+            ) : (
+                <CommunityScreen />
+            )}
+            {showMembershipCreateModal && (
+                <Modal
+                    closeModal={closeModal}
+                    membershipBadges={membershipBadges}
+                    // setMembershipBadges={setMembershipBadges}
+                    isEditing={isEditing}
+                />
+            )}
+            {showMembershipMintingModal && (
                 <MintingModal
                     closeMintingModal={closeMintingModal}
+                    membershipBadges={membershipBadges}
+                />
+            )}
+            {showMembershipOverviewModal && (
+                <MembershipOverviewModal
+                    closeMembershipOverviewModal={closeMembershipOverviewModal}
+                    membershipBadges={membershipBadges}
+                    editMembership={editMembership}
+                />
+            )}
+
+            {showMembershipChangeModal && (
+                <MembershipChangeModal
+                    closeMembershipChangeModal={closeMembershipChangeModal}
                     membershipBadges={membershipBadges}
                 />
             )}

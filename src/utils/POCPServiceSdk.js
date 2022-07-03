@@ -1,22 +1,30 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 import { ethers } from "ethers"
-// import { getSelectedChainId } from "./POCPutils"
-// const currentNetwork = getSelectedChainId()
+import { getSelectedChainId } from "./POCPutils"
+const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
-// const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
-const pocpGetter = new PocpGetters(137)
+const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
+// const pocpGetter = new PocpGetters(137)
 
 export const initPOCP = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
 
-    pocpInstance = new Pocp(signer, provider, window.ethereum, 80001, {
-        biconomyInstance: Biconomy,
-        url: "",
-        relayNetwork: 80001,
-    })
+    pocpInstance = new Pocp(
+        signer,
+        provider,
+        window.ethereum,
+        currentNetwork?.chainId === 4 ? 80001 : 137,
+        // 137,
+        {
+            biconomyInstance: Biconomy,
+            url: "",
+            relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
+            // relayNetwork: 137,
+        }
+    )
 
     await pocpInstance.createInstance()
 }
@@ -63,4 +71,26 @@ export const getAllMembershipBadges = (accountAddress, contractAddress) => {
 
 export const getMembershipBadgeFromTxHash = (txHash) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
+}
+
+export const createMembershipVoucher = async (
+    contractAddress,
+    level,
+    category,
+    addresses,
+    metadataHash
+) => {
+    console.log("Signing Voucher", level, category, metadataHash)
+    try {
+        return await pocpInstance.createMembershipVoucher(
+            contractAddress,
+            level,
+            category,
+            [],
+            metadataHash,
+            "metadataHash,"
+        )
+    } catch (error) {
+        console.log("error", error)
+    }
 }

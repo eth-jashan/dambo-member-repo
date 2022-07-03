@@ -10,6 +10,12 @@ const toastSlice = createSlice({
             value: 0,
         },
         pocp_action: false,
+        toastInfo: {
+            toastContent: "",
+            toastType: "success",
+            toastDuration: 3,
+        },
+        showToast: false,
     },
     reducers: {
         show_payout_toast(state, action) {
@@ -22,6 +28,19 @@ const toastSlice = createSlice({
         },
         set_pocp_action(state, action) {
             state.pocp_action = action.payload.status
+        },
+        setShowToast(state, action) {
+            console.log(
+                "setting show toast in toast reducer",
+                action.payload.status
+            )
+            state.showToast = action.payload.status
+        },
+        setToastInfo(state, action) {
+            state.toastInfo = {
+                ...state.toastInfo,
+                ...action.payload.toastInfo,
+            }
         },
     },
 })

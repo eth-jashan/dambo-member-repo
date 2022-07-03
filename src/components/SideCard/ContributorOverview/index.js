@@ -54,8 +54,12 @@ const ContributionOverview = () => {
     const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
-    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
+    const allMembershipBadges = useSelector(
+        (x) => x.membership.membershipBadges
+    )
+    const membershipVouchers = useSelector(
+        (x) => x.membership.membershipVoucher
+    )
     const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
         const badgeInfo = allMembershipBadges.find(
             (ele) => ele.uuid === badge.membership_uuid
@@ -66,7 +70,7 @@ const ContributionOverview = () => {
         }
     })
     const membershipBadgesForAddress = useSelector(
-        (x) => x.dao.membershipBadgesForAddress
+        (x) => x.membership.membershipBadgesForAddress
     )
 
     // const unClaimedBadges = voucherInfo.filter((badge) => {

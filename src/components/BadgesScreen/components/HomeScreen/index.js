@@ -5,12 +5,23 @@ import contributionIconWhite from "../../../../assets/Icons/contributionIconWhit
 import appreciationIconWhite from "../../../../assets/Icons/appreciationIconWhite.svg"
 import participationIconWhite from "../../../../assets/Icons/participationIconWhite.svg"
 import edit_active from "../../../../assets/Icons/edit_active.svg"
+import {
+    setShowMembershipCreateModal,
+    setShowMembershipMintingModal,
+} from "../../../../store/actions/membership-action"
+import { useDispatch } from "react-redux"
 
 export default function HomeScreen({
-    setShowModal,
     membershipBadges,
-    setShowMintingModal,
+    setShowMembershipOverviewModal,
 }) {
+    const dispatch = useDispatch()
+    const showModal = () => {
+        dispatch(setShowMembershipCreateModal(true))
+    }
+    const showMintingModal = () => {
+        dispatch(setShowMembershipMintingModal(true))
+    }
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -45,21 +56,24 @@ export default function HomeScreen({
                                     </div>
                                 )}
                                 <div className="membership-badge-buttons">
-                                    <button
-                                        onClick={() =>
-                                            setShowMintingModal(true)
-                                        }
-                                    >
+                                    <button onClick={showMintingModal}>
                                         Mint Badges
                                     </button>
-                                    <div>
+                                    <div
+                                        onClick={() =>
+                                            setShowMembershipOverviewModal(true)
+                                        }
+                                    >
                                         <img src={edit_active} alt="" />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="membership-badge-right">
-                            <img src={membershipBadges?.[0]?.imgUrl} alt="" />
+                            <img
+                                src={membershipBadges?.[0]?.image_url}
+                                alt=""
+                            />
                         </div>
                     </div>
                 ) : (
@@ -70,9 +84,7 @@ export default function HomeScreen({
                         <div className="membership-badge-content">
                             <div>Setup</div>
                             <div>Membership Badge</div>
-                            <button onClick={() => setShowModal(true)}>
-                                Setup Badges
-                            </button>
+                            <button onClick={showModal}>Setup Badges</button>
                         </div>
                     </div>
                 )}

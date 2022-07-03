@@ -22,3 +22,9 @@ export const setPocpAction = (status) => {
         dispatch(toastAction.set_pocp_action({ status }))
     }
 }
+
+export const setShowToast = (status) => {
+    return (dispatch) => {
+        dispatch(toastAction.setShowToast({ status }))
+    }
+}

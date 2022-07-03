@@ -18,6 +18,7 @@ import {
     syncTxDataWithGnosis,
 } from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
+import { getMembershipVoucher } from "../../../store/actions/membership-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
     const dispatch = useDispatch()
@@ -38,6 +39,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
             await dispatch(getAllClaimedBadges())
             await dispatch(getAllUnclaimedBadges())
             dispatch(getContributorOverview())
+            await dispatch(getMembershipVoucher())
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())

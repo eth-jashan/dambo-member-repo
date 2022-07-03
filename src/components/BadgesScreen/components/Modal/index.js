@@ -7,22 +7,49 @@ import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import cross from "../../../../assets/Icons/cross.svg"
 import MembershipCreationStep1 from "../MembershipCreationStep1"
 import MembershipCreationStep2 from "../MembershipCreationStep2"
+import { useDispatch } from "react-redux"
+import { createMembershipBadges } from "../../../../store/actions/membership-action"
 
-export default function Modal({ closeModal }) {
-    const [membershipStep, setMembershipStep] = useState(0)
+export default function Modal({ closeModal, membershipBadges, isEditing }) {
+    const [membershipStep, setMembershipStep] = useState(1)
     const [badgeType, setBadgeType] = useState(null)
-    const [membershipBadges, setMembershipBadges] = useState([
-        {
-            name: "",
-            imgUrl: "",
-        },
-    ])
+    const [localMembershipBadges, setLocalMembershipBadges] = useState(
+        isEditing
+            ? membershipBadges
+            : [
+                  {
+                      name: "",
+                      image_url: "",
+                      description: "",
+                  },
+              ]
+    )
+
+    const dispatch = useDispatch()
 
     const increaseStep = () => {
         console.log("membership step is", membershipStep)
         if (membershipStep >= 2) {
+            // setMembershipBadges(localMembershipBadges)
             closeModal()
-            setMembershipStep(0)
+            setMembershipStep(1)
+
+            const formData = new FormData()
+            localMembershipBadges.forEach((badge, index) => {
+                formData.append("file", badge.file)
+                formData.append("name", badge.name)
+                formData.append("level", badge.level || index + 1)
+                formData.append("category", 1)
+                formData.append("description", badge.description)
+            })
+
+            dispatch(
+                createMembershipBadges(
+                    formData,
+                    localMembershipBadges,
+                    isEditing
+                )
+            )
         } else {
             setMembershipStep((membershipStep) => membershipStep + 1)
         }
@@ -126,16 +153,16 @@ export default function Modal({ closeModal }) {
                 return (
                     <MembershipCreationStep1
                         increaseStep={increaseStep}
-                        membershipBadges={membershipBadges}
-                        setMembershipBadges={setMembershipBadges}
+                        membershipBadges={localMembershipBadges}
+                        setMembershipBadges={setLocalMembershipBadges}
                     />
                 )
             case 2:
                 return (
                     <MembershipCreationStep2
                         increaseStep={increaseStep}
-                        membershipBadges={membershipBadges}
-                        setMembershipBadges={setMembershipBadges}
+                        membershipBadges={localMembershipBadges}
+                        setMembershipBadges={setLocalMembershipBadges}
                     />
                 )
             default:

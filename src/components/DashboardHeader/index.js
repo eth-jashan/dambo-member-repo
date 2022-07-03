@@ -142,7 +142,7 @@ const DashboardHeader = ({
                     >
                         Request
                     </div>
-                    {/* <div
+                    <div
                         className={
                             currentPage === "treasury" ? "activePageLink" : ""
                         }
@@ -152,8 +152,8 @@ const DashboardHeader = ({
                         }}
                     >
                         Treasury
-                    </div> */}
-                    {/* <div
+                    </div>
+                    <div
                         className={
                             currentPage === "badges" ? "activePageLink" : ""
                         }
@@ -163,7 +163,7 @@ const DashboardHeader = ({
                         }}
                     >
                         Badges
-                    </div> */}
+                    </div>
                 </div>
             )}
             <div className="profileContainer">
