@@ -5,10 +5,15 @@ import plus_black from "../../../../assets/Icons/plus_black.svg"
 import upload_file_colored from "../../../../assets/Icons/upload_file_colored.svg"
 import tick from "../../../../assets/Icons/tick.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
-import { mintBadges } from "../../../../store/actions/membership-action"
+import {
+    mintBadges,
+    setShowMembershipMintingModal,
+} from "../../../../store/actions/membership-action"
 import { useDispatch } from "react-redux"
+import { createMembershipVoucher } from "../../../../utils/POCPServiceSdk"
+import { web3 } from "../../../../constant/web3"
 
-export default function AddAddress({ selectedMembershipBadge }) {
+export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [isBulkMinting, setIsBulkMinting] = useState(false)
     const [addresses, setAddresses] = useState([""])
     const [bulkMintingStep, setBulkMintingStep] = useState(0)
@@ -51,10 +56,12 @@ export default function AddAddress({ selectedMembershipBadge }) {
         }
     }
 
-    const increaseStep = () => {
+    const increaseStep = async () => {
         if (bulkMintingStep >= 1) {
             setBulkMintingStep(1)
-            mintVouchers()
+            await mintVouchers()
+            // console.log("hhere")
+            // dispatch(setShowMembershipMintingModal(false))
         } else {
             setBulkMintingStep((bulkMintingStep) => bulkMintingStep + 1)
         }
@@ -63,7 +70,12 @@ export default function AddAddress({ selectedMembershipBadge }) {
     const mintVouchers = async () => {
         console.log("minting badges")
         const mintAddresses = isBulkMinting ? bulkAddresses : addresses
-        dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
+        try {
+            await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
+            dispatch(setShowMembershipMintingModal(false))
+        } catch (error) {
+            console.log("error on signinig", error.toString())
+        }
     }
 
     const checkIsDisabled = () => {

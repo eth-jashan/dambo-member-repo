@@ -69,6 +69,7 @@ export default function MintingModal({ closeMintingModal, membershipBadges }) {
                                 selectedMembershipBadge={
                                     selectedMembershipBadge
                                 }
+                                closeModal={closeMintingModal}
                             />
                         </div>
                     ) : (

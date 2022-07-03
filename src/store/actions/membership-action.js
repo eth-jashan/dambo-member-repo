@@ -302,7 +302,8 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
 
         try {
             const response = await apiClient.post(
-                `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
+                // `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
+                `http://localhost:3000/arweave_server/membership`,
                 formData
             )
             console.log("response is ", response.data)
@@ -492,23 +493,29 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
             [[]]
         )
 
-        console.log("mapArr", mapArr)
-
         try {
-            const mapArrWithSignedVoucher = mapArr.map(async (ele) => {
-                const signedObject = await createMembershipVoucher(
-                    web3.contractAddress,
-                    [selectedMembershipBadge?.level],
-                    [selectedMembershipBadge?.category],
-                    [],
-                    ele,
-                    selectedMembershipBadge?.metadata_hash
-                )
-                return {
-                    addresses: [...ele],
-                    signed_voucher: signedObject,
-                }
-            })
+            const mapArrWithSignedVoucher = await Promise.all(
+                mapArr.map(async (ele) => {
+                    console.log(ele, selectedMembershipBadge?.metadata_hash)
+                    // eslint-disable-next-line no-useless-catch
+                    try {
+                        const signedObject = await createMembershipVoucher(
+                            web3.contractAddress,
+                            [selectedMembershipBadge?.level],
+                            [selectedMembershipBadge?.category],
+                            [],
+                            ele,
+                            "selectedMembershipBadge?.metadata_hash,"
+                        )
+                        return {
+                            addresses: [...ele],
+                            signed_voucher: signedObject,
+                        }
+                    } catch (error) {
+                        throw error
+                    }
+                })
+            )
 
             const arrWithApiCall = mapArrWithSignedVoucher.map((ele) =>
                 apiClient.post(
@@ -539,7 +546,5 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                 dispatch(toastAction.setShowToast({ status: true }))
             }
         } catch (err) {}
-
-        const res = await apiClient.post()
     }
 }

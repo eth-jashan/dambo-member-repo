@@ -54,19 +54,24 @@ export const getMembershipBadgeFromTxHash = (txHash) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
-export const createMembershipVoucher = (
+export const createMembershipVoucher = async (
     contractAddress,
     level,
     category,
     addresses,
     metadataHash
 ) => {
-    return pocpInstance.createMembershipVoucher(
-        contractAddress,
-        [level],
-        [category],
-        [],
-        addresses,
-        metadataHash
-    )
+    console.log("Signing Voucher", level, category, metadataHash)
+    try {
+        return await pocpInstance.createMembershipVoucher(
+            contractAddress,
+            level,
+            category,
+            [],
+            metadataHash,
+            "metadataHash,"
+        )
+    } catch (error) {
+        console.log("error", error)
+    }
 }
