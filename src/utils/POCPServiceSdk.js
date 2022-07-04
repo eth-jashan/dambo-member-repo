@@ -36,7 +36,12 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
-    console.log(contractAddress, voucher, claimerAddressIndex)
+    console.log(
+        "Claiming details",
+        contractAddress,
+        voucher,
+        claimerAddressIndex
+    )
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
@@ -93,6 +98,7 @@ export const createMembershipVoucher = async (
     addresses,
     metadataHash
 ) => {
+    console.log("contract detail", contractAddress)
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,

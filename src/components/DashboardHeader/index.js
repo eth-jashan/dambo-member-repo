@@ -133,6 +133,17 @@ const DashboardHeader = ({
                 <div className="routeLinks">
                     <div
                         className={
+                            currentPage === "badges" ? "activePageLink" : ""
+                        }
+                        onClick={() => {
+                            setCurrentPage("badges")
+                            setShowSettings(false)
+                        }}
+                    >
+                        Badges
+                    </div>
+                    <div
+                        className={
                             currentPage === "request" ? "activePageLink" : ""
                         }
                         onClick={() => {
@@ -152,17 +163,6 @@ const DashboardHeader = ({
                         }}
                     >
                         Treasury
-                    </div>
-                    <div
-                        className={
-                            currentPage === "badges" ? "activePageLink" : ""
-                        }
-                        onClick={() => {
-                            setCurrentPage("badges")
-                            setShowSettings(false)
-                        }}
-                    >
-                        Badges
                     </div>
                 </div>
             )}

@@ -118,7 +118,7 @@ export default function BadgesScreen() {
                     </div>
                 </div>
             </div>
-            <BadgesScreenSearchTab />
+            {/* <BadgesScreenSearchTab /> */}
             {selectedNav === "badges" ? (
                 <HomeScreen
                     membershipBadges={membershipBadges}

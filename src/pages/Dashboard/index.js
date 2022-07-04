@@ -199,7 +199,7 @@ export default function Dashboard() {
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
-        await dispatch(getAllMembershipBadgesForAddress(address, proxyContract))
+        await dispatch(getAllMembershipBadgesForAddress(address))
 
         // if (!voucher) {
         //     message.error("You are not a member of this DAO")
@@ -228,9 +228,7 @@ export default function Dashboard() {
             console.log("Current Dao!", currentDao)
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
             const voucher = await dispatch(getMembershipVoucher())
-            await dispatch(
-                getAllMembershipBadgesForAddress(address, proxyContract)
-            )
+            await dispatch(getAllMembershipBadgesForAddress(address))
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
@@ -370,8 +368,8 @@ export default function Dashboard() {
                     )}
                 </div>
             </div>
-            <div>
-                {role === "ADMIN" && (
+            {/* <div> */}
+            {/* {role === "ADMIN" && (
                     <div
                         onMouseEnter={() => setUniPayHover(true)}
                         onMouseLeave={() => setUniPayHover(false)}
@@ -399,8 +397,8 @@ export default function Dashboard() {
                         signer={signer}
                         onClose={() => setModalUniPayment(false)}
                     />
-                )}
-            </div>
+                )} */}
+            {/* </div> */}
         </div>
     )
 

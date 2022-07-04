@@ -189,12 +189,13 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
     }
 }
 
-export const getAllMembershipBadgesForAddress = (address, contractAddress) => {
+export const getAllMembershipBadgesForAddress = (address) => {
     return async (dispatch, getState) => {
+        const proxyContract = getState().dao.proxyContract
         try {
             const membershipBadges = await getAllMembershipBadges(
                 address,
-                contractAddress
+                proxyContract
             )
             console.log(
                 "membership badges are ",
