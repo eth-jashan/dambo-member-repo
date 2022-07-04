@@ -226,7 +226,7 @@ export default function Dashboard() {
             // )
             // await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
-            console.log("Current Dao!", currentDao.proxy_txn_hash)
+            console.log("Current Dao!", currentDao)
             const voucher = await dispatch(getMembershipVoucher())
             await dispatch(
                 getAllMembershipBadgesForAddress(address, web3.contractAdress)
