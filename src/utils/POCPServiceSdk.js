@@ -59,8 +59,8 @@ export const deployDaoContract = async (
         daoName,
         daoSymbol,
         approverAddress,
-        "0xDcc7133abBA15B8f4Bf155A372C17744E0941f28",
-        "0x1C6D20042bfc8474051Aba9FB4Ff85880089A669",
+        "0x1f06C05EC5d69796CEF077369e50Ca347048CAC1",
+        "0x36F7Fa526384D3471188bFAc93Db9d2C691C7fFA",
         hashCallbackFn,
         confirmCallbackFn
     )
