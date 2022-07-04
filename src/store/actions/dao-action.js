@@ -236,11 +236,12 @@ export const getAllDaowithAddress = (chainId) => {
     }
 }
 
-export const setContractAddress = (txHash) => {
-    return async (dispatch) => {
-        const res = await getInfoHash(txHash)
-        console.log("resss", res)
-        dispatch(daoAction.set_proxy_address({ contract: "" }))
+export const setContractAddress = () => {
+    return async (dispatch, getState) => {
+        const currentDao = getState().dao.currentDao
+        const res = await getInfoHash(currentDao?.proxy_txn_hash)
+        console.log("Contract address", res.data.daos[0], currentDao)
+        dispatch(daoAction.set_proxy_address({ contract: res.data.daos[0].id }))
     }
 }
 

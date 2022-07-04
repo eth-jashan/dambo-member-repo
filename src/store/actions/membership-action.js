@@ -9,6 +9,7 @@ import {
 import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
+import { ethers } from "ethers"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -85,13 +86,18 @@ const wait = function (ms = 1000) {
 
 export const claimMembershipVoucher = (membershipVoucherInfo) => {
     return async (dispatch, getState) => {
+        const proxyContract = getState().dao.daoProxyAddress
         try {
             const claimerAddress = getState().auth.address
             console.log("claiming voucher")
             await claimVoucher(
-                web3.contractAdress,
+                proxyContract,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
+                async (x) => {
+                    console.log("Tx emitted is", x)
+                    // dispatch(updateTxHash(x, "claim"))
+                },
                 async (x) => {
                     console.log("event emitted is", x)
                     const fetchNFT = () =>
@@ -155,7 +161,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     dispatch(
                         getAllMembershipBadgesForAddress(
                             claimerAddress,
-                            web3.contractAddress
+                            proxyContract
                         )
                     )
                     dispatch(
@@ -483,7 +489,7 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         // const uuid = getState().dao.currentDao?.uuid
-
+        const proxyContract = getState().dao.daoProxyAddress
         const mapArr = addresses.reduce(
             (acc, curr) => {
                 if (acc[acc.length - 1].length < 24) {
@@ -505,7 +511,7 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                     // eslint-disable-next-line no-useless-catch
                     try {
                         const signedObject = await createMembershipVoucher(
-                            web3.contractAdress,
+                            proxyContract,
                             [selectedMembershipBadge?.level],
                             [selectedMembershipBadge?.category],
                             [],
@@ -551,5 +557,37 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                 dispatch(toastAction.setShowToast({ status: true }))
             }
         } catch (err) {}
+    }
+}
+
+export const updateTxHash = (txnHash, type, prevHash) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = await provider.getSigner()
+        const chainId = await signer.getChainId()
+        const data = {
+            txn_hash: txnHash,
+            chain_id: chainId,
+            prev_txn_hash: type === "claim" ? null : prevHash,
+            type,
+        }
+        try {
+            const res = apiClient.post(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${"/membership/membership_txn"}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res", res)
+            return 1
+        } catch (error) {
+            return 0
+        }
     }
 }

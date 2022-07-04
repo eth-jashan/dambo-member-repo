@@ -5,8 +5,8 @@ import { getSelectedChainId } from "./POCPutils"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
-const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
-// const pocpGetter = new PocpGetters(137)
+// const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
+const pocpGetter = new PocpGetters(137)
 
 export const initPOCP = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -33,6 +33,7 @@ export const claimVoucher = async (
     contractAddress,
     voucher,
     claimerAddressIndex,
+    hashCallbackFn,
     callbackFn
 ) => {
     console.log(contractAddress, voucher, claimerAddressIndex)
@@ -42,6 +43,7 @@ export const claimVoucher = async (
         claimerAddressIndex,
         (x) => {
             console.log("Tranaction hash callback", x)
+            hashCallbackFn(x)
         },
         callbackFn
     )

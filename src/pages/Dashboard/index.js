@@ -100,6 +100,7 @@ export default function Dashboard() {
     // gnosis setup
     const [signer, setSigner] = useState()
     const currentDao = useSelector((x) => x.dao.currentDao)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
 
@@ -198,9 +199,7 @@ export default function Dashboard() {
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
-        await dispatch(
-            getAllMembershipBadgesForAddress(address, web3.contractAdress)
-        )
+        await dispatch(getAllMembershipBadgesForAddress(address, proxyContract))
 
         // if (!voucher) {
         //     message.error("You are not a member of this DAO")
@@ -227,9 +226,10 @@ export default function Dashboard() {
             // await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
             console.log("Current Dao!", currentDao)
+            await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
             const voucher = await dispatch(getMembershipVoucher())
             await dispatch(
-                getAllMembershipBadgesForAddress(address, web3.contractAdress)
+                getAllMembershipBadgesForAddress(address, proxyContract)
             )
 
             if (accountRole === "ADMIN") {
@@ -270,11 +270,6 @@ export default function Dashboard() {
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         // await dispatch(getCommunityId())
-        // await dispatch(
-        //     setContractAddress(
-        //         "0x45d871ef3a95a76ed7fe87792392d72b66204628d1bb906897b988c301ea32a5"
-        //     )
-        // )
         await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
