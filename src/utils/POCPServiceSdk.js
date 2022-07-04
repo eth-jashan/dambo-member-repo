@@ -38,13 +38,27 @@ export const claimVoucher = async (
 ) => {
     console.log(
         "Claiming details",
-        contractAddress,
-        voucher,
+        contractAddress === "0x3283620C58B0130020eb54B6Dec95298BfE42E8c",
+        {
+            data: [257],
+            end: [],
+            to: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
+            tokenUris: "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
+            signature:
+                "0xd649094da026b88694daf823f00d0bc77405555a690731080d22897282a1e46f565707d3b75b07c6ed0707e2ff4cfa6baedf8b3525244ddfc1e56a54c7a6daa81b",
+        },
         claimerAddressIndex
     )
     await pocpInstance.claimMembershipNft(
-        contractAddress,
-        voucher,
+        "0x3283620C58B0130020eb54B6Dec95298BfE42E8c",
+        {
+            data: [257],
+            end: [],
+            to: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
+            tokenUris: "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
+            signature:
+                "0xd649094da026b88694daf823f00d0bc77405555a690731080d22897282a1e46f565707d3b75b07c6ed0707e2ff4cfa6baedf8b3525244ddfc1e56a54c7a6daa81b",
+        },
         claimerAddressIndex,
         (x) => {
             console.log("Tranaction hash callback", x)
