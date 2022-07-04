@@ -38,6 +38,7 @@ export default function Onboarding() {
     const { safeFactory } = useSafeSdk(signer, safeAddress)
     const daoSetupInfo = useSelector((x) => x.dao.newSafeSetup)
     const threshold = useSelector((x) => x.dao.newSafeSetup.threshold)
+    const [register, setRegister] = useState(false)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -147,12 +148,19 @@ export default function Onboarding() {
         if (newSafeSetup) {
             setCurrentStep(4)
         } else {
-            await dispatch(
-                registerDao((x) => {
-                    navigate("/dashboard")
-                    console.log(x)
-                })
-            )
+            try {
+                setRegister(true)
+                await dispatch(
+                    registerDao((x) => {
+                        navigate("/dashboard")
+                        console.log("Confirmed hash", x)
+                        setRegister(false)
+                    })
+                )
+            } catch (error) {
+                console.log("error", error)
+                setRegister(false)
+            }
         }
     }
 
