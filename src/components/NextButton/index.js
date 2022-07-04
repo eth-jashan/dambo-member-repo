@@ -7,6 +7,7 @@ export default function NextButton({
     isDisabled,
     isContributor,
     nextButtonCallback,
+    isNext,
 }) {
     return (
         <div

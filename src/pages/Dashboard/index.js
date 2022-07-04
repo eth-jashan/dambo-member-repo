@@ -14,6 +14,7 @@ import {
     getPayoutRequest,
     gnosisDetailsofDao,
     refreshContributionList,
+    setContractAddress,
     set_active_nonce,
     set_payout_filter,
     syncTxDataWithGnosis,
@@ -61,7 +62,7 @@ import SettingsScreen from "../../components/SettingsScreen"
 import { web3 } from "../../constant/web3"
 import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
-import { initPOCP } from "../../utils/POCPServiceSdk"
+import { getInfoHash, initPOCP } from "../../utils/POCPServiceSdk"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -76,7 +77,7 @@ export default function Dashboard() {
     const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const currentDao = useSelector((x) => x.dao.currentDao)
+
     const community_id = useSelector((x) => x.dao.communityInfo)
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
@@ -98,6 +99,7 @@ export default function Dashboard() {
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
     // gnosis setup
     const [signer, setSigner] = useState()
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
 
@@ -188,15 +190,16 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
-        await dispatch(getPayoutRequest())
-        dispatch(set_payout_filter("PENDING"))
+        //---gnosi check----///
+        // await dispatch(getPayoutRequest())
+        // dispatch(set_payout_filter("PENDING"))
     }
 
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
         await dispatch(
-            getAllMembershipBadgesForAddress(address, web3.contractAddress)
+            getAllMembershipBadgesForAddress(address, web3.contractAdress)
         )
 
         // if (!voucher) {
@@ -204,9 +207,6 @@ export default function Dashboard() {
         //     navigate("/")
         // }
         dispatch(setLoadingState(false))
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        dispatch(getContributorOverview())
     }
 
     const initialLoad = useCallback(async () => {
@@ -219,21 +219,18 @@ export default function Dashboard() {
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            // await dispatch(getCommunityId())
-            await dispatch(gnosisDetailsofDao())
-            await dispatch(getAllApprovedBadges())
+            // await dispatch(gnosisDetailsofDao())
+            // await getInfoHash(
+            //     "0x45d871ef3a95a76ed7fe87792392d72b66204628d1bb906897b988c301ea32a5",
+            //     currentDao
+            // )
+            // await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
+            console.log("Current Dao!", currentDao.proxy_txn_hash)
             const voucher = await dispatch(getMembershipVoucher())
             await dispatch(
-                getAllMembershipBadgesForAddress(address, web3.contractAddress)
+                getAllMembershipBadgesForAddress(address, web3.contractAdress)
             )
-
-            // console.log("voucher and allNFts", voucher, allNfts.data.membershipNfts)
-
-            // if (!voucher) {
-            //     message.error("You are not a member of this DAO")
-            //     navigate("/")
-            // }
 
             if (accountRole === "ADMIN") {
                 await adminContributionFetch()
@@ -273,6 +270,11 @@ export default function Dashboard() {
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         // await dispatch(getCommunityId())
+        // await dispatch(
+        //     setContractAddress(
+        //         "0x45d871ef3a95a76ed7fe87792392d72b66204628d1bb906897b988c301ea32a5"
+        //     )
+        // )
         await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {

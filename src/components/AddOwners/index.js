@@ -18,6 +18,7 @@ export default function AddOwners({
     setStep,
     safeOwners,
     rep3Setup,
+    onBack,
 }) {
     const address = useSelector((x) => x.auth.address)
     const [owners, setOwners] = useState([
@@ -142,7 +143,7 @@ export default function AddOwners({
         //     // increaseStep()
         // }
         increaseStep()
-        console.log("hereeee")
+        // console.log("hereeee")
     }
 
     const renderHeader = () =>
@@ -181,8 +182,6 @@ export default function AddOwners({
                 )}
             </>
         )
-
-    console.log(safeSigners.length)
 
     return (
         <div className={styles.wrapper}>
@@ -271,6 +270,7 @@ export default function AddOwners({
             <div className={styles.bottomBarAbsolute}>
                 <div className={styles.backDiv}>
                     <img
+                        onClick={() => onBack()}
                         src={assets.icons.backArrowBlack}
                         alt="right"
                         className={styles.backIcon}
@@ -281,6 +281,7 @@ export default function AddOwners({
                     text={rep3Setup ? "Sign Transaction" : "Add Permissions"}
                     nextButtonCallback={onNext}
                     isDisabled={!areValidOwners()}
+                    isNext={false}
                 />
             </div>
         </div>

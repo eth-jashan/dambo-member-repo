@@ -18,12 +18,13 @@ export default function ApproveTransaction({
 }) {
     const owners = useSelector((x) => x.dao.newSafeSetup.owners)
     const dispatch = useDispatch()
-    const onNext = () => {
+    const onNext = async () => {
+        // setProvider()
         dispatch(addThreshold(selectedIndex + 1))
-        increaseStep()
-        if (!hasMultiSignWallet) {
-            setProvider()
-        }
+        await increaseStep()
+        // if (!hasMultiSignWallet) {
+
+        // }
     }
     const defaultOptions = {
         loop: true,
@@ -44,7 +45,7 @@ export default function ApproveTransaction({
             </div>
             <Lottie
                 options={defaultOptions}
-                style={{ height: "40%", width: "100%" }}
+                // style={{ height: "40%", width: "100%" }}
                 className={styles.layoutImage}
             />
         </div>
@@ -93,7 +94,7 @@ export default function ApproveTransaction({
                         </div>
                         <NextButton
                             text="Add DAO details"
-                            nextButtonCallback={onNext}
+                            nextButtonCallback={async () => await onNext()}
                             isDisabled={!(selectedIndex >= 0)}
                         />
                     </div>

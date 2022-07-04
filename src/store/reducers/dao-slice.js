@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit"
 const daoSlice = createSlice({
     name: "dao",
     initialState: {
+        daoProxyAddress: false,
         chainId: null,
         allSafeList: [],
         dao_list: [],
@@ -60,6 +61,9 @@ const daoSlice = createSlice({
         set_chainId(state, action) {
             state.chainId = action.payload.chainId
         },
+        set_proxy_address(state, action) {
+            state.daoProxyAddress = action.payload.contract
+        },
         set_allSafe(state, action) {
             state.allSafeList = action.payload.list
         },
@@ -88,6 +92,7 @@ const daoSlice = createSlice({
             state.active_nonce = action.payload.nonce
         },
         set_current_dao(state, action) {
+            console.log("current dao", action.payload.dao)
             state.currentDao = action.payload.dao
             state.role = action.payload.role
             state.community_role = action.payload.community_role

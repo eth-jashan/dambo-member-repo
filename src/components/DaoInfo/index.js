@@ -20,13 +20,14 @@ const DaoInfo = ({
     hasMultiSignWallet,
     createDao,
     increaseStep,
+    onBack,
 }) => {
     const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [discord, setDiscord] = useState("")
+    // const [email, setEmail] = useState("")
+    // const [discord, setDiscord] = useState("")
     const [image, setImage] = useState()
     const [loading, setLoading] = useState(false)
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
 
     const defaultOptions = {
         loop: true,
@@ -269,7 +270,10 @@ const DaoInfo = ({
                         </div>
                     </div>
                     <div className={styles.bottomBar}>
-                        <div className={styles.backDiv}>
+                        <div
+                            onClick={() => onBack()}
+                            className={styles.backDiv}
+                        >
                             <img
                                 src={assets.icons.backArrowBlack}
                                 alt="right"

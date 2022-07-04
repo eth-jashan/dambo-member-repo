@@ -95,21 +95,27 @@ export default function Onboarding() {
         async (owners) => {
             if (!safeFactory) return
             setDeploying(true)
-            const safeAccountConfig = { owners, threshold }
+            const safeAccountConfig = {
+                owners,
+                threshold: threshold === 0 ? threshold + 1 : threshold,
+            }
             let safe
             try {
                 safe = await safeFactory.deploySafe(safeAccountConfig)
                 message.success("A safe is successfully created !")
                 setDeploying(false)
+                // callBackFnSuccess()
+                const newSafeAddress = ethers.utils.getAddress(
+                    safe.getAddress()
+                )
+                console.log("new safe address", newSafeAddress)
+                setSafeAddress(newSafeAddress)
+                dispatch(addSafeAddress(newSafeAddress))
             } catch (error) {
                 message.error(error.message)
                 setDeploying(false)
-                return
             }
-            const newSafeAddress = ethers.utils.getAddress(safe.getAddress())
 
-            setSafeAddress(newSafeAddress)
-            dispatch(addSafeAddress(newSafeAddress))
             // setDeploying(true)
             // const { dao_uuid, name } = await dispatch(registerDao())
             // dispatch(lastSelectedId(dao_uuid))
@@ -141,20 +147,17 @@ export default function Onboarding() {
         if (newSafeSetup) {
             setCurrentStep(4)
         } else {
-            await dispatch(registerDao())
+            await dispatch(
+                registerDao((x) => {
+                    navigate("/dashboard")
+                    console.log(x)
+                })
+            )
         }
-        // console.log(daoSetupInfo)
-
-        // await deployDaoContract(
-        //     daoSetupInfo.dao_name,
-        //     "JRT",
-        //     owner,
-        // (x) => console.log("Hash is", x),
-        // (x) => console.log("hash is confirmed", x)
-        // )
     }
 
     const setProvider = async () => {
+        console.log("setting signer")
         const provider = new ethers.providers.Web3Provider(
             window.ethereum,
             "any"
@@ -165,11 +168,24 @@ export default function Onboarding() {
         setSigner(signer)
     }
 
+    useEffect(() => {
+        setProvider()
+    }, [])
+
     const increaseStep = () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep((currentStep) => currentStep + 1)
         } else {
             setCurrentStep(steps.length - 1)
+        }
+    }
+
+    const increaseStepFromGnosisList = async () => {
+        if (newSafeSetup) {
+            await deployNewSafe(() => {})
+            increaseStep()
+        } else {
+            increaseStep()
         }
     }
 
@@ -223,21 +239,20 @@ export default function Onboarding() {
     }
 
     const deployNewSafe = async () => {
+        // try {
         try {
-            try {
-                const owner = []
-                owners.forEach((item) => {
-                    owner.push(item.address)
-                })
-                console.log("owners", owner, threshold)
-                await deploySafe(owner)
-                setCurrentStep(6)
-            } catch (error) {
-                // console.log("error.... on deploying", error);
-            }
+            const owner = []
+            owners.forEach((item) => {
+                owner.push(item.address)
+            })
+            await deploySafe(owner)
+            setCurrentStep(6)
         } catch (error) {
-            // console.log("error.......", error);
+            console.log("error.... on deploying", error)
         }
+        // } catch (error) {
+        //     console.log("error.......", error)
+        // }
     }
 
     const fetchAllSafe = useCallback(async () => {
@@ -271,7 +286,6 @@ export default function Onboarding() {
     }
 
     const increaseFromGnosisSetup = () => {
-        // console.log("here")
         setNewSafeSetup(false)
         setHasMultiSignWallet(false)
         setrep3Setup(true)
@@ -279,6 +293,7 @@ export default function Onboarding() {
     }
 
     const increaseFromDaoInfo = async (name, logoUrl) => {
+        console.log(logoUrl)
         dispatch(addDaoInfo(name, logoUrl))
         if (isPayout) {
             const res = await fetchAllSafe()
@@ -290,6 +305,13 @@ export default function Onboarding() {
         } else {
             setrep3Setup(true)
             setCurrentStep(3)
+        }
+    }
+
+    const backFromAddOwner = () => {
+        if (rep3Setup && !hasMultiSignWallet) {
+            console.log("here")
+            setCurrentStep(5)
         }
     }
 
@@ -318,12 +340,13 @@ export default function Onboarding() {
                 return (
                     <GnosisSafeList
                         setStep={(x) => setCurrentStep(x)}
-                        increaseStep={increaseStep}
+                        increaseStep={increaseStepFromGnosisList}
                         setHasMultiSignWallet={setHasMultiSignWallet}
                         guildId={guildId}
                         discordUserId={discordUserId}
                         rep3Setup={rep3Setup}
                         setrep3Setup={(x) => setrep3Setup(x)}
+                        onBack={() => setCurrentStep(5)}
                         setNewSafe={(x) => setNewSafeSetup(x)}
                     />
                 )
@@ -339,13 +362,14 @@ export default function Onboarding() {
                         setStep={(x) => setCurrentStep(steps.indexOf(x))}
                         rep3Setup={rep3Setup}
                         safeOwners={owners}
+                        onBack={backFromAddOwner}
                     />
                 )
             }
             case "approveTransaction":
                 return (
                     <ApproveTransaction
-                        increaseStep={deployNewSafe}
+                        increaseStep={async () => await deployNewSafe()}
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
                         hasMultiSignWallet={hasMultiSignWallet}
@@ -362,6 +386,7 @@ export default function Onboarding() {
                         }
                         deploying={deploying}
                         createDao={createDao}
+                        onBack={() => setCurrentStep(1)}
                     />
                 )
             case "pocpSignup":

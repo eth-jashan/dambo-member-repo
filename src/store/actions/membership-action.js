@@ -89,7 +89,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
             const claimerAddress = getState().auth.address
             console.log("claiming voucher")
             await claimVoucher(
-                web3.contractAddress,
+                web3.contractAdress,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
                 async (x) => {
@@ -302,8 +302,8 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
 
         try {
             const response = await apiClient.post(
-                // `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
-                `http://localhost:3000/arweave_server/membership`,
+                `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
+                // `http://localhost:3000/arweave_server/membership`,
                 formData
             )
             console.log("response is ", response.data)
@@ -326,11 +326,14 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                         }
 
                         return {
-                            ...membership,
+                            // level:membership.level,
+                            description: membership.description,
                             image_url,
                             metadata_hash,
                             level: membership?.level || index + 1,
                             category: 1,
+                            is_video: false,
+                            name: membership.name,
                         }
                     }
                 )
@@ -493,6 +496,8 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
             [[]]
         )
 
+        console.log(selectedMembershipBadge)
+
         try {
             const mapArrWithSignedVoucher = await Promise.all(
                 mapArr.map(async (ele) => {
@@ -500,12 +505,12 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                     // eslint-disable-next-line no-useless-catch
                     try {
                         const signedObject = await createMembershipVoucher(
-                            web3.contractAddress,
+                            web3.contractAdress,
                             [selectedMembershipBadge?.level],
                             [selectedMembershipBadge?.category],
                             [],
                             ele,
-                            "selectedMembershipBadge?.metadata_hash,"
+                            `${selectedMembershipBadge?.metadata_hash},`
                         )
                         return {
                             addresses: [...ele],

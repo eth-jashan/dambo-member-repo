@@ -16,8 +16,8 @@ export const initPOCP = async () => {
         signer,
         provider,
         window.ethereum,
-        currentNetwork?.chainId === 4 ? 80001 : 137,
-        // 137,
+        // currentNetwork?.chainId === 4 ? 80001 : 137,
+        137,
         {
             biconomyInstance: Biconomy,
             url: "",
@@ -35,10 +35,14 @@ export const claimVoucher = async (
     claimerAddressIndex,
     callbackFn
 ) => {
+    console.log(contractAddress, voucher, claimerAddressIndex)
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
         claimerAddressIndex,
+        (x) => {
+            console.log("Tranaction hash callback", x)
+        },
         callbackFn
     )
 }
@@ -73,22 +77,28 @@ export const getMembershipBadgeFromTxHash = (txHash) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
+export const getInfoHash = async (txHash, currentDao) => {
+    const res = await pocpGetter.getdaoInfoForHash(txHash)
+    console.log("res", res, currentDao)
+    return res
+}
+
 export const createMembershipVoucher = async (
     contractAddress,
     level,
     category,
+    to,
     addresses,
     metadataHash
 ) => {
-    console.log("Signing Voucher", level, category, metadataHash)
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,
             level,
             category,
             [],
-            metadataHash,
-            "metadataHash,"
+            addresses,
+            metadataHash
         )
     } catch (error) {
         console.log("error", error)

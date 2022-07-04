@@ -23,6 +23,8 @@ const GnosisSafeList = ({
     discordUserId,
     setrep3Setup,
     setNewSafe,
+    newSafeDeploy,
+    onBack,
 }) => {
     const setCurrentStep = () => {
         setStep(3)
@@ -102,10 +104,11 @@ const GnosisSafeList = ({
         </div>
     )
 
-    const createNewMulti = () => {
-        increaseStep()
+    const createNewMulti = async () => {
         setHasMultiSignWallet(false)
         setNewSafe(true)
+        await increaseStep()
+        // newSafeDeploy()
     }
 
     const renderNoWallet = () => (
@@ -169,7 +172,7 @@ const GnosisSafeList = ({
                 )}
             </div>
             <div className="bottomBar">
-                <div className="backDiv">
+                <div onClick={onBack} className="backDiv">
                     <img
                         src={assets.icons.backArrowBlack}
                         alt="right"

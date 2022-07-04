@@ -24,6 +24,9 @@ export const authWithSign = (address, signer, chainId) => {
         try {
             const responseNonce = await apiClient.get(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getNonce}?addr=${address}`
+                // `${"https://2eac-106-51-36-15.ngrok.io/dao_tool_server"}${
+                //     routes.auth.getNonce
+                // }?addr=${address}`
             )
             const signature = await signer.signMessage(
                 `Signing in to rep3.gg with nonce ${responseNonce.data.data.nonce}`
@@ -32,6 +35,9 @@ export const authWithSign = (address, signer, chainId) => {
                 const data = { addr: address, sig: signature }
                 const responseSignature = await apiClient.post(
                     `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getSignature}`,
+                    // `${"https://2eac-106-51-36-15.ngrok.io/dao_tool_server"}${
+                    //     routes.auth.getSignature
+                    // }`,
                     data
                 )
                 if (responseSignature.data.success) {
@@ -66,6 +72,7 @@ export const getJwt = (address, jwt) => {
         if (jwtInfo?.jwt) {
             try {
                 const res = await apiClient.get(
+                    // `${"https://2eac-106-51-36-15.ngrok.io/dao_tool_server"}/auth/ping`,
                     `${process.env.REACT_APP_DAO_TOOL_URL}/auth/ping`,
                     {
                         headers: {
