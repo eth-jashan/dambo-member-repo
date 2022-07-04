@@ -51,9 +51,18 @@ export const claimVoucher = async (
         },
         claimerAddressIndex
     )
+    const vouchers = {
+        data: [257],
+        end: [],
+        to: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
+        tokenUris: "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
+        signature:
+            "0x9e5045e78264c41f438aaac4a310cb9780796fa7cd0307c474e6c004687ab2550cc6a1d876dcad144c8800255974e1d9775ecf1f7a97ffec7b383418378b43c41b",
+    }
+    console.log(vouchers)
     await pocpInstance.claimMembershipNft(
-        "0x3283620C58B0130020eb54B6Dec95298BfE42E8c",
-        voucher,
+        "0x73A776bDF09B40e28e7d42318e8247FB3492AfB7",
+        vouchers,
         claimerAddressIndex,
         (x) => {
             console.log("Tranaction hash callback", x)
