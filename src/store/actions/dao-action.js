@@ -73,7 +73,7 @@ export const registerDao = (callbackFn) => {
 
         await deployDaoContract(
             name,
-            "JT",
+            name,
             approvers,
             async (x) => {
                 console.log("Hash is", x, {
