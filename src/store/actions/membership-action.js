@@ -89,14 +89,18 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
         const proxyContract = getState().dao.daoProxyAddress
         try {
             const claimerAddress = getState().auth.address
-            console.log("claiming voucher")
+            console.log(
+                "claiming voucher",
+                proxyContract,
+                JSON.stringify(membershipVoucherInfo)
+            )
             await claimVoucher(
                 proxyContract,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
                 async (x) => {
                     console.log("Tx emitted is", x)
-                    // dispatch(updateTxHash(x, "claim"))
+                    dispatch(updateTxHash(x, "claim"))
                 },
                 async (x) => {
                     console.log("event emitted is", x)

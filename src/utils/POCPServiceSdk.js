@@ -98,7 +98,15 @@ export const createMembershipVoucher = async (
     addresses,
     metadataHash
 ) => {
-    console.log("contract detail", contractAddress)
+    console.log(
+        "contract detail",
+        contractAddress,
+        level,
+        category,
+        addresses,
+        metadataHash,
+        to
+    )
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,
