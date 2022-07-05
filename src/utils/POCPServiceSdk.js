@@ -120,11 +120,11 @@ export const createMembershipVoucher = async (
     console.log(
         "contract detail",
         web3.contractAddress,
-        [1],
-        [1],
+        level,
+        category,
+        [],
         addresses,
-        "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
-        to
+        "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,"
     )
     try {
         return await pocpInstance.createMembershipVoucher(
@@ -133,7 +133,7 @@ export const createMembershipVoucher = async (
             category,
             [],
             addresses,
-            metadataHash
+            "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,"
         )
     } catch (error) {
         console.log("error", error)
