@@ -200,7 +200,7 @@ export default function Dashboard() {
 
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
-        const voucher = await dispatch(getMembershipVoucher())
+        await dispatch(getMembershipVoucher())
         console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
 
@@ -221,17 +221,19 @@ export default function Dashboard() {
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            await dispatch(getAllMembershipBadgesList())
+
             console.log("Current Dao!", currentDao)
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
+            await dispatch(getAllMembershipBadgesList())
 
-            const voucher = await dispatch(getMembershipVoucher())
-            console.log("here started")
+            await dispatch(getMembershipVoucher())
+
             await dispatch(getAllMembershipBadgesForAddress(address))
 
             if (accountRole === "ADMIN") {
                 await dispatch(getAllDaoMembers())
                 await adminContributionFetch()
+                setCurrentPage("badges")
             } else {
                 await contributorFetch()
             }
@@ -267,12 +269,13 @@ export default function Dashboard() {
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
-        // await dispatch(getCommunityId())
         await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-
         await dispatch(getAllMembershipBadgesList())
+        console.log("account Switch")
+        await dispatch(getAllMembershipBadgesForAddress(address))
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
+            setCurrentPage("badges")
             await dispatch(getAllDaoMembers())
             await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
@@ -297,6 +300,12 @@ export default function Dashboard() {
     useEffect(() => {
         preventGoingBack()
     }, [preventGoingBack])
+
+    useEffect(async () => {
+        // await dispatch(getAllMembershipBadgesList())
+        await dispatch(getMembershipVoucher())
+        await dispatch(getAllMembershipBadgesForAddress(address))
+    }, [currentDao?.uuid])
 
     const onRouteChange = async (route) => {
         dispatch(refreshContributionList())

@@ -44,20 +44,20 @@ export default function CommunityScreen() {
     const daoMember = []
 
     members.dao_members.forEach((x, i) => {
-        const newMemberships = {
-            id: 13,
-            uuid: "c28a3ea6-bc84-49bd-9df0-1f94aad9662b",
-            level: 1,
-            category: 1,
-            name: "Member",
-            description: null,
-            image_url:
-                "http://arweave.net/dCAUfkzCmOOZvBW-cF1-6AruMf9f7v53cpBnzhvhQg8",
-            is_video: false,
-            metadata_hash: "oeox8BZS7S937Q0xE6xZTJfRrjP8EKDJMsoIwbkpUvw",
-            members_count: 0,
-        }
-        daoMember.push({ ...x, index: i, memberships: newMemberships })
+        // const newMemberships = {
+        //     id: 13,
+        //     uuid: "c28a3ea6-bc84-49bd-9df0-1f94aad9662b",
+        //     level: 1,
+        //     category: 1,
+        //     name: "Member",
+        //     description: null,
+        //     image_url:
+        //         "http://arweave.net/dCAUfkzCmOOZvBW-cF1-6AruMf9f7v53cpBnzhvhQg8",
+        //     is_video: false,
+        //     metadata_hash: "oeox8BZS7S937Q0xE6xZTJfRrjP8EKDJMsoIwbkpUvw",
+        //     members_count: 0,
+        // }
+        daoMember.push({ ...x, index: i })
     })
 
     members.non_claimers_addr.forEach((x, i) => {
@@ -115,8 +115,8 @@ export default function CommunityScreen() {
                                     : "white",
                             }}
                         >{`${
-                            member?.memberships?.name
-                                ? member.memberships.name
+                            member?.memberships.length > 0
+                                ? member.memberships[0].name
                                 : "Jedi"
                         }`}</div>
                     </div>

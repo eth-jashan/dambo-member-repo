@@ -43,7 +43,7 @@ const CommunitySideCard = ({ show }) => {
                             <div className="membership-info-left">
                                 <div className="membership-name">
                                     {/* Noobie */}
-                                    {selectedMember?.memberships?.name}
+                                    {selectedMember?.memberships[0]?.name}
                                 </div>
                                 <div className="membership-time">
                                     11:25AM, 4 Jul

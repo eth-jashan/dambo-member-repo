@@ -97,7 +97,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -110,7 +110,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -123,7 +123,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}

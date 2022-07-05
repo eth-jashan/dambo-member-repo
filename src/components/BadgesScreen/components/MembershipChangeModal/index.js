@@ -86,14 +86,14 @@ export default function MembershipChangeModal({
                                         </div>
                                         <div className="membership-name">
                                             <div>{badge.name}</div>
-                                            {selectedMember.memberships.uuid ===
-                                                badge.uuid && (
+                                            {selectedMember.memberships[0]
+                                                .uuid === badge.uuid && (
                                                 <div>Current Role</div>
                                             )}
                                         </div>
                                     </div>
                                     <div className="membership-badge-time">
-                                        {selectedMember.memberships.uuid ===
+                                        {selectedMember.memberships[0].uuid ===
                                         badge.uuid ? (
                                             "2 months ago"
                                         ) : (
@@ -136,7 +136,7 @@ export default function MembershipChangeModal({
                                     ) : (
                                         <img
                                             src={
-                                                selectedMember.memberships
+                                                selectedMember.memberships[0]
                                                     .image_url
                                             }
                                         />

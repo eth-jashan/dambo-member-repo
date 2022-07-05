@@ -6,6 +6,7 @@ import upload_file_colored from "../../../../assets/Icons/upload_file_colored.sv
 import tick from "../../../../assets/Icons/tick.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
 import {
+    getAllDaoMembers,
     mintBadges,
     setShowMembershipMintingModal,
 } from "../../../../store/actions/membership-action"
@@ -72,6 +73,7 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         const mintAddresses = isBulkMinting ? bulkAddresses : addresses
         try {
             await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
+            await dispatch(getAllDaoMembers())
             dispatch(setShowMembershipMintingModal(false))
         } catch (error) {
             console.log("error on signinig", error.toString())
