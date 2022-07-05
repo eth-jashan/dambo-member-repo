@@ -6,6 +6,7 @@ import {
     setSelectedMember,
     setShowMembershipChangeModal,
 } from "../../../store/actions/membership-action"
+import { assets } from "../../../constant/assets"
 
 const CommunitySideCard = ({ show }) => {
     const selectedMember = useSelector((x) => x.membership.selectedMember)
@@ -20,7 +21,19 @@ const CommunitySideCard = ({ show }) => {
     const openMembershipUpdateModal = () => {
         dispatch(setShowMembershipChangeModal(true))
     }
-    console.log(selectedMember)
+
+    const changeLevel = () => (
+        <div
+            onClick={() => openMembershipUpdateModal()}
+            className="change-level-container"
+        >
+            <div className="change-text">Change Level</div>
+            {/* <img
+                src={assets.icons.tuneIcon}
+                style={{ height: "1.5rem", width: "1.5rem" }}
+            /> */}
+        </div>
+    )
 
     return (
         <div
@@ -40,9 +53,9 @@ const CommunitySideCard = ({ show }) => {
                             {selectedMember?.public_address?.slice(-3)}
                         </div>
                         <div className="membership-info">
-                            <div className="membership-info-left">
+                            {/* <div className="membership-info-left">
                                 <div className="membership-name">
-                                    {/* Noobie */}
+                                    
                                     {selectedMember?.memberships[0]?.name}
                                 </div>
                                 <div className="membership-time">
@@ -54,14 +67,20 @@ const CommunitySideCard = ({ show }) => {
                                 >
                                     Change Membership
                                 </div>
-                            </div>
+                            </div> */}
                             <img
-                                // className='membership-image'
-                                src={
-                                    "http://arweave.net/FD1g0umqte1Vbz-7BBN8NaZm_511bHenazj5q63h4eY"
-                                }
-                                alt=""
+                                src={selectedMember?.memberships[0]?.image_url}
+                                className="member-image"
                             />
+                            <div className="badge-info">
+                                <div>
+                                    <div className="level-name">Noobie</div>
+                                    <div className="level-time">
+                                        2 Hours ago
+                                    </div>
+                                </div>
+                                {changeLevel()}
+                            </div>
                         </div>
                     </div>
                 ) : (

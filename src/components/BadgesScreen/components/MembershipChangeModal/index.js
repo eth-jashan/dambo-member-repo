@@ -5,7 +5,10 @@ import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import long_arrow_right from "../../../../assets/Icons/long_arrow_right.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
 import { useDispatch, useSelector } from "react-redux"
-import { upgradeMembershipNft } from "../../../../utils/POCPServiceSdk"
+import {
+    getMembershipBadgeFromTxHash,
+    upgradeMembershipNft,
+} from "../../../../utils/POCPServiceSdk"
 import { updateTxHash } from "../../../../store/actions/membership-action"
 
 export default function MembershipChangeModal({
@@ -24,9 +27,13 @@ export default function MembershipChangeModal({
         setUpgradeMembership(x)
     }
     const upgradMembershipNft = async () => {
-        console.log(proxyContract, selectUpgradeMembership)
+        console.log(proxyContract, selectUpgradeMembership, selectedMember)
         if (proxyContract && !loading) {
             setLoading(true)
+            const res = await getMembershipBadgeFromTxHash(
+                "0x7e80cca8485c86abd3004cac21071a00c55224c89bbc51a5b5e3eac92f1810c1"
+            )
+            console.log("res", res.data?.membershipNFTs)
             await upgradeMembershipNft(
                 proxyContract,
                 0,
@@ -87,13 +94,13 @@ export default function MembershipChangeModal({
                                         <div className="membership-name">
                                             <div>{badge.name}</div>
                                             {selectedMember.memberships[0]
-                                                .uuid === badge.uuid && (
+                                                ?.uuid === badge.uuid && (
                                                 <div>Current Role</div>
                                             )}
                                         </div>
                                     </div>
                                     <div className="membership-badge-time">
-                                        {selectedMember.memberships[0].uuid ===
+                                        {selectedMember.memberships[0]?.uuid ===
                                         badge.uuid ? (
                                             "2 months ago"
                                         ) : (
@@ -136,8 +143,8 @@ export default function MembershipChangeModal({
                                     ) : (
                                         <img
                                             src={
-                                                selectedMember.memberships[0]
-                                                    .image_url
+                                                selectedMember?.memberships[0]
+                                                    ?.image_url
                                             }
                                         />
                                     )}
