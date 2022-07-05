@@ -241,7 +241,9 @@ export const setContractAddress = () => {
         const currentDao = getState().dao.currentDao
         const res = await getInfoHash(currentDao?.proxy_txn_hash)
         console.log("Contract address", res.data.daos[0], currentDao)
-        dispatch(daoAction.set_proxy_address({ contract: res.data.daos[0].id }))
+        dispatch(
+            daoAction.set_proxy_address({ contract: res.data.daos[0]?.id })
+        )
     }
 }
 

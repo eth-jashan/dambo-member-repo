@@ -37,25 +37,48 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
-    const vouchers = {
-        data: [257],
-        end: [],
-        to: ["0x0E4C5523f58F513C444535AB4ab2217E5D5DE942"],
-        tokenUris: "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,",
-        signature:
-            "0x3e24dbb85a135bdabbb976742f7088436daf2a17bdfe1c7bcc672d12d5e5dcab34202aa4ebf7294ed6c7b9afeb09753bf1b895f3ca515c9ea2ff58fb19e99fbe1c",
-    }
-    console.log("Claiming details", pocpInstance, vouchers, claimerAddressIndex)
-    console.log(vouchers, "0x9e00c9a53e71073cee827d54db9e32005d1b95ac")
+    // const vouchers = {
+    //     data: [257],
+    //     end: [],
+    //     to: ["0x0E4C5523f58F513C444535AB4ab2217E5D5DE942"],
+    //     tokenUris: "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,",
+    //     signature:
+    //         "0x3e24dbb85a135bdabbb976742f7088436daf2a17bdfe1c7bcc672d12d5e5dcab34202aa4ebf7294ed6c7b9afeb09753bf1b895f3ca515c9ea2ff58fb19e99fbe1c",
+    // }
+    console.log("Claiming details", pocpInstance, voucher, claimerAddressIndex)
+    // console.log(vouchers, "0x9e00c9a53e71073cee827d54db9e32005d1b95ac")
     await pocpInstance.claimMembershipNft(
-        "0x9e00c9a53e71073cee827d54db9e32005d1b95ac",
-        vouchers,
+        contractAddress,
+        voucher,
         0,
         async (x) => {
             console.log("Tranaction hash callback", x)
             await hashCallbackFn(x)
         },
         callbackFn
+    )
+}
+
+export const upgradeMembershipNft = async (
+    contractAddress,
+    tokenId,
+    level,
+    category,
+    metaDataHash,
+    transactionHashCallback,
+    callbackFunction
+) => {
+    await pocpInstance.upgradeMembershipNft(
+        contractAddress,
+        tokenId,
+        level,
+        category,
+        metaDataHash,
+        async (x) => {
+            console.log("Tranaction hash callback", x)
+            await transactionHashCallback(x)
+        },
+        callbackFunction
     )
 }
 
@@ -66,13 +89,12 @@ export const deployDaoContract = async (
     hashCallbackFn,
     confirmCallbackFn
 ) => {
-    console.log(daoName, daoSymbol, approverAddress)
     await pocpInstance.daoDeploy(
         daoName,
         daoSymbol,
         approverAddress,
-        "0x1f06C05EC5d69796CEF077369e50Ca347048CAC1",
-        "0x36F7Fa526384D3471188bFAc93Db9d2C691C7fFA",
+        "0x083842b3F6739948D26C152C137929E0D3a906b9",
+        "0xB9Acf5287881160e8CE66b53b507F6350d7a7b1B",
         hashCallbackFn,
         confirmCallbackFn
     )
@@ -105,21 +127,21 @@ export const createMembershipVoucher = async (
 ) => {
     console.log(
         "contract detail",
-        web3.contractAddress,
+        contractAddress,
         level,
         category,
-        [],
+        to,
         addresses,
-        "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,"
+        metadataHash
     )
     try {
         return await pocpInstance.createMembershipVoucher(
-            web3.contractAddress,
+            contractAddress,
             level,
             category,
             [],
             addresses,
-            "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,"
+            metadataHash
         )
     } catch (error) {
         console.log("error", error)
