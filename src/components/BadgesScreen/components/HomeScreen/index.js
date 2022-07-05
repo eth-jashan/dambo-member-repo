@@ -9,17 +9,20 @@ import {
     setShowMembershipCreateModal,
     setShowMembershipMintingModal,
 } from "../../../../store/actions/membership-action"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { setContractAddress } from "../../../../store/actions/dao-action"
 
 export default function HomeScreen({
     membershipBadges,
     setShowMembershipOverviewModal,
 }) {
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const dispatch = useDispatch()
     const showModal = () => {
         dispatch(setShowMembershipCreateModal(true))
     }
-    const showMintingModal = () => {
+    const showMintingModal = async () => {
+        await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
         dispatch(setShowMembershipMintingModal(true))
     }
     return (
