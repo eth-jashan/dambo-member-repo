@@ -220,6 +220,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
 export const getAllMembershipBadgesForAddress = (address) => {
     return async (dispatch, getState) => {
         const proxyContract = getState().dao.daoProxyAddress
+        const address = getState().auth.address
         console.log("Claim check!!", proxyContract, address)
         try {
             const membershipBadges = await getAllMembershipBadges(

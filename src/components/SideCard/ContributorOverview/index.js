@@ -10,6 +10,9 @@ import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
 const ContributionOverview = () => {
     const [isToggleOpen, setIsToggleOpen] = useState(false)
 
+    const getAllClaimed = useSelector((x) => x.membership.claimedTokens)
+    console.log("get all", getAllClaimed)
+
     const payoutInfo = () => (
         <div className={styles.payoutContainer}>
             <div
@@ -92,10 +95,15 @@ const ContributionOverview = () => {
                     membershipBadgesForAddress[0]?.category?.toString()
         )
         currentMembershipBadge = {
-            ...temp[0],
+            ...temp[temp.length - 1],
             ...membershipBadgesForAddress[0],
         }
     }
+    console.log(
+        allMembershipBadges,
+        membershipBadgesForAddress,
+        currentMembershipBadge
+    )
 
     const contributionStats = () => (
         <div className={styles.contributionContainer}>
@@ -204,13 +212,13 @@ const ContributionOverview = () => {
                         } ${styles.toggleContent}`}
                     >
                         <div className={styles.lineBreak}></div>
-                        <div
+                        {/* <div
                             className={styles.toggleContentRow}
                             onClick={openOpensea}
                         >
                             View on Opensea
                             <img src={openseaIcon} alt="" />
-                        </div>
+                        </div> */}
                         <div className={styles.lineBreak}></div>
                         <div
                             className={styles.toggleContentRow}

@@ -50,7 +50,7 @@ export const claimVoucher = async (
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
-        0,
+        claimerAddressIndex,
         async (x) => {
             console.log("Tranaction hash callback", x)
             await hashCallbackFn(x)
@@ -111,9 +111,10 @@ export const getMembershipBadgeFromTxHash = (txHash) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
-export const getInfoHash = async (txHash, currentDao) => {
+export const getInfoHash = async (txHash) => {
+    console.log(txHash)
     const res = await pocpGetter.getdaoInfoForHash(txHash)
-    console.log("res", res, currentDao)
+    console.log("res...", res, txHash)
     return res
 }
 

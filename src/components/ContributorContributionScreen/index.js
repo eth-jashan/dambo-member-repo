@@ -24,9 +24,6 @@ export default function ContributorContributionScreen() {
         (x) => x.membership.membershipVoucher
     )
 
-    // const voucherInfo = allMembershipBadges?.filter(
-    //     (badge) => badge.uuid === membershipVoucher?.membership_uuid
-    // )
     const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
         const badgeInfo = allMembershipBadges.find(
             (ele) => ele.uuid === badge.membership_uuid
