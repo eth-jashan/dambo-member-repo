@@ -30,26 +30,45 @@ export default function MembershipChangeModal({
         console.log(proxyContract, selectUpgradeMembership, selectedMember)
         if (proxyContract && !loading) {
             setLoading(true)
-            const res = await getMembershipBadgeFromTxHash(
-                "0x7e80cca8485c86abd3004cac21071a00c55224c89bbc51a5b5e3eac92f1810c1"
-            )
-            console.log("res", res.data?.membershipNFTs)
-            await upgradeMembershipNft(
-                proxyContract,
-                0,
-                selectUpgradeMembership.level,
-                selectUpgradeMembership.category,
-                selectUpgradeMembership.metadata_hash,
-                (x) => {
-                    console.log("hash is here", x)
-                    dispatch(updateTxHash(x, "upgrade", x))
-                },
-                (x) => {
-                    setLoading(false)
-                    closeMembershipChangeModal()
-                    console.log("Upgrade Confirmed!")
-                }
-            )
+
+            // console.log(
+            //     "res",
+            //     res.data?.membershipNFTs[0].tokenID,
+            //     selectedMember.membership_txns[0].membership_txn_hash
+            // )
+            if (selectedMember.membership_txns[0].membership_txn_hash) {
+                const res = await getMembershipBadgeFromTxHash(
+                    selectedMember.membership_txns[0].membership_txn_hash
+                )
+                console.log(
+                    "res",
+                    res.data?.membershipNFTs[0].tokenID,
+                    selectedMember.membership_txns[0].membership_txn_hash
+                )
+                await upgradeMembershipNft(
+                    proxyContract,
+                    0,
+                    selectUpgradeMembership.level,
+                    selectUpgradeMembership.category,
+                    selectUpgradeMembership.metadata_hash,
+                    (x) => {
+                        console.log("hash is here", x)
+                        dispatch(
+                            updateTxHash(
+                                x,
+                                "upgrade",
+                                selectedMember.membership_txns[0]
+                                    .membership_txn_hash
+                            )
+                        )
+                    },
+                    (x) => {
+                        setLoading(false)
+                        closeMembershipChangeModal()
+                        console.log("Upgrade Confirmed!")
+                    }
+                )
+            }
         }
     }
     console.log(selectedMember.memberships, membershipBadges)
