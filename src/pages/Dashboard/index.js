@@ -224,12 +224,13 @@ export default function Dashboard() {
             await dispatch(getAllMembershipBadgesList())
             console.log("Current Dao!", currentDao)
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-            await dispatch(getAllDaoMembers())
+
             const voucher = await dispatch(getMembershipVoucher())
             console.log("here started")
             await dispatch(getAllMembershipBadgesForAddress(address))
 
             if (accountRole === "ADMIN") {
+                await dispatch(getAllDaoMembers())
                 await adminContributionFetch()
             } else {
                 await contributorFetch()
@@ -268,10 +269,11 @@ export default function Dashboard() {
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         // await dispatch(getCommunityId())
         await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-        await dispatch(getAllDaoMembers())
+
         await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
+            await dispatch(getAllDaoMembers())
             await contributionAdminFetchAccountSwitch()
             if (tab === "payments") {
                 await paymentsAdminFetchAccountSwitch()

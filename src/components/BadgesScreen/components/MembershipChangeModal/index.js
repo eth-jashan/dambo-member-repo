@@ -4,8 +4,9 @@ import cross from "../../../../assets/Icons/cross.svg"
 import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import long_arrow_right from "../../../../assets/Icons/long_arrow_right.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { upgradeMembershipNft } from "../../../../utils/POCPServiceSdk"
+import { updateTxHash } from "../../../../store/actions/membership-action"
 
 export default function MembershipChangeModal({
     closeMembershipChangeModal,
@@ -16,6 +17,7 @@ export default function MembershipChangeModal({
     const selectedMember = useSelector((x) => x.membership.selectedMember)
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
     // const currentMembershipBadge = selectedMember.memberhips[0].uuid === membershipBadges.uuid
     const selectNewMembership = (x) => {
         setCurrentStep((currentStep) => currentStep + 1)
@@ -23,15 +25,23 @@ export default function MembershipChangeModal({
     }
     const upgradMembershipNft = async () => {
         console.log(proxyContract, selectUpgradeMembership)
-        if (proxyContract) {
+        if (proxyContract && !loading) {
+            setLoading(true)
             await upgradeMembershipNft(
                 proxyContract,
                 0,
                 selectUpgradeMembership.level,
                 selectUpgradeMembership.category,
                 selectUpgradeMembership.metadata_hash,
-                (x) => console.log("hash is here", x),
-                (x) => console.log("transaction here", x)
+                (x) => {
+                    console.log("hash is here", x)
+                    dispatch(updateTxHash(x, "upgrade", x))
+                },
+                (x) => {
+                    setLoading(false)
+                    closeMembershipChangeModal()
+                    console.log("Upgrade Confirmed!")
+                }
             )
         }
     }
@@ -162,7 +172,9 @@ export default function MembershipChangeModal({
                                 className="upgrade-button-wrapper"
                             >
                                 <button>
-                                    Confirm Upgrade
+                                    {loading
+                                        ? "Upgrading...."
+                                        : "Confirm Upgrade"}
                                     <img src={right_arrow_white} alt="" />
                                 </button>
                             </div>

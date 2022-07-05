@@ -597,7 +597,7 @@ export const updateTxHash = (txnHash, type, prevHash) => {
         const chainId = await signer.getChainId()
         const data = {
             txn_hash: txnHash,
-            chain_id: chainId,
+            chain_id: 137,
             prev_txn_hash: type === "claim" ? null : prevHash,
             type,
         }
