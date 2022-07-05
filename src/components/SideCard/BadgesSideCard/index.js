@@ -34,11 +34,15 @@ const CommunitySideCard = ({ show }) => {
                         <div className="member-name">
                             {selectedMember?.name}
                         </div>
+                        <div className="member-addr">
+                            {selectedMember?.public_address?.slice(0, 4)}...
+                            {selectedMember?.public_address?.slice(-3)}
+                        </div>
                         <div className="membership-info">
                             <div className="membership-info-left">
                                 <div className="membership-name">
-                                    Noobie
-                                    {/* {selectedMember?.membership?.name} */}
+                                    {/* Noobie */}
+                                    {selectedMember?.memberhips[0].name}
                                 </div>
                                 <div className="membership-time">
                                     11:25AM, 4 Jul

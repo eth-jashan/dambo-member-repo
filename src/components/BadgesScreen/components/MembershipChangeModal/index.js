@@ -4,18 +4,23 @@ import cross from "../../../../assets/Icons/cross.svg"
 import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import long_arrow_right from "../../../../assets/Icons/long_arrow_right.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
+import { useSelector } from "react-redux"
 
 export default function MembershipChangeModal({
     closeMembershipChangeModal,
     membershipBadges,
-    currentMembershipBadge,
 }) {
     const [currentStep, setCurrentStep] = useState(0)
-
-    const selectNewMembership = () => {
+    const [selectUpgradeMembership, setUpgradeMembership] = useState(null)
+    const selectedMember = useSelector((x) => x.membership.selectedMember)
+    const [loading, setLoading] = useState(false)
+    // const currentMembershipBadge = selectedMember.memberhips[0].uuid === membershipBadges.uuid
+    const selectNewMembership = (x) => {
         setCurrentStep((currentStep) => currentStep + 1)
+        setUpgradeMembership(x)
     }
-
+    const upgradMembershipNft = async () => {}
+    console.log(selectedMember.memberhips[0], membershipBadges)
     return (
         <div className="membership-change-modal-container">
             <div
@@ -56,18 +61,22 @@ export default function MembershipChangeModal({
                                         </div>
                                         <div className="membership-name">
                                             <div>{badge.name}</div>
-                                            {currentMembershipBadge && (
+                                            {selectedMember.memberhips[0]
+                                                .uuid === badge.uuid && (
                                                 <div>Current Role</div>
                                             )}
                                         </div>
                                     </div>
                                     <div className="membership-badge-time">
-                                        {currentMembershipBadge ? (
+                                        {selectedMember.memberhips[0].uuid ===
+                                        badge.uuid ? (
                                             "2 months ago"
                                         ) : (
                                             <div
                                                 className="badge-type-btn"
-                                                onClick={selectNewMembership}
+                                                onClick={() =>
+                                                    selectNewMembership(badge)
+                                                }
                                             >
                                                 <img
                                                     src={arrow_forward}
@@ -82,9 +91,12 @@ export default function MembershipChangeModal({
                     ) : (
                         <>
                             <div className="membership-change-heading">
-                                Upgrade from Noobie to Padwan
+                                Upgrade from {selectedMember.memberhips[0].name}{" "}
+                                to {selectUpgradeMembership.name}
                             </div>
-                            <div className="member-name">Noell</div>
+                            <div className="member-name">
+                                {selectedMember.name}
+                            </div>
                             <div className="membership-update-images-wrapper">
                                 <div className="badge-image-wrapper">
                                     {membershipBadges[0].is_video ? (
@@ -98,7 +110,10 @@ export default function MembershipChangeModal({
                                         </video>
                                     ) : (
                                         <img
-                                            src={membershipBadges[0].image_url}
+                                            src={
+                                                selectedMember.memberhips[0]
+                                                    .image_url
+                                            }
                                         />
                                     )}
                                 </div>
@@ -108,23 +123,29 @@ export default function MembershipChangeModal({
                                     className="right-image-long"
                                 />
                                 <div className="badge-image-wrapper">
-                                    {membershipBadges[0].is_video ? (
+                                    {selectUpgradeMembership.is_video ? (
                                         <video autoPlay loop muted>
                                             <source
                                                 src={
-                                                    membershipBadges[0]
-                                                        .image_url
+                                                    selectUpgradeMembership.image_url
                                                 }
                                             />
                                         </video>
                                     ) : (
                                         <img
-                                            src={membershipBadges[0].image_url}
+                                            src={
+                                                selectUpgradeMembership.image_url
+                                            }
                                         />
                                     )}
                                 </div>
                             </div>
-                            <div className="upgrade-button-wrapper">
+                            <div
+                                onClick={async () =>
+                                    await upgradMembershipNft()
+                                }
+                                className="upgrade-button-wrapper"
+                            >
                                 <button>
                                     Confirm Upgrade
                                     <img src={right_arrow_white} alt="" />

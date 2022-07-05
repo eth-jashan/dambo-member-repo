@@ -20,7 +20,7 @@
             height: fit-content;
             width: 570px;
             .membership-change-heading {
-                width: 74%;
+                width: 90%;
                 font-family: "TelegrafBolder";
                 font-style: normal;
                 font-weight: 800;
@@ -30,6 +30,7 @@
             .membership-badge-row {
                 display: flex;
                 justify-content: space-between;
+                align-self: center;
                 align-items: center;
                 padding: 1.25rem 0;
                 border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -55,16 +56,21 @@
                         }
                     }
                     .membership-name {
-                        font-family: "TelegrafBolder";
+                        font-family: "TelegrafMedium";
                         font-style: normal;
-                        font-weight: 800;
-                        font-size: 1.75rem;
-                        line-height: 2.25rem;
+                        font-weight: 500;
+                        font-size: 19px;
+                        line-height: 28px;
                     }
                 }
                 .membership-badge-time {
                     display: flex;
                     align-items: center;
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 19px;
+                    line-height: 28px;
                     .badge-type-btn {
                         margin-left: 2rem;
                         background: #6852ff;

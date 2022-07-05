@@ -37,37 +37,23 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
-    console.log(
-        "Claiming details",
-        pocpInstance,
-        contractAddress === "0x3283620C58B0130020eb54B6Dec95298BfE42E8c",
-        contractAddress,
-        {
-            data: [257],
-            end: [],
-            to: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
-            tokenUris: "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
-            signature:
-                "0xd649094da026b88694daf823f00d0bc77405555a690731080d22897282a1e46f565707d3b75b07c6ed0707e2ff4cfa6baedf8b3525244ddfc1e56a54c7a6daa81b",
-        },
-        claimerAddressIndex
-    )
     const vouchers = {
         data: [257],
         end: [],
-        to: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
-        tokenUris: "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
+        to: ["0x0E4C5523f58F513C444535AB4ab2217E5D5DE942"],
+        tokenUris: "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,",
         signature:
-            "0x9e5045e78264c41f438aaac4a310cb9780796fa7cd0307c474e6c004687ab2550cc6a1d876dcad144c8800255974e1d9775ecf1f7a97ffec7b383418378b43c41b",
+            "0x3e24dbb85a135bdabbb976742f7088436daf2a17bdfe1c7bcc672d12d5e5dcab34202aa4ebf7294ed6c7b9afeb09753bf1b895f3ca515c9ea2ff58fb19e99fbe1c",
     }
-    console.log(vouchers)
+    console.log("Claiming details", pocpInstance, vouchers, claimerAddressIndex)
+    console.log(vouchers, "0x9e00c9a53e71073cee827d54db9e32005d1b95ac")
     await pocpInstance.claimMembershipNft(
-        "0x73A776bDF09B40e28e7d42318e8247FB3492AfB7",
+        "0x9e00c9a53e71073cee827d54db9e32005d1b95ac",
         vouchers,
-        claimerAddressIndex,
-        (x) => {
+        0,
+        async (x) => {
             console.log("Tranaction hash callback", x)
-            hashCallbackFn(x)
+            await hashCallbackFn(x)
         },
         callbackFn
     )

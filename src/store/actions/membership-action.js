@@ -523,6 +523,7 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                             ele,
                             `${selectedMembershipBadge?.metadata_hash},`
                         )
+                        console.log("member", JSON.stringify(signedObject))
                         return {
                             addresses: [...ele],
                             signed_voucher: signedObject,

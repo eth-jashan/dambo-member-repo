@@ -8,6 +8,15 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     text-align: left;
+    .member-addr {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1.438rem;
+        line-height: 2rem;
+        color: #ffffff;
+        opacity: 0.5;
+    }
     &.not-selected-container {
         display: flex;
         align-items: center;

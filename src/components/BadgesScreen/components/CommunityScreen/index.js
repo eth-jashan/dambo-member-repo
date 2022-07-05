@@ -1,83 +1,110 @@
 import React from "react"
 import "./style.scss"
 import { setSelectedMember } from "../../../../store/actions/membership-action"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 export default function CommunityScreen() {
-    const members = [
-        {
-            public_address: "0x3EE2cf04a59FBb967E2b181A60Eb802F36Cf9FC8",
-            name: "Jashan Shetty",
-            dao_uuid: "d35cbf33cfa74df1a5d9a8760cee2471",
-            is_approver: true,
-            is_member: false,
-            access_role: "ADMIN",
-            memberships_count: 0,
-            membership_update: false,
+    const selectedMember = useSelector((x) => x.membership.selectedMember)
+    console.log("Selected", selectedMember)
+    const members = {
+        dao_members: [
+            {
+                public_address: "0xa0304EbBaE696e57e63fF682B57971065792A542",
+                name: "Jashan",
+                dao_uuid: "47ee81da17e5400b983824dc7697f86f",
+                is_approver: true,
+                is_member: false,
+                access_role: "ADMIN",
+                memberships_count: 0,
+                membership_update: false,
+                memberhips: [
+                    {
+                        id: 7,
+                        uuid: "8127ece1-1c6a-4d57-a48f-68b544ad906b",
+                        level: 1,
+                        category: 1,
+                        name: "Pioneer",
+                        description: null,
+                        image_url:
+                            "http://arweave.net/EQFkLq6pdcH_9sHhXmo1x1YYs8thfNjCajNA2hTOpJ0",
+                        is_video: false,
+                        metadata_hash:
+                            "Ha8oPTQwZ9oXr9W4ewUHZYIUHQ5orxfKgyM2qkLIkdk",
+                        members_count: 0,
+                    },
+                ],
+                membership_txns: [],
+                contributions: [],
+            },
+        ],
+        non_claimers_addr: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
+    }
+
+    const daoMember = []
+
+    members.dao_members.forEach((x, i) => {
+        daoMember.push({ ...x, index: i })
+    })
+
+    members.non_claimers_addr.forEach((x, i) => {
+        daoMember.push({
+            public_address: x,
+            index: daoMember.length,
+            non_claimers_addr: true,
             memberhips: [],
-            membership_txns: [],
-            contributions: [],
-        },
-        {
-            public_address: "0xB6aeB5dF6ff618A800536a5EB3a112200ff3C377",
-            name: "Jashan Yo",
-            dao_uuid: "d35cbf33cfa74df1a5d9a8760cee2471",
-            is_approver: false,
-            is_member: false,
-            access_role: "CONTRIBUTOR",
-            memberships_count: 0,
-            membership_update: false,
-            memberhips: [],
-            membership_txns: [],
-            contributions: [],
-        },
-        {
-            public_address: "0xbC8e3391a0A0F51B1c6B72316cdc210e98F2d64A",
-            name: "Yo Yo",
-            dao_uuid: "d35cbf33cfa74df1a5d9a8760cee2471",
-            is_approver: false,
-            is_member: false,
-            access_role: "CONTRIBUTOR",
-            memberships_count: 0,
-            membership_update: false,
-            memberhips: [],
-            membership_txns: [],
-            contributions: [],
-        },
-        {
-            public_address: "0x5730330A594640049113559A0021EcD7e624749e",
-            name: "John Ropson",
-            dao_uuid: "d35cbf33cfa74df1a5d9a8760cee2471",
-            is_approver: false,
-            is_member: false,
-            access_role: "CONTRIBUTOR",
-            memberships_count: 0,
-            membership_update: false,
-            memberhips: [],
-            membership_txns: [],
-            contributions: [],
-        },
-    ]
+        })
+    })
 
     const dispatch = useDispatch()
+    console.log(daoMember)
 
     return (
         <div className="community-screen-container">
-            {members.map((member) => (
+            {daoMember.map((member) => (
                 <div
+                    style={{
+                        background:
+                            selectedMember?.index === member?.index &&
+                            "#1e1e1f",
+                        border: selectedMember?.index === member?.index && 0,
+                        borderRadius:
+                            selectedMember?.index === member?.index && "1rem",
+                    }}
                     className="member-row"
-                    key={member.name}
-                    onClick={() => dispatch(setSelectedMember(member))}
+                    key={member?.name}
+                    onClick={() =>
+                        !member.non_claimers_addr &&
+                        dispatch(setSelectedMember(member))
+                    }
                 >
-                    <div className="member-name">
-                        {member.name} • {member.public_address.slice(0, 5)}...
-                        {member.public_address.slice(-3)}
+                    <div
+                        style={{
+                            color: member.non_claimers_addr
+                                ? "#737373"
+                                : "white",
+                        }}
+                        className="member-name"
+                    >
+                        {member?.name || "unclaimed"} •{" "}
+                        {member?.public_address?.slice(0, 5)}
+                        ...
+                        {member?.public_address?.slice(-3)}
                     </div>
                     {/* <div className="member-info">
                         {member.contributions} members • {member.startDate}
                     </div> */}
                     <div className="member-badge">
-                        <div>{"Skywalker"}</div>
+                        <div
+                            style={{
+                                color: member?.non_claimers_addr
+                                    ? "#999999"
+                                    : "white",
+                            }}
+                        >{`${
+                            member?.memberhips.length > 0
+                                ? member.memberhips[0].name
+                                : "Jedi"
+                        }`}</div>
                     </div>
                 </div>
             ))}
