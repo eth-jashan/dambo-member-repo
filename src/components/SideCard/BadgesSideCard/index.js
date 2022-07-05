@@ -20,6 +20,7 @@ const CommunitySideCard = ({ show }) => {
     const openMembershipUpdateModal = () => {
         dispatch(setShowMembershipChangeModal(true))
     }
+    console.log(selectedMember)
 
     return (
         <div
@@ -42,7 +43,7 @@ const CommunitySideCard = ({ show }) => {
                             <div className="membership-info-left">
                                 <div className="membership-name">
                                     {/* Noobie */}
-                                    {selectedMember?.memberhips[0].name}
+                                    {selectedMember?.memberships?.name}
                                 </div>
                                 <div className="membership-time">
                                     11:25AM, 4 Jul

@@ -174,14 +174,14 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    {/* <img
+                    <img
                         src={currentMembershipBadge?.image_url}
                         alt=""
                         className={styles.badgeImage}
-                    /> */}
-                    <video autoPlay loop className={styles.badgeImage} muted>
+                    />
+                    {/* <video autoPlay loop className={styles.badgeImage} muted>
                         <source src={currentMembershipBadge?.image_url} />
-                    </video>
+                    </video> */}
                     <div>
                         <div className={styles.toggleHeader} onClick={toggle}>
                             <div>

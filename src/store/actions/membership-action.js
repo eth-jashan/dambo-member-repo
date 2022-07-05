@@ -37,6 +37,34 @@ export const getAllMembershipBadgesList = () => {
     }
 }
 
+export const getAllDaoMembers = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${"/dao/contributors"}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res.data is", res.data)
+            dispatch(
+                membershipAction.setDaoMembers({
+                    allDaoMembers: res?.data?.data,
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
 export const getMembershipVoucher = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
@@ -149,10 +177,6 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     }, 90000)
 
                     const response = await poll(fetchNFT, validate, 3000)
-                    // const metadata = await axios.get(
-                    //     // response?.data?.membershipNFTs?.[0]?.metadataUri
-                    //     "http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
-                    // )
                     console.log("fetched the badge", response)
                     const membershipNFT = response?.data?.membershipNFTs?.[0]
                     dispatch(
@@ -195,15 +219,16 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
 
 export const getAllMembershipBadgesForAddress = (address) => {
     return async (dispatch, getState) => {
-        // const proxyContract = getState().dao.proxyContract
+        const proxyContract = getState().dao.daoProxyAddress
+        console.log("Claim check!!", proxyContract, address)
         try {
             const membershipBadges = await getAllMembershipBadges(
                 address,
-                web3.contractAddress
+                proxyContract
             )
             console.log(
                 "membership badges are ",
-                membershipBadges,
+                proxyContract,
                 membershipBadges?.data?.membershipNFTs
             )
             dispatch(
@@ -506,8 +531,6 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
             },
             [[]]
         )
-
-        console.log(selectedMembershipBadge)
 
         try {
             const mapArrWithSignedVoucher = await Promise.all(

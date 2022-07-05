@@ -23,6 +23,7 @@ import {
     getAllMembershipBadgesList,
     getMembershipVoucher,
     getAllMembershipBadgesForAddress,
+    getAllDaoMembers,
 } from "../../store/actions/membership-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -191,6 +192,7 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
+        // await dispatch(getAllDaoMembers())
         //---gnosi check----///
         // await dispatch(getPayoutRequest())
         // dispatch(set_payout_filter("PENDING"))
@@ -199,6 +201,7 @@ export default function Dashboard() {
     const contributorFetch = async () => {
         await dispatch(getContriRequest())
         const voucher = await dispatch(getMembershipVoucher())
+        console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
 
         // if (!voucher) {
@@ -218,16 +221,12 @@ export default function Dashboard() {
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
             const accountRole = await dispatch(getAllDaowithAddress(chainId))
-            // await dispatch(gnosisDetailsofDao())
-            // await getInfoHash(
-            //     "0x45d871ef3a95a76ed7fe87792392d72b66204628d1bb906897b988c301ea32a5",
-            //     currentDao
-            // )
-            // await dispatch(getAllApprovedBadges())
             await dispatch(getAllMembershipBadgesList())
             console.log("Current Dao!", currentDao)
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
+            await dispatch(getAllDaoMembers())
             const voucher = await dispatch(getMembershipVoucher())
+            console.log("here started")
             await dispatch(getAllMembershipBadgesForAddress(address))
 
             if (accountRole === "ADMIN") {
@@ -268,6 +267,8 @@ export default function Dashboard() {
         const chainId = await signer.getChainId()
         const accountRole = await dispatch(getAllDaowithAddress(chainId))
         // await dispatch(getCommunityId())
+        await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
+        await dispatch(getAllDaoMembers())
         await dispatch(getAllMembershipBadgesList())
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {

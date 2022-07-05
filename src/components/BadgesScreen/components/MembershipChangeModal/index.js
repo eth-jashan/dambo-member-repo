@@ -5,6 +5,7 @@ import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import long_arrow_right from "../../../../assets/Icons/long_arrow_right.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
 import { useSelector } from "react-redux"
+import { upgradeMembershipNft } from "../../../../utils/POCPServiceSdk"
 
 export default function MembershipChangeModal({
     closeMembershipChangeModal,
@@ -13,14 +14,28 @@ export default function MembershipChangeModal({
     const [currentStep, setCurrentStep] = useState(0)
     const [selectUpgradeMembership, setUpgradeMembership] = useState(null)
     const selectedMember = useSelector((x) => x.membership.selectedMember)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const [loading, setLoading] = useState(false)
     // const currentMembershipBadge = selectedMember.memberhips[0].uuid === membershipBadges.uuid
     const selectNewMembership = (x) => {
         setCurrentStep((currentStep) => currentStep + 1)
         setUpgradeMembership(x)
     }
-    const upgradMembershipNft = async () => {}
-    console.log(selectedMember.memberhips[0], membershipBadges)
+    const upgradMembershipNft = async () => {
+        console.log(proxyContract, selectUpgradeMembership)
+        if (proxyContract) {
+            await upgradeMembershipNft(
+                proxyContract,
+                0,
+                selectUpgradeMembership.level,
+                selectUpgradeMembership.category,
+                selectUpgradeMembership.metadata_hash,
+                (x) => console.log("hash is here", x),
+                (x) => console.log("transaction here", x)
+            )
+        }
+    }
+    console.log(selectedMember.memberships, membershipBadges)
     return (
         <div className="membership-change-modal-container">
             <div
@@ -61,14 +76,14 @@ export default function MembershipChangeModal({
                                         </div>
                                         <div className="membership-name">
                                             <div>{badge.name}</div>
-                                            {selectedMember.memberhips[0]
-                                                .uuid === badge.uuid && (
+                                            {selectedMember.memberships.uuid ===
+                                                badge.uuid && (
                                                 <div>Current Role</div>
                                             )}
                                         </div>
                                     </div>
                                     <div className="membership-badge-time">
-                                        {selectedMember.memberhips[0].uuid ===
+                                        {selectedMember.memberships.uuid ===
                                         badge.uuid ? (
                                             "2 months ago"
                                         ) : (
@@ -91,7 +106,7 @@ export default function MembershipChangeModal({
                     ) : (
                         <>
                             <div className="membership-change-heading">
-                                Upgrade from {selectedMember.memberhips[0].name}{" "}
+                                Upgrade from {selectedMember.memberships.name}{" "}
                                 to {selectUpgradeMembership.name}
                             </div>
                             <div className="member-name">
@@ -111,7 +126,7 @@ export default function MembershipChangeModal({
                                     ) : (
                                         <img
                                             src={
-                                                selectedMember.memberhips[0]
+                                                selectedMember.memberships
                                                     .image_url
                                             }
                                         />

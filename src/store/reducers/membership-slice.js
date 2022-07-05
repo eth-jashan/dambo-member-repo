@@ -19,10 +19,14 @@ const membershipSlice = createSlice({
         membershipCreateLoading: false,
         showMembershipCreateModal: false,
         showMembershipMintingModal: false,
+        allDaoMembers: null,
     },
     reducers: {
         setMembershipBadges(state, action) {
             state.membershipBadges = action.payload.membershipBadges
+        },
+        setDaoMembers(state, action) {
+            state.allDaoMembers = action.payload.allDaoMembers
         },
         setMembershipVoucher(state, action) {
             state.membershipVoucher = action.payload.membershipVoucher

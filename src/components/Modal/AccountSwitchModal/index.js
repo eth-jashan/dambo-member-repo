@@ -4,7 +4,7 @@ import textStyles from "../../../commonStyles/textType/styles.module.css"
 import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
     getAllApprovedBadges,
     getAllClaimedBadges,
@@ -18,10 +18,14 @@ import {
     syncTxDataWithGnosis,
 } from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
-import { getMembershipVoucher } from "../../../store/actions/membership-action"
+import {
+    getAllMembershipBadgesForAddress,
+    getMembershipVoucher,
+} from "../../../store/actions/membership-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
     const dispatch = useDispatch()
+    const address = useSelector((x) => x.auth.address)
     const changeRole = async (role) => {
         dispatch(refreshContributionList())
         dispatch(switchRole(role))
@@ -29,6 +33,8 @@ const AccountSwitchModal = ({ onChange, route }) => {
         dispatch(setLoadingState(true))
         await dispatch(getAllApprovedBadges())
         await dispatch(getContriRequest())
+        console.log("here started")
+        await dispatch(getAllMembershipBadgesForAddress(address))
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
