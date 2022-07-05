@@ -97,6 +97,7 @@ export const registerDao = (callbackFn) => {
                             approvers: ownerMeta,
                             logo_url: logo,
                             chain_id: chainId,
+                            txn_chain_id: "137",
                         },
                         {
                             headers: {
