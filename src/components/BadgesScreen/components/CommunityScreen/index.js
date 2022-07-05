@@ -64,7 +64,7 @@ export default function CommunityScreen() {
         members.non_claimers_addr.forEach((x, i) => {
             daoMember.push({
                 public_address: x.address,
-                index: daoMember.length,
+                index: daoMember?.length,
                 non_claimers_addr: true,
                 memberships: x.membership,
             })
@@ -76,7 +76,7 @@ export default function CommunityScreen() {
 
     return (
         <div className="community-screen-container">
-            {daoMember.length > 0 &&
+            {daoMember?.length > 0 &&
                 daoMember.map((member) => (
                     <div
                         style={{
@@ -109,9 +109,6 @@ export default function CommunityScreen() {
                             ...
                             {member?.public_address?.slice(-3)}
                         </div>
-                        {/* <div className="member-info">
-                        {member.contributions} members • {member.startDate}
-                    </div> */}
                         <div className="member-badge">
                             <div
                                 style={{
@@ -120,7 +117,7 @@ export default function CommunityScreen() {
                                         : "white",
                                 }}
                             >{`${
-                                member?.memberships.length > 0
+                                member?.memberships?.length > 0
                                     ? member.memberships[0].name
                                     : "Jedi"
                             }`}</div>

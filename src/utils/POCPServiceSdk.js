@@ -114,7 +114,7 @@ export const getMembershipBadgeFromTxHash = (txHash) => {
 export const getInfoHash = async (txHash) => {
     console.log(txHash)
     const res = await pocpGetter.getdaoInfoForHash(txHash)
-    console.log("res...", res, txHash)
+    // console.log("res...", res, txHash)
     return res
 }
 

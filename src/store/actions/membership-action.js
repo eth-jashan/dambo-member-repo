@@ -64,7 +64,33 @@ export const getAllDaoMembers = () => {
         }
     }
 }
+export const setAllDaoMember = (allDaoMembers) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
 
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${"/dao/contributors"}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res.data is", res.data)
+            dispatch(
+                membershipAction.setDaoMembers({
+                    allDaoMembers
+                })
+            )
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
 export const getMembershipVoucher = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt

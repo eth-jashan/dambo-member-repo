@@ -10,6 +10,7 @@ import {
     upgradeMembershipNft,
 } from "../../../../utils/POCPServiceSdk"
 import {
+    setAllDaoMember,
     setSelectedMember,
     updateTxHash,
 } from "../../../../store/actions/membership-action"
@@ -21,6 +22,7 @@ export default function MembershipChangeModal({
     const [currentStep, setCurrentStep] = useState(0)
     const [selectUpgradeMembership, setUpgradeMembership] = useState(null)
     const selectedMember = useSelector((x) => x.membership.selectedMember)
+    const allDaoMembers = useSelector((x) => x.membership.allDaoMembers)
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
@@ -45,10 +47,34 @@ export default function MembershipChangeModal({
                 )
                 console.log(
                     "res",
-                    res.data?.membershipNFTs[0].tokenID,
-                    selectedMember.membership_txns[0].membership_txn_hash,
-                    selectedMember
+                    // res.data?.membershipNFTs[0].tokenID,
+                    // selectedMember.membership_txns[0].membership_txn_hash,
+                    selectedMember,
+                    selectUpgradeMembership,
+                    {
+                        ...selectedMember,
+                        memberships: [selectUpgradeMembership],
+                    }
                 )
+                // console.log(
+                //     JSON.stringify({
+                //         ...selectedMember,
+                //         memberships: [selectUpgradeMembership],
+                //     })
+                // )
+
+                // const dao = allDaoMembers.dao_members.map((x, i) => {
+                //     if (selectedMember.index === i) {
+                //         const newMembership = [selectUpgradeMembership]
+                //         x.memberships = newMembership
+                //     }
+                // })
+                // const newDaoInfo = allDaoMembers.dao_members[0]
+
+                // console.log({...allDaoMembers,})
+
+                // console.log(newObj, allDaoMembers)
+
                 await upgradeMembershipNft(
                     proxyContract,
                     res.data?.membershipNFTs[0].tokenID,
@@ -68,8 +94,34 @@ export default function MembershipChangeModal({
                     },
                     (x) => {
                         setLoading(false)
+                        const newMember = {
+                            ...selectedMember,
+                            memberships: [selectUpgradeMembership],
+                        }
+                        dispatch(setSelectedMember(newMember))
+                        const newObj = {
+                            dao_members: [],
+                            non_claimers_addr: [],
+                        }
+                        allDaoMembers.dao_members.forEach((x, i) => {
+                            if (selectedMember.index === i) {
+                                const newMembership = {
+                                    ...selectedMember,
+                                    memberships: [selectUpgradeMembership],
+                                }
+                                newObj.dao_members.push(newMembership)
+                            } else {
+                                newObj.dao_members.push(x)
+                            }
+                        })
+                        allDaoMembers.non_claimers_addr.forEach((x, i) => {
+                            newObj.non_claimers_addr.push(x)
+                        })
+                        dispatch(setAllDaoMember(newObj))
+                        // closeMembershipChangeModal()
                         closeMembershipChangeModal()
                         // dispatch(setSelectedMember())
+
                         console.log("Upgrade Confirmed!")
                     }
                 )

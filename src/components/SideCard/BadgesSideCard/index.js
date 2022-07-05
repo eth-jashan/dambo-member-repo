@@ -74,7 +74,9 @@ const CommunitySideCard = ({ show }) => {
                             />
                             <div className="badge-info">
                                 <div>
-                                    <div className="level-name">Noobie</div>
+                                    <div className="level-name">
+                                        {selectedMember.memberships[0]?.name}
+                                    </div>
                                     <div className="level-time">
                                         2 Hours ago
                                     </div>

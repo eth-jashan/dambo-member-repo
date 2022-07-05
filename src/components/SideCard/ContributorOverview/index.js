@@ -212,13 +212,13 @@ const ContributionOverview = () => {
                         } ${styles.toggleContent}`}
                     >
                         <div className={styles.lineBreak}></div>
-                        {/* <div
+                        <div
                             className={styles.toggleContentRow}
                             onClick={openOpensea}
                         >
                             View on Opensea
                             <img src={openseaIcon} alt="" />
-                        </div> */}
+                        </div>
                         <div className={styles.lineBreak}></div>
                         <div
                             className={styles.toggleContentRow}
