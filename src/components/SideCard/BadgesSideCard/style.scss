@@ -31,7 +31,8 @@
             border-radius: 0.75rem;
             overflow: hidden;
             .membership-info-left {
-                flex: 2;
+                // flex: 2;
+                padding: 1rem;
                 .membership-name {
                     font-family: "TelegrafBolder";
                     font-style: normal;
@@ -45,6 +46,7 @@
                     font-weight: 500;
                     font-size: 1.25rem;
                     line-height: 1.75rem;
+                    margin-bottom: 1.25rem;
                 }
                 .change-membership {
                     text-decoration: underline;
@@ -52,8 +54,9 @@
                 }
             }
             img {
-                flex: 1;
-                width: 100%;
+                // flex: 1;
+                width: 50%;
+                // height: 100%;
             }
         }
     }

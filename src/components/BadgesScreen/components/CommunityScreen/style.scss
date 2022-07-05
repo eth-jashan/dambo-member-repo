@@ -15,10 +15,21 @@
             color: rgba(255, 255, 255, 0.5);
         }
         .member-badge {
-            background-color: rgba(255, 178, 46, 0.2);
-            color: #ffb22e;
+            // background-color: rgba(255, 178, 46, 0.2);
+            background-color: #333333;
             padding: 0.25rem 1.5rem;
             border-radius: 6.25rem;
+        }
+        .member-badge > div {
+            color: white;
+        }
+        .member-name {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+            color: #ffffff;
         }
     }
 }

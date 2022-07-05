@@ -37,10 +37,11 @@ const CommunitySideCard = ({ show }) => {
                         <div className="membership-info">
                             <div className="membership-info-left">
                                 <div className="membership-name">
-                                    {selectedMember?.membership?.name}
+                                    Noobie
+                                    {/* {selectedMember?.membership?.name} */}
                                 </div>
                                 <div className="membership-time">
-                                    2 months ago
+                                    11:25AM, 4 Jul
                                 </div>
                                 <div
                                     className="change-membership"
@@ -49,7 +50,13 @@ const CommunitySideCard = ({ show }) => {
                                     Change Membership
                                 </div>
                             </div>
-                            <img src={selectedMember?.image_url} alt="" />
+                            <img
+                                // className='membership-image'
+                                src={
+                                    "http://arweave.net/FD1g0umqte1Vbz-7BBN8NaZm_511bHenazj5q63h4eY"
+                                }
+                                alt=""
+                            />
                         </div>
                     </div>
                 ) : (

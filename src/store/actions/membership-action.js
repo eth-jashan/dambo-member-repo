@@ -86,16 +86,16 @@ const wait = function (ms = 1000) {
 
 export const claimMembershipVoucher = (membershipVoucherInfo) => {
     return async (dispatch, getState) => {
-        const proxyContract = getState().dao.daoProxyAddress
+        // const proxyContract = getState().dao.daoProxyAddress
         try {
             const claimerAddress = getState().auth.address
             console.log(
                 "claiming voucher",
-                proxyContract,
+                web3.contractAddress,
                 JSON.stringify(membershipVoucherInfo)
             )
             await claimVoucher(
-                proxyContract,
+                web3.contractAddress,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
                 async (x) => {
@@ -165,7 +165,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     dispatch(
                         getAllMembershipBadgesForAddress(
                             claimerAddress,
-                            proxyContract
+                            web3.contractAddress
                         )
                     )
                     dispatch(
@@ -195,11 +195,11 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
 
 export const getAllMembershipBadgesForAddress = (address) => {
     return async (dispatch, getState) => {
-        const proxyContract = getState().dao.proxyContract
+        // const proxyContract = getState().dao.proxyContract
         try {
             const membershipBadges = await getAllMembershipBadges(
                 address,
-                proxyContract
+                web3.contractAddress
             )
             console.log(
                 "membership badges are ",
@@ -494,7 +494,7 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         // const uuid = getState().dao.currentDao?.uuid
-        const proxyContract = getState().dao.daoProxyAddress
+        // const proxyContract = getState().dao.daoProxyAddress
         const mapArr = addresses.reduce(
             (acc, curr) => {
                 if (acc[acc.length - 1].length < 24) {
@@ -516,7 +516,7 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                     // eslint-disable-next-line no-useless-catch
                     try {
                         const signedObject = await createMembershipVoucher(
-                            proxyContract,
+                            web3.contractAddress,
                             [selectedMembershipBadge?.level],
                             [selectedMembershipBadge?.category],
                             [],

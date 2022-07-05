@@ -2,6 +2,7 @@ import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 import { ethers } from "ethers"
 import { getSelectedChainId } from "./POCPutils"
+import { web3 } from "../constant/web3"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
@@ -118,16 +119,16 @@ export const createMembershipVoucher = async (
 ) => {
     console.log(
         "contract detail",
-        contractAddress,
-        level,
-        category,
+        web3.contractAddress,
+        [1],
+        [1],
         addresses,
-        metadataHash,
+        "PjK1v16DyILZtI1GpNKfKhP1vaNqax8RVL8BgB6w35s,",
         to
     )
     try {
         return await pocpInstance.createMembershipVoucher(
-            "0x3283620C58B0130020eb54B6Dec95298BfE42E8c",
+            web3.contractAddress,
             level,
             category,
             [],
