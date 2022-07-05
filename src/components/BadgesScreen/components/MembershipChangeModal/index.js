@@ -9,7 +9,10 @@ import {
     getMembershipBadgeFromTxHash,
     upgradeMembershipNft,
 } from "../../../../utils/POCPServiceSdk"
-import { updateTxHash } from "../../../../store/actions/membership-action"
+import {
+    setSelectedMember,
+    updateTxHash,
+} from "../../../../store/actions/membership-action"
 
 export default function MembershipChangeModal({
     closeMembershipChangeModal,
@@ -43,11 +46,12 @@ export default function MembershipChangeModal({
                 console.log(
                     "res",
                     res.data?.membershipNFTs[0].tokenID,
-                    selectedMember.membership_txns[0].membership_txn_hash
+                    selectedMember.membership_txns[0].membership_txn_hash,
+                    selectedMember
                 )
                 await upgradeMembershipNft(
                     proxyContract,
-                    0,
+                    res.data?.membershipNFTs[0].tokenID,
                     selectUpgradeMembership.level,
                     selectUpgradeMembership.category,
                     selectUpgradeMembership.metadata_hash,
@@ -65,6 +69,7 @@ export default function MembershipChangeModal({
                     (x) => {
                         setLoading(false)
                         closeMembershipChangeModal()
+                        // dispatch(setSelectedMember())
                         console.log("Upgrade Confirmed!")
                     }
                 )
