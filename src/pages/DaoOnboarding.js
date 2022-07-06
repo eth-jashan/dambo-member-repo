@@ -116,30 +116,6 @@ export default function Onboarding() {
                 message.error(error.message)
                 setDeploying(false)
             }
-
-            // setDeploying(true)
-            // const { dao_uuid, name } = await dispatch(registerDao())
-            // dispatch(lastSelectedId(dao_uuid))
-            // if (dao_uuid) {
-            //     if (guildId) {
-            //         const res = await dispatch(
-            //             connectDaoToDiscord(dao_uuid, guildId, discordUserId)
-            //         )
-            //         if (res) {
-            //             message.success(
-            //                 "Discord registered to dao successfully"
-            //             )
-            //         } else {
-            //             message.error(
-            //                 "Something went wrong please try again later"
-            //             )
-            //         }
-            //     }
-            //     dispatch(pocpRegistrationInfo(dao_uuid, name, owners))
-            //     setCurrentStep(currentStep + 1)
-            // } else {
-            //     navigate(`/`)
-            // }
         },
         [address, dispatch, navigate, safeFactory, threshold]
     )
@@ -371,6 +347,7 @@ export default function Onboarding() {
                         rep3Setup={rep3Setup}
                         safeOwners={owners}
                         onBack={backFromAddOwner}
+                        registerLoader={register}
                     />
                 )
             }

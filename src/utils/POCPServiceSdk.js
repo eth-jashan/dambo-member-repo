@@ -37,16 +37,6 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
-    // const vouchers = {
-    //     data: [257],
-    //     end: [],
-    //     to: ["0x0E4C5523f58F513C444535AB4ab2217E5D5DE942"],
-    //     tokenUris: "bHBXZBbIc2-YZ-a7PzUpo_tYQTTuFOX9hSUuyLZOSJg,",
-    //     signature:
-    //         "0x3e24dbb85a135bdabbb976742f7088436daf2a17bdfe1c7bcc672d12d5e5dcab34202aa4ebf7294ed6c7b9afeb09753bf1b895f3ca515c9ea2ff58fb19e99fbe1c",
-    // }
-    console.log("Claiming details", pocpInstance, voucher, claimerAddressIndex)
-    // console.log(vouchers, "0x9e00c9a53e71073cee827d54db9e32005d1b95ac")
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,

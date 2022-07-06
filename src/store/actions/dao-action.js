@@ -71,58 +71,62 @@ export const registerDao = (callbackFn) => {
             approvers.push(item.address)
         })
 
-        await deployDaoContract(
-            name,
-            name,
-            approvers,
-            async (x) => {
-                console.log("Hash is", x, {
-                    dao_name: name,
-                    by: address,
-                    safe_addr: safeAddress || "",
-                    proxy_txn_hash: x,
-                    approvers: ownerMeta,
-                    logo_url: logo,
-                    chain_id: chainId,
-                    txn_chain_id: "137",
-                })
-                try {
-                    const res = await apiClient.post(
-                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
-                        {
-                            dao_name: name,
-                            by: address,
-                            safe_addr: safeAddress || "",
-                            proxy_txn_hash: x,
-                            approvers: ownerMeta,
-                            logo_url: logo,
-                            chain_id: chainId,
-                            txn_chain_id: "137",
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${jwt}`,
-                                "Content-Type": "application/json",
+        try {
+            await deployDaoContract(
+                name,
+                name,
+                approvers,
+                async (x) => {
+                    console.log("Hash is", x, {
+                        dao_name: name,
+                        by: address,
+                        safe_addr: safeAddress || "",
+                        proxy_txn_hash: x,
+                        approvers: ownerMeta,
+                        logo_url: logo,
+                        chain_id: chainId,
+                        txn_chain_id: "137",
+                    })
+                    try {
+                        const res = await apiClient.post(
+                            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
+                            {
+                                dao_name: name,
+                                by: address,
+                                safe_addr: safeAddress || "",
+                                proxy_txn_hash: x,
+                                approvers: ownerMeta,
+                                logo_url: logo,
+                                chain_id: chainId,
+                                txn_chain_id: "137",
                             },
-                        }
-                    )
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${jwt}`,
+                                    "Content-Type": "application/json",
+                                },
+                            }
+                        )
 
-                    if (res.data.success) {
-                        dispatch(lastSelectedId(res.data.data.dao_uuid))
-                        return {
-                            dao_uuid: res.data.data.dao_uuid,
-                            name,
-                            owners,
+                        if (res.data.success) {
+                            dispatch(lastSelectedId(res.data.data.dao_uuid))
+                            return {
+                                dao_uuid: res.data.data.dao_uuid,
+                                name,
+                                owners,
+                            }
+                        } else {
+                            return 0
                         }
-                    } else {
-                        return 0
+                    } catch (error) {
+                        console.log("error", error)
                     }
-                } catch (error) {
-                    console.log("error", error)
-                }
-            },
-            (x) => callbackFn(x)
-        )
+                },
+                (x) => callbackFn(x)
+            )
+        } catch (error) {
+            console.log("error on deploying", error)
+        }
     }
 }
 

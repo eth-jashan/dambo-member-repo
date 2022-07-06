@@ -19,6 +19,7 @@ export default function AddOwners({
     safeOwners,
     rep3Setup,
     onBack,
+    registerLoader,
 }) {
     const address = useSelector((x) => x.auth.address)
     const [owners, setOwners] = useState([
@@ -32,7 +33,7 @@ export default function AddOwners({
     const [threshold, setThreshold] = useState(0)
     const dispatch = useDispatch()
     const safeAddress = useSelector((x) => x.dao.newSafeSetup.safeAddress)
-    const [loading, setLoading] = useState(false)
+
     const [safeSigners, setSafeOwners] = useState([])
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
     console.log(safeOwners)
@@ -67,28 +68,12 @@ export default function AddOwners({
         }
     }, [safeAddress])
 
-    const checkSafeOwner = (address) => {
-        // if (hasMultiSignWallet) {
-        safeSigners.forEach((x) => {
-            if (x.address === address) {
-                console.log(address, x, "true")
-                return true
-            } else {
-                console.log(address, x, "false")
-                return false
-            }
-        })
-        // } else {
-        //     return false
-        // }
-    }
-
-    console.log(safeSigners.length)
+    // const setLoader = (x) => {
+    //     setLoading(x)
+    // }
 
     useEffect(() => {
-        // if (hasMultiSignWallet) {
         getSafeOwners()
-        // }
     }, [getSafeOwners])
 
     const updateOwner = (e, id, key) => {
@@ -136,14 +121,7 @@ export default function AddOwners({
 
     const onNext = () => {
         dispatch(addOwners(owners))
-        // if (hasMultiSignWallet) {
-        //     dispatch(addThreshold(threshold))
-        //     setStep("daoInfo")
-        // } else {
-        //     // increaseStep()
-        // }
         increaseStep()
-        // console.log("hereeee")
     }
 
     const renderHeader = () =>
@@ -187,9 +165,11 @@ export default function AddOwners({
         <div className={styles.wrapper}>
             {renderHeader()}
 
-            <div className={styles.ownerContainer}>
-                {!loading &&
-                    owners.length > 0 &&
+            <div
+                style={{ opacity: registerLoader ? 0.5 : 1 }}
+                className={styles.ownerContainer}
+            >
+                {owners.length > 0 &&
                     owners.map((owner, index) => (
                         <div className={styles.ownerRow} key={owner.id}>
                             <div style={{ width: "32%", border: 0 }}>
@@ -228,30 +208,22 @@ export default function AddOwners({
                             </div>
                             <div
                                 onClick={() =>
-                                    // hasMultiSignWallet ||
-                                    // (!rep3Setup &&
                                     (safeSigners.length > 0 &&
                                         index + 1 <= safeSigners.length) ||
                                     (index !== 0 && deleteOwner(owner.id))
                                 }
                             >
-                                {
-                                    // !rep3Setup &&
-                                    !(
-                                        safeSigners.length > 0 &&
-                                        index + 1 <= safeSigners.length
-                                    ) ? (
-                                        <img src={CrossSvg} alt="delete" />
-                                    ) : (
-                                        <img
-                                            src={assets.icons.infoIcon}
-                                            alt="info"
-                                        />
-                                    )
-                                }
-                                {/* {rep3Setup && !hasMultiSignWallet && (
+                                {!(
+                                    safeSigners.length > 0 &&
+                                    index + 1 <= safeSigners.length
+                                ) ? (
                                     <img src={CrossSvg} alt="delete" />
-                                )} */}
+                                ) : (
+                                    <img
+                                        src={assets.icons.infoIcon}
+                                        alt="info"
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
@@ -277,12 +249,22 @@ export default function AddOwners({
                     />
                     <div className={styles.backTitle}>Back</div>
                 </div>
-                <NextButton
-                    text={rep3Setup ? "Sign Transaction" : "Add Permissions"}
-                    nextButtonCallback={onNext}
-                    isDisabled={!areValidOwners()}
-                    isNext={false}
-                />
+                <div>
+                    {registerLoader && (
+                        <div className={styles.loaderText}>
+                            Takes around 30sec
+                        </div>
+                    )}
+                    <NextButton
+                        isRep3Setup={rep3Setup}
+                        text={
+                            rep3Setup ? "Sign Transaction" : "Add Permissions"
+                        }
+                        nextButtonCallback={onNext}
+                        isDisabled={!areValidOwners()}
+                        isNext={false}
+                    />
+                </div>
             </div>
         </div>
     )

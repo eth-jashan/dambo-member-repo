@@ -107,7 +107,7 @@
     justify-content: space-between;
     flex-direction: row;
     width: 100%;
-    bottom: 1rem;
+    bottom: 0.5rem;
     /* background-color: red; */
 }
 
@@ -160,4 +160,14 @@
     flex-direction: row;
     display: flex;
     align-items: center;
+}
+.loaderText {
+    font-family: "TelegrafMedium";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    /* identical to box height, or 150% */
+    color: #000000;
+    opacity: 0.5;
 }
