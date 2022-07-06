@@ -4,18 +4,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
 import {
-    getAllApprovedBadges,
-    getAllClaimedBadges,
     getAllDaowithAddress,
-    getAllUnclaimedBadges,
-    getCommunityId,
-    getContributorOverview,
     getContriRequest,
     getPayoutRequest,
-    gnosisDetailsofDao,
     refreshContributionList,
     setContractAddress,
-    set_active_nonce,
     set_payout_filter,
     syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
@@ -30,7 +23,6 @@ import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import ContributionRequestModal from "../../components/Modal/ContributionRequest"
 import { ethers } from "ethers"
-import DashboardSearchTab from "../../components/DashboardSearchTab"
 import ContributionCard from "../../components/ContributionCard"
 import { useSafeSdk } from "../../hooks"
 
@@ -63,7 +55,7 @@ import SettingsScreen from "../../components/SettingsScreen"
 import { web3 } from "../../constant/web3"
 import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
-import { getInfoHash, initPOCP } from "../../utils/POCPServiceSdk"
+import { initPOCP } from "../../utils/POCPServiceSdk"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -79,7 +71,6 @@ export default function Dashboard() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const community_id = useSelector((x) => x.dao.communityInfo)
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
@@ -101,7 +92,6 @@ export default function Dashboard() {
     // gnosis setup
     const [signer, setSigner] = useState()
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
 
@@ -188,7 +178,7 @@ export default function Dashboard() {
     }
 
     const adminContributionFetch = async () => {
-        await dispatch(getContriRequest())
+        // await dispatch(getContriRequest())
         dispatch(setLoadingState(false))
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -199,7 +189,7 @@ export default function Dashboard() {
     }
 
     const contributorFetch = async () => {
-        await dispatch(getContriRequest())
+        // await dispatch(getContriRequest())
         await dispatch(getMembershipVoucher())
         console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
@@ -225,15 +215,12 @@ export default function Dashboard() {
             console.log("Current Dao!", currentDao)
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
             await dispatch(getAllMembershipBadgesList())
-
             await dispatch(getMembershipVoucher())
-
             await dispatch(getAllMembershipBadgesForAddress(address))
-
             if (accountRole === "ADMIN") {
-                await dispatch(getAllDaoMembers())
-                await adminContributionFetch()
                 setCurrentPage("badges")
+                await dispatch(getAllDaoMembers())
+                // await adminContributionFetch()
             } else {
                 await contributorFetch()
             }
@@ -276,11 +263,14 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
             setCurrentPage("badges")
-            await dispatch(getAllDaoMembers())
-            await contributionAdminFetchAccountSwitch()
-            if (tab === "payments") {
-                await paymentsAdminFetchAccountSwitch()
-            }
+            await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
+            await dispatch(getAllMembershipBadgesList())
+            await dispatch(getMembershipVoucher())
+            await dispatch(getAllMembershipBadgesForAddress(address))
+            // await contributionAdminFetchAccountSwitch()
+            // if (tab === "payments") {
+            //     await paymentsAdminFetchAccountSwitch()
+            // }
         } else {
             await contributorFetch()
         }
@@ -292,6 +282,7 @@ export default function Dashboard() {
             if (role === accountMode && account_index === 0) {
                 initialLoad()
             } else {
+                console.log("here")
                 accountSwitch()
             }
         }
@@ -302,35 +293,33 @@ export default function Dashboard() {
     }, [preventGoingBack])
 
     useEffect(async () => {
-        // await dispatch(getAllMembershipBadgesList())
         await dispatch(getMembershipVoucher())
         await dispatch(getAllMembershipBadgesForAddress(address))
     }, [currentDao?.uuid])
 
     const onRouteChange = async (route) => {
-        dispatch(refreshContributionList())
-        setTab(route)
-        dispatch(setLoadingState(true))
-        // await dispatch(getCommunityId())
-        if (role === "ADMIN") {
-            if (safeSdk) {
-                const nonce = await safeSdk.getNonce()
-                dispatch(set_active_nonce(nonce))
-            }
-            await dispatch(getPayoutRequest())
-            await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter("PENDING"))
-            if (route !== "payments") {
-                dispatch(getContriRequest())
-                dispatch(setLoadingState(false))
-                await dispatch(getAllApprovedBadges())
-            }
-        } else {
-            await contributorFetch()
-        }
-        dispatch(setPayment(null))
-        dispatch(setTransaction(null))
-        dispatch(setLoadingState(false))
+        // dispatch(refreshContributionList())
+        // setTab(route)
+        // dispatch(setLoadingState(true))
+        // if (role === "ADMIN") {
+        //     if (safeSdk) {
+        //         const nonce = await safeSdk.getNonce()
+        //         dispatch(set_active_nonce(nonce))
+        //     }
+        //     await dispatch(getPayoutRequest())
+        //     await dispatch(syncTxDataWithGnosis())
+        //     await dispatch(set_payout_filter("PENDING"))
+        //     if (route !== "payments") {
+        //         dispatch(getContriRequest())
+        //         dispatch(setLoadingState(false))
+        //         await dispatch(getAllApprovedBadges())
+        //     }
+        // } else {
+        //     await contributorFetch()
+        // }
+        // dispatch(setPayment(null))
+        // dispatch(setTransaction(null))
+        // dispatch(setLoadingState(false))
     }
 
     const onUniModalOpen = async () => {

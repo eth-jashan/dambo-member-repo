@@ -12,6 +12,7 @@ import MembershipOverviewModal from "./components/MembershipOverviewModal"
 import MembershipChangeModal from "./components/MembershipChangeModal"
 import { useSelector, useDispatch } from "react-redux"
 import {
+    getAllDaoMembers,
     setSelectedNav,
     setShowMembershipChangeModal,
     setShowMembershipCreateModal,
@@ -98,9 +99,10 @@ export default function BadgesScreen() {
                             className={`nav-link ${
                                 selectedNav === "community" && "active-nav-link"
                             }`}
-                            onClick={() =>
+                            onClick={async () => {
+                                await dispatch(getAllDaoMembers())
                                 dispatch(setSelectedNav("community"))
-                            }
+                            }}
                         >
                             Community
                         </div>

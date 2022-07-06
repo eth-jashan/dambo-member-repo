@@ -76,26 +76,21 @@ const ContributionOverview = () => {
         (x) => x.membership.membershipBadgesForAddress
     )
 
-    // const unClaimedBadges = voucherInfo.filter((badge) => {
-    //     const indexOfBadge = membershipBadgesForAddress.findIndex(
-    //         (ele) =>
-    //             ele.level.toString() === badge.level.toString() &&
-    //             ele.category.toString() === badge.category.toString()
-    //     )
-    //     return indexOfBadge === -1
-    // })
-
     let currentMembershipBadge = null
     if (membershipBadgesForAddress?.length) {
         const temp = allMembershipBadges.filter(
             (badge) =>
                 badge?.level?.toString() ===
-                    membershipBadgesForAddress[0]?.level?.toString() &&
+                    membershipBadgesForAddress[
+                        membershipBadgesForAddress.length - 1
+                    ]?.level?.toString() &&
                 badge?.category?.toString() ===
-                    membershipBadgesForAddress[0]?.category?.toString()
+                    membershipBadgesForAddress[
+                        membershipBadgesForAddress.length - 1
+                    ]?.category?.toString()
         )
         currentMembershipBadge = {
-            ...temp[temp.length - 1],
+            ...temp[0],
             ...membershipBadgesForAddress[0],
         }
     }
