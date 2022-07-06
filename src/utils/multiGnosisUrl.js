@@ -13,6 +13,8 @@ export const getSafeServiceUrl = () => {
             return "https://safe-transaction.goerli.gnosis.io/"
         case 137:
             return "https://safe-transaction.polygon.gnosis.io/"
+        case 10:
+            return "https://safe-transaction.optimism.gnosis.io/"
         default:
             return false
     }

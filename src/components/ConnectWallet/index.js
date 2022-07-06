@@ -37,7 +37,12 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
             setAuth(true)
-            if (chainId === 4 || chainId === 1 || chainId === 5) {
+            if (
+                chainId === 4 ||
+                chainId === 1 ||
+                chainId === 5 ||
+                chainId === 10
+            ) {
                 try {
                     const res = await dispatch(
                         authWithSign(address, signer, chainId)
@@ -127,7 +132,13 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             dispatch(setAddress(newAddress))
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            if (res && (chainId === 4 || chainId === 1 || chainId === 5)) {
+            if (
+                res &&
+                (chainId === 4 ||
+                    chainId === 1 ||
+                    chainId === 5 ||
+                    chainId === 10)
+            ) {
                 // has token and chain is selected for rinkeby
                 setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
@@ -180,7 +191,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 }
             } else if (
                 !res &&
-                (chainId === 4 || chainId === 1 || chainId === 5)
+                (chainId === 4 ||
+                    chainId === 1 ||
+                    chainId === 5 ||
+                    chainId === 10)
             ) {
                 // if (!isAdmin) {
                 //     await authWithWallet(newAddress, chainId, signer)
