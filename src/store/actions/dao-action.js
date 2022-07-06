@@ -16,6 +16,7 @@ import {
     getInfoHash,
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
+import { membershipAction } from "../reducers/membership-slice"
 
 const currentNetwork = getSelectedChainId()
 console.log("link", getSafeServiceUrl())
@@ -138,14 +139,12 @@ export const getAllDaowithAddress = (chainId) => {
         try {
             const res = await apiClient.get(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
-                // `https://2eac-106-51-36-15.ngrok.io/dao_tool_server${routes.dao.getDaoMembership}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
                     },
                 }
             )
-            console.log("member detail dao", res.data)
 
             if (res.data.data.length > 0) {
                 const dao_details = []
@@ -155,7 +154,7 @@ export const getAllDaowithAddress = (chainId) => {
                         dao_details.push(x)
                     }
                 })
-                console.log(dao_details)
+
                 dispatch(
                     daoAction.set_dao_list({
                         list: dao_details,
@@ -191,19 +190,17 @@ export const getAllDaowithAddress = (chainId) => {
                         username: dao_details[selectionIndex].name,
                     })
                 )
-                // dispatch(
-                //     daoAction.set_current_dao({
-                //         dao: dao_details[selectionIndex].dao_details,
-                //         role: dao_details[selectionIndex].dao_details
-                //             .access_role,
-                //         community_role:
-                //             dao_details[selectionIndex].community_role,
-                //         account_mode:
-                //             dao_details[selectionIndex].dao_details.access_role,
-                //         index: selectionIndex,
-                //         username: dao_details[selectionIndex].name,
-                //     })
-                // )
+
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        contributorClaimedDataBackend: {
+                            membership:
+                                dao_details[selectionIndex].memberships[0],
+                            recentlyUpdate:
+                                dao_details[selectionIndex].membership_update,
+                        },
+                    })
+                )
                 return dao_details[selectionIndex].access_role
             } else {
                 dispatch(
@@ -218,6 +215,12 @@ export const getAllDaowithAddress = (chainId) => {
                         community_role: null,
                         account_mode: null,
                         index: 0,
+                    })
+                )
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        membership: null,
+                        recentlyUpdate: null,
                     })
                 )
                 return 0
@@ -235,6 +238,12 @@ export const getAllDaowithAddress = (chainId) => {
                     community_role: null,
                     account_mode: null,
                     index: 0,
+                })
+            )
+            dispatch(
+                membershipAction.setClaimedDataFromBE({
+                    membership: null,
+                    recentlyUpdate: null,
                 })
             )
             return 0
@@ -391,7 +400,6 @@ export const lastSelectedId = (dao_uuid) => {
 }
 
 export const set_dao = (dao, index) => {
-    console.log("Roles", dao.access_role)
     return async (dispatch) => {
         dispatch(
             daoAction.set_current_dao({
@@ -402,7 +410,15 @@ export const set_dao = (dao, index) => {
                 index,
             })
         )
-        gnosisDetailsofDao()
+        dispatch(
+            membershipAction.setClaimedDataFromBE({
+                contributorClaimedDataBackend: {
+                    membership: dao.memberships[0],
+                    recentlyUpdate: dao.membership_update,
+                },
+            })
+        )
+        // gnosisDetailsofDao()
     }
 }
 
@@ -1554,7 +1570,6 @@ export const updateDaoInfo = (daoInfo) => {
                     },
                 }
             )
-            console.log("res from update dao", res)
             const currentDao = getState().dao.currentDao
             dispatch(
                 daoAction.set_current_dao({

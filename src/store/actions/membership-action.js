@@ -83,7 +83,7 @@ export const setAllDaoMember = (allDaoMembers) => {
             console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setDaoMembers({
-                    allDaoMembers
+                    allDaoMembers,
                 })
             )
         } catch (err) {

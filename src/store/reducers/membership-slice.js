@@ -4,6 +4,7 @@ const membershipSlice = createSlice({
     name: "membership",
     initialState: {
         membershipBadges: [],
+        contributorClaimedDataBackend: null,
         membershipVoucher: null,
         membershipBadgesForAddress: [],
         membershipBadgeClaimed: null,
@@ -24,6 +25,10 @@ const membershipSlice = createSlice({
     reducers: {
         setMembershipBadges(state, action) {
             state.membershipBadges = action.payload.membershipBadges
+        },
+        setClaimedDataFromBE(state, action) {
+            state.membershipBadges =
+                action.payload.contributorClaimedDataBackend
         },
         setDaoMembers(state, action) {
             state.allDaoMembers = action.payload.allDaoMembers

@@ -56,6 +56,7 @@ import { web3 } from "../../constant/web3"
 import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
+import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -299,7 +300,7 @@ export default function Dashboard() {
 
     const onRouteChange = async (route) => {
         // dispatch(refreshContributionList())
-        // setTab(route)
+        setTab(route)
         // dispatch(setLoadingState(true))
         // if (role === "ADMIN") {
         //     if (safeSdk) {
@@ -647,7 +648,8 @@ export default function Dashboard() {
                 ) : dataSource?.length > 0 ? (
                     renderBadges()
                 ) : (
-                    renderEmptyBadgesScreen()
+                    // renderEmptyBadgesScreen()
+                    <ContributorBadgeScreen />
                 )}
                 {rejectModal && (
                     <RejectPayment

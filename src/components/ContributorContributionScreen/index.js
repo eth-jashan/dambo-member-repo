@@ -39,8 +39,6 @@ export default function ContributorContributionScreen() {
         membershipVouchersWithInfo
     )
 
-    // console.log("voucher info is ", voucherInfo)
-
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
@@ -118,67 +116,6 @@ export default function ContributorContributionScreen() {
             "_blank"
         )
     }
-
-    // console.log("txhasfetched", txHashFetched)
-    // console.log("disableClaimBtn", disableClaimBtn)
-    // console.log("showMetamasktext", showMetamaskSignText)
-    // console.log("claim taking time", showClaimTakingTime)
-
-    // useEffect(() => {
-    //     const script = document.createElement("script")
-
-    //     script.src = "https://platform.twitter.com/widgets.js"
-    //     script.async = true
-
-    //     document.body.appendChild(script)
-
-    //     console.log("script tag created successfully")
-
-    //     return () => {
-    //         document.body.removeChild(script)
-    //     }
-    // }, [])
-
-    // contribution_request.length > 0 ? (
-
-    // const poll = async function (fn, fnCondition, ms) {
-    //     let result = await fn()
-    //     console.log("result of polling fn", result)
-    //     while (fnCondition(result)) {
-    //         await wait(ms)
-    //         result = await fn()
-    //         console.log("result in while loop", result)
-    //     }
-    //     return result
-    // }
-
-    // const wait = function (ms = 1000) {
-    //     return new Promise((resolve) => {
-    //         setTimeout(resolve, ms)
-    //     })
-    // }
-
-    // const [hasMetadata, setHasMetadata] = useState(false)
-
-    // useEffect(async () => {
-    //     if (membershipBadgeClaimed) {
-    //         // const res = await axios.get(
-    //         //     "https://opensea.io/assets/matic/0x9094c08fc1a0e4ffd03e2b80eef68af914a74f56/3"
-    //         // )
-    //         // console.log("res", res)
-    //         const fetchNFT = () =>
-    //             axios.get(
-    //                 `https://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`
-    //             )
-    //         const validate = (result) => !result?.data?.metadata
-
-    //         const response = await poll(fetchNFT, validate, 1000)
-
-    //         if (response) {
-    //             setHasMetadata(true)
-    //         }
-    //     }
-    // }, [])
 
     return (
         <div className="contributor-contribution-screen-container">
