@@ -90,7 +90,7 @@ const ContributionOverview = () => {
                     },
                 }
             )
-
+            console.log("here badges", res.data.data.length)
             if (res.data.data.length > 0) {
                 res.data.data.forEach((x) => {
                     if (
@@ -102,7 +102,7 @@ const ContributionOverview = () => {
                         // const backendMembership
                         const level = x.memberships[0].level.toString()
                         const metadataBE = x.memberships[0]
-                        console.log(level)
+
                         const metadatSubgraph =
                             membershipBadgesForAddress.filter(
                                 (x) => x.level === level
@@ -122,8 +122,11 @@ const ContributionOverview = () => {
         }
     }
     useEffect(async () => {
-        await getCurrentBadgeUpdated()
-    }, [])
+        console.log(currentDao)
+        if (currentDao) {
+            await getCurrentBadgeUpdated()
+        }
+    }, [getCurrentBadgeUpdated, currentDao])
     // if (membershipBadgesForAddress?.length) {
     //     const temp = allMembershipBadges.filter(
     //         (badge) =>
