@@ -25,7 +25,7 @@ const AuthWallet = () => {
                 navigate(`/dashboard`)
             } else {
                 setAuth(false)
-                // navigate("/onboard/dao")
+                navigate("/onboard/dao")
             }
         } else {
             setAuth(false)

@@ -5,34 +5,18 @@ import styles from "./style.module.css"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    contributorRefreshList,
-    getAllApprovedBadges,
-    getAllClaimedBadges,
-    getAllUnclaimedBadges,
-    getCommunityId,
-    getContributorOverview,
-    getContriRequest,
-    getPayoutRequest,
     gnosisDetailsofDao,
     lastSelectedId,
-    refreshContributionList,
     set_active_nonce,
     set_dao,
-    set_payout_filter,
-    syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
 import logo from "../../assets/dreputeLogo.svg"
 import add_white from "../../assets/Icons/add_white.svg"
-import {
-    resetApprovedRequest,
-    setPayment,
-    setTransaction,
-} from "../../store/actions/transaction-action"
 import { useSafeSdk } from "../../hooks"
 import { setLoadingState } from "../../store/actions/toast-action"
-import { setContributionDetail } from "../../store/actions/contibutor-action"
 import DashboardHeader from "../../components/DashboardHeader"
 import OnboardingHeader from "../../components/OnboardingHeader"
+import AntdToast from "../../components/Toast/AntdToast"
 
 export default function DashboardLayout({
     children,
@@ -52,39 +36,39 @@ export default function DashboardLayout({
 
     const contributorFetch = async () => {
         dispatch(setLoadingState(true))
-        await dispatch(getContriRequest())
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        dispatch(getContributorOverview())
+        // await dispatch(getContriRequest())
+        // await dispatch(getAllApprovedBadges())
+        // await dispatch(getAllClaimedBadges())
+        // await dispatch(getAllUnclaimedBadges())
+        // dispatch(getContributorOverview())
         dispatch(setLoadingState(false))
     }
 
     const changeAccount = async (item) => {
-        dispatch(refreshContributionList())
-        dispatch(contributorRefreshList())
-        dispatch(resetApprovedRequest())
+        console.log("item selected", item)
+        // dispatch(refreshContributionList())
+        // dispatch(contributorRefreshList())
+        // dispatch(resetApprovedRequest())
         dispatch(set_dao(item))
-        // await dispatch(getCommunityId())
-        dispatch(setPayment(null))
-        dispatch(setTransaction(null))
-        dispatch(setContributionDetail(null))
+        // dispatch(setPayment(null))
+        // dispatch(setTransaction(null))
+        // dispatch(setContributionDetail(null))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
         await dispatch(gnosisDetailsofDao())
         dispatch(setLoadingState(true))
-        await dispatch(getContriRequest())
+        // await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
-            await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING"))
-            await dispatch(syncTxDataWithGnosis())
+            // await dispatch(getPayoutRequest())
+            // await dispatch(set_payout_filter("PENDING"))
+            // await dispatch(syncTxDataWithGnosis())
         } else if (role !== "ADMIN") {
             await contributorFetch()
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
-            await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING"))
-            await dispatch(syncTxDataWithGnosis())
+            // await dispatch(getPayoutRequest())
+            // await dispatch(set_payout_filter("PENDING"))
+            // await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         }
 
@@ -98,6 +82,7 @@ export default function DashboardLayout({
     const text = (item) => <span>{item}</span>
     return (
         <>
+            <AntdToast />
             <div className={styles.layout}>
                 <div className={styles.accountsLayout}>
                     <div className={styles.logoContainer}>
@@ -170,16 +155,16 @@ export default function DashboardLayout({
                         </div>
                     ))}
                     <div className={styles.addContainer}>
-                        {/* <div
-                        className={styles.addButton}
-                        onClick={() => navigate("/onboard/dao")}
-                    >
-                        <img
-                            alt="add"
-                            className={styles.addIcon}
-                            src={add_white}
-                        />
-                    </div> */}
+                        <div
+                            className={styles.addButton}
+                            onClick={() => navigate("/onboard/dao")}
+                        >
+                            <img
+                                alt="add"
+                                className={styles.addIcon}
+                                src={add_white}
+                            />
+                        </div>
                     </div>
                 </div>
 

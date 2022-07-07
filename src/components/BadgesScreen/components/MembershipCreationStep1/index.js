@@ -19,7 +19,8 @@ export default function MembershipCreationStep1({
             ...membershipBadges,
             {
                 name: "",
-                imgUrl: "",
+                image_url: "",
+                description: "",
             },
         ])
     }

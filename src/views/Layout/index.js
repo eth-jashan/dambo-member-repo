@@ -59,21 +59,7 @@ export default function Layout({
                     )}
 
                     {!contributorWallet && (
-                        <div className={styles.modal}>
-                            {!contributorWallet &&
-                            checkRoute() &&
-                            !deploying ? (
-                                <img
-                                    className={styles.backImg}
-                                    onClick={decreaseStep}
-                                    src={BackSvg}
-                                    alt="back"
-                                />
-                            ) : (
-                                <div className={styles.backImg} />
-                            )}
-                            {children}
-                        </div>
+                        <div className={styles.modal}>{children}</div>
                     )}
                     {contributorWallet && children}
                 </div>

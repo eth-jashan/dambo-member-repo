@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react"
 import styles from "./style.module.css"
 import CrossSvg from "../../assets/Icons/cross.svg"
-import PlusSvg from "../../assets/Icons/plus.svg"
+import PlusSvg from "../../assets/Icons/plusBlack.svg"
 import { v4 as uuidv4 } from "uuid"
 import NextButton from "../NextButton"
 import { useDispatch, useSelector } from "react-redux"
@@ -10,11 +10,16 @@ import InputText from "../Input"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { addOwners, addThreshold } from "../../store/actions/dao-action"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { assets } from "../../constant/assets"
 
 export default function AddOwners({
     increaseStep,
     hasMultiSignWallet,
     setStep,
+    safeOwners,
+    rep3Setup,
+    onBack,
+    registerLoader,
 }) {
     const address = useSelector((x) => x.auth.address)
     const [owners, setOwners] = useState([
@@ -28,31 +33,48 @@ export default function AddOwners({
     const [threshold, setThreshold] = useState(0)
     const dispatch = useDispatch()
     const safeAddress = useSelector((x) => x.dao.newSafeSetup.safeAddress)
-    const [loading, setLoading] = useState(false)
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
+    const [safeSigners, setSafeOwners] = useState([])
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+    console.log(safeOwners)
     const getSafeOwners = useCallback(async () => {
         const ownerObj = []
-        const safeInfo = await serviceClient.getSafeInfo(safeAddress)
-        if (safeInfo.owners) {
-            safeInfo.owners.forEach((item) => {
+        if (hasMultiSignWallet) {
+            const safeInfo = await serviceClient.getSafeInfo(safeAddress)
+            if (safeInfo.owners) {
+                safeInfo.owners.forEach((item) => {
+                    ownerObj.push({
+                        id: uuidv4(),
+                        name: "",
+                        address: item,
+                    })
+                })
+                setOwners(ownerObj)
+                setSafeOwners(ownerObj)
+                setThreshold(safeInfo.threshold)
+                // }
+            }
+        } else if (safeOwners?.length > 0) {
+            safeOwners.forEach((x, i) => {
+                console.log(x)
                 ownerObj.push({
                     id: uuidv4(),
-                    name: "",
-                    address: item,
+                    name: x.name,
+                    address: x.address,
                 })
+                setOwners(ownerObj)
+                setSafeOwners(ownerObj)
             })
-            setOwners(ownerObj)
-            setThreshold(safeInfo.threshold)
-            // }
         }
     }, [safeAddress])
 
+    // const setLoader = (x) => {
+    //     setLoading(x)
+    // }
+
     useEffect(() => {
-        if (hasMultiSignWallet) {
-            getSafeOwners()
-        }
-    }, [getSafeOwners, hasMultiSignWallet])
+        getSafeOwners()
+    }, [getSafeOwners])
 
     const updateOwner = (e, id, key) => {
         const updatedOwners = owners.map((owner) => {
@@ -99,46 +121,61 @@ export default function AddOwners({
 
     const onNext = () => {
         dispatch(addOwners(owners))
-        if (hasMultiSignWallet) {
-            dispatch(addThreshold(threshold))
-            setStep("daoInfo")
-        } else {
-            increaseStep()
-        }
+        increaseStep()
     }
+
+    const renderHeader = () =>
+        rep3Setup ? (
+            <div>
+                <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                    Register people
+                </div>
+                <div className={`${textStyles.m_36} ${styles.helperHeading}`}>
+                    need to have some copy to talk about the protocol, bla bla
+                    bla bla
+                </div>
+            </div>
+        ) : (
+            <>
+                {hasMultiSignWallet ? (
+                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
+                        Review your owners
+                    </div>
+                ) : (
+                    <div className={styles.heading}>Add vault owners</div>
+                )}
+                {hasMultiSignWallet ? (
+                    <div
+                        className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
+                    >
+                        Tell us what to call your team
+                        <br /> members.
+                    </div>
+                ) : (
+                    <div
+                        className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
+                    >
+                        have more than one owner to <br /> maximize security
+                    </div>
+                )}
+            </>
+        )
 
     return (
         <div className={styles.wrapper}>
-            {hasMultiSignWallet ? (
-                <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                    Review your owners
-                </div>
-            ) : (
-                <div className={styles.heading}>Add vault owners</div>
-            )}
-            {hasMultiSignWallet ? (
-                <div
-                    className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
-                >
-                    Tell us what to call your team
-                    <br /> members.
-                </div>
-            ) : (
-                <div
-                    className={`${styles.heading} ${styles.greyedHeading} ${textStyles.ub_53}`}
-                >
-                    have more than one owner to <br /> maximize security
-                </div>
-            )}
-            <div className={styles.ownerContainer}>
-                {!loading &&
-                    owners.length > 0 &&
+            {renderHeader()}
+
+            <div
+                style={{ opacity: registerLoader ? 0.5 : 1 }}
+                className={styles.ownerContainer}
+            >
+                {owners.length > 0 &&
                     owners.map((owner, index) => (
                         <div className={styles.ownerRow} key={owner.id}>
                             <div style={{ width: "32%", border: 0 }}>
                                 <InputText
                                     type="text"
-                                    placeholder={"Owner Name"}
+                                    placeholder={"Username"}
                                     width={"100%"}
                                     value={owner?.name}
                                     onChange={(e) =>
@@ -149,7 +186,11 @@ export default function AddOwners({
                             <div style={{ width: "60%", border: 0 }}>
                                 <InputText
                                     width={"100%"}
-                                    disabled={hasMultiSignWallet || index === 0}
+                                    disabled={
+                                        (safeSigners.length > 0 &&
+                                            index + 1 <= safeSigners.length) ||
+                                        index === 0
+                                    }
                                     type="text"
                                     placeholder={"Owner Address"}
                                     value={owner?.address}
@@ -167,33 +208,63 @@ export default function AddOwners({
                             </div>
                             <div
                                 onClick={() =>
-                                    !hasMultiSignWallet &&
-                                    index !== 0 &&
-                                    deleteOwner(owner.id)
+                                    (safeSigners.length > 0 &&
+                                        index + 1 <= safeSigners.length) ||
+                                    (index !== 0 && deleteOwner(owner.id))
                                 }
                             >
-                                <img src={CrossSvg} alt="delete" />
+                                {!(
+                                    safeSigners.length > 0 &&
+                                    index + 1 <= safeSigners.length
+                                ) ? (
+                                    <img src={CrossSvg} alt="delete" />
+                                ) : (
+                                    <img
+                                        src={assets.icons.infoIcon}
+                                        alt="info"
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
-
-                <div className={styles.bottomBar}>
-                    <NextButton
-                        text={
-                            hasMultiSignWallet
-                                ? "Add DAO details"
-                                : "Add Permissions"
-                        }
-                        nextButtonCallback={onNext}
-                        isDisabled={!areValidOwners()}
-                    />
-                </div>
             </div>
             <div
-                onClick={!hasMultiSignWallet ? () => addOwner() : () => {}}
+                onClick={
+                    !hasMultiSignWallet || rep3Setup
+                        ? () => addOwner()
+                        : () => {}
+                }
                 className={styles.addOwner}
             >
                 Add Owner <img src={PlusSvg} alt="add" />
+            </div>
+
+            <div className={styles.bottomBarAbsolute}>
+                <div className={styles.backDiv}>
+                    <img
+                        onClick={() => onBack()}
+                        src={assets.icons.backArrowBlack}
+                        alt="right"
+                        className={styles.backIcon}
+                    />
+                    <div className={styles.backTitle}>Back</div>
+                </div>
+                <div>
+                    {registerLoader && (
+                        <div className={styles.loaderText}>
+                            Takes around 30sec
+                        </div>
+                    )}
+                    <NextButton
+                        isRep3Setup={rep3Setup}
+                        text={
+                            rep3Setup ? "Sign Transaction" : "Add Permissions"
+                        }
+                        nextButtonCallback={onNext}
+                        isDisabled={!areValidOwners()}
+                        isNext={false}
+                    />
+                </div>
             </div>
         </div>
     )

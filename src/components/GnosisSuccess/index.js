@@ -10,10 +10,12 @@ import {
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import Lottie from "react-lottie"
-import confetti from ".././../assets/lottie/confett-lottie.json"
+import confetti from "../../assets/lottie/confett-lottie.json"
 import { ethers } from "ethers"
+import { assets } from "../../constant/assets"
+import NextButton from "../NextButton"
 
-const POCPSignup = () => {
+const GnosisSuccess = ({ increaseStep }) => {
     const jwt = useSelector((x) => x.auth.jwt)
     const pocpInfo = useSelector((x) => x.dao.pocp_register)
 
@@ -106,9 +108,27 @@ const POCPSignup = () => {
                 }}
             />
 
-            {renderBanner()}
+            <div className={`${texStyles.m_36} opacity-text`}>
+                Upnext registering community <br />
+                onto the protocol.
+            </div>
+
+            <div className="bottomBar">
+                <div className="backDiv">
+                    <img
+                        src={assets.icons.backArrowBlack}
+                        alt="right"
+                        className="backIcon"
+                    />
+                    <div className="backTitle">Back</div>
+                </div>
+                <NextButton
+                    text={"Register people"}
+                    nextButtonCallback={increaseStep}
+                />
+            </div>
         </div>
     )
 }
 
-export default POCPSignup
+export default GnosisSuccess

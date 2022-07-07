@@ -1,8 +1,9 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 import { ethers } from "ethers"
-// import { getSelectedChainId } from "./POCPutils"
-// const currentNetwork = getSelectedChainId()
+import { getSelectedChainId } from "./POCPutils"
+import { web3 } from "../constant/web3"
+const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
@@ -21,8 +22,8 @@ export const initPOCP = async () => {
         {
             biconomyInstance: Biconomy,
             url: "",
-            // relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
-            relayNetwork: 137,
+            relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
+            // relayNetwork: 137,
         }
     )
 
@@ -33,13 +34,59 @@ export const claimVoucher = async (
     contractAddress,
     voucher,
     claimerAddressIndex,
+    hashCallbackFn,
     callbackFn
 ) => {
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
         claimerAddressIndex,
+        async (x) => {
+            console.log("Tranaction hash callback", x)
+            await hashCallbackFn(x)
+        },
         callbackFn
+    )
+}
+
+export const upgradeMembershipNft = async (
+    contractAddress,
+    tokenId,
+    level,
+    category,
+    metaDataHash,
+    transactionHashCallback,
+    callbackFunction
+) => {
+    await pocpInstance.upgradeMembershipNft(
+        contractAddress,
+        tokenId,
+        level,
+        category,
+        metaDataHash,
+        async (x) => {
+            console.log("Tranaction hash callback", x)
+            await transactionHashCallback(x)
+        },
+        callbackFunction
+    )
+}
+
+export const deployDaoContract = async (
+    daoName,
+    daoSymbol,
+    approverAddress,
+    hashCallbackFn,
+    confirmCallbackFn
+) => {
+    await pocpInstance.daoDeploy(
+        daoName,
+        daoSymbol,
+        approverAddress,
+        "0x083842b3F6739948D26C152C137929E0D3a906b9",
+        "0xB9Acf5287881160e8CE66b53b507F6350d7a7b1B",
+        hashCallbackFn,
+        confirmCallbackFn
     )
 }
 
@@ -52,4 +99,42 @@ export const getAllMembershipBadges = (accountAddress, contractAddress) => {
 
 export const getMembershipBadgeFromTxHash = (txHash) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
+}
+
+export const getInfoHash = async (txHash) => {
+    console.log(txHash)
+    const res = await pocpGetter.getdaoInfoForHash(txHash)
+    // console.log("res...", res, txHash)
+    return res
+}
+
+export const createMembershipVoucher = async (
+    contractAddress,
+    level,
+    category,
+    to,
+    addresses,
+    metadataHash
+) => {
+    console.log(
+        "contract detail",
+        contractAddress,
+        level,
+        category,
+        to,
+        addresses,
+        metadataHash
+    )
+    try {
+        return await pocpInstance.createMembershipVoucher(
+            contractAddress,
+            level,
+            category,
+            [],
+            addresses,
+            metadataHash
+        )
+    } catch (error) {
+        console.log("error", error)
+    }
 }

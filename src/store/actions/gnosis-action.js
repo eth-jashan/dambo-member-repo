@@ -10,13 +10,14 @@ export const getAddressMembership = (chainId) => {
         try {
             const res = await apiClient.get(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
+                // `https://2eac-106-51-36-15.ngrok.io/dao_tool_server${routes.dao.getDaoMembership}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
                     },
                 }
             )
-
+            console.log("member detail", res)
             const dao_details = []
 
             res.data.data.forEach((x) => {

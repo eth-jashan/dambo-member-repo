@@ -7,6 +7,8 @@ export default function NextButton({
     isDisabled,
     isContributor,
     nextButtonCallback,
+    isNext,
+    isRep3Setup,
 }) {
     return (
         <div
@@ -24,9 +26,9 @@ export default function NextButton({
             >
                 <div className={styles.titleContainer}>
                     <span className={styles.whiteIcon}>
-                        {!isContributor ? "Next" : "Open Dashboard"}
+                        {!isContributor && !isRep3Setup ? "Next" : text}
                     </span>
-                    {!isContributor && (
+                    {!isRep3Setup && !isContributor && (
                         <span className={styles.greyedText}>
                             {" "}
                             &bull; {text}

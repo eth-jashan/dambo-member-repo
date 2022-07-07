@@ -32,10 +32,10 @@ export default function TreasuryDetails() {
         setIsModalVisible(false)
     }
 
-    useEffect(() => {
-        dispatch(getAllTokensOfSafe())
-        dispatch(getAllNFTsOfSafe())
-    }, [currentDao?.uuid])
+    // useEffect(() => {
+    //     dispatch(getAllTokensOfSafe())
+    //     dispatch(getAllNFTsOfSafe())
+    // }, [currentDao?.uuid])
 
     const setProvider = async () => {
         const provider = new ethers.providers.Web3Provider(
@@ -159,7 +159,7 @@ export default function TreasuryDetails() {
                         <div className="safe-owner-heading">
                             Multisig Signers
                         </div>
-                        {currentDao?.signers.slice(0, 3).map((signer) => (
+                        {currentDao?.signers?.slice(0, 3).map((signer) => (
                             <div
                                 className="owner-row"
                                 key={signer.public_address}
@@ -168,17 +168,17 @@ export default function TreasuryDetails() {
                                     {currentUserAddress ===
                                     signer.public_address
                                         ? "You"
-                                        : signer?.metadata?.name.slice(0, 8)}
+                                        : signer?.metadata?.name?.slice(0, 8)}
                                 </div>
                                 <div className="owner-address">
-                                    {signer.public_address.slice(0, 5)}...
-                                    {signer.public_address.slice(-4)}
+                                    {signer.public_address?.slice(0, 5)}...
+                                    {signer.public_address?.slice(-4)}
                                 </div>
                             </div>
                         ))}
-                        {currentDao?.signers.length > 3 ? (
+                        {currentDao?.signers?.length > 3 ? (
                             <div className="more-signers" onClick={showModal}>
-                                and {currentDao?.signers.length - 3} more
+                                and {currentDao?.signers?.length - 3} more
                             </div>
                         ) : (
                             <div className="manage-signers">
@@ -289,7 +289,7 @@ export default function TreasuryDetails() {
             </div>
             <div className="treasury-transactions-wrapper">
                 <DashboardSearchTab route="payments" />
-                {payout_request.length > 0 ? (
+                {payout_request?.length > 0 ? (
                     <div>
                         <div className="payment-cards-wrapper">
                             {payout_request.map((item, index) => (

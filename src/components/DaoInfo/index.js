@@ -13,14 +13,21 @@ import Lottie from "react-lottie"
 import axios from "axios"
 
 import textStyles from "../../commonStyles/textType/styles.module.css"
+import { assets } from "../../constant/assets"
 
-const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
+const DaoInfo = ({
+    deploying,
+    hasMultiSignWallet,
+    createDao,
+    increaseStep,
+    onBack,
+}) => {
     const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [discord, setDiscord] = useState("")
+    // const [email, setEmail] = useState("")
+    // const [discord, setDiscord] = useState("")
     const [image, setImage] = useState()
     const [loading, setLoading] = useState(false)
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
 
     const defaultOptions = {
         loop: true,
@@ -40,16 +47,9 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
         },
     }
 
-    const onSubmit = async () => {
-        dispatch(addDaoInfo(name, email, discord, image?.url))
-        createDao()
-    }
     const createImage = (file) => {
         const reader = new FileReader()
         reader.onload = (e) => {
-            // if (e.target.result.length > MAX_IMAGE_SIZE) {
-            //   return alert("Image is loo large.");
-            // }
             const imageObj = {
                 url: false,
                 image: e.target.result,
@@ -136,7 +136,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                         <Typography.Text
                                             className={styles.helperText}
                                         >
-                                            What should we call your DAO
+                                            What is your Community called?
                                         </Typography.Text>
                                         <div>
                                             <InputText
@@ -145,51 +145,7 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                                                 onChange={(e) =>
                                                     setName(e.target.value)
                                                 }
-                                                placeholder="DAO Name"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Typography.Text
-                                            className={styles.helperTextSec}
-                                        >
-                                            How we can reach you
-                                        </Typography.Text>
-                                        <div>
-                                            <InputText
-                                                width={"90%"}
-                                                value={email}
-                                                onChange={(e) =>
-                                                    setEmail(e.target.value)
-                                                }
-                                                placeholder="Your email address (optional)"
-                                                className={
-                                                    email === ""
-                                                        ? styles.input
-                                                        : styles.inputText
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Typography.Text
-                                            className={styles.helperTextSec}
-                                        >
-                                            Can you link your discord
-                                        </Typography.Text>
-                                        <div>
-                                            <InputText
-                                                width={"90%"}
-                                                value={discord}
-                                                onChange={(e) =>
-                                                    setDiscord(e.target.value)
-                                                }
-                                                placeholder="Your discord link (optional)"
-                                                className={
-                                                    email === ""
-                                                        ? styles.input
-                                                        : styles.inputText
-                                                }
+                                                placeholder="Community Name"
                                             />
                                         </div>
                                     </div>
@@ -314,14 +270,25 @@ const DaoInfo = ({ deploying, hasMultiSignWallet, createDao }) => {
                         </div>
                     </div>
                     <div className={styles.bottomBar}>
+                        <div
+                            onClick={() => onBack()}
+                            className={styles.backDiv}
+                        >
+                            <img
+                                src={assets.icons.backArrowBlack}
+                                alt="right"
+                                className={styles.backIcon}
+                            />
+                            <div className={styles.backTitle}>Back</div>
+                        </div>
                         <NextButton
-                            text={
-                                hasMultiSignWallet
-                                    ? "Register Dao"
-                                    : "Create Multisig"
+                            text={"Register people"}
+                            nextButtonCallback={() =>
+                                increaseStep(name, image?.url)
                             }
-                            nextButtonCallback={onSubmit}
-                            isDisabled={name === "" || deploying || loading}
+                            isDisabled={
+                                name === "" || deploying || loading || !image
+                            }
                         />
                     </div>
                 </>

@@ -63,6 +63,7 @@
                         padding: 0.375rem;
                         width: 2.25rem;
                         height: 2.25rem;
+                        cursor: pointer;
                     }
                 }
             }
@@ -115,6 +116,7 @@
         margin-top: 1.25rem;
         .rest-badge-row {
             display: flex;
+            // background-color: red;
             justify-content: space-between;
             padding: 1.25rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.16);
@@ -130,7 +132,23 @@
                 }
             }
             .badge-row-right {
-                color: rgba(255, 255, 255, 0.5);
+                // color: white;
+                // background: #ffffff;
+                // // opacity: 0.2;
+                // box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
+                //     0px 3px 6px rgba(0, 0, 0, 0.08);
+                // border-radius: 18px;
+            }
+            .btn-steps {
+                background: #333333;
+                // opacity: 0.2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
+                    0px 3px 6px rgba(0, 0, 0, 0.08);
+                border-radius: 18px;
             }
         }
     }

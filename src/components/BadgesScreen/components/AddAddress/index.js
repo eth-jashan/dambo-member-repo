@@ -5,13 +5,23 @@ import plus_black from "../../../../assets/Icons/plus_black.svg"
 import upload_file_colored from "../../../../assets/Icons/upload_file_colored.svg"
 import tick from "../../../../assets/Icons/tick.svg"
 import right_arrow_white from "../../../../assets/Icons/right_arrow_white.svg"
+import {
+    getAllDaoMembers,
+    mintBadges,
+    setShowMembershipMintingModal,
+} from "../../../../store/actions/membership-action"
+import { useDispatch } from "react-redux"
+import { createMembershipVoucher } from "../../../../utils/POCPServiceSdk"
+import { web3 } from "../../../../constant/web3"
 
-export default function AddAddress({ selectedMembershipBadge }) {
+export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [isBulkMinting, setIsBulkMinting] = useState(false)
     const [addresses, setAddresses] = useState([""])
     const [bulkMintingStep, setBulkMintingStep] = useState(0)
     const [isCsvUploaded, setIsCsvUploaded] = useState(false)
     const [bulkAddresses, setBulkAddresses] = useState([])
+
+    const dispatch = useDispatch()
 
     const addAddress = () => {
         setAddresses((addresses) => [...addresses, ""])
@@ -47,12 +57,45 @@ export default function AddAddress({ selectedMembershipBadge }) {
         }
     }
 
-    const increaseStep = () => {
+    const increaseStep = async () => {
         if (bulkMintingStep >= 1) {
             setBulkMintingStep(1)
+            await mintVouchers()
+            // console.log("hhere")
+            // dispatch(setShowMembershipMintingModal(false))
         } else {
             setBulkMintingStep((bulkMintingStep) => bulkMintingStep + 1)
         }
+    }
+
+    const mintVouchers = async () => {
+        console.log("minting badges")
+        const mintAddresses = isBulkMinting ? bulkAddresses : addresses
+        try {
+            await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
+            await dispatch(getAllDaoMembers())
+            dispatch(setShowMembershipMintingModal(false))
+        } catch (error) {
+            console.log("error on signinig", error.toString())
+        }
+    }
+
+    const checkIsDisabled = () => {
+        let isDisabled = false
+        if (isBulkMinting) {
+            bulkAddresses.forEach((address) => {
+                if (!address) {
+                    isDisabled = true
+                }
+            })
+        } else {
+            addresses.forEach((address) => {
+                if (!address) {
+                    isDisabled = true
+                }
+            })
+        }
+        return isDisabled
     }
 
     return (
@@ -69,7 +112,7 @@ export default function AddAddress({ selectedMembershipBadge }) {
                     </div>
                 </div>
                 <div className="mint-membership-badge-right">
-                    <img src={selectedMembershipBadge.imgUrl} alt="" />
+                    <img src={selectedMembershipBadge.image_url} alt="" />
                 </div>
             </div>
             {isBulkMinting ? (
@@ -133,7 +176,10 @@ export default function AddAddress({ selectedMembershipBadge }) {
                         )}
                     </div>
                     <div className="bulk-minting-btn">
-                        <button onClick={increaseStep}>
+                        <button
+                            onClick={increaseStep}
+                            disabled={checkIsDisabled()}
+                        >
                             {bulkMintingStep === 0
                                 ? "Review Addresses"
                                 : "Mint Badges"}
@@ -169,7 +215,12 @@ export default function AddAddress({ selectedMembershipBadge }) {
                         Add another Address
                     </div>
                     <div className="minting-buttons-wrapper">
-                        <button>Mint Badges • {addresses.length}</button>
+                        <button
+                            onClick={mintVouchers}
+                            disabled={checkIsDisabled()}
+                        >
+                            Mint Badges • {addresses.length}
+                        </button>
                         <div
                             onClick={() => setIsBulkMinting(true)}
                             className="bulk-minting-text"

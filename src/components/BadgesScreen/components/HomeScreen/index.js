@@ -5,12 +5,26 @@ import contributionIconWhite from "../../../../assets/Icons/contributionIconWhit
 import appreciationIconWhite from "../../../../assets/Icons/appreciationIconWhite.svg"
 import participationIconWhite from "../../../../assets/Icons/participationIconWhite.svg"
 import edit_active from "../../../../assets/Icons/edit_active.svg"
+import {
+    setShowMembershipCreateModal,
+    setShowMembershipMintingModal,
+} from "../../../../store/actions/membership-action"
+import { useDispatch, useSelector } from "react-redux"
+import { setContractAddress } from "../../../../store/actions/dao-action"
 
 export default function HomeScreen({
-    setShowModal,
     membershipBadges,
-    setShowMintingModal,
+    setShowMembershipOverviewModal,
 }) {
+    const currentDao = useSelector((x) => x.dao.currentDao)
+    const dispatch = useDispatch()
+    const showModal = () => {
+        dispatch(setShowMembershipCreateModal(true))
+    }
+    const showMintingModal = async () => {
+        await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
+        dispatch(setShowMembershipMintingModal(true))
+    }
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -45,21 +59,24 @@ export default function HomeScreen({
                                     </div>
                                 )}
                                 <div className="membership-badge-buttons">
-                                    <button
-                                        onClick={() =>
-                                            setShowMintingModal(true)
-                                        }
-                                    >
+                                    <button onClick={showMintingModal}>
                                         Mint Badges
                                     </button>
-                                    <div>
+                                    <div
+                                        onClick={() =>
+                                            setShowMembershipOverviewModal(true)
+                                        }
+                                    >
                                         <img src={edit_active} alt="" />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="membership-badge-right">
-                            <img src={membershipBadges?.[0]?.imgUrl} alt="" />
+                            <img
+                                src={membershipBadges?.[0]?.image_url}
+                                alt=""
+                            />
                         </div>
                     </div>
                 ) : (
@@ -70,9 +87,7 @@ export default function HomeScreen({
                         <div className="membership-badge-content">
                             <div>Setup</div>
                             <div>Membership Badge</div>
-                            <button onClick={() => setShowModal(true)}>
-                                Setup Badges
-                            </button>
+                            <button onClick={showModal}>Setup Badges</button>
                         </div>
                     </div>
                 )}
@@ -85,7 +100,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -98,7 +113,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -111,7 +126,7 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button>Enable Badges</button>
+                            <button className="btn-steps">Enable Badges</button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}

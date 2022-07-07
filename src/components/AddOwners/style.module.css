@@ -18,6 +18,11 @@
     line-height: 3.5rem;
 }
 
+.helperHeading {
+    margin-top: 0.5rem;
+    margin-bottom: 6%;
+}
+
 .greyedHeading {
     color: rgba(0, 0, 0, 0.5);
     width: 100%;
@@ -95,24 +100,16 @@
     line-height: 1.5rem;
 }
 
-/* .ownerRow:nth-of-type(3n + 2) > .nameInput,
-.ownerRow:nth-of-type(3n + 2) > .addressInput {
-  background: rgba(255, 109, 27, 0.2);
+.bottomBarAbsolute {
+    position: absolute;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+    bottom: 0.5rem;
+    /* background-color: red; */
 }
-.ownerRow:nth-of-type(3n + 2) > .nameInput:focus,
-.ownerRow:nth-of-type(3n + 2) > .addressInput:focus {
-  border: 1px solid rgba(255, 109, 27, 0.2);
-  background: transparent;
-}
-.ownerRow:nth-of-type(3n + 3) > .nameInput,
-.ownerRow:nth-of-type(3n + 3) > .addressInput {
-  background: rgba(79, 88, 223, 0.2);
-}
-.ownerRow:nth-of-type(3n + 3) > .nameInput:focus,
-.ownerRow:nth-of-type(3n + 3) > .addressInput:focus {
-  border: 1px solid rgba(79, 88, 223, 0.2);
-  background: transparent;
-} */
 
 .ownerRow > div > img {
     width: 20px;
@@ -136,9 +133,41 @@
     width: 20px;
 }
 
-.bottomBar {
-    position: fixed;
-    bottom: 1.25rem;
-    /* background: red; */
-    width: 100%;
+.backIcon {
+    align-self: center;
+    justify-content: center;
+    /* margin-top: 4px; */
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 8px;
+}
+
+.buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.backTitle {
+    font-family: "SFMono";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.backDiv {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+.loaderText {
+    font-family: "TelegrafMedium";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    /* identical to box height, or 150% */
+    color: #000000;
+    opacity: 0.5;
 }

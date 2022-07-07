@@ -32,11 +32,17 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const [auth, setAuth] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [isAccess, setAccess] = useState(true)
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
             setAuth(true)
-            if (chainId === 4 || chainId === 1 || chainId === 5) {
+            if (
+                chainId === 4 ||
+                chainId === 1 ||
+                chainId === 5 ||
+                chainId === 10
+            ) {
                 try {
                     const res = await dispatch(
                         authWithSign(address, signer, chainId)
@@ -61,7 +67,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    setAccess(false)
+                                    // setAccess(false)
                                 }
                             } else {
                                 navigate(`/onboard/contributor/${uuid}`, {
@@ -71,7 +77,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } else {
-                            setAccess(false)
+                            // setAccess(false)
                             await afterConnectWalletCallback(setAuth)
                         }
                     } else {
@@ -111,8 +117,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         window.location.replace(`${links.discord_oauth.local}`)
     }
 
-    const [isAccess, setAccess] = useState(true)
-
     const loadWeb3Modal = useCallback(async () => {
         console.log(isAdmin)
         setAuth(true)
@@ -128,7 +132,13 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             dispatch(setAddress(newAddress))
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            if (res && (chainId === 4 || chainId === 1 || chainId === 5)) {
+            if (
+                res &&
+                (chainId === 4 ||
+                    chainId === 1 ||
+                    chainId === 5 ||
+                    chainId === 10)
+            ) {
                 // has token and chain is selected for rinkeby
                 setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
@@ -142,7 +152,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         setAuth(false)
                         setAccess(false)
                         // message.error("Closed For Beta Test")
-                        // navigate("/onboard/dao")
+                        navigate("/onboard/dao")
                     }
                 } else {
                     // setAuth(false)
@@ -181,7 +191,10 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 }
             } else if (
                 !res &&
-                (chainId === 4 || chainId === 1 || chainId === 5)
+                (chainId === 4 ||
+                    chainId === 1 ||
+                    chainId === 5 ||
+                    chainId === 10)
             ) {
                 // if (!isAdmin) {
                 //     await authWithWallet(newAddress, chainId, signer)
@@ -321,11 +334,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         {/* <br /> communities */}
                     </div>
                     <div className={styles.contactText}>
-                        Please reach out to Pony finance on{" "}
-                        <a href="" target="_blank" rel="noreferrer">
-                            discord
-                        </a>{" "}
-                        or reach out to us{" "}
+                        Please reach out to us{" "}
                         <a
                             href="https://twitter.com/rep3gg"
                             target="_blank"

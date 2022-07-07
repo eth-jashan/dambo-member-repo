@@ -19,6 +19,7 @@ import { combineReducers } from "redux"
 import daoSlice from "./reducers/dao-slice"
 import transactionSlice from "./reducers/transaction-slice"
 import toastSlice from "./reducers/toast-slice"
+import membershipSlice from "./reducers/membership-slice"
 
 const rootReducer = combineReducers({
     auth: authSlice.reducer,
@@ -27,12 +28,20 @@ const rootReducer = combineReducers({
     dao: daoSlice.reducer,
     transaction: transactionSlice.reducer,
     toast: toastSlice.reducer,
+    membership: membershipSlice.reducer,
 })
 
 const persistConfig = {
     key: "root",
     storage,
-    blacklist: ["transaction", "dao", "gnosis", "contributor", "toast"],
+    blacklist: [
+        "transaction",
+        "dao",
+        "gnosis",
+        "contributor",
+        "toast",
+        "membership",
+    ],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

@@ -12,10 +12,14 @@ import {
     claimVoucher,
     getMembershipBadgeFromTxHash,
     getAllMembershipBadges,
+    deployDaoContract,
+    getInfoHash,
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
+import { membershipAction } from "../reducers/membership-slice"
 
 const currentNetwork = getSelectedChainId()
+console.log("link", getSafeServiceUrl())
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
 export const setChainId = (chainId) => {
@@ -42,13 +46,13 @@ export const addThreshold = (threshold) => {
     }
 }
 
-export const addDaoInfo = (name, email, discord, logo) => {
+export const addDaoInfo = (name, logo, email, discord) => {
     return (dispatch) => {
         dispatch(daoAction.set_dainInfo({ email, name, discord, logo }))
     }
 }
 
-export const registerDao = () => {
+export const registerDao = (callbackFn) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
@@ -61,40 +65,69 @@ export const registerDao = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
-        const owner = []
-
-        owners.map((item) =>
-            owner.push({ public_address: item.address, name: item.name })
-        )
-
-        const data = {
-            dao_name: name,
-            safe_addr: safeAddress,
-            by: address,
-            signers: owner,
-            signs_required: threshold,
-            logo_url: logo,
-            discord_link: discord,
-            chain_id: chainId,
-        }
+        const ownerMeta = []
+        const approvers = []
+        owners.forEach((item) => {
+            ownerMeta.push({ public_address: item.address, name: item.name })
+            approvers.push(item.address)
+        })
 
         try {
-            const res = await apiClient.post(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
+            await deployDaoContract(
+                name,
+                name,
+                approvers,
+                async (x) => {
+                    console.log("Hash is", x, {
+                        dao_name: name,
+                        by: address,
+                        safe_addr: safeAddress || "",
+                        proxy_txn_hash: x,
+                        approvers: ownerMeta,
+                        logo_url: logo,
+                        chain_id: chainId,
+                        txn_chain_id: "137",
+                    })
+                    try {
+                        const res = await apiClient.post(
+                            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
+                            {
+                                dao_name: name,
+                                by: address,
+                                safe_addr: safeAddress || "",
+                                proxy_txn_hash: x,
+                                approvers: ownerMeta,
+                                logo_url: logo,
+                                chain_id: chainId,
+                                txn_chain_id: "137",
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${jwt}`,
+                                    "Content-Type": "application/json",
+                                },
+                            }
+                        )
 
-            if (res.data.success) {
-                return { dao_uuid: res.data.data.dao_uuid, name, owners }
-            } else {
-                return 0
-            }
-        } catch (error) {}
+                        if (res.data.success) {
+                            dispatch(lastSelectedId(res.data.data.dao_uuid))
+                            return {
+                                dao_uuid: res.data.data.dao_uuid,
+                                name,
+                                owners,
+                            }
+                        } else {
+                            return 0
+                        }
+                    } catch (error) {
+                        console.log("error", error)
+                    }
+                },
+                (x) => callbackFn(x)
+            )
+        } catch (error) {
+            console.log("error on deploying", error)
+        }
     }
 }
 
@@ -145,7 +178,7 @@ export const getAllDaowithAddress = (chainId) => {
                         }
                     })
                 }
-
+                console.log("Roles", dao_details[selectionIndex])
                 dispatch(
                     daoAction.set_current_dao({
                         dao: dao_details[selectionIndex].dao_details,
@@ -155,6 +188,17 @@ export const getAllDaowithAddress = (chainId) => {
                         account_mode: dao_details[selectionIndex].access_role,
                         index: selectionIndex,
                         username: dao_details[selectionIndex].name,
+                    })
+                )
+
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        contributorClaimedDataBackend: {
+                            membership:
+                                dao_details[selectionIndex].memberships[0],
+                            recentlyUpdate:
+                                dao_details[selectionIndex].membership_update,
+                        },
                     })
                 )
                 return dao_details[selectionIndex].access_role
@@ -171,6 +215,12 @@ export const getAllDaowithAddress = (chainId) => {
                         community_role: null,
                         account_mode: null,
                         index: 0,
+                    })
+                )
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        membership: null,
+                        recentlyUpdate: null,
                     })
                 )
                 return 0
@@ -190,8 +240,25 @@ export const getAllDaowithAddress = (chainId) => {
                     index: 0,
                 })
             )
+            dispatch(
+                membershipAction.setClaimedDataFromBE({
+                    membership: null,
+                    recentlyUpdate: null,
+                })
+            )
             return 0
         }
+    }
+}
+
+export const setContractAddress = () => {
+    return async (dispatch, getState) => {
+        const currentDao = getState().dao.currentDao
+        const res = await getInfoHash(currentDao.proxy_txn_hash)
+        console.log("Contract address", res.data.daos[0]?.id, currentDao)
+        dispatch(
+            daoAction.set_proxy_address({ contract: res.data.daos[0]?.id })
+        )
     }
 }
 
@@ -289,36 +356,38 @@ export const set_contri_filter = (filter_key, number) => {
 export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-        try {
-            const balance = await serviceClient.getBalances(
-                currentDao?.safe_public_address
-            )
+        if (currentDao?.safe_public_address !== "") {
+            try {
+                const balance = await serviceClient.getBalances(
+                    currentDao?.safe_public_address
+                )
 
-            const tokenType = []
-            balance.forEach((item) => {
-                if (item.tokenAddress === null) {
-                    tokenType.push({
-                        label: "ETH",
-                        value: item,
-                    })
-                } else {
-                    tokenType.push({
-                        label: item.token.symbol,
-                        value: item,
-                    })
-                }
-            })
-            dispatch(
-                daoAction.set_gnosis_details({
-                    balance: tokenType,
+                const tokenType = []
+                balance.forEach((item) => {
+                    if (item.tokenAddress === null) {
+                        tokenType.push({
+                            label: "ETH",
+                            value: item,
+                        })
+                    } else {
+                        tokenType.push({
+                            label: item.token.symbol,
+                            value: item,
+                        })
+                    }
                 })
-            )
-        } catch (error) {
-            dispatch(
-                daoAction.set_gnosis_details({
-                    balance: null,
-                })
-            )
+                dispatch(
+                    daoAction.set_gnosis_details({
+                        balance: tokenType,
+                    })
+                )
+            } catch (error) {
+                dispatch(
+                    daoAction.set_gnosis_details({
+                        balance: null,
+                    })
+                )
+            }
         }
     }
 }
@@ -335,13 +404,21 @@ export const set_dao = (dao, index) => {
         dispatch(
             daoAction.set_current_dao({
                 dao: dao.dao_details,
-                role: dao.access_role,
+                role: dao.dao_details.access_role,
                 community_role: dao.community_role,
-                account_mode: dao.access_role,
+                account_mode: dao.dao_details.access_role,
                 index,
             })
         )
-        gnosisDetailsofDao()
+        dispatch(
+            membershipAction.setClaimedDataFromBE({
+                contributorClaimedDataBackend: {
+                    membership: dao.memberships[0],
+                    recentlyUpdate: dao.membership_update,
+                },
+            })
+        )
+        // gnosisDetailsofDao()
     }
 }
 
@@ -506,107 +583,194 @@ export const getPayoutRequest = () => {
 
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
-
-        try {
-            const res = await apiClient.get(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-
-            const pendingTxs = await serviceClient.getPendingTransactions(
-                safe_address
-            )
-
-            const list_of_tx = []
-            if (res.data.success) {
-                // all payout from server
-                dispatch(
-                    daoAction.set_all_payout_request({
-                        list: res.data?.data?.payouts,
-                    })
+        if (safe_address !== "") {
+            try {
+                const res = await apiClient.get(
+                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}?dao_uuid=${uuid}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwt}`,
+                        },
+                    }
                 )
-                // filtering out drepute pending txs from gnosis
-                res.data?.data?.payouts.forEach((item) => {
-                    pendingTxs.results.forEach((x) => {
-                        if (item.gnosis_reference_id === x.safeTxHash) {
-                            list_of_tx.push({ gnosis: x, metaInfo: item })
-                        }
+
+                const pendingTxs = await serviceClient.getPendingTransactions(
+                    safe_address
+                )
+
+                const list_of_tx = []
+                if (res.data.success) {
+                    // all payout from server
+                    dispatch(
+                        daoAction.set_all_payout_request({
+                            list: res.data?.data?.payouts,
+                        })
+                    )
+                    // filtering out drepute pending txs from gnosis
+                    res.data?.data?.payouts.forEach((item) => {
+                        pendingTxs.results.forEach((x) => {
+                            if (item.gnosis_reference_id === x.safeTxHash) {
+                                list_of_tx.push({ gnosis: x, metaInfo: item })
+                            }
+                        })
                     })
-                })
 
-                const tx = []
-                const nonce_inserted = []
+                    const tx = []
+                    const nonce_inserted = []
 
-                // checking rejected tx and updated tx
-                list_of_tx.forEach((item) => {
-                    pendingTxs.results.forEach((x) => {
-                        if (
-                            item.gnosis.nonce === x.nonce &&
-                            !item.metaInfo.is_executed
-                        ) {
-                            if (x.data === null && x.value === "0") {
-                                if (!nonce_inserted.includes(x.nonce)) {
-                                    tx.push({
-                                        gnosis: x,
-                                        metaInfo: item.metaInfo,
-                                        status: "REJECTED",
-                                    })
-                                    nonce_inserted.push(x.nonce)
-                                } else {
-                                    // was approved and changed to rejected
-                                    const same_nonce = tx.filter(
-                                        (y) => y.gnosis.nonce === x.nonce
-                                    )
-
-                                    if (same_nonce[0].status === "APPROVED") {
-                                        tx.forEach((item, index) => {
-                                            if (item.gnosis.nonce === x.nonce) {
-                                                tx[index] = {
-                                                    gnosis: x,
-                                                    metaInfo: item.metaInfo,
-                                                    status: "REJECTED",
-                                                }
-                                            }
+                    // checking rejected tx and updated tx
+                    list_of_tx.forEach((item) => {
+                        pendingTxs.results.forEach((x) => {
+                            if (
+                                item.gnosis.nonce === x.nonce &&
+                                !item.metaInfo.is_executed
+                            ) {
+                                if (x.data === null && x.value === "0") {
+                                    if (!nonce_inserted.includes(x.nonce)) {
+                                        tx.push({
+                                            gnosis: x,
+                                            metaInfo: item.metaInfo,
+                                            status: "REJECTED",
                                         })
+                                        nonce_inserted.push(x.nonce)
+                                    } else {
+                                        // was approved and changed to rejected
+                                        const same_nonce = tx.filter(
+                                            (y) => y.gnosis.nonce === x.nonce
+                                        )
+
+                                        if (
+                                            same_nonce[0].status === "APPROVED"
+                                        ) {
+                                            tx.forEach((item, index) => {
+                                                if (
+                                                    item.gnosis.nonce ===
+                                                    x.nonce
+                                                ) {
+                                                    tx[index] = {
+                                                        gnosis: x,
+                                                        metaInfo: item.metaInfo,
+                                                        status: "REJECTED",
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }
+                                } else {
+                                    if (!nonce_inserted.includes(x.nonce)) {
+                                        tx.push({
+                                            gnosis: x,
+                                            metaInfo: item.metaInfo,
+                                            status: "APPROVED",
+                                        })
+                                        nonce_inserted.push(x.nonce)
                                     }
                                 }
-                            } else {
-                                if (!nonce_inserted.includes(x.nonce)) {
-                                    tx.push({
-                                        gnosis: x,
-                                        metaInfo: item.metaInfo,
-                                        status: "APPROVED",
-                                    })
-                                    nonce_inserted.push(x.nonce)
+                            }
+                        })
+                    })
+
+                    const updateTx = []
+                    tx.forEach((item) => {
+                        updateTx.push({
+                            payout_id: item?.metaInfo?.id,
+                            gnosis_reference_id: item?.gnosis?.safeTxHash,
+                            is_executed: false,
+                            status: item?.status,
+                        })
+                    })
+                    dispatch(
+                        daoAction.set_payout_list({
+                            list: tx,
+                        })
+                    )
+
+                    if (updateTx.length > 0) {
+                        const data = {
+                            dao_uuid: uuid,
+                            data: updateTx,
+                        }
+
+                        try {
+                            await apiClient.post(
+                                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.updatePayout}`,
+                                data,
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${jwt}`,
+                                    },
+                                }
+                            )
+                        } catch (error) {
+                            // console.log("error while updating gnosis", error)
+                        }
+                    }
+                } else {
+                    return 0
+                }
+            } catch (error) {
+                return 0
+            }
+        }
+    }
+}
+
+export const syncTxDataWithGnosis = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const safe_address = getState().dao.currentDao?.safe_public_address
+        const uuid = getState().dao.currentDao?.uuid
+        const getAllPayout = getState().dao.all_payout_request
+        if (safe_address !== "") {
+            try {
+                const allTx = await serviceClient.getMultisigTransactions(
+                    safe_address
+                )
+                const updatedTX = []
+
+                const nonce_inserted = []
+                allTx.results.forEach((item) => {
+                    getAllPayout.forEach((x) => {
+                        if (
+                            x.nonce === item.nonce &&
+                            (x.request_type === "APPROVED" ||
+                                x.request_type === "REJECTED") &&
+                            !x.is_executed
+                        ) {
+                            if (item.isExecuted) {
+                                if (item.data === null && item.value === "0") {
+                                    // Rejected with isExecuted
+                                    if (!nonce_inserted.includes(item.nonce)) {
+                                        nonce_inserted.push(item.nonce)
+                                        updatedTX.push({
+                                            payout_id: x.id,
+                                            gnosis_reference_id:
+                                                item.safeTxHash,
+                                            is_executed: true,
+                                            status: "REJECTED",
+                                        })
+                                    }
+                                } else {
+                                    // Approved with isExecuted
+                                    if (!nonce_inserted.includes(item.nonce)) {
+                                        nonce_inserted.push(item.nonce)
+                                        updatedTX.push({
+                                            payout_id: x.id,
+                                            gnosis_reference_id:
+                                                item.safeTxHash,
+                                            is_executed: true,
+                                            status: "APPROVED",
+                                        })
+                                    }
                                 }
                             }
                         }
                     })
                 })
-
-                const updateTx = []
-                tx.forEach((item) => {
-                    updateTx.push({
-                        payout_id: item?.metaInfo?.id,
-                        gnosis_reference_id: item?.gnosis?.safeTxHash,
-                        is_executed: false,
-                        status: item?.status,
-                    })
-                })
-                dispatch(
-                    daoAction.set_payout_list({
-                        list: tx,
-                    })
-                )
-
-                if (updateTx.length > 0) {
+                if (updatedTX.length > 0) {
                     const data = {
                         dao_uuid: uuid,
-                        data: updateTx,
+                        data: updatedTX,
                     }
 
                     try {
@@ -623,86 +787,9 @@ export const getPayoutRequest = () => {
                         // console.log("error while updating gnosis", error)
                     }
                 }
-            } else {
+            } catch (error) {
                 return 0
             }
-        } catch (error) {
-            return 0
-        }
-    }
-}
-
-export const syncTxDataWithGnosis = () => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        const safe_address = getState().dao.currentDao?.safe_public_address
-        const uuid = getState().dao.currentDao?.uuid
-        const getAllPayout = getState().dao.all_payout_request
-        try {
-            const allTx = await serviceClient.getMultisigTransactions(
-                safe_address
-            )
-            const updatedTX = []
-
-            const nonce_inserted = []
-            allTx.results.forEach((item) => {
-                getAllPayout.forEach((x) => {
-                    if (
-                        x.nonce === item.nonce &&
-                        (x.request_type === "APPROVED" ||
-                            x.request_type === "REJECTED") &&
-                        !x.is_executed
-                    ) {
-                        if (item.isExecuted) {
-                            if (item.data === null && item.value === "0") {
-                                // Rejected with isExecuted
-                                if (!nonce_inserted.includes(item.nonce)) {
-                                    nonce_inserted.push(item.nonce)
-                                    updatedTX.push({
-                                        payout_id: x.id,
-                                        gnosis_reference_id: item.safeTxHash,
-                                        is_executed: true,
-                                        status: "REJECTED",
-                                    })
-                                }
-                            } else {
-                                // Approved with isExecuted
-                                if (!nonce_inserted.includes(item.nonce)) {
-                                    nonce_inserted.push(item.nonce)
-                                    updatedTX.push({
-                                        payout_id: x.id,
-                                        gnosis_reference_id: item.safeTxHash,
-                                        is_executed: true,
-                                        status: "APPROVED",
-                                    })
-                                }
-                            }
-                        }
-                    }
-                })
-            })
-            if (updatedTX.length > 0) {
-                const data = {
-                    dao_uuid: uuid,
-                    data: updatedTX,
-                }
-
-                try {
-                    await apiClient.post(
-                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.updatePayout}`,
-                        data,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${jwt}`,
-                            },
-                        }
-                    )
-                } catch (error) {
-                    // console.log("error while updating gnosis", error)
-                }
-            }
-        } catch (error) {
-            return 0
         }
     }
 }
@@ -712,103 +799,107 @@ export const set_payout_filter = (filter_key) => {
         const safe_address = getState().dao.currentDao?.safe_public_address
         const getAllPayout = getState().dao.all_payout_request
         const pending_txs = getState().dao.payout_request
-
-        if (pending_txs.length > 0) {
-            dispatch(
-                daoAction.set_active_payment_notification({ status: true })
-            )
-        } else {
-            dispatch(
-                daoAction.set_active_payment_notification({ status: false })
-            )
-        }
-
-        if (filter_key === "PENDING") {
-            dispatch(
-                daoAction.set_filter_list({
-                    key: filter_key,
-                    number: 1,
-                    list: pending_txs,
-                })
-            )
-        } else if (filter_key === "APPROVED") {
-            const pending = pending_txs.filter((x) => x.status === filter_key)
-
-            dispatch(
-                daoAction.set_filter_list({
-                    key: filter_key,
-                    number: 2,
-                    list: pending,
-                })
-            )
-        } else {
-            try {
-                const pendingTxs = await serviceClient.getMultisigTransactions(
-                    safe_address
+        if (safe_address !== "") {
+            if (pending_txs.length > 0) {
+                dispatch(
+                    daoAction.set_active_payment_notification({ status: true })
                 )
+            } else {
+                dispatch(
+                    daoAction.set_active_payment_notification({ status: false })
+                )
+            }
 
-                const list_of_tx = []
-
-                // filtering out drepute txs from gnosis
-                getAllPayout.forEach((item) => {
-                    pendingTxs.results.forEach((x) => {
-                        if (
-                            item.gnosis_reference_id === x.safeTxHash &&
-                            item.is_executed
-                        ) {
-                            list_of_tx.push({
-                                gnosis: x,
-                                metaInfo: item,
-                                status: item.request_type,
-                            })
-                        }
-                    })
-                })
-
-                if (filter_key === "ALL") {
-                    const all_payout = pending_txs.concat(list_of_tx)
-
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number: 0,
-                            list: all_payout,
-                        })
-                    )
-                } else if (filter_key === "PAID") {
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number: 3,
-                            list: list_of_tx,
-                        })
-                    )
-                } else if (filter_key === "REJECTED") {
-                    const rejectedInPending = pending_txs.filter(
-                        (x) => x.status === filter_key
-                    )
-                    const rejectedInExecuted = list_of_tx.filter(
-                        (x) => x.status === filter_key
-                    )
-                    const allReject =
-                        rejectedInPending.concat(rejectedInExecuted)
-                    dispatch(
-                        daoAction.set_filter_list({
-                            key: filter_key,
-                            number: 4,
-                            list: allReject,
-                        })
-                    )
-                }
-            } catch (error) {
+            if (filter_key === "PENDING") {
                 dispatch(
                     daoAction.set_filter_list({
-                        list: [],
                         key: filter_key,
-                        number: 0,
+                        number: 1,
+                        list: pending_txs,
                     })
                 )
-                return 0
+            } else if (filter_key === "APPROVED") {
+                const pending = pending_txs.filter(
+                    (x) => x.status === filter_key
+                )
+
+                dispatch(
+                    daoAction.set_filter_list({
+                        key: filter_key,
+                        number: 2,
+                        list: pending,
+                    })
+                )
+            } else {
+                try {
+                    const pendingTxs =
+                        await serviceClient.getMultisigTransactions(
+                            safe_address
+                        )
+
+                    const list_of_tx = []
+
+                    // filtering out drepute txs from gnosis
+                    getAllPayout.forEach((item) => {
+                        pendingTxs.results.forEach((x) => {
+                            if (
+                                item.gnosis_reference_id === x.safeTxHash &&
+                                item.is_executed
+                            ) {
+                                list_of_tx.push({
+                                    gnosis: x,
+                                    metaInfo: item,
+                                    status: item.request_type,
+                                })
+                            }
+                        })
+                    })
+
+                    if (filter_key === "ALL") {
+                        const all_payout = pending_txs.concat(list_of_tx)
+
+                        dispatch(
+                            daoAction.set_filter_list({
+                                key: filter_key,
+                                number: 0,
+                                list: all_payout,
+                            })
+                        )
+                    } else if (filter_key === "PAID") {
+                        dispatch(
+                            daoAction.set_filter_list({
+                                key: filter_key,
+                                number: 3,
+                                list: list_of_tx,
+                            })
+                        )
+                    } else if (filter_key === "REJECTED") {
+                        const rejectedInPending = pending_txs.filter(
+                            (x) => x.status === filter_key
+                        )
+                        const rejectedInExecuted = list_of_tx.filter(
+                            (x) => x.status === filter_key
+                        )
+                        const allReject =
+                            rejectedInPending.concat(rejectedInExecuted)
+                        dispatch(
+                            daoAction.set_filter_list({
+                                key: filter_key,
+                                number: 4,
+                                list: allReject,
+                            })
+                        )
+                    }
+                } catch (error) {
+                    dispatch(
+                        daoAction.set_filter_list({
+                            list: [],
+                            key: filter_key,
+                            number: 0,
+                        })
+                    )
+                    return 0
+                }
             }
         }
     }
@@ -1093,25 +1184,33 @@ export const getContributorOverview = () => {
     }
 }
 
-export const getAllSafeFromAddress = (address) => {
+export const getAllSafeFromAddress = () => {
     return async (dispatch, getState) => {
-        const list = await serviceClient.getSafesByOwner(address)
-        let daos = []
-        for (let i = 0; i < list.safes.length; i++) {
-            daos.push(`safe=${list.safes[i]}`)
-        }
-        daos = daos?.toString()
-        daos = daos.replace(/,/g, "&")
-        const jwt = getState().auth.jwt
-        const res = await apiClient.get(
-            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getOurSafes}?${daos}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${jwt}`,
-                },
+        const address = getState().auth.address
+        let list
+        try {
+            list = await serviceClient.getSafesByOwner(address)
+            let daos = []
+            for (let i = 0; i < list.safes.length; i++) {
+                daos.push(`safe=${list.safes[i]}`)
             }
-        )
-        dispatch(daoAction.set_allSafe({ list: res.data.data }))
+            daos = daos?.toString()
+            daos = daos.replace(/,/g, "&")
+            const jwt = getState().auth.jwt
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getOurSafes}?${daos}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            dispatch(daoAction.set_allSafe({ list: res.data.data }))
+        } catch (error) {
+            console.log("Error", error)
+            list = []
+            dispatch(daoAction.set_allSafe({ list: [] }))
+        }
     }
 }
 
@@ -1369,15 +1468,16 @@ export const approveBadge = (contribution, feedback = false, token = false) => {
 export const getAllTokensOfSafe = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-
-        const tokensData = await serviceClient.getUsdBalances(
-            currentDao?.safe_public_address
-        )
-        dispatch(
-            daoAction.setTokensBalanceInUsd({
-                balanceInUsd: tokensData,
-            })
-        )
+        if (currentDao?.safe_public_address !== "") {
+            const tokensData = await serviceClient.getUsdBalances(
+                currentDao?.safe_public_address
+            )
+            dispatch(
+                daoAction.setTokensBalanceInUsd({
+                    balanceInUsd: tokensData,
+                })
+            )
+        }
     }
 }
 
@@ -1385,32 +1485,35 @@ export const getAllNFTsOfSafe = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
         const jwt = getState().auth.jwt
-
-        const collectiblesData = await serviceClient.getCollectibles(
-            currentDao?.safe_public_address
-        )
-        const mappedCollectiblesData = collectiblesData.map(
-            async (collectible) => {
-                const collectibleDetails = await apiClient.post(
-                    `${process.env.REACT_APP_DAO_TOOL_URL}${routes.pocp.collectibleInfo}`,
-                    {
-                        endpoint: collectible.uri,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${jwt}`,
+        if (currentDao?.safe_public_address !== "") {
+            const collectiblesData = await serviceClient.getCollectibles(
+                currentDao?.safe_public_address
+            )
+            const mappedCollectiblesData = collectiblesData.map(
+                async (collectible) => {
+                    const collectibleDetails = await apiClient.post(
+                        `${process.env.REACT_APP_DAO_TOOL_URL}${routes.pocp.collectibleInfo}`,
+                        {
+                            endpoint: collectible.uri,
                         },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${jwt}`,
+                            },
+                        }
+                    )
+                    return {
+                        ...collectible,
+                        imageUrl: collectibleDetails?.data.data.image,
                     }
-                )
-                return {
-                    ...collectible,
-                    imageUrl: collectibleDetails?.data.data.image,
                 }
-            }
-        )
+            )
 
-        const result = await Promise.all(mappedCollectiblesData)
-        dispatch(daoAction.setNFTs({ NFTs: result }))
+            const result = await Promise.all(mappedCollectiblesData)
+            dispatch(daoAction.setNFTs({ NFTs: result }))
+        } else {
+            dispatch(daoAction.setNFTs({ NFTs: [] }))
+        }
     }
 }
 
@@ -1467,7 +1570,6 @@ export const updateDaoInfo = (daoInfo) => {
                     },
                 }
             )
-            console.log("res from update dao", res)
             const currentDao = getState().dao.currentDao
             dispatch(
                 daoAction.set_current_dao({
@@ -1525,291 +1627,6 @@ export const toggleBot = () => {
         } catch (err) {
             console.error(err)
             return false
-        }
-    }
-}
-
-export const getAllMembershipBadgesList = () => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-
-        const uuid = getState().dao.currentDao?.uuid
-        try {
-            const res = await apiClient.get(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.getMembershipBadgesList}?dao_uuid=${uuid}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            console.log("res.data is", res.data)
-            dispatch(
-                daoAction.setMembershipBadges({
-                    membershipBadges: res?.data?.data?.memberships,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const getMembershipVoucher = () => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        const uuid = getState().dao.currentDao?.uuid
-        try {
-            const res = await apiClient.get(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.getMembershipVoucher}?dao_uuid=${uuid}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            console.log("res.data is", res.data)
-            dispatch(
-                daoAction.setMembershipVoucher({
-                    membershipVoucher: res?.data?.data,
-                })
-            )
-            if (res.data?.data?.length) {
-                return 1
-            }
-            return 0
-        } catch (err) {
-            console.error(err)
-            return 0
-        }
-    }
-}
-
-const poll = async function (fn, fnCondition, ms) {
-    let result = await fn()
-    console.log("result of polling fn", result)
-    while (fnCondition(result)) {
-        await wait(ms)
-        result = await fn()
-        console.log("result in while loop", result)
-    }
-    return result
-}
-
-const wait = function (ms = 1000) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms)
-    })
-}
-
-export const claimMembershipVoucher = (membershipVoucherInfo) => {
-    return async (dispatch, getState) => {
-        try {
-            const claimerAddress = getState().auth.address
-            console.log("claiming voucher")
-            await claimVoucher(
-                web3.contractAddress,
-                membershipVoucherInfo?.signed_voucher,
-                membershipVoucherInfo?.voucher_address_index,
-                async (x) => {
-                    console.log("event emitted is", x)
-                    const fetchNFT = () =>
-                        getMembershipBadgeFromTxHash(x.transactionHash)
-                    const validate = (result) =>
-                        !result?.data?.membershipNFTs?.length
-
-                    dispatch(setTxHashFetched(true))
-
-                    dispatch(
-                        setClaimMembershipLoading({
-                            status: true,
-                            membership_uuid: membershipVoucherInfo.uuid,
-                        })
-                    )
-
-                    dispatch(setShowMetamaskSignText(false))
-
-                    dispatch(
-                        setClaimTakingTime({
-                            claimText:
-                                "Takes around 20sec, please don’t leave the page",
-                            claimColor: "#fff",
-                        })
-                    )
-
-                    setTimeout(() => {
-                        dispatch(
-                            setClaimTakingTime({
-                                claimText:
-                                    "Oops, polygon seems to be a bit slow at the moment, please give it a bit longer",
-                                claimColor: "#FFB22E",
-                            })
-                        )
-                    }, 30000)
-
-                    setTimeout(() => {
-                        dispatch(
-                            setClaimTakingTime({
-                                claimText:
-                                    "It’s taking longer than expected. Why not have some water in the mean time? 🚰 ",
-                                claimColor: "#FF6262",
-                            })
-                        )
-                    }, 90000)
-
-                    const response = await poll(fetchNFT, validate, 3000)
-                    // const metadata = await axios.get(
-                    //     // response?.data?.membershipNFTs?.[0]?.metadataUri
-                    //     "http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
-                    // )
-                    console.log("fetched the badge", response)
-                    const membershipNFT = response?.data?.membershipNFTs?.[0]
-                    dispatch(
-                        setMembershipBadgeClaimed({
-                            ...membershipVoucherInfo,
-                            contractAddress: membershipNFT?.contractAddress,
-                            tokenID: membershipNFT?.tokenID,
-                        })
-                    )
-                    dispatch(
-                        getAllMembershipBadgesForAddress(
-                            claimerAddress,
-                            web3.contractAddress
-                        )
-                    )
-                    dispatch(
-                        setClaimMembershipLoading({
-                            status: false,
-                            membership_uuid: null,
-                        })
-                    )
-                    dispatch(setDisableClaimBtn(false))
-                }
-            )
-            return 1
-        } catch (err) {
-            console.log("claiming signing error", err)
-            dispatch(
-                setClaimMembershipLoading({
-                    status: false,
-                    membership_uuid: null,
-                })
-            )
-            dispatch(setClaimTakingTime(false))
-            dispatch(setDisableClaimBtn(false))
-            return 0
-        }
-    }
-}
-
-export const getAllMembershipBadgesForAddress = (address, contractAddress) => {
-    return async (dispatch, getState) => {
-        try {
-            const membershipBadges = await getAllMembershipBadges(
-                address,
-                contractAddress
-            )
-            console.log(
-                "membership badges are ",
-                membershipBadges,
-                membershipBadges?.data?.membershipNFTs
-            )
-            dispatch(
-                daoAction.setMembershipBadgesForAddress({
-                    membershipBadgesForAddress:
-                        membershipBadges?.data?.membershipNFTs,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setMembershipBadgeClaimed = (membershipBadgeClaimed) => {
-    return async (dispatch, getState) => {
-        try {
-            console.log(
-                "dispatching set membership badge claimed with ",
-                membershipBadgeClaimed
-            )
-            dispatch(
-                daoAction.setMembershipBadgeClaimed({
-                    membershipBadgeClaimed,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setClaimMembershipLoading = (loadingStatus) => {
-    return async (dispatch, getState) => {
-        try {
-            dispatch(
-                daoAction.setClaimMembershipLoading({
-                    claimMembershipLoading: loadingStatus,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setClaimTakingTime = (claimTakingTimeInfo) => {
-    return async (dispatch, getState) => {
-        try {
-            dispatch(
-                daoAction.setClaimTakingTime({
-                    claimTakingTime: claimTakingTimeInfo,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setDisableClaimBtn = (status) => {
-    return async (dispatch, getState) => {
-        try {
-            dispatch(
-                daoAction.setDisableClaimBtn({
-                    disableClaimBtn: status,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setShowMetamaskSignText = (status) => {
-    return async (dispatch, getState) => {
-        try {
-            dispatch(
-                daoAction.setShowMetamaskSignText({
-                    showMetamaskSignText: status,
-                })
-            )
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-export const setTxHashFetched = (status) => {
-    return async (dispatch, getState) => {
-        try {
-            dispatch(
-                daoAction.setTxHashFetched({
-                    txHashFetched: status,
-                })
-            )
-        } catch (err) {
-            console.error(err)
         }
     }
 }

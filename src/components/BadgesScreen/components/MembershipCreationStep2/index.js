@@ -12,7 +12,7 @@ export default function MembershipCreationStep2({
     const checkIsDisabled = () => {
         let isDisabled = false
         membershipBadges.forEach((badge) => {
-            if (!badge.name || !badge.imgUrl) {
+            if (!badge.name || !badge.image_url) {
                 isDisabled = true
             }
         })
@@ -22,10 +22,21 @@ export default function MembershipCreationStep2({
     const onFileChange = (e, badgeIndex) => {
         const files = e.target.files || e.dataTransfer.files
         if (!files.length) return
-        const copyOfBadges = [...membershipBadges]
-        copyOfBadges[badgeIndex].imgUrl = URL.createObjectURL(files[0])
+        const copyOfBadges = membershipBadges.map((ele) => ({ ...ele }))
+        console.log("file selected is", files[0])
+        copyOfBadges[badgeIndex].image_url = URL.createObjectURL(files[0])
+        copyOfBadges[badgeIndex].is_video = false
+        if (files[0].type === "video/mp4") {
+            copyOfBadges[badgeIndex].is_video = true
+        }
+        // const formData = new FormData()
+        // formData.append("file", files[0])
+        // console.log("formdata is", files[0])
+        copyOfBadges[badgeIndex].file = files[0]
         setMembershipBadges(copyOfBadges)
     }
+
+    console.log("membership badges ", membershipBadges)
 
     return (
         <div className="membership-creation-step2-container">
@@ -40,7 +51,7 @@ export default function MembershipCreationStep2({
                         {membershipBadges.map((badge, index) => (
                             <div className="badge-row" key={index}>
                                 <div>
-                                    {badge.imgUrl && (
+                                    {badge.image_url && (
                                         <img
                                             src={check}
                                             className="check-mark"
@@ -48,7 +59,7 @@ export default function MembershipCreationStep2({
                                         />
                                     )}
                                     {badge.name}
-                                    {badge.imgUrl && (
+                                    {badge.image_url && (
                                         <span className="badge-reupload-wrapper">
                                             {" "}
                                             &bull;{" "}
@@ -63,8 +74,14 @@ export default function MembershipCreationStep2({
                                     )}
                                 </div>
                                 <div className="badge-image-wrapper">
-                                    {badge.imgUrl ? (
-                                        <img src={badge.imgUrl} alt="" />
+                                    {badge.image_url ? (
+                                        badge.is_video ? (
+                                            <video autoPlay muted loop>
+                                                <source src={badge.image_url} />
+                                            </video>
+                                        ) : (
+                                            <img src={badge.image_url} alt="" />
+                                        )
                                     ) : (
                                         <>
                                             <label
@@ -80,7 +97,7 @@ export default function MembershipCreationStep2({
                                     )}
                                     <input
                                         type="file"
-                                        accept="image/png, image/gif, image/jpeg"
+                                        accept="image/png, image/gif, image/jpeg, video/mp4, video/"
                                         id={`upload-file-input-${index}`}
                                         className="upload-file-input-hidden"
                                         onChange={(e) => onFileChange(e, index)}

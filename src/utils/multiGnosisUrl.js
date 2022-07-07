@@ -1,9 +1,6 @@
 import { getSelectedChainId } from "./POCPutils"
 
 export const getSafeServiceUrl = () => {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // const signer = await provider.getSigner()
-    // const chainId = await signer.getChainId()
     const chainId = getSelectedChainId()?.chainId
     switch (chainId) {
         case 4:
@@ -16,6 +13,8 @@ export const getSafeServiceUrl = () => {
             return "https://safe-transaction.goerli.gnosis.io/"
         case 137:
             return "https://safe-transaction.polygon.gnosis.io/"
+        case 10:
+            return "https://safe-transaction.optimism.gnosis.io/"
         default:
             return false
     }

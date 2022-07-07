@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import styles from "./style.module.css"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import { useSelector } from "react-redux"
@@ -6,92 +6,154 @@ import chevron_down from "../../../assets/Icons/chevron_down.svg"
 import chevron_up from "../../../assets/Icons/chevron_up.svg"
 import etherscanIcon from "../../../assets/Icons/etherscanIcon.svg"
 import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
-
+import apiClient from "../../../utils/api_client"
+import routes from "../../../constant/routes"
+import { getSelectedChainId } from "../../../utils/POCPutils"
 const ContributionOverview = () => {
     const [isToggleOpen, setIsToggleOpen] = useState(false)
+    const currentDao = useSelector((x) => x.dao.currentDao)
+    const jwt = useSelector((x) => x.auth.jwt)
+    const getAllClaimed = useSelector((x) => x.membership.claimedTokens)
+    console.log("get all", getAllClaimed)
 
-    const payoutInfo = () => (
-        <div className={styles.payoutContainer}>
-            <div
-                style={{ color: "white", textAlign: "start" }}
-                className={textStyle.m_16}
-            >
-                {contributionOverview?.total_payout.length} Payouts
-            </div>
-            <div className={styles.flex_totalPayout}>
-                <div style={{ color: "#FFFFFF66" }} className={textStyle.m_16}>
-                    Total Payout
-                </div>
-                <div style={{ color: "#ECFFB8" }} className={textStyle.m_16}>
-                    {(contributionOverview?.total_amount).toFixed(2)}$
-                </div>
-            </div>
-            <div className={styles.divider} />
-            {contributionOverview.token_info.length > 0 &&
-                contributionOverview.token_info?.map((x, i) => (
-                    <div
-                        key={i}
-                        style={{ marginTop: "1.5rem" }}
-                        className={styles.flex_totalPayout}
-                    >
-                        <div
-                            style={{ color: "white" }}
-                            className={textStyle.m_14}
-                        >
-                            {(x?.amount).toFixed(2)} {x?.symbol}
-                        </div>
-                        <div
-                            style={{ color: "#FFFFFF66" }}
-                            className={textStyle.m_16}
-                        >
-                            {(x?.value).toFixed(2)}$
-                        </div>
-                    </div>
-                ))}
-        </div>
-    )
+    // const payoutInfo = () => (
+    //     <div className={styles.payoutContainer}>
+    //         <div
+    //             style={{ color: "white", textAlign: "start" }}
+    //             className={textStyle.m_16}
+    //         >
+    //             {contributionOverview?.total_payout.length} Payouts
+    //         </div>
+    //         <div className={styles.flex_totalPayout}>
+    //             <div style={{ color: "#FFFFFF66" }} className={textStyle.m_16}>
+    //                 Total Payout
+    //             </div>
+    //             <div style={{ color: "#ECFFB8" }} className={textStyle.m_16}>
+    //                 {(contributionOverview?.total_amount).toFixed(2)}$
+    //             </div>
+    //         </div>
+    //         <div className={styles.divider} />
+    //         {contributionOverview.token_info.length > 0 &&
+    //             contributionOverview.token_info?.map((x, i) => (
+    //                 <div
+    //                     key={i}
+    //                     style={{ marginTop: "1.5rem" }}
+    //                     className={styles.flex_totalPayout}
+    //                 >
+    //                     <div
+    //                         style={{ color: "white" }}
+    //                         className={textStyle.m_14}
+    //                     >
+    //                         {(x?.amount).toFixed(2)} {x?.symbol}
+    //                     </div>
+    //                     <div
+    //                         style={{ color: "#FFFFFF66" }}
+    //                         className={textStyle.m_16}
+    //                     >
+    //                         {(x?.value).toFixed(2)}$
+    //                     </div>
+    //                 </div>
+    //             ))}
+    //     </div>
+    // )
 
     const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
-    const allMembershipBadges = useSelector((x) => x.dao.membershipBadges)
-    const membershipVouchers = useSelector((x) => x.dao.membershipVoucher)
-    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
-        const badgeInfo = allMembershipBadges.find(
-            (ele) => ele.uuid === badge.membership_uuid
-        )
-        return {
-            ...badge,
-            ...badgeInfo,
-        }
-    })
-    const membershipBadgesForAddress = useSelector(
-        (x) => x.dao.membershipBadgesForAddress
+    const allMembershipBadges = useSelector(
+        (x) => x.membership.membershipBadges
     )
-
-    // const unClaimedBadges = voucherInfo.filter((badge) => {
-    //     const indexOfBadge = membershipBadgesForAddress.findIndex(
-    //         (ele) =>
-    //             ele.level.toString() === badge.level.toString() &&
-    //             ele.category.toString() === badge.category.toString()
+    const membershipVouchers = useSelector(
+        (x) => x.membership.membershipVoucher
+    )
+    // const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
+    //     const badgeInfo = allMembershipBadges.find(
+    //         (ele) => ele.uuid === badge.membership_uuid
     //     )
-    //     return indexOfBadge === -1
+    //     return {
+    //         ...badge,
+    //         ...badgeInfo,
+    //     }
     // })
+    const membershipBadgesForAddress = useSelector(
+        (x) => x.membership.membershipBadgesForAddress
+    )
+    const selectedChainId = getSelectedChainId()
+    const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
+    const getCurrentBadgeUpdated = async () => {
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("here badges", res.data.data.length)
+            if (res.data.data.length > 0) {
+                res.data.data.forEach((x) => {
+                    if (
+                        x.dao_details.chain_id === selectedChainId.chainId &&
+                        x.dao_details.uuid === currentDao?.uuid
+                        // x.membership_update
+                    ) {
+                        // dao_details.push(x)
+                        // const backendMembership
+                        const level = x.memberships[0].level.toString()
+                        const metadataBE = x.memberships[0]
 
-    let currentMembershipBadge = null
-    if (membershipBadgesForAddress?.length) {
-        const temp = allMembershipBadges.filter(
-            (badge) =>
-                badge?.level?.toString() ===
-                    membershipBadgesForAddress[0]?.level?.toString() &&
-                badge?.category?.toString() ===
-                    membershipBadgesForAddress[0]?.category?.toString()
-        )
-        currentMembershipBadge = {
-            ...temp[0],
-            ...membershipBadgesForAddress[0],
+                        const metadatSubgraph =
+                            membershipBadgesForAddress.filter(
+                                (x) => x.level === level
+                            )
+                        console.log(metadatSubgraph[0])
+
+                        setCurrentMembershipBadge({
+                            ...metadatSubgraph[0],
+                            ...metadataBE,
+                        })
+                    }
+                })
+                // console.log(upgradedMembership, selectedChainId, currentDao)
+            }
+        } catch (error) {
+            console.log("error", error)
         }
     }
+    useEffect(async () => {
+        console.log(currentDao)
+        if (currentDao) {
+            await getCurrentBadgeUpdated()
+        }
+    }, [getCurrentBadgeUpdated, currentDao])
+    // if (membershipBadgesForAddress?.length) {
+    //     const temp = allMembershipBadges.filter(
+    //         (badge) =>
+    //             badge?.level?.toString() ===
+    //                 membershipBadgesForAddress[
+    //                     membershipBadgesForAddress.length - 1
+    //                 ]?.level?.toString() &&
+    //             badge?.category?.toString() ===
+    //                 membershipBadgesForAddress[
+    //                     membershipBadgesForAddress.length - 1
+    //                 ]?.category?.toString()
+    //     )
+    //     currentMembershipBadge = {
+    //         ...temp[0],
+    //         ...membershipBadgesForAddress[
+    //             membershipBadgesForAddress.length - 1
+    //         ],
+    //     }
+    // }
+    // console.log(
+    //     "Badge Info",
+    //     allMembershipBadges,
+    //     membershipBadgesForAddress,
+    //     membershipBadgesForAddress[1],
+    //     currentMembershipBadge
+    // )
+    console.log(currentMembershipBadge?.contractAddress)
 
     const contributionStats = () => (
         <div className={styles.contributionContainer}>
@@ -141,16 +203,18 @@ const ContributionOverview = () => {
     }
 
     const openEtherscan = () => {
-        console.log("current membership badge is", currentMembershipBadge)
+        // console.log("current membership badge is", currentMembershipBadge)
+        console.log(currentMembershipBadge)
         window.open(
-            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
+            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress[0]?.id}?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
 
     const openOpensea = () => {
+        console.log(currentMembershipBadge)
         window.open(
-            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
+            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress[0]?.id}/${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
@@ -170,18 +234,18 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    {/* <img
-                        src={currentMembershipBadge?.image_url}
+                    <img
+                        src={currentMembershipBadge.image_url}
                         alt=""
                         className={styles.badgeImage}
-                    /> */}
-                    <video autoPlay loop className={styles.badgeImage} muted>
+                    />
+                    {/* <video autoPlay loop className={styles.badgeImage} muted>
                         <source src={currentMembershipBadge?.image_url} />
-                    </video>
+                    </video> */}
                     <div>
                         <div className={styles.toggleHeader} onClick={toggle}>
                             <div>
-                                <div>{currentMembershipBadge?.name}</div>
+                                <div>{currentMembershipBadge.name}</div>
                                 {/* <div>2 months ago</div> */}
                             </div>
                             <div>

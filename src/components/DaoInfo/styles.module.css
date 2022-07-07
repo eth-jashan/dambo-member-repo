@@ -14,7 +14,7 @@
     line-height: 3.5rem;
 }
 .form {
-    margin-top: 9.12%;
+    margin-top: 6%;
 }
 .inputText {
     border: 1px solid #eeeef0;
@@ -217,9 +217,10 @@
 }
 
 .bottomBar {
-    position: fixed;
-    bottom: 1.25rem;
-    /* background: red; */
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
     width: 100%;
 }
 
@@ -241,4 +242,34 @@
 
 .loadingText {
     color: #808080;
+}
+
+.backIcon {
+    align-self: center;
+    justify-content: center;
+    /* margin-top: 4px; */
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 8px;
+}
+
+.buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.backTitle {
+    font-family: "SFMono";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.backDiv {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }
