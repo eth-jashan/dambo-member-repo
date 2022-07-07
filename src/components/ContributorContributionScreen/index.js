@@ -131,14 +131,17 @@ export default function ContributorContributionScreen() {
                                         ))} */}
                     {unClaimedBadges.map((badge, index) => (
                         <div className="newMembershipBadge" key={index}>
-                            {currentDao?.uuid ===
-                            "93ba937e02ea4fdb9633c2cb27345200" ? (
-                                <video autoPlay loop muted>
-                                    <source src={badge.image_url} />
-                                </video>
-                            ) : (
-                                <img src={badge.image_url} />
-                            )}
+                            {/* <img src={badge.image_url} alt="" /> */}
+                            {/* <video autoPlay loop muted>
+                                <source
+                                    src={badge.image_url}
+                                    // src="http://arweave.net/fzjtljsZMX_oDM1tsXtU2HcXa2TkA0c5Iyjp-loOYKg"
+                                />
+                            </video> */}
+                            <img
+                                // style={{ height: "100%", width: "100%" }}
+                                src={badge.image_url}
+                            />
                             <div className="congratsAndClaim">
                                 <div className="congratulationsText">
                                     Congratulations

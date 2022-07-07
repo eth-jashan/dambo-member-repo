@@ -26,8 +26,7 @@ export default function MembershipChangeModal({
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
-    const currentDao = useSelector((x) => x.dao.currentDao)
-
+    // const currentMembershipBadge = selectedMember.memberhips[0].uuid === membershipBadges.uuid
     const selectNewMembership = (x) => {
         setCurrentStep((currentStep) => currentStep + 1)
         setUpgradeMembership(x)
@@ -37,13 +36,19 @@ export default function MembershipChangeModal({
         if (proxyContract && !loading) {
             setLoading(true)
 
+            // console.log(
+            //     "res",
+            //     res.data?.membershipNFTs[0].tokenID,
+            //     selectedMember.membership_txns[0].membership_txn_hash
+            // )
             if (selectedMember.membership_txns[0].membership_txn_hash) {
                 const res = await getMembershipBadgeFromTxHash(
                     selectedMember.membership_txns[0].membership_txn_hash
                 )
                 console.log(
                     "res",
-
+                    // res.data?.membershipNFTs[0].tokenID,
+                    // selectedMember.membership_txns[0].membership_txn_hash,
                     selectedMember,
                     selectUpgradeMembership,
                     {
@@ -51,6 +56,24 @@ export default function MembershipChangeModal({
                         memberships: [selectUpgradeMembership],
                     }
                 )
+                // console.log(
+                //     JSON.stringify({
+                //         ...selectedMember,
+                //         memberships: [selectUpgradeMembership],
+                //     })
+                // )
+
+                // const dao = allDaoMembers.dao_members.map((x, i) => {
+                //     if (selectedMember.index === i) {
+                //         const newMembership = [selectUpgradeMembership]
+                //         x.memberships = newMembership
+                //     }
+                // })
+                // const newDaoInfo = allDaoMembers.dao_members[0]
+
+                // console.log({...allDaoMembers,})
+
+                // console.log(newObj, allDaoMembers)
 
                 await upgradeMembershipNft(
                     proxyContract,
@@ -134,8 +157,7 @@ export default function MembershipChangeModal({
                                 >
                                     <div className="membership-badge-content">
                                         <div className="membership-badge-image-wrapper">
-                                            {currentDao?.uuid ===
-                                            "93ba937e02ea4fdb9633c2cb27345200" ? (
+                                            {badge.is_video ? (
                                                 <video autoPlay loop muted>
                                                     <source
                                                         src={badge.image_url}

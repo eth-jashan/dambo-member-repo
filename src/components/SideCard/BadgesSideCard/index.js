@@ -11,7 +11,6 @@ import { assets } from "../../../constant/assets"
 const CommunitySideCard = ({ show }) => {
     const selectedMember = useSelector((x) => x.membership.selectedMember)
     const selectedNav = useSelector((x) => x.membership.selectedNav)
-    const currentDao = useSelector((x) => x.dao.currentDao)
 
     const dispatch = useDispatch()
 
@@ -29,6 +28,10 @@ const CommunitySideCard = ({ show }) => {
             className="change-level-container"
         >
             <div className="change-text">Change Level</div>
+            {/* <img
+                src={assets.icons.tuneIcon}
+                style={{ height: "1.5rem", width: "1.5rem" }}
+            /> */}
         </div>
     )
 
@@ -50,30 +53,25 @@ const CommunitySideCard = ({ show }) => {
                             {selectedMember?.public_address?.slice(-3)}
                         </div>
                         <div className="membership-info">
-                            {currentDao?.uuid !==
-                            "93ba937e02ea4fdb9633c2cb27345200" ? (
-                                <img
-                                    src={
-                                        selectedMember?.memberships[0]
-                                            ?.image_url
-                                    }
-                                    className="member-image"
-                                />
-                            ) : (
-                                <video
-                                    className="member-image"
-                                    autoPlay
-                                    loop
-                                    muted
+                            {/* <div className="membership-info-left">
+                                <div className="membership-name">
+                                    
+                                    {selectedMember?.memberships[0]?.name}
+                                </div>
+                                <div className="membership-time">
+                                    11:25AM, 4 Jul
+                                </div>
+                                <div
+                                    className="change-membership"
+                                    onClick={openMembershipUpdateModal}
                                 >
-                                    <source
-                                        src={
-                                            selectedMember?.memberships[0]
-                                                ?.image_url
-                                        }
-                                    />
-                                </video>
-                            )}
+                                    Change Membership
+                                </div>
+                            </div> */}
+                            <img
+                                src={selectedMember?.memberships[0]?.image_url}
+                                className="member-image"
+                            />
                             <div className="badge-info">
                                 <div>
                                     <div className="level-name">

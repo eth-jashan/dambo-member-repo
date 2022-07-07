@@ -41,14 +41,23 @@ export default function CommunityScreen() {
     //     non_claimers_addr: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
     // }
 
-    // const getsystemOs= () => {
-    //     if(window.navigator.appVersion.indexOf('Mac') !== -1        )
-    // }
-
     const daoMember = []
 
     if (members) {
         members.dao_members.forEach((x, i) => {
+            // const newMemberships = {
+            //     id: 13,
+            //     uuid: "c28a3ea6-bc84-49bd-9df0-1f94aad9662b",
+            //     level: 1,
+            //     category: 1,
+            //     name: "Member",
+            //     description: null,
+            //     image_url:
+            //         "http://arweave.net/dCAUfkzCmOOZvBW-cF1-6AruMf9f7v53cpBnzhvhQg8",
+            //     is_video: false,
+            //     metadata_hash: "oeox8BZS7S937Q0xE6xZTJfRrjP8EKDJMsoIwbkpUvw",
+            //     members_count: 0,
+            // }
             daoMember.push({ ...x, index: i })
         })
 
@@ -63,6 +72,7 @@ export default function CommunityScreen() {
     }
 
     const dispatch = useDispatch()
+    // console.log(daoMember[1].memberships.name)
 
     return (
         <div className="community-screen-container">
