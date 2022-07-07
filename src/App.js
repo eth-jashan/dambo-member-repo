@@ -35,9 +35,7 @@ function App() {
         setChainId(chainId)
     }
 
-    console.log(window.location.hostname)
-
-    if (window.location.hostname === "pony.rep3.gg'" && !redirected) {
+    if (window.location.hostname === "pony.rep3.gg" && !redirected) {
         if (window.location.pathname) {
             window.open(
                 `https://app.rep3.gg${window.location.pathname}`,
