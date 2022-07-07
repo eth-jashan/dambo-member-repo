@@ -10,7 +10,7 @@ import {
     mintBadges,
     setShowMembershipMintingModal,
 } from "../../../../store/actions/membership-action"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { createMembershipVoucher } from "../../../../utils/POCPServiceSdk"
 import { web3 } from "../../../../constant/web3"
 
@@ -20,6 +20,7 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [bulkMintingStep, setBulkMintingStep] = useState(0)
     const [isCsvUploaded, setIsCsvUploaded] = useState(false)
     const [bulkAddresses, setBulkAddresses] = useState([])
+    const currentDao = useSelector((x) => x.dao.currentDao)
 
     const dispatch = useDispatch()
 
@@ -112,7 +113,18 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                     </div>
                 </div>
                 <div className="mint-membership-badge-right">
-                    <img src={selectedMembershipBadge.image_url} alt="" />
+                    {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ? (
+                        <img src={selectedMembershipBadge.image_url} alt="" />
+                    ) : (
+                        <video
+                            autoPlay
+                            loop
+                            // className={styles.badgeImage}
+                            muted
+                        >
+                            <source src={selectedMembershipBadge?.image_url} />
+                        </video>
+                    )}
                 </div>
             </div>
             {isBulkMinting ? (

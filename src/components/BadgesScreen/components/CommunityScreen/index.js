@@ -7,39 +7,6 @@ export default function CommunityScreen() {
     const selectedMember = useSelector((x) => x.membership.selectedMember)
 
     const members = useSelector((x) => x.membership.allDaoMembers)
-    // const members = {
-    //     dao_members: [
-    //         {
-    //             public_address: "0xa0304EbBaE696e57e63fF682B57971065792A542",
-    //             name: "Jashan",
-    //             dao_uuid: "47ee81da17e5400b983824dc7697f86f",
-    //             is_approver: true,
-    //             is_member: false,
-    //             access_role: "ADMIN",
-    //             memberships_count: 0,
-    //             membership_update: false,
-    //             memberhips: [
-    //                 {
-    //                     id: 7,
-    //                     uuid: "8127ece1-1c6a-4d57-a48f-68b544ad906b",
-    //                     level: 1,
-    //                     category: 1,
-    //                     name: "Pioneer",
-    //                     description: null,
-    //                     image_url:
-    //                         "http://arweave.net/EQFkLq6pdcH_9sHhXmo1x1YYs8thfNjCajNA2hTOpJ0",
-    //                     is_video: false,
-    //                     metadata_hash:
-    //                         "Ha8oPTQwZ9oXr9W4ewUHZYIUHQ5orxfKgyM2qkLIkdk",
-    //                     members_count: 0,
-    //                 },
-    //             ],
-    //             membership_txns: [],
-    //             contributions: [],
-    //         },
-    //     ],
-    //     non_claimers_addr: ["0xE46Acf7236056387B30D8180C547D2c2972807cF"],
-    // }
 
     const daoMember = []
 

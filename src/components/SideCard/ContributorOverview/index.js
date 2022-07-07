@@ -14,6 +14,8 @@ const ContributionOverview = () => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
     const getAllClaimed = useSelector((x) => x.membership.claimedTokens)
+    const address = useSelector((x) => x.auth.address)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     console.log("get all", getAllClaimed)
 
     // const payoutInfo = () => (
@@ -123,10 +125,14 @@ const ContributionOverview = () => {
     }
     useEffect(async () => {
         console.log(currentDao)
-        if (currentDao) {
+        if (
+            currentDao &&
+            proxyContract &&
+            membershipBadgesForAddress?.length > 0
+        ) {
             await getCurrentBadgeUpdated()
         }
-    }, [getCurrentBadgeUpdated, currentDao])
+    }, [currentDao, proxyContract, membershipBadgesForAddress])
     // if (membershipBadgesForAddress?.length) {
     //     const temp = allMembershipBadges.filter(
     //         (badge) =>
@@ -214,7 +220,7 @@ const ContributionOverview = () => {
     const openOpensea = () => {
         console.log(currentMembershipBadge)
         window.open(
-            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress[0]?.id}/${currentMembershipBadge?.tokenID}`,
+            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
@@ -234,11 +240,22 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    <img
-                        src={currentMembershipBadge.image_url}
-                        alt=""
-                        className={styles.badgeImage}
-                    />
+                    {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ? (
+                        <img
+                            src={currentMembershipBadge.image_url}
+                            alt=""
+                            className={styles.badgeImage}
+                        />
+                    ) : (
+                        <video
+                            autoPlay
+                            loop
+                            className={styles.badgeImage}
+                            muted
+                        >
+                            <source src={currentMembershipBadge?.image_url} />
+                        </video>
+                    )}
                     {/* <video autoPlay loop className={styles.badgeImage} muted>
                         <source src={currentMembershipBadge?.image_url} />
                     </video> */}
