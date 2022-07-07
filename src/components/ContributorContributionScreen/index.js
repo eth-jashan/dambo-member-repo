@@ -244,13 +244,13 @@ export default function ContributorContributionScreen() {
                             <img src={cross} alt="" />
                         </div>
 
-                        {/* <video className="claimedBadgeImg" autoPlay loop muted>
+                        <video className="claimedBadgeImg" autoPlay loop muted>
                             <source
                                 src={membershipBadgeClaimed?.image_url}
                                 // src="http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
                                 type="video/mp4"
                             />
-                        </video> */}
+                        </video>
                         {/* <img
                             src={membershipBadgeClaimed?.animationUrl}
                             alt=""
