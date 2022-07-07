@@ -3,9 +3,11 @@ import cross from "../../../../assets/Icons/cross.svg"
 import arrow_forward from "../../../../assets/Icons/arrow_forward.svg"
 import "./style.scss"
 import AddAddress from "../AddAddress"
+import { useSelector } from "react-redux"
 
 export default function MintingModal({ closeMintingModal, membershipBadges }) {
     const [selectedMembershipBadge, setSelectedMembershipBadge] = useState(null)
+    const currentDao = useSelector((x) => x.dao.currentDao)
 
     const selectMembershipBadge = () => {
         return (
@@ -34,7 +36,14 @@ export default function MintingModal({ closeMintingModal, membershipBadges }) {
                             }}
                         >
                             <div className="select-badge-row-left">
-                                <img src={badge.image_url} alt="" />
+                                {currentDao?.uuid !==
+                                "93ba937e02ea4fdb9633c2cb27345200" ? (
+                                    <img src={badge.image_url} alt="" />
+                                ) : (
+                                    <video autoPlay loop muted>
+                                        <source src={badge?.image_url} />
+                                    </video>
+                                )}
                                 <div>
                                     <div className="badge-name">
                                         {badge.name}

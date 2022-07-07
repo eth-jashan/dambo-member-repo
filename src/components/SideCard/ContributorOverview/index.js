@@ -9,53 +9,15 @@ import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
 import apiClient from "../../../utils/api_client"
 import routes from "../../../constant/routes"
 import { getSelectedChainId } from "../../../utils/POCPutils"
+import { getAllMembershipBadges } from "../../../utils/POCPServiceSdk"
 const ContributionOverview = () => {
     const [isToggleOpen, setIsToggleOpen] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
     const getAllClaimed = useSelector((x) => x.membership.claimedTokens)
-    console.log("get all", getAllClaimed)
-
-    // const payoutInfo = () => (
-    //     <div className={styles.payoutContainer}>
-    //         <div
-    //             style={{ color: "white", textAlign: "start" }}
-    //             className={textStyle.m_16}
-    //         >
-    //             {contributionOverview?.total_payout.length} Payouts
-    //         </div>
-    //         <div className={styles.flex_totalPayout}>
-    //             <div style={{ color: "#FFFFFF66" }} className={textStyle.m_16}>
-    //                 Total Payout
-    //             </div>
-    //             <div style={{ color: "#ECFFB8" }} className={textStyle.m_16}>
-    //                 {(contributionOverview?.total_amount).toFixed(2)}$
-    //             </div>
-    //         </div>
-    //         <div className={styles.divider} />
-    //         {contributionOverview.token_info.length > 0 &&
-    //             contributionOverview.token_info?.map((x, i) => (
-    //                 <div
-    //                     key={i}
-    //                     style={{ marginTop: "1.5rem" }}
-    //                     className={styles.flex_totalPayout}
-    //                 >
-    //                     <div
-    //                         style={{ color: "white" }}
-    //                         className={textStyle.m_14}
-    //                     >
-    //                         {(x?.amount).toFixed(2)} {x?.symbol}
-    //                     </div>
-    //                     <div
-    //                         style={{ color: "#FFFFFF66" }}
-    //                         className={textStyle.m_16}
-    //                     >
-    //                         {(x?.value).toFixed(2)}$
-    //                     </div>
-    //                 </div>
-    //             ))}
-    //     </div>
-    // )
+    const membershipBadgesForAddress = useSelector(
+        (x) => x.membership.membershipBadgesForAddress
+    )
 
     const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
@@ -66,6 +28,8 @@ const ContributionOverview = () => {
     const membershipVouchers = useSelector(
         (x) => x.membership.membershipVoucher
     )
+    const address = useSelector((x) => x.auth.address)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     // const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
     //     const badgeInfo = allMembershipBadges.find(
     //         (ele) => ele.uuid === badge.membership_uuid
@@ -75,9 +39,7 @@ const ContributionOverview = () => {
     //         ...badgeInfo,
     //     }
     // })
-    const membershipBadgesForAddress = useSelector(
-        (x) => x.membership.membershipBadgesForAddress
-    )
+
     const selectedChainId = getSelectedChainId()
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
     const getCurrentBadgeUpdated = async () => {
@@ -90,16 +52,20 @@ const ContributionOverview = () => {
                     },
                 }
             )
-            console.log("here badges", res.data.data.length)
+            //const badges = await getAllMembershipBadges(address, proxyContract)
+            console.log(
+                "here badges",
+                res.data.data.length,
+                address,
+                proxyContract,
+                membershipBadgesForAddress
+            )
             if (res.data.data.length > 0) {
                 res.data.data.forEach((x) => {
                     if (
                         x.dao_details.chain_id === selectedChainId.chainId &&
                         x.dao_details.uuid === currentDao?.uuid
-                        // x.membership_update
                     ) {
-                        // dao_details.push(x)
-                        // const backendMembership
                         const level = x.memberships[0].level.toString()
                         const metadataBE = x.memberships[0]
 
@@ -107,7 +73,7 @@ const ContributionOverview = () => {
                             membershipBadgesForAddress.filter(
                                 (x) => x.level === level
                             )
-                        console.log(metadatSubgraph[0])
+                        console.log(membershipBadgesForAddress, level)
 
                         setCurrentMembershipBadge({
                             ...metadatSubgraph[0],
@@ -122,11 +88,14 @@ const ContributionOverview = () => {
         }
     }
     useEffect(async () => {
-        console.log(currentDao)
-        if (currentDao) {
+        if (
+            currentDao &&
+            proxyContract &&
+            membershipBadgesForAddress?.length > 0
+        ) {
             await getCurrentBadgeUpdated()
         }
-    }, [getCurrentBadgeUpdated, currentDao])
+    }, [currentDao, proxyContract, membershipBadgesForAddress])
     // if (membershipBadgesForAddress?.length) {
     //     const temp = allMembershipBadges.filter(
     //         (badge) =>
@@ -204,7 +173,7 @@ const ContributionOverview = () => {
 
     const openEtherscan = () => {
         // console.log("current membership badge is", currentMembershipBadge)
-        console.log(currentMembershipBadge)
+        console.log(currentMembershipBadge?.contractAddress)
         window.open(
             `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress[0]?.id}?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
@@ -212,9 +181,8 @@ const ContributionOverview = () => {
     }
 
     const openOpensea = () => {
-        console.log(currentMembershipBadge)
         window.open(
-            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress[0]?.id}/${currentMembershipBadge?.tokenID}`,
+            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
@@ -234,14 +202,22 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    <img
-                        src={currentMembershipBadge.image_url}
-                        alt=""
-                        className={styles.badgeImage}
-                    />
-                    {/* <video autoPlay loop className={styles.badgeImage} muted>
-                        <source src={currentMembershipBadge?.image_url} />
-                    </video> */}
+                    {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ? (
+                        <img
+                            src={currentMembershipBadge.image_url}
+                            alt=""
+                            className={styles.badgeImage}
+                        />
+                    ) : (
+                        <video
+                            autoPlay
+                            loop
+                            className={styles.badgeImage}
+                            muted
+                        >
+                            <source src={currentMembershipBadge?.image_url} />
+                        </video>
+                    )}
                     <div>
                         <div className={styles.toggleHeader} onClick={toggle}>
                             <div>
@@ -266,7 +242,7 @@ const ContributionOverview = () => {
                         <div className={styles.lineBreak}></div>
                         <div
                             className={styles.toggleContentRow}
-                            onClick={openOpensea}
+                            onClick={() => openOpensea()}
                         >
                             View on Opensea
                             <img src={openseaIcon} alt="" />

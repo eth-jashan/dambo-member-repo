@@ -73,10 +73,19 @@ export default function HomeScreen({
                             </div>
                         </div>
                         <div className="membership-badge-right">
-                            <img
-                                src={membershipBadges?.[0]?.image_url}
-                                alt=""
-                            />
+                            {currentDao?.uuid !==
+                            "93ba937e02ea4fdb9633c2cb27345200" ? (
+                                <img
+                                    src={membershipBadges?.[0]?.image_url}
+                                    alt=""
+                                />
+                            ) : (
+                                <video autoPlay loop muted>
+                                    <source
+                                        src={membershipBadges?.[0]?.image_url}
+                                    />
+                                </video>
+                            )}
                         </div>
                     </div>
                 ) : (
