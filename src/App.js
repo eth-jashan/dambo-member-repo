@@ -28,10 +28,21 @@ function App() {
 
     const [pocpAction, setPocpAction] = useState(false)
     const [chainId, setChainId] = useState(null)
+    const [redirected, setRedirected] = useState(false)
 
     const setPocpActionValue = (status, chainId) => {
         setPocpAction(status)
         setChainId(chainId)
+    }
+
+    if (window.location.hostname === "pony.rep3.gg'" && !redirected) {
+        if (window.location.pathname) {
+            window.open(
+                `https://app.rep3.gg${window.location.pathname}`,
+                "_self"
+            )
+            setRedirected(true)
+        }
     }
 
     const pocpActionSetup = {

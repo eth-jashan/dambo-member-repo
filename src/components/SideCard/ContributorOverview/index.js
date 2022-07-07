@@ -218,7 +218,6 @@ const ContributionOverview = () => {
     }
 
     const openOpensea = () => {
-        console.log(currentMembershipBadge)
         window.open(
             `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
             "_blank"
