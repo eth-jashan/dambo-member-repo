@@ -262,7 +262,7 @@ export default function Onboarding() {
 
     const increaseFromOverview = async () => {
         try {
-            await initPOCP()
+            await initPOCP(false)
             setCurrentStep(5)
         } catch (error) {
             message.error("error on creating instance")

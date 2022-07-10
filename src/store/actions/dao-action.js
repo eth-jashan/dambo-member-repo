@@ -201,7 +201,10 @@ export const getAllDaowithAddress = (chainId) => {
                         },
                     })
                 )
-                return dao_details[selectionIndex].access_role
+                return {
+                    accountRole: dao_details[selectionIndex].access_role,
+                    currentDaos: dao_details[selectionIndex].dao_details,
+                }
             } else {
                 dispatch(
                     daoAction.set_dao_list({
@@ -254,8 +257,10 @@ export const getAllDaowithAddress = (chainId) => {
 export const setContractAddress = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-        const res = await getInfoHash(currentDao.proxy_txn_hash)
-        console.log("Contract address", res.data.daos[0]?.id, currentDao)
+        const res = await getInfoHash(
+            currentDao.proxy_txn_hash,
+            currentDao?.uuid
+        )
         dispatch(
             daoAction.set_proxy_address({ contract: res.data.daos[0]?.id })
         )

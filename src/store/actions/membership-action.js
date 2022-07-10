@@ -143,15 +143,17 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
         const proxyContract = getState().dao.daoProxyAddress
         try {
             const claimerAddress = getState().auth.address
-            console.log(
-                "claiming voucher",
-                proxyContract,
-                JSON.stringify(membershipVoucherInfo)
-            )
+            const currentDao = getState().dao.currentDao
+            // console.log(
+            //     "claiming voucher",
+            //     proxyContract,
+            //     JSON.stringify(membershipVoucherInfo)
+            // )
             await claimVoucher(
                 proxyContract,
                 membershipVoucherInfo?.signed_voucher,
                 membershipVoucherInfo?.voucher_address_index,
+                currentDao?.uuid,
                 async (x) => {
                     console.log("Tx emitted is", x)
                     dispatch(updateTxHash(x, "claim"))
@@ -159,7 +161,10 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                 async (x) => {
                     console.log("event emitted is", x)
                     const fetchNFT = () =>
-                        getMembershipBadgeFromTxHash(x.transactionHash)
+                        getMembershipBadgeFromTxHash(
+                            x.transactionHash,
+                            currentDao?.uuid
+                        )
                     const validate = (result) =>
                         !result?.data?.membershipNFTs?.length
 
@@ -215,7 +220,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                     dispatch(
                         getAllMembershipBadgesForAddress(
                             claimerAddress,
-                            web3.contractAddress
+                            proxyContract
                         )
                     )
                     dispatch(
@@ -247,11 +252,13 @@ export const getAllMembershipBadgesForAddress = (address) => {
     return async (dispatch, getState) => {
         const proxyContract = getState().dao.daoProxyAddress
         const address = getState().auth.address
+        const currentDao = getState().dao.currentDao
         console.log("Claim check!!", proxyContract, address)
         try {
             const membershipBadges = await getAllMembershipBadges(
                 address,
-                proxyContract
+                proxyContract,
+                currentDao?.uuid
             )
             console.log(
                 "membership badges are ",
@@ -571,7 +578,8 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                             [selectedMembershipBadge?.category],
                             [],
                             ele,
-                            `${selectedMembershipBadge?.metadata_hash},`
+                            `${selectedMembershipBadge?.metadata_hash},`,
+                            "signTypedDatav1.0"
                         )
                         console.log("member", JSON.stringify(signedObject))
                         return {

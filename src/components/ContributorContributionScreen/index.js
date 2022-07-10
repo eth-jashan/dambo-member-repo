@@ -117,6 +117,8 @@ export default function ContributorContributionScreen() {
         )
     }
 
+    console.log("Unclaimed Vouchers", unClaimedBadges)
+
     return (
         <div className="contributor-contribution-screen-container">
             {unClaimedBadges?.length ? (
@@ -132,7 +134,9 @@ export default function ContributorContributionScreen() {
                     {unClaimedBadges.map((badge, index) => (
                         <div className="newMembershipBadge" key={index}>
                             {currentDao?.uuid ===
-                            "93ba937e02ea4fdb9633c2cb27345200" ? (
+                                "93ba937e02ea4fdb9633c2cb27345200" ||
+                            currentDao?.uuid ===
+                                "981349a995c140d8b7fb5c110b0d133b" ? (
                                 <video autoPlay loop muted>
                                     <source src={badge.image_url} />
                                 </video>

@@ -193,7 +193,9 @@ export default function Dashboard() {
         // await dispatch(getContriRequest())
         await dispatch(getMembershipVoucher())
         console.log("here started")
-        await dispatch(getAllMembershipBadgesForAddress(address))
+        await dispatch(
+            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
+        )
 
         // if (!voucher) {
         //     message.error("You are not a member of this DAO")
@@ -206,22 +208,24 @@ export default function Dashboard() {
         dispatch(refreshContributionList())
         const account = await onInit()
         if (address === ethers.utils.getAddress(account)) {
-            initPOCP()
             dispatch(setLoadingState(true))
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
             const chainId = await signer.getChainId()
-            const accountRole = await dispatch(getAllDaowithAddress(chainId))
-
-            console.log("Current Dao!", currentDao)
+            const { accountRole, currentDaos } = await dispatch(
+                getAllDaowithAddress(chainId)
+            )
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
             await dispatch(getAllMembershipBadgesList())
             await dispatch(getMembershipVoucher())
-            await dispatch(getAllMembershipBadgesForAddress(address))
+            console.log(currentDaos)
+            await initPOCP(currentDaos.uuid)
+            await dispatch(
+                getAllMembershipBadgesForAddress(address, currentDao?.uuid)
+            )
             if (accountRole === "ADMIN") {
                 setCurrentPage("badges")
                 await dispatch(getAllDaoMembers())
-                // await adminContributionFetch()
             } else {
                 await contributorFetch()
             }
@@ -260,14 +264,18 @@ export default function Dashboard() {
         await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
         console.log("account Switch")
-        await dispatch(getAllMembershipBadgesForAddress(address))
+        await dispatch(
+            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
+        )
         dispatch(setLoadingState(false))
         if (accountRole === "ADMIN") {
             setCurrentPage("badges")
             await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
             await dispatch(getAllMembershipBadgesList())
             await dispatch(getMembershipVoucher())
-            await dispatch(getAllMembershipBadgesForAddress(address))
+            await dispatch(
+                getAllMembershipBadgesForAddress(address, currentDao?.uuid)
+            )
             // await contributionAdminFetchAccountSwitch()
             // if (tab === "payments") {
             //     await paymentsAdminFetchAccountSwitch()
@@ -295,7 +303,9 @@ export default function Dashboard() {
 
     useEffect(async () => {
         await dispatch(getMembershipVoucher())
-        await dispatch(getAllMembershipBadgesForAddress(address))
+        await dispatch(
+            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
+        )
     }, [currentDao?.uuid])
 
     const onRouteChange = async (route) => {

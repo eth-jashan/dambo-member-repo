@@ -7,23 +7,26 @@ const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
-const pocpGetter = new PocpGetters(137)
 
-export const initPOCP = async () => {
+export const initPOCP = async (dao_uuid) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-
     pocpInstance = new Pocp(
         signer,
         provider,
         window.ethereum,
-        // currentNetwork?.chainId === 4 ? 80001 : 137,
         137,
+        dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? web3.rep3V1Matic
+            : web3.rep3V2Matic,
         {
             biconomyInstance: Biconomy,
-            url: "",
-            relayNetwork: currentNetwork?.chainId === 4 ? 80001 : 137,
-            // relayNetwork: 137,
+            apiKey:
+                dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
+                    ? "a1SusDqqY.24edf34d-6125-4026-af88-b156a96b7f85"
+                    : "gD5tL5Hyt.caf51015-4e19-4873-9540-65443a4519e9",
+            relayURL:
+                "https://polygon-mainnet.g.alchemy.com/v2/gBoo6ihGnSUa3ObT49K36yHG6BdtyuVo",
         }
     )
 
@@ -34,6 +37,7 @@ export const claimVoucher = async (
     contractAddress,
     voucher,
     claimerAddressIndex,
+    dao_uuid,
     hashCallbackFn,
     callbackFn
 ) => {
@@ -41,6 +45,9 @@ export const claimVoucher = async (
         contractAddress,
         voucher,
         claimerAddressIndex,
+        dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "signTypedDatav1.0"
+            : "signTypedDatav2.0",
         async (x) => {
             console.log("Tranaction hash callback", x)
             await hashCallbackFn(x)
@@ -90,19 +97,38 @@ export const deployDaoContract = async (
     )
 }
 
-export const getAllMembershipBadges = (accountAddress, contractAddress) => {
+export const getAllMembershipBadges = (
+    accountAddress,
+    contractAddress,
+    uuid
+) => {
+    const pocpGetter = new PocpGetters(
+        uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
+            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
+    )
     return pocpGetter.membershipNftWithClaimerOfDao(
         accountAddress,
         contractAddress
     )
 }
 
-export const getMembershipBadgeFromTxHash = (txHash) => {
+export const getMembershipBadgeFromTxHash = (txHash, uuid) => {
+    const pocpGetter = new PocpGetters(
+        uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
+            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
+    )
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
-export const getInfoHash = async (txHash) => {
-    console.log(txHash)
+export const getInfoHash = async (txHash, uuid) => {
+    const pocpGetter = new PocpGetters(
+        uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
+            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
+    )
+
     const res = await pocpGetter.getdaoInfoForHash(txHash)
     // console.log("res...", res, txHash)
     return res
@@ -114,17 +140,9 @@ export const createMembershipVoucher = async (
     category,
     to,
     addresses,
-    metadataHash
+    metadataHash,
+    dao_uuid
 ) => {
-    console.log(
-        "contract detail",
-        contractAddress,
-        level,
-        category,
-        to,
-        addresses,
-        metadataHash
-    )
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,
@@ -132,7 +150,10 @@ export const createMembershipVoucher = async (
             category,
             [],
             addresses,
-            metadataHash
+            metadataHash,
+            dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
+                ? "signTypedDatav1.0"
+                : "signTypedDatav2.0"
         )
     } catch (error) {
         console.log("error", error)

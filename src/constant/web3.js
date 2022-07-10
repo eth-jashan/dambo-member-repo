@@ -12,7 +12,14 @@ export const web3 = {
     infura: {
         url: "https://polygon-mumbai.infura.io/v3/3706497c69ef40b0a5160e55a6f73a4c",
     },
-    // contractAddress: "0x9094c08fc1a0e4ffd03e2b80eef68af914a74f56",
-    // contractAdress: "0x85952513541c9ffe31928621c19450c41db97aa2",
-    contractAddress: "0x9e00c9a53e71073cee827d54db9e32005d1b95ac",
+    rep3V1Matic: {
+        pocpManger: "0xE4F44A8ef530aa69C252A553D64f0b070AAF9a0A",
+        pocpBeacon: "0x1f06C05EC5d69796CEF077369e50Ca347048CAC1",
+        pocpRouter: "0x7cd27c57e1CBb81Ba8f3aF35CFB275CB107C897d",
+    },
+    rep3V2Matic: {
+        pocpManger: "0xDA6F4387C344f1312439E05E9f9580882abA6958",
+        pocpBeacon: "0x083842b3F6739948D26C152C137929E0D3a906b9",
+        pocpRouter: "0xB9Acf5287881160e8CE66b53b507F6350d7a7b1B",
+    },
 }
