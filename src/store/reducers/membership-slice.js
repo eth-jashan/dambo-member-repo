@@ -31,7 +31,7 @@ const membershipSlice = createSlice({
             state.unclaimedMembershipBadges = action.payload.unclaimedMembership
         },
         setClaimedDataFromBE(state, action) {
-            state.membershipBadges =
+            state.contributorClaimedDataBackend =
                 action.payload.contributorClaimedDataBackend
         },
         setDaoMembers(state, action) {

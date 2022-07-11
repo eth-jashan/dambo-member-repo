@@ -18,37 +18,53 @@ export default function ContributorBadgeScreen() {
     const contributorClaimedDataBackend = useSelector(
         (x) => x.membership.contributorClaimedDataBackend
     )
+    const membershipBadges = useSelector(
+        (x) => x.membership.contributorClaimedDataBackend
+    )
     const [upgradedMembership, setUpgradedMembership] = useState(false)
     const selectedChainId = getSelectedChainId()
 
-    const getCurrentBadgeUpdated = async () => {
-        try {
-            const res = await apiClient.get(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-
-            if (res.data.data.length > 0) {
-                res.data.data.forEach((x) => {
-                    if (
-                        x.dao_details.chain_id === selectedChainId.chainId &&
-                        x.dao_details.uuid === currentDao?.uuid &&
-                        x.membership_update
-                    ) {
-                        // dao_details.push(x)
-                        setUpgradedMembership(x)
-                    }
-                })
-                console.log(upgradedMembership, selectedChainId, currentDao)
-            }
-        } catch (error) {
-            console.log("error", error)
+    const getCurrentBadgeUpdated = () => {
+        // const metadatSubgraph = membershipBadgesForAddress.filter(
+        //     (x) => x?.level === membershipBadges?.membership?.level.toString()
+        // )
+        if (membershipBadges.recentlyUpdate) {
+            setUpgradedMembership({
+                // ...metadatSubgraph[0],
+                ...membershipBadges.membership,
+            })
         }
+        console.log("Claimed Token From BE", membershipBadges)
     }
+
+    // const getCurrentBadgeUpdated = async () => {
+    //     try {
+    //         const res = await apiClient.get(
+    //             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${jwt}`,
+    //                 },
+    //             }
+    //         )
+
+    //         if (res.data.data.length > 0) {
+    //             res.data.data.forEach((x) => {
+    //                 if (
+    //                     x.dao_details.chain_id === selectedChainId.chainId &&
+    //                     x.dao_details.uuid === currentDao?.uuid &&
+    //                     x.membership_update
+    //                 ) {
+    //                     // dao_details.push(x)
+    //                     setUpgradedMembership(x)
+    //                 }
+    //             })
+    //             console.log(upgradedMembership, selectedChainId, currentDao)
+    //         }
+    //     } catch (error) {
+    //         console.log("error", error)
+    //     }
+    // }
 
     const updateUpgrade = async () => {
         try {
@@ -140,14 +156,13 @@ export default function ContributorBadgeScreen() {
         <div className="contributor-contribution-screen-container">
             {upgradedMembership && (
                 <div className="newMembershipBadge">
-                    <img src={upgradedMembership?.memberships[0]?.image_url} />
+                    <img src={upgradedMembership?.image_url} />
                     <div className="congratsAndClaim">
                         <div className="congratulationsText">
                             Congratulations
                         </div>
                         <div className="badgeName">
-                            You upgraded to{" "}
-                            {upgradedMembership?.memberships[0]?.name} badge
+                            You upgraded to {upgradedMembership?.name} badge
                         </div>
                         <div className="claimBadgeBtnWrapper-badge">
                             <button

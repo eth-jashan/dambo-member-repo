@@ -19,18 +19,20 @@ const ContributionOverview = () => {
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
-    const membershipBadges = useSelector((x) => x.membership.membershipBadges)
-    console.log("Here badges", membershipBadges)
+    const membershipBadges = useSelector(
+        (x) => x.membership.contributorClaimedDataBackend
+    )
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
     const getCurrentBadgeUpdated = () => {
         const metadatSubgraph = membershipBadgesForAddress.filter(
-            (x) => x?.level === membershipBadges[0]?.level.toString()
+            (x) => x?.level === membershipBadges?.membership?.level.toString()
         )
 
         setCurrentMembershipBadge({
             ...metadatSubgraph[0],
-            ...membershipBadges[0],
+            ...membershipBadges.membership,
         })
+        console.log("Claimed Token From BE", membershipBadges)
     }
     useEffect(() => {
         if (

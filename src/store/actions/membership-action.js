@@ -411,7 +411,6 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                         }
 
                         return {
-                            // level:membership.level,
                             description: membership.description,
                             image_url,
                             metadata_hash,
@@ -645,11 +644,13 @@ export const updateTxHash = (txnHash, type, prevHash) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
+        const currentDao = getState().dao.currentDao
         const data = {
             txn_hash: txnHash,
             chain_id: "137",
             prev_txn_hash: type === "claim" ? null : prevHash,
             type,
+            dao_uuid: currentDao?.uuid,
         }
         try {
             const res = apiClient.post(

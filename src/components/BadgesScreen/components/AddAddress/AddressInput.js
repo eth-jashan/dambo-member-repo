@@ -53,9 +53,20 @@ const AddressInput = ({
         <div>
             <div className="address-row" key={index}>
                 <div className={!onFocus ? `input-div-address` : `input-div`}>
+                    {addressStatus === "fail" && (
+                        <div className="overlay-error">
+                            Badge minted already
+                        </div>
+                    )}
                     <input
                         type="text"
-                        onFocus={() => setOnFocus(true)}
+                        onFocus={() => {
+                            setOnFocus(true)
+                            if (addressStatus === "fail") {
+                                setAddressStatus("not-validate")
+                                updateAddress("", index)
+                            }
+                        }}
                         onBlur={async () => {
                             console.log("On Blur")
                             setOnFocus(false)
