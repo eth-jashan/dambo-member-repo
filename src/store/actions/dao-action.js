@@ -178,7 +178,10 @@ export const getAllDaowithAddress = (chainId) => {
                         }
                     })
                 }
-                console.log("Roles", dao_details[selectionIndex])
+                console.log(
+                    "Roles defined...",
+                    dao_details[selectionIndex].memberships
+                )
                 dispatch(
                     daoAction.set_current_dao({
                         dao: dao_details[selectionIndex].dao_details,

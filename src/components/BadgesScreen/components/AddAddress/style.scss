@@ -42,27 +42,23 @@
         .address-row {
             display: flex;
             margin-bottom: 1rem;
+            // flex-direction: col;
             .address-input {
-                flex: 1;
+                width: 100%;
                 padding: 0.75rem 1rem;
                 line-height: 1.5rem;
                 font-size: 1rem;
-                background-color: rgba(104, 82, 255, 0.2);
+                // background-color: rgba(104, 82, 255, 0.2);
                 outline: none;
-                border: 1px solid transparent;
+                // border: 1px solid transparent;
                 font-family: "TelegrafMedium";
                 font-style: normal;
                 font-weight: 500;
                 border-radius: 8px;
                 margin-right: 0.5rem;
-                &:placeholder-shown {
-                    border: 1px solid #6852ff;
-                    background-color: transparent;
-                }
-                &:focus {
-                    background-color: transparent;
-                    border: 1px solid #6852ff;
-                }
+                outline: none;
+                border: 0;
+                background-color: transparent;
             }
             .address-delete {
                 width: 3rem;
@@ -73,6 +69,41 @@
                 border: 1px solid #eeeef0;
                 border-radius: 8px;
                 cursor: pointer;
+            }
+            .input-div {
+                width: 100%;
+                margin-right: 0.5rem;
+                display: flex;
+                flex-direction: row;
+                padding-right: 1rem;
+                // background-color: rgba(104, 82, 255, 0.2);
+                background-color: white;
+                border-radius: 8px;
+                border: 1px solid #6852ff;
+                align-items: center;
+            }
+            .input-div-address {
+                width: 100%;
+                margin-right: 0.5rem;
+                display: flex;
+                flex-direction: row;
+                padding-right: 1rem;
+                background-color: rgba(104, 82, 255, 0.2);
+                // background-color: white;
+                border-radius: 8px;
+                align-items: center;
+                // border: 1px solid #6852ff;
+            }
+
+            .check-icon {
+                height: 1.5rem;
+                width: 1.5rem;
+                opacity: 0.5;
+            }
+
+            .warning-icon {
+                height: 1.5rem;
+                width: 1.5rem;
             }
         }
     }

@@ -122,6 +122,19 @@ export const getMembershipBadgeFromTxHash = (txHash, uuid) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
+export const getMembershipBadgeFromClaimer = (
+    claimer,
+    contractAddress,
+    uuid
+) => {
+    const pocpGetter = new PocpGetters(
+        uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
+            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
+    )
+    return pocpGetter.membershipNftWithClaimerOfDao(claimer, contractAddress)
+}
+
 export const getInfoHash = async (txHash, uuid) => {
     const pocpGetter = new PocpGetters(
         uuid === "981349a995c140d8b7fb5c110b0d133b"
@@ -130,7 +143,6 @@ export const getInfoHash = async (txHash, uuid) => {
     )
 
     const res = await pocpGetter.getdaoInfoForHash(txHash)
-    // console.log("res...", res, txHash)
     return res
 }
 
