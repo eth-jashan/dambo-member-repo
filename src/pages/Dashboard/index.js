@@ -5,12 +5,7 @@ import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
 import {
     getAllDaowithAddress,
-    getContriRequest,
-    getPayoutRequest,
-    refreshContributionList,
     setContractAddress,
-    set_payout_filter,
-    syncTxDataWithGnosis,
 } from "../../store/actions/dao-action"
 import {
     getAllMembershipBadgesList,
@@ -29,7 +24,6 @@ import { useSafeSdk } from "../../hooks"
 import PaymentCheckoutModal from "../../components/Modal/PaymentCheckoutModal"
 import PaymentCard from "../../components/PaymentCard"
 import {
-    getPendingTransaction,
     setEthPrice,
     setPayment,
     setRejectModal,
@@ -39,9 +33,6 @@ import {
     setLoadingState,
     setPayoutToast,
 } from "../../store/actions/toast-action"
-import UniversalPaymentModal from "../../components/Modal/UniversalPaymentModal"
-import plus_black from "../../assets/Icons/plus_black.svg"
-import plus_gray from "../../assets/Icons/plus_gray.svg"
 import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
@@ -62,7 +53,7 @@ export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
     const [currentPage, setCurrentPage] = useState("request")
     const [uniPayHover, setUniPayHover] = useState(false)
-
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const payoutToast = useSelector((x) => x.toast.payout)
     const active_payout_notification = useSelector(
         (x) => x.dao.active_payout_notification
@@ -92,7 +83,6 @@ export default function Dashboard() {
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
     // gnosis setup
     const [signer, setSigner] = useState()
-    const currentDao = useSelector((x) => x.dao.currentDao)
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
 
@@ -178,34 +168,14 @@ export default function Dashboard() {
         return account
     }
 
-    const adminContributionFetch = async () => {
-        // await dispatch(getContriRequest())
-        dispatch(setLoadingState(false))
-        dispatch(setPayment(null))
-        dispatch(setTransaction(null))
-        // await dispatch(getAllDaoMembers())
-        //---gnosi check----///
-        // await dispatch(getPayoutRequest())
-        // dispatch(set_payout_filter("PENDING"))
-    }
-
-    const contributorFetch = async () => {
-        // await dispatch(getContriRequest())
+    const rep3ProtocolFunctionsCommon = async (currentDaos) => {
+        await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
+        await dispatch(getAllMembershipBadgesList())
         await dispatch(getMembershipVoucher())
-        console.log("here started")
-        await dispatch(
-            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
-        )
-
-        // if (!voucher) {
-        //     message.error("You are not a member of this DAO")
-        //     navigate("/")
-        // }
-        dispatch(setLoadingState(false))
+        await dispatch(getAllMembershipBadgesForAddress())
     }
 
     const initialLoad = useCallback(async () => {
-        dispatch(refreshContributionList())
         const account = await onInit()
         if (address === ethers.utils.getAddress(account)) {
             dispatch(setLoadingState(true))
@@ -215,122 +185,35 @@ export default function Dashboard() {
             const { accountRole, currentDaos } = await dispatch(
                 getAllDaowithAddress(chainId)
             )
-            await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-            await dispatch(getAllMembershipBadgesList())
-            await dispatch(getMembershipVoucher())
-            console.log(currentDaos)
+            await rep3ProtocolFunctionsCommon(currentDaos)
             await initPOCP(currentDaos.uuid)
-            await dispatch(
-                getAllMembershipBadgesForAddress(address, currentDao?.uuid)
-            )
             if (accountRole === "ADMIN") {
                 setCurrentPage("badges")
                 await dispatch(getAllDaoMembers())
             } else {
-                await contributorFetch()
+                // await contributorFetch()
+                // contribution specific fetch
             }
         } else {
             dispatch(setLoadingState(false))
-            message.info("Token expired")
             dispatch(signout())
             navigate("/")
         }
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
-    const contributionAdminFetchAccountSwitch = async () => {
-        dispatch(setLoadingState(true))
-        dispatch(setPayment(null))
-        dispatch(setTransaction(null))
-        await dispatch(getContriRequest())
-        dispatch(setLoadingState(false))
-    }
-
-    const paymentsAdminFetchAccountSwitch = async () => {
-        dispatch(setLoadingState(true))
-        await dispatch(getPayoutRequest())
-        await dispatch(set_payout_filter("PENDING"))
-        await dispatch(getPendingTransaction())
-        await dispatch(syncTxDataWithGnosis())
-        dispatch(setLoadingState(false))
-    }
-
-    const accountSwitch = useCallback(async () => {
-        dispatch(setLoadingState(true))
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
-        const accountRole = await dispatch(getAllDaowithAddress(chainId))
-        await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-        await dispatch(getAllMembershipBadgesList())
-        console.log("account Switch")
-        await dispatch(
-            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
-        )
-        dispatch(setLoadingState(false))
-        if (accountRole === "ADMIN") {
-            setCurrentPage("badges")
-            await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
-            await dispatch(getAllMembershipBadgesList())
-            await dispatch(getMembershipVoucher())
-            await dispatch(
-                getAllMembershipBadgesForAddress(address, currentDao?.uuid)
-            )
-            // await contributionAdminFetchAccountSwitch()
-            // if (tab === "payments") {
-            //     await paymentsAdminFetchAccountSwitch()
-            // }
-        } else {
-            await contributorFetch()
-        }
-        dispatch(setLoadingState(false))
-    }, [dispatch, safeSdk, tab])
-
     useEffect(() => {
         if (!modalPayment) {
-            if (role === accountMode && account_index === 0) {
-                initialLoad()
-            } else {
-                console.log("here")
-                accountSwitch()
-            }
+            initialLoad()
         }
-    }, [])
+    }, [currentDao?.uuid])
 
     useEffect(() => {
         preventGoingBack()
     }, [preventGoingBack])
 
-    useEffect(async () => {
-        await dispatch(getMembershipVoucher())
-        await dispatch(
-            getAllMembershipBadgesForAddress(address, currentDao?.uuid)
-        )
-    }, [currentDao?.uuid])
-
     const onRouteChange = async (route) => {
-        // dispatch(refreshContributionList())
         setTab(route)
-        // dispatch(setLoadingState(true))
-        // if (role === "ADMIN") {
-        //     if (safeSdk) {
-        //         const nonce = await safeSdk.getNonce()
-        //         dispatch(set_active_nonce(nonce))
-        //     }
-        //     await dispatch(getPayoutRequest())
-        //     await dispatch(syncTxDataWithGnosis())
-        //     await dispatch(set_payout_filter("PENDING"))
-        //     if (route !== "payments") {
-        //         dispatch(getContriRequest())
-        //         dispatch(setLoadingState(false))
-        //         await dispatch(getAllApprovedBadges())
-        //     }
-        // } else {
-        //     await contributorFetch()
-        // }
-        // dispatch(setPayment(null))
-        // dispatch(setTransaction(null))
-        // dispatch(setLoadingState(false))
     }
 
     const onUniModalOpen = async () => {
@@ -611,14 +494,6 @@ export default function Dashboard() {
 
     const adminScreen = () =>
         tab === "contributions" ? renderContribution() : renderPayment()
-    // const contributorScreen = () =>
-    //     tab === "contributions" ? (
-    //         <ContributorContributionScreen />
-    //     ) : dataSource.length > 0 ? (
-    //         renderBadges()
-    //     ) : (
-    //         renderEmptyBadgesScreen()
-    //     )
 
     const setModalBackDropFunc = (x) => {
         dispatch(setPayment(null))
@@ -714,12 +589,17 @@ export default function Dashboard() {
                 ) : (
                     <>
                         <div className={styles.children}>
-                            {currentPage === "request" ? (
+                            {currentPage === "request" ||
+                            (currentPage === "badges" &&
+                                currentDao?.access_role !== "ADMIN") ? (
                                 <RequestScreen />
                             ) : currentPage === "badges" ? (
                                 <BadgesScreen />
                             ) : (
-                                <TreasuryDetails />
+                                currentPage === "treasury" &&
+                                currentDao?.access_role === "ADMIN" && (
+                                    <TreasuryDetails />
+                                )
                             )}
                         </div>
                         <div className={styles.adminStats}>

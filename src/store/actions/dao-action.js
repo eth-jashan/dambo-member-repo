@@ -408,13 +408,14 @@ export const lastSelectedId = (dao_uuid) => {
 }
 
 export const set_dao = (dao, index) => {
+    console.log("daos", dao)
     return async (dispatch) => {
         dispatch(
             daoAction.set_current_dao({
                 dao: dao.dao_details,
-                role: dao.dao_details.access_role,
+                role: dao.access_role,
                 community_role: dao.community_role,
-                account_mode: dao.dao_details.access_role,
+                account_mode: dao.access_role,
                 index,
             })
         )

@@ -36,39 +36,20 @@ export default function DashboardLayout({
 
     const contributorFetch = async () => {
         dispatch(setLoadingState(true))
-        // await dispatch(getContriRequest())
-        // await dispatch(getAllApprovedBadges())
-        // await dispatch(getAllClaimedBadges())
-        // await dispatch(getAllUnclaimedBadges())
-        // dispatch(getContributorOverview())
         dispatch(setLoadingState(false))
     }
 
     const changeAccount = async (item) => {
         console.log("item selected", item)
-        // dispatch(refreshContributionList())
-        // dispatch(contributorRefreshList())
-        // dispatch(resetApprovedRequest())
         dispatch(set_dao(item))
-        // dispatch(setPayment(null))
-        // dispatch(setTransaction(null))
-        // dispatch(setContributionDetail(null))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
-        await dispatch(gnosisDetailsofDao())
         dispatch(setLoadingState(true))
-        // await dispatch(getContriRequest())
         if (route === "contributions" && role === "ADMIN") {
             dispatch(setLoadingState(false))
-            // await dispatch(getPayoutRequest())
-            // await dispatch(set_payout_filter("PENDING"))
-            // await dispatch(syncTxDataWithGnosis())
         } else if (role !== "ADMIN") {
             await contributorFetch()
             dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
-            // await dispatch(getPayoutRequest())
-            // await dispatch(set_payout_filter("PENDING"))
-            // await dispatch(syncTxDataWithGnosis())
             dispatch(setLoadingState(false))
         }
 

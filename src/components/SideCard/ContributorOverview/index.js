@@ -16,21 +16,6 @@ const ContributionOverview = () => {
     const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
     const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
-    // const allMembershipBadges = useSelector(
-    //     (x) => x.membership.membershipBadges
-    // )
-    // const membershipVouchers = useSelector(
-    //     (x) => x.membership.membershipVoucher
-    // )
-    // const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
-    //     const badgeInfo = allMembershipBadges.find(
-    //         (ele) => ele.uuid === badge.membership_uuid
-    //     )
-    //     return {
-    //         ...badge,
-    //         ...badgeInfo,
-    //     }
-    // })
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
@@ -39,9 +24,8 @@ const ContributionOverview = () => {
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
     const getCurrentBadgeUpdated = () => {
         const metadatSubgraph = membershipBadgesForAddress.filter(
-            (x) => x.level === membershipBadges[0].level.toString()
+            (x) => x?.level === membershipBadges[0]?.level.toString()
         )
-        console.log(metadatSubgraph[0])
 
         setCurrentMembershipBadge({
             ...metadatSubgraph[0],
@@ -49,7 +33,6 @@ const ContributionOverview = () => {
         })
     }
     useEffect(() => {
-        console.log(currentDao)
         if (
             currentDao &&
             proxyContract &&
@@ -58,6 +41,7 @@ const ContributionOverview = () => {
             getCurrentBadgeUpdated()
         }
     }, [currentDao, proxyContract, membershipBadgesForAddress])
+    const isImage = currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200"
 
     const contributionStats = () => (
         <div className={styles.contributionContainer}>
@@ -121,6 +105,13 @@ const ContributionOverview = () => {
         )
     }
 
+    console.log(
+        "cuurent badge",
+        currentMembershipBadge,
+        currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200",
+        isImage
+    )
+
     return (
         <div className={styles.container}>
             <div
@@ -136,7 +127,7 @@ const ContributionOverview = () => {
                 </div>
             ) : (
                 <div className={styles.badgeOverview}>
-                    {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ? (
+                    {isImage ? (
                         <img
                             src={currentMembershipBadge.image_url}
                             alt=""

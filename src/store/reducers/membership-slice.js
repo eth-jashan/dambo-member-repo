@@ -21,10 +21,14 @@ const membershipSlice = createSlice({
         showMembershipCreateModal: false,
         showMembershipMintingModal: false,
         allDaoMembers: null,
+        unclaimedMembershipBadges: [],
     },
     reducers: {
         setMembershipBadges(state, action) {
             state.membershipBadges = action.payload.membershipBadges
+        },
+        setMembershipUnclaimed(state, action) {
+            state.unclaimedMembershipBadges = action.payload.unclaimedMembership
         },
         setClaimedDataFromBE(state, action) {
             state.membershipBadges =

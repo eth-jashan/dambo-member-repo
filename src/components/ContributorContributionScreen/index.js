@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { Spin } from "antd"
@@ -24,20 +24,32 @@ export default function ContributorContributionScreen() {
         (x) => x.membership.membershipVoucher
     )
 
-    const membershipVouchersWithInfo = membershipVouchers?.map((badge) => {
-        const badgeInfo = allMembershipBadges.find(
-            (ele) => ele.uuid === badge.membership_uuid
-        )
-        return {
-            ...badge,
-            ...badgeInfo,
-        }
-    })
-    console.log("All membership badges are", allMembershipBadges)
+    // const getAllMembershipVouchers = () => {
+    //     if (membershipVouchers) {
+    //         const membershipVouchersWithInfo = membershipVouchers?.map(
+    //             (badge) => {
+    //                 const badgeInfo = allMembershipBadges?.find(
+    //                     (ele) => ele.uuid === badge.membership_uuid
+    //                 )
+    //                 return {
+    //                     ...badge,
+    //                     ...badgeInfo,
+    //                 }
+    //             }
+    //         )
+    //         return membershipVouchersWithInfo
+    //     }
+    // }
+
     console.log(
-        "membership vouchers for this address from backend are",
-        membershipVouchersWithInfo
+        "All membership badges are",
+        // getAllMembershipVouchers(),
+        allMembershipBadges
     )
+    // console.log(
+    //     "membership vouchers for this address from backend are",
+    //     membershipVouchersWithInfo
+    // )
 
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
@@ -48,18 +60,29 @@ export default function ContributorContributionScreen() {
         membershipBadgesForAddress
     )
 
-    const unClaimedBadges = membershipVouchersWithInfo?.filter((badge) => {
-        const indexOfBadge = membershipBadgesForAddress?.findIndex(
-            (ele) =>
-                ele?.level?.toString() === badge?.level?.toString() &&
-                ele?.category?.toString() === badge?.category?.toString() &&
-                ele?.level &&
-                ele?.category
-        )
-        return indexOfBadge === -1
-    })
+    const unClaimedBadges = useSelector(
+        (x) => x.membership.unclaimedMembershipBadges
+    )
 
-    console.log("unclaimed badges are", unClaimedBadges)
+    // const filterOutUnclaimedBadges = () => {
+    //     const unClaimedBadges = getAllMembershipVouchers()?.filter((badge) => {
+    //         const indexOfBadge = membershipBadgesForAddress?.findIndex(
+    //             (ele) =>
+    //                 ele?.level?.toString() === badge?.level?.toString() &&
+    //                 ele?.category?.toString() === badge?.category?.toString() &&
+    //                 ele?.level &&
+    //                 ele?.category
+    //         )
+    //         return indexOfBadge === -1
+    //     })
+    //     setUnclaimedBadges(unClaimedBadges)
+    // }
+
+    // useEffect(() => {
+    //     if (getAllMembershipVouchers()) {
+    //         filterOutUnclaimedBadges()
+    //     }
+    // }, [filterOutUnclaimedBadges, unClaimedBadges])
 
     const membershipBadgeClaimed = useSelector(
         (x) => x.membership.membershipBadgeClaimed
@@ -123,14 +146,6 @@ export default function ContributorContributionScreen() {
         <div className="contributor-contribution-screen-container">
             {unClaimedBadges?.length ? (
                 <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {/* {contribution_request.map((item, index) => (
-                                            <ContributionCard
-                                                // community_id={community_id[0]?.id}
-                                                // signer={signer}
-                                                item={item}
-                                                key={index}
-                                            />
-                                        ))} */}
                     {unClaimedBadges.map((badge, index) => (
                         <div className="newMembershipBadge" key={index}>
                             {currentDao?.uuid ===
