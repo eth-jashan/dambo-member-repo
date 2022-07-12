@@ -38,7 +38,7 @@ const AddressInput = ({
                 //     proxyContract,
                 //     currentDao?.uuid
                 // )
-                const res = await dispatch(getAllMembershipVouchers())
+                const res = await dispatch(getAllMembershipVouchers(address))
                 console.log("Here", res)
                 setLoading(false)
                 // if (res.data.membershipNFTs.length > 0) {
