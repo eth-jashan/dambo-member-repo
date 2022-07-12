@@ -36,6 +36,28 @@ export const getAllMembershipBadgesList = () => {
     }
 }
 
+export const getAllMembershipVouchers = (claimer) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}/get_voucher?dao_uuid=${uuid}&addr=&${claimer}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+
+            return res?.data?.data
+        } catch (err) {
+            console.error(err)
+            return 0
+        }
+    }
+}
+
 export const getAllDaoMembers = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
