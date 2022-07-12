@@ -2,9 +2,12 @@ import React, { useState } from "react"
 import { assets } from "../../../../constant/assets"
 import cross from "../../../../assets/Icons/cross.svg"
 import "./style.scss"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { getMembershipBadgeFromClaimer } from "../../../../utils/POCPServiceSdk"
 import { ethers } from "@biconomy/mexa/node_modules/ethers"
+import Lottie from "react-lottie"
+import black_loader from "../../../../assets/lottie/Loader_Black_Lottie.json"
+import { getAllMembershipVouchers } from "../../../../store/actions/membership-action"
 
 const AddressInput = ({
     address,
@@ -20,6 +23,9 @@ const AddressInput = ({
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const userAddress = useSelector((x) => x.auth.address)
     const currentDao = useSelector((x) => x.dao.currentDao)
+    //get_voucher?dao_uuid=&addr=
+
+    const dispatch = useDispatch()
 
     const getMembershipNftForAddress = async (address) => {
         const isAddress = ethers.utils.isAddress(address)
@@ -27,14 +33,16 @@ const AddressInput = ({
         if (isAddress) {
             setLoading(true)
             try {
-                const res = await getMembershipBadgeFromClaimer(
-                    address,
-                    proxyContract,
-                    currentDao?.uuid
-                )
-                // console.log("Here", res, currentInput)
+                // const res = await getMembershipBadgeFromClaimer(
+                //     address,
+                //     proxyContract,
+                //     currentDao?.uuid
+                // )
+                const res = await dispatch(getAllMembershipVouchers(address))
+                console.log("Here", res)
                 setLoading(false)
-                if (res.data.membershipNFTs.length > 0) {
+                // if (res.data.membershipNFTs.length > 0) {
+                if (res.length > 0) {
                     setAddressStatus("fail")
                     updateStatus(false, index)
                 } else {
@@ -48,6 +56,22 @@ const AddressInput = ({
             }
         }
     }
+
+    const defaultOptions = {
+        loop: true,
+        autoplay: true,
+        animationData: black_loader,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice",
+        },
+    }
+
+    const lottieLoader = () => (
+        <Lottie
+            options={defaultOptions}
+            style={{ height: "1.5rem", width: "1.5rem" }}
+        />
+    )
 
     return (
         <div>
@@ -68,8 +92,11 @@ const AddressInput = ({
                             }
                         }}
                         onBlur={async () => {
-                            console.log("On Blur")
                             setOnFocus(false)
+                            if (addressStatus === "fail") {
+                                setAddressStatus("not-validate")
+                                updateAddress("", index)
+                            }
                         }}
                         className="address-input"
                         value={address}
@@ -79,6 +106,7 @@ const AddressInput = ({
                         }}
                         placeholder="Enter Address"
                     />
+                    {loading && lottieLoader()}
                     {addressStatus === "success" && (
                         <img
                             className="check-icon"

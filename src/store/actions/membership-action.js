@@ -10,6 +10,7 @@ import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
 import { ethers } from "ethers"
+import { getSelectedChainId } from "../../utils/POCPutils"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -32,6 +33,28 @@ export const getAllMembershipBadgesList = () => {
             )
         } catch (err) {
             console.error(err)
+        }
+    }
+}
+
+export const getAllMembershipVouchers = (claimer) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}/membership/get_vouchers?dao_uuid=${uuid}&addr=${claimer}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+
+            return res?.data?.data
+        } catch (err) {
+            console.error(err)
+            return 0
         }
     }
 }
@@ -647,7 +670,7 @@ export const updateTxHash = (txnHash, type, prevHash) => {
         const currentDao = getState().dao.currentDao
         const data = {
             txn_hash: txnHash,
-            chain_id: "137",
+            chain_id: getSelectedChainId()?.chainId === 4 ? "80001" : "137",
             prev_txn_hash: type === "claim" ? null : prevHash,
             type,
             dao_uuid: currentDao?.uuid,

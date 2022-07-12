@@ -86,7 +86,10 @@ export const registerDao = (callbackFn) => {
                         approvers: ownerMeta,
                         logo_url: logo,
                         chain_id: chainId,
-                        txn_chain_id: "137",
+                        txn_chain_id:
+                            getSelectedChainId()?.chainId === 4
+                                ? "80001"
+                                : "137",
                     })
                     try {
                         const res = await apiClient.post(
