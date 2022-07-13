@@ -22,4 +22,9 @@ export const web3 = {
         pocpBeacon: "0x083842b3F6739948D26C152C137929E0D3a906b9",
         pocpRouter: "0xB9Acf5287881160e8CE66b53b507F6350d7a7b1B",
     },
+    rep3Mumbai: {
+        pocpManger: "0xf00eAbb380752fed6414f3C12e3D8F976C7D024d",
+        pocpBeacon: "0xDcc7133abBA15B8f4Bf155A372C17744E0941f28",
+        pocpRouter: "0x1C6D20042bfc8474051Aba9FB4Ff85880089A669",
+    },
 }

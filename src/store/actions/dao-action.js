@@ -86,7 +86,10 @@ export const registerDao = (callbackFn) => {
                         approvers: ownerMeta,
                         logo_url: logo,
                         chain_id: chainId,
-                        txn_chain_id: "137",
+                        txn_chain_id:
+                            getSelectedChainId()?.chainId === 4
+                                ? "80001"
+                                : "137",
                     })
                     try {
                         const res = await apiClient.post(
@@ -178,7 +181,10 @@ export const getAllDaowithAddress = (chainId) => {
                         }
                     })
                 }
-                console.log("Roles", dao_details[selectionIndex])
+                console.log(
+                    "Roles defined...",
+                    dao_details[selectionIndex].memberships
+                )
                 dispatch(
                     daoAction.set_current_dao({
                         dao: dao_details[selectionIndex].dao_details,
@@ -405,13 +411,14 @@ export const lastSelectedId = (dao_uuid) => {
 }
 
 export const set_dao = (dao, index) => {
+    console.log("daos", dao)
     return async (dispatch) => {
         dispatch(
             daoAction.set_current_dao({
                 dao: dao.dao_details,
-                role: dao.dao_details.access_role,
+                role: dao.access_role,
                 community_role: dao.community_role,
-                account_mode: dao.dao_details.access_role,
+                account_mode: dao.access_role,
                 index,
             })
         )

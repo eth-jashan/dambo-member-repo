@@ -12,8 +12,6 @@ export default function ApproveTransaction({
     increaseStep,
     selectedIndex,
     setSelectedIndex,
-    hasMultiSignWallet,
-    setProvider,
     deploying,
 }) {
     const owners = useSelector((x) => x.dao.newSafeSetup.owners)

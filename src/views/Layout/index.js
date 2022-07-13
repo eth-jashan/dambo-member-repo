@@ -1,26 +1,12 @@
 import React, { useState } from "react"
 import styles from "./style.module.css"
-import BackSvg from "../../assets/Icons/backSvg.svg"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import Lottie from "react-lottie"
 import background from "../../assets/lottie/onboarding_background.json"
 import ProfileModal from "../../components/Modal/ProfileModal"
 
-export default function Layout({
-    children,
-    decreaseStep,
-    currentStep,
-    contributorWallet,
-    signer,
-    deploying,
-    steps,
-}) {
+export default function Layout({ children, contributorWallet, signer }) {
     const [walletCenter, setWalletCenterModal] = useState(false)
-    const checkRoute = () => {
-        if (currentStep > 1 && currentStep <= steps.length - 1) {
-            return true
-        }
-    }
 
     const defaultOptions = {
         loop: true,

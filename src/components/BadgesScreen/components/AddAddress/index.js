@@ -11,8 +11,8 @@ import {
     setShowMembershipMintingModal,
 } from "../../../../store/actions/membership-action"
 import { useDispatch, useSelector } from "react-redux"
-import { createMembershipVoucher } from "../../../../utils/POCPServiceSdk"
-import { web3 } from "../../../../constant/web3"
+import { assets } from "../../../../constant/assets"
+import AddressInput from "./AddressInput"
 
 export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [isBulkMinting, setIsBulkMinting] = useState(false)
@@ -20,12 +20,14 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [bulkMintingStep, setBulkMintingStep] = useState(0)
     const [isCsvUploaded, setIsCsvUploaded] = useState(false)
     const [bulkAddresses, setBulkAddresses] = useState([])
+    const [addressValidation, setAddressValidation] = useState([false])
     const currentDao = useSelector((x) => x.dao.currentDao)
 
     const dispatch = useDispatch()
 
     const addAddress = () => {
         setAddresses((addresses) => [...addresses, ""])
+        setAddressValidation((validation) => [...validation, false])
     }
 
     const updateAddress = (value, index) => {
@@ -34,11 +36,21 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         setAddresses(copyOfAddresses)
     }
 
+    const updateStatus = (status, index) => {
+        const copyOfAddresses = [...addressValidation]
+        copyOfAddresses[index] = status
+        setAddressValidation(copyOfAddresses)
+    }
+
     const deleteAddress = (deletingIndex) => {
         const copyOfAddressesAfterDelete = [...addresses].filter(
             (_, index) => index !== deletingIndex
         )
+        const copyOfAddressesValidationAfterDelete = [
+            ...addressValidation,
+        ].filter((_, index) => index !== deletingIndex)
         setAddresses(copyOfAddressesAfterDelete)
+        setAddressValidation(copyOfAddressesValidationAfterDelete)
     }
 
     const onFileChange = (e) => {
@@ -70,8 +82,8 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     }
 
     const mintVouchers = async () => {
-        console.log("minting badges")
         const mintAddresses = isBulkMinting ? bulkAddresses : addresses
+        console.log(addressValidation.includes(false), addressValidation)
         try {
             await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
             await dispatch(getAllDaoMembers())
@@ -203,23 +215,37 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                 <>
                     <div className="mint-membership-badge-addresses-wrapper">
                         {addresses.map((address, index) => (
-                            <div className="address-row" key={index}>
-                                <input
-                                    type="text"
-                                    className="address-input"
-                                    value={address}
-                                    onChange={(e) =>
-                                        updateAddress(e.target.value, index)
-                                    }
-                                    placeholder="Enter Address"
-                                />
-                                <div
-                                    className="address-delete"
-                                    onClick={() => deleteAddress(index)}
-                                >
-                                    <img src={cross} alt="" />
-                                </div>
-                            </div>
+                            // <div className="address-row" key={index}>
+                            //     <div className="input-div">
+                            //         <input
+                            //             type="text"
+                            //             className="address-input"
+                            //             value={address}
+                            //             onChange={(e) =>
+                            //                 updateAddress(e.target.value, index)
+                            //             }
+                            //             placeholder="Enter Address"
+                            //         />
+                            //         <img
+                            //             className="check-icon"
+                            //             src={assets.icons.checkIcon}
+                            //         />
+                            //     </div>
+                            //     <div
+                            //         className="address-delete"
+                            //         onClick={() => deleteAddress(index)}
+                            //     >
+                            //         <img src={cross} alt="" />
+                            //     </div>
+                            // </div>
+                            <AddressInput
+                                index={index}
+                                key={index}
+                                address={address}
+                                updateAddress={updateAddress}
+                                deleteAddress={deleteAddress}
+                                updateStatus={updateStatus}
+                            />
                         ))}
                     </div>
                     <div className="add-address" onClick={addAddress}>
@@ -229,7 +255,10 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                     <div className="minting-buttons-wrapper">
                         <button
                             onClick={mintVouchers}
-                            disabled={checkIsDisabled()}
+                            disabled={
+                                checkIsDisabled() ||
+                                addressValidation.includes(false)
+                            }
                         >
                             Mint Badges • {addresses.length}
                         </button>

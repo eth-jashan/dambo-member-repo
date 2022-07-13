@@ -10,11 +10,11 @@ import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
 import { ethers } from "ethers"
+import { getSelectedChainId } from "../../utils/POCPutils"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-
         const uuid = getState().dao.currentDao?.uuid
         try {
             const res = await apiClient.get(
@@ -25,7 +25,7 @@ export const getAllMembershipBadgesList = () => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
+
             dispatch(
                 membershipAction.setMembershipBadges({
                     membershipBadges: res?.data?.data?.memberships,
@@ -33,6 +33,28 @@ export const getAllMembershipBadgesList = () => {
             )
         } catch (err) {
             console.error(err)
+        }
+    }
+}
+
+export const getAllMembershipVouchers = (claimer) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}/membership/get_vouchers?dao_uuid=${uuid}&addr=${claimer}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+
+            return res?.data?.data
+        } catch (err) {
+            console.error(err)
+            return 0
         }
     }
 }
@@ -104,7 +126,6 @@ export const getMembershipVoucher = () => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setMembershipVoucher({
                     membershipVoucher: res?.data?.data,
@@ -248,29 +269,50 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
     }
 }
 
-export const getAllMembershipBadgesForAddress = (address) => {
+export const getAllMembershipBadgesForAddress = () => {
     return async (dispatch, getState) => {
         const proxyContract = getState().dao.daoProxyAddress
         const address = getState().auth.address
         const currentDao = getState().dao.currentDao
-        console.log("Claim check!!", proxyContract, address)
+        const membershipVoucher = getState().membership.membershipVoucher
+        const membership = getState().membership.membershipBadges
+
         try {
             const membershipBadges = await getAllMembershipBadges(
                 address,
                 proxyContract,
                 currentDao?.uuid
             )
-            console.log(
-                "membership badges are ",
-                proxyContract,
-                membershipBadges?.data?.membershipNFTs
-            )
+
             dispatch(
                 membershipAction.setMembershipBadgesForAddress({
                     membershipBadgesForAddress:
                         membershipBadges?.data?.membershipNFTs,
                 })
             )
+            if (membershipBadges?.data?.membershipNFTs.length > 0) {
+                dispatch(
+                    membershipAction.setMembershipUnclaimed({
+                        unclaimedMembership: [],
+                    })
+                )
+            } else {
+                const vouchers = []
+
+                membershipVoucher.forEach((x, i) => {
+                    membership.forEach((badges, index) => {
+                        if (x.membership_uuid === badges.uuid) {
+                            vouchers.push({ ...x, ...badges })
+                        }
+                    })
+                })
+
+                dispatch(
+                    membershipAction.setMembershipUnclaimed({
+                        unclaimedMembership: vouchers,
+                    })
+                )
+            }
         } catch (err) {
             console.error(err)
         }
@@ -280,10 +322,6 @@ export const getAllMembershipBadgesForAddress = (address) => {
 export const setMembershipBadgeClaimed = (membershipBadgeClaimed) => {
     return async (dispatch, getState) => {
         try {
-            console.log(
-                "dispatching set membership badge claimed with ",
-                membershipBadgeClaimed
-            )
             dispatch(
                 membershipAction.setMembershipBadgeClaimed({
                     membershipBadgeClaimed,
@@ -396,7 +434,6 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                         }
 
                         return {
-                            // level:membership.level,
                             description: membership.description,
                             image_url,
                             metadata_hash,
@@ -630,11 +667,13 @@ export const updateTxHash = (txnHash, type, prevHash) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = await provider.getSigner()
         const chainId = await signer.getChainId()
+        const currentDao = getState().dao.currentDao
         const data = {
             txn_hash: txnHash,
-            chain_id: "137",
+            chain_id: getSelectedChainId()?.chainId === 4 ? "80001" : "137",
             prev_txn_hash: type === "claim" ? null : prevHash,
             type,
+            dao_uuid: currentDao?.uuid,
         }
         try {
             const res = apiClient.post(

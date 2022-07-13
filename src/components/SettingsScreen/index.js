@@ -129,7 +129,7 @@ export default function SettingsScreen() {
 
     const openDiscordBot = () => {
         localStorage.setItem("discord_bot_dao_uuid", currentDao.uuid)
-        window.open(links.discord_add_bot.staging, "_self")
+        window.open(links.discord_add_bot, "_self")
     }
 
     const copyCommandsList = () => {

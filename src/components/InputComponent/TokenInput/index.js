@@ -11,7 +11,6 @@ import styles from "./styles.module.css"
 
 export const TokenInput = ({
     dark,
-    value,
     onChange,
     updateTokenType,
     hideDropDown,
@@ -27,7 +26,7 @@ export const TokenInput = ({
         setAmount(e.target.value)
     }
     const darkColourStyles = {
-        control: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        control: (styles, { isFocused }) => {
             return {
                 ...styles,
                 backgroundColor: isFocused ? "#B1A6FF" : "#ECFFB8",
@@ -46,7 +45,7 @@ export const TokenInput = ({
                 borderBottom: "none",
             }
         },
-        option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        option: (styles, _state) => {
             return {
                 ...styles,
                 fontFamily: "TelegrafMedium",
@@ -56,18 +55,18 @@ export const TokenInput = ({
                 lineHeight: "1rem",
             }
         },
-        indicatorSeparator: (styles, state) => ({
+        indicatorSeparator: (styles, _state) => ({
             ...styles,
             height: 0,
             width: 0,
         }),
-        dropdownIndicator: (styles, state) => ({ ...styles, color: "black" }),
+        dropdownIndicator: (styles, _state) => ({ ...styles, color: "black" }),
         menu: (styles) => ({
             ...styles,
             width: "100%",
             backgroundColor: "#585858",
         }),
-        input: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        input: (styles, { isFocused }) => {
             return {
                 ...styles,
                 fontFamily: "TelegrafMedium",
@@ -88,7 +87,7 @@ export const TokenInput = ({
             fontSize: "1rem",
             lineHeight: "1.5rem",
         }),
-        singleValue: (styles, { data }) => ({
+        singleValue: (styles, _state) => ({
             ...styles,
             fontFamily: "TelegrafMedium",
             fontStyle: "normal",
@@ -100,7 +99,7 @@ export const TokenInput = ({
     }
 
     const ligntColourStyles = {
-        control: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        control: (styles, { isFocused }) => {
             return {
                 ...styles,
                 backgroundColor: "white",
@@ -119,7 +118,7 @@ export const TokenInput = ({
                 outline: isFocused ? "none" : "none",
             }
         },
-        option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        option: (styles, _state) => {
             return {
                 ...styles,
                 fontFamily: "TelegrafMedium",
@@ -129,14 +128,14 @@ export const TokenInput = ({
                 lineHeight: "1rem",
             }
         },
-        indicatorSeparator: (styles, state) => ({
+        indicatorSeparator: (styles, _state) => ({
             ...styles,
             height: 0,
             width: 0,
         }),
-        dropdownIndicator: (styles, state) => ({ ...styles, color: "black" }),
+        dropdownIndicator: (styles, _state) => ({ ...styles, color: "black" }),
         menu: (styles) => ({ ...styles, width: "100%" }),
-        input: (styles, { data, isDisabled, isFocused, isSelected }) => {
+        input: (styles, { isFocused }) => {
             return {
                 ...styles,
                 fontFamily: "TelegrafMedium",
@@ -157,7 +156,7 @@ export const TokenInput = ({
             fontSize: "1rem",
             lineHeight: "1.5rem",
         }),
-        singleValue: (styles, { data }) => ({
+        singleValue: (styles, _state) => ({
             ...styles,
             fontFamily: "TelegrafMedium",
             fontStyle: "normal",

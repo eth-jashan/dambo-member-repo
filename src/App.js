@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
-import ContributorOnbording from "./pages/ContributorOnboarding"
+import ContributorOnboarding from "./pages/ContributorOnboarding"
 import AuthWallet from "./pages/AuthWallet"
 import "./App.scss"
 import DiscordFallback from "./pages/DiscordFallback"
@@ -19,6 +19,7 @@ import AppContext from "./appContext"
 import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
 import MetamaskError from "./pages/MetamaskError"
+import ErrorBoundary from "./components/ErrorBoundary"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
@@ -93,37 +94,42 @@ function App() {
     }, [])
 
     return (
-        <AppContext.Provider value={pocpActionSetup}>
-            <div className="App">
-                <div className="App-header">
-                    <Routes>
-                        <Route path="/" element={<AuthWallet />} />
-                        <Route
-                            path="/discord/fallback"
-                            element={<DiscordFallback />}
-                        />
-                        <Route path="/onboard/dao" element={<Onboarding />} />
-                        <Route
-                            path="onboard/contributor/:id"
-                            element={<ContributorOnbording />}
-                        />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        <Route
-                            path="contributor/invite/:name/:id"
-                            element={<ContributorSignupFallback />}
-                        />
-                        <Route
-                            path="/discord/add-bot-fallback"
-                            element={<AddBotFallback />}
-                        />
-                        <Route
-                            path="/metamask-error"
-                            element={<MetamaskError />}
-                        />
-                    </Routes>
+        <ErrorBoundary>
+            <AppContext.Provider value={pocpActionSetup}>
+                <div className="App">
+                    <div className="App-header">
+                        <Routes>
+                            <Route path="/" element={<AuthWallet />} />
+                            <Route
+                                path="/discord/fallback"
+                                element={<DiscordFallback />}
+                            />
+                            <Route
+                                path="/onboard/dao"
+                                element={<Onboarding />}
+                            />
+                            <Route
+                                path="onboard/contributor/:id"
+                                element={<ContributorOnboarding />}
+                            />
+                            <Route path="dashboard" element={<Dashboard />} />
+                            <Route
+                                path="contributor/invite/:name/:id"
+                                element={<ContributorSignupFallback />}
+                            />
+                            <Route
+                                path="/discord/add-bot-fallback"
+                                element={<AddBotFallback />}
+                            />
+                            <Route
+                                path="/metamask-error"
+                                element={<MetamaskError />}
+                            />
+                        </Routes>
+                    </div>
                 </div>
-            </div>
-        </AppContext.Provider>
+            </AppContext.Provider>
+        </ErrorBoundary>
     )
 }
 

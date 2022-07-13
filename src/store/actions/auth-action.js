@@ -20,7 +20,7 @@ export const getAuthToken = async (jwt) => {
 }
 
 export const authWithSign = (address, signer, chainId) => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         try {
             const responseNonce = await apiClient.get(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.auth.getNonce}?addr=${address}`
@@ -158,7 +158,7 @@ export const getCommunityRole = () => {
             )
             if (res.data.success) {
                 const roles = []
-                res.data.data.map((item, index) => {
+                res.data.data.forEach((item) => {
                     roles.push({ value: item, label: item })
                 })
 
@@ -168,11 +168,11 @@ export const getCommunityRole = () => {
     }
 }
 
-export const joinContributor = (id, discordUserId) => {
+export const joinContributor = (id) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
-        const role = getState().auth.role
+        // const role = getState().auth.role
         const contributorName = getState().auth.contributorName
 
         const data = {
@@ -181,7 +181,7 @@ export const joinContributor = (id, discordUserId) => {
             // community_role: "CONTRIBUTOR",
             // discord_user_id: "discordUserId",
         }
-        console.log("JOINER", data)
+        // console.log("JOINER", data)
 
         try {
             const res = await apiClient.post(
