@@ -23,7 +23,7 @@ import DiscordRegister from "../components/DiscordRegister"
 import OnboardingError from "../components/OnboardingError"
 import OnboardingOverview from "../components/OnboardingOverview"
 import GnosisSuccess from "../components/GnosisSuccess"
-import { deployDaoContract, initPOCP } from "../utils/POCPServiceSdk"
+import { initPOCP } from "../utils/POCPServiceSdk"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(1)
@@ -36,7 +36,7 @@ export default function Onboarding() {
     const [rep3Setup, setrep3Setup] = useState(false)
     const [isPayout, setIsPayout] = useState(false)
     const { safeFactory } = useSafeSdk(signer, safeAddress)
-    const daoSetupInfo = useSelector((x) => x.dao.newSafeSetup)
+    // const daoSetupInfo = useSelector((x) => x.dao.newSafeSetup)
     const threshold = useSelector((x) => x.dao.newSafeSetup.threshold)
     const [register, setRegister] = useState(false)
 

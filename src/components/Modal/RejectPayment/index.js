@@ -60,8 +60,8 @@ const RejectPayment = ({ onClose, signer }) => {
     const getContriInfo = () => {
         const tokens = []
         const amount = []
-        currentPayment?.metaInfo?.contributions.map((x, i) => {
-            x?.tokens.map((item, index) => {
+        currentPayment?.metaInfo?.contributions.forEach((x) => {
+            x?.tokens.forEach((item) => {
                 // //console.log('item', item)
                 if (!tokens.includes(item?.details?.symbol)) {
                     tokens?.push(item?.details?.symbol)

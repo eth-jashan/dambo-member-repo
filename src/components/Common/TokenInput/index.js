@@ -7,7 +7,7 @@ import { assets } from "../../../constant/assets"
 import { useSelector } from "react-redux"
 import { convertTokentoUsd } from "../../../utils/conversion"
 
-const TokenInput = ({ updateTokenType, tokenInput, onChange, payDetail }) => {
+const TokenInput = ({ updateTokenType, onChange }) => {
     const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
     const [tokenUsd, setTokenUsd] = useState(ETHprice)
     const [tokenSymbol, setTokenSymbol] = useState("ETH")

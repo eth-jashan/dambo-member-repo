@@ -8,14 +8,13 @@ import { useDispatch, useSelector } from "react-redux"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
 import InputText from "../Input"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { addOwners, addThreshold } from "../../store/actions/dao-action"
+import { addOwners } from "../../store/actions/dao-action"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
 import { assets } from "../../constant/assets"
 
 export default function AddOwners({
     increaseStep,
     hasMultiSignWallet,
-    setStep,
     safeOwners,
     rep3Setup,
     onBack,
@@ -55,7 +54,7 @@ export default function AddOwners({
                 // }
             }
         } else if (safeOwners?.length > 0) {
-            safeOwners.forEach((x, i) => {
+            safeOwners.forEach((x) => {
                 console.log(x)
                 ownerObj.push({
                     id: uuidv4(),

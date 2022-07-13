@@ -25,20 +25,20 @@ import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 
 const UniversalPaymentModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const approved_request = useSelector(
-        (x) => x.transaction.approvedContriRequest
-    )
+    // const approved_request = useSelector(
+    //     (x) => x.transaction.approvedContriRequest
+    // )
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
     const [address, setAddress] = useState("")
     const [onFocus, setOnFocus] = useState(false)
-    const [showFeedBack, setShowFeedBack] = useState(false)
+    // const [showFeedBack, setShowFeedBack] = useState(false)
     const token_available = useSelector((x) => x.dao.balance)
 
-    const currentTransaction = useSelector(
-        (x) => x.transaction.currentTransaction
-    )
+    // const currentTransaction = useSelector(
+    //     (x) => x.transaction.currentTransaction
+    // )
 
     const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
     const [feedBackShow, setFeedBackSow] = useState(false)
@@ -52,12 +52,12 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
     ])
 
     const addToken = async () => {
-        const usdCoversion = await convertTokentoUsd("ETH")
-        if (usdCoversion) {
+        const usdConversion = await convertTokentoUsd("ETH")
+        if (usdConversion) {
             const newDetail = {
                 amount: "",
                 token_type: null,
-                usd_amount: usdCoversion,
+                usd_amount: usdConversion,
                 address,
             }
             setPayDetail([...payDetail, newDetail])
@@ -70,10 +70,10 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
     }
 
     const updateTokenType = async (value, index) => {
-        const usdCoversion = await convertTokentoUsd(value.label)
-        if (usdCoversion) {
+        const usdConversion = await convertTokentoUsd(value.label)
+        if (usdConversion) {
             payDetail[index].token_type = value.value
-            payDetail[index].usd_amount = usdCoversion
+            payDetail[index].usd_amount = usdConversion
             setPayDetail(payDetail)
         }
     }
@@ -86,7 +86,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
         setLoading(true)
 
         if (payDetail.length > 0) {
-            payDetail?.map((item, index) => {
+            payDetail?.map((item) => {
                 if (item?.token_type === null || !item?.token_type) {
                     transaction_obj.push({
                         to: ethers.utils.getAddress(address),

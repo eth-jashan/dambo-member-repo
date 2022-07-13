@@ -1,7 +1,5 @@
 import { Typography } from "antd"
 import React, { useState } from "react"
-import { useDispatch } from "react-redux"
-import { addDaoInfo } from "../../store/actions/dao-action"
 import InputText from "../InputComponent/Input"
 import NextButton from "../NextButton"
 import styles from "./styles.module.css"
@@ -15,13 +13,7 @@ import axios from "axios"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { assets } from "../../constant/assets"
 
-const DaoInfo = ({
-    deploying,
-    hasMultiSignWallet,
-    createDao,
-    increaseStep,
-    onBack,
-}) => {
+const DaoInfo = ({ deploying, increaseStep, onBack }) => {
     const [name, setName] = useState("")
     // const [email, setEmail] = useState("")
     // const [discord, setDiscord] = useState("")
