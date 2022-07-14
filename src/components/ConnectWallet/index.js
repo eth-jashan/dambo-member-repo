@@ -111,6 +111,22 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     // const web3 = new Web3(Web3.givenProvider)
 
+    // console.log("address", address1, isConnecting, isDisconnected)
+
+    // console.log("wagmi", data, isLoading, isError, isSuccess)
+
+    if (isConnected) {
+        return (
+            <div>
+                <img src={ensAvatar} alt="ENS Avatar" />
+                <div>{ensName ? `${ensName} (${address})` : address}</div>
+                <div>Connected to {connector?.name}</div>
+                <button onClick={disconnect}>Disconnect</button>
+                <button onClick={() => signMessage()}>Sign Message</button>
+            </div>
+        )
+    }
+
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
             setAuth(true)
@@ -178,21 +194,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         },
         [dispatch, isAdmin, navigate, uuid]
     )
-
-    const checkIsAdminInvite = useCallback(() => {
-        if (!uuid && !isAdmin) {
-            dispatch(signout())
-        }
-    }, [])
-
-    useEffect(() => {
-        checkIsAdminInvite()
-    }, [checkIsAdminInvite])
-
-    const onDiscordAuth = () => {
-        dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(`${links.discord_oauth.local}`)
-    }
 
     const loadWeb3Modal = useCallback(async () => {
         console.log(isAdmin)
@@ -319,12 +320,38 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             />
         </div>
     )
+    // const { address: address1, isConnecting, isDisconnected } = useAccount()
 
     const authenticateWallet = async () => {
         // const provider = new ethers.providers.Web3Provider(window.ethereum)
         // const signer = provider.getSigner()
         const chainId = await signer.getChainId()
         await authWithWallet(address, chainId, signer)
+    }
+
+    const checkIsAdminInvite = useCallback(() => {
+        if (!uuid && !isAdmin) {
+            dispatch(signout())
+        }
+    }, [])
+
+    useEffect(() => {
+        checkIsAdminInvite()
+    }, [checkIsAdminInvite])
+
+    // useEffect(async () => {
+    //     if (address1) {
+    // signMessage()
+    // const provider = new ethers.providers.Web3Provider(window.ethereum)
+    // const signer = await provider.getSigner()
+    // console.log("signing")
+    // await signer.signMessage(`Signing in to rep3.gg with nonce`)
+    // }
+    // }, [address1])
+
+    const onDiscordAuth = () => {
+        dispatch(setDiscordOAuth(address, uuid, jwt))
+        window.location.replace(`${links.discord_oauth.local}`)
     }
 
     const authWallet = () => (
