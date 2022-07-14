@@ -18,6 +18,7 @@ import {
     setShowMembershipCreateModal,
     setShowMembershipMintingModal,
 } from "../../store/actions/membership-action"
+import ContributionSchemaModal from "../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
@@ -142,6 +143,7 @@ export default function BadgesScreen() {
                     membershipBadges={membershipBadges}
                 />
             )}
+            <ContributionSchemaModal />
         </div>
     )
 }

@@ -19,6 +19,8 @@ import checkBoxActive from "../assets/Icons/check_box_active.svg"
 import tuneIcon from "../assets/Icons/tune.svg"
 import checkIcon from "../assets/Icons/check.svg"
 import redWarningIcon from "../assets/Icons/error_icon_red.svg"
+import chevronRightWhite from "../assets/Icons/chevron_right_white.svg"
+import crossBlack from "../assets/Icons/cross.svg"
 
 export const assets = {
     icons: {
@@ -43,5 +45,7 @@ export const assets = {
         tuneIcon,
         checkIcon,
         redWarningIcon,
+        chevronRightWhite,
+        crossBlack,
     },
 }

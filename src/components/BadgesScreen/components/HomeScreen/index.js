@@ -5,12 +5,14 @@ import contributionIconWhite from "../../../../assets/Icons/contributionIconWhit
 import appreciationIconWhite from "../../../../assets/Icons/appreciationIconWhite.svg"
 import participationIconWhite from "../../../../assets/Icons/participationIconWhite.svg"
 import edit_active from "../../../../assets/Icons/edit_active.svg"
+import { assets } from "../../../../constant/assets"
 import {
     setShowMembershipCreateModal,
     setShowMembershipMintingModal,
 } from "../../../../store/actions/membership-action"
 import { useDispatch, useSelector } from "react-redux"
 import { setContractAddress } from "../../../../store/actions/dao-action"
+import ContributionSchemaModal from "../../../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
 
 export default function HomeScreen({
     membershipBadges,
@@ -39,7 +41,7 @@ export default function HomeScreen({
                                     Membership Badge
                                 </div>
                                 {membershipBadges
-                                    .slice(0, 3)
+                                    .slice(0, 2)
                                     .map((badge, index) => (
                                         <div
                                             key={index}
@@ -53,9 +55,9 @@ export default function HomeScreen({
                                             </div>
                                         </div>
                                     ))}
-                                {membershipBadges.length > 3 && (
+                                {membershipBadges.length > 2 && (
                                     <div>
-                                        {membershipBadges.length - 3} more
+                                        {membershipBadges.length - 2} more
                                     </div>
                                 )}
                                 <div className="membership-badge-buttons">
@@ -73,19 +75,25 @@ export default function HomeScreen({
                             </div>
                         </div>
                         <div className="membership-badge-right">
-                            {currentDao?.uuid !==
-                            "93ba937e02ea4fdb9633c2cb27345200" ? (
-                                <img
-                                    src={membershipBadges?.[0]?.image_url}
-                                    alt=""
-                                />
-                            ) : (
+                            {/* {currentDao?.uuid !==
+                            "93ba937e02ea4fdb9633c2cb27345200" ? ( */}
+                            {/* <div className="stack-card"> */}
+                            {/* {["1", "2", "3"].map((x, i) => ( */}
+                            <img
+                                // key={i}
+                                src={membershipBadges?.[0]?.image_url}
+                                alt=""
+                                // style={{ right: `${i * 10}px` }}
+                            />
+                            {/* ))} */}
+                            {/* </div> */}
+                            {/* ) : (
                                 <video autoPlay loop muted>
                                     <source
                                         src={membershipBadges?.[0]?.image_url}
                                     />
                                 </video>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 ) : (
@@ -109,7 +117,13 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button className="btn-steps">Enable Badges</button>
+                            <button className="btn-steps">
+                                <div>Enable Badges</div>
+                                <img
+                                    src={assets.icons.chevronRightWhite}
+                                    alt=""
+                                />
+                            </button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -122,7 +136,13 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button className="btn-steps">Enable Badges</button>
+                            <button className="btn-steps">
+                                <div>Enable Badges</div>
+                                <img
+                                    src={assets.icons.chevronRightWhite}
+                                    alt=""
+                                />
+                            </button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
@@ -135,7 +155,13 @@ export default function HomeScreen({
                     </div>
                     <div className="badge-row-right">
                         {membershipBadges?.length ? (
-                            <button className="btn-steps">Enable Badges</button>
+                            <button className="btn-steps">
+                                <div>Enable Badges</div>
+                                <img
+                                    src={assets.icons.chevronRightWhite}
+                                    alt=""
+                                />
+                            </button>
                         ) : (
                             <span>Setup membership badge to enable it</span>
                         )}
