@@ -33,7 +33,7 @@ export default function Onboarding() {
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const [deploying, setDeploying] = useState(false)
     // const [signer, setSigner] = useState()
-    const { data: signer } = useSigner
+    const { data: signer } = useSigner()
     const { chain } = useNetwork()
     const [safeAddress, setSafeAddress] = useState()
     const [rep3Setup, setrep3Setup] = useState(false)
@@ -249,7 +249,7 @@ export default function Onboarding() {
 
     const increaseFromOverview = async () => {
         try {
-            await initPOCP(false, provider, signer)
+            await initPOCP(false, provider, signer, chain?.id)
             setCurrentStep(5)
         } catch (error) {
             message.error("error on creating instance")

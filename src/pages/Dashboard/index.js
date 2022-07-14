@@ -191,7 +191,7 @@ export default function Dashboard() {
                     getAllDaowithAddress(chainId)
                 )
                 await rep3ProtocolFunctionsCommon(currentDaos)
-                await initPOCP(currentDaos.uuid, provider, signer)
+                await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
                     setCurrentPage("badges")
                     await dispatch(getAllDaoMembers())

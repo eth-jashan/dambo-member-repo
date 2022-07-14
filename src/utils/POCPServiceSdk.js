@@ -3,20 +3,34 @@ import { Biconomy } from "@biconomy/mexa"
 // import { ethers } from "ethers"
 import { getSelectedChainId } from "./POCPutils"
 import { web3 } from "../constant/web3"
+import Web3 from "web3"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
 
-export const initPOCP = async (dao_uuid, provider, signer) => {
+export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     // const provider = new ethers.providers.Web3Provider(window.ethereum)
     // const signer = provider.getSigner()
+    const walletWeb3 = new Web3(provider)
+    const walletProvider = walletWeb3.givenProvider
+    console.log(
+        "chain Id is",
+        chainId,
+        signer,
+        provider,
+        walletProvider,
+        walletProvider.length,
+        walletProvider.selectedProvider
+    )
     pocpInstance = new Pocp(
         signer,
         provider,
-        window.ethereum,
-        currentNetwork?.chainId === 4 ? 80001 : 137,
-        currentNetwork?.chainId === 4
+        walletProvider.selectedProvider
+            ? walletProvider.selectedProvider
+            : walletProvider,
+        chainId === 4 ? 80001 : 137,
+        chainId === 4
             ? web3.rep3Mumbai
             : dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
             ? web3.rep3V1Matic
@@ -24,13 +38,13 @@ export const initPOCP = async (dao_uuid, provider, signer) => {
         {
             biconomyInstance: Biconomy,
             apiKey:
-                currentNetwork?.chainId === 4
+                chainId === 4
                     ? "h3GRiJo5V.ea5e72c1-a3dd-44cf-824e-1bd77a681ff7"
                     : dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
                     ? "a1SusDqqY.24edf34d-6125-4026-af88-b156a96b7f85"
                     : "gD5tL5Hyt.caf51015-4e19-4873-9540-65443a4519e9",
             relayURL:
-                currentNetwork?.chainId === 4
+                chainId === 4
                     ? "https://polygon-mumbai.g.alchemy.com/v2/8zhyGM-aq1wJ4TFspyVp-dOAQ27TWozK"
                     : "https://polygon-mainnet.g.alchemy.com/v2/gBoo6ihGnSUa3ObT49K36yHG6BdtyuVo",
         }
