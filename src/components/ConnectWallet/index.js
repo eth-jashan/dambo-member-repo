@@ -115,17 +115,17 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     // console.log("wagmi", data, isLoading, isError, isSuccess)
 
-    if (isConnected) {
-        return (
-            <div>
-                <img src={ensAvatar} alt="ENS Avatar" />
-                <div>{ensName ? `${ensName} (${address})` : address}</div>
-                <div>Connected to {connector?.name}</div>
-                <button onClick={disconnect}>Disconnect</button>
-                <button onClick={() => signMessage()}>Sign Message</button>
-            </div>
-        )
-    }
+    // if (isConnected) {
+    //     return (
+    //         <div>
+    //             <img src={ensAvatar} alt="ENS Avatar" />
+    //             <div>{ensName ? `${ensName} (${address})` : address}</div>
+    //             <div>Connected to {connector?.name}</div>
+    //             <button onClick={disconnect}>Disconnect</button>
+    //             <button onClick={() => signMessage()}>Sign Message</button>
+    //         </div>
+    //     )
+    // }
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -411,163 +411,163 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         </div>
     )
 
-    const disconnectContributor = () => {
-        dispatch(signout())
-        dispatch(setAdminStatus(false))
-    }
+    // const disconnectContributor = () => {
+    //     dispatch(signout())
+    //     dispatch(setAdminStatus(false))
+    // }
     // Cozy corner for all your communities
 
-    const daoWallet = () => (
-        <div style={{ width: "100%" }}>
-            {isAccess ? (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        welcome to rep3
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        Cozy corner for all your
-                        <br /> communities
-                    </div>
-                </div>
-            ) : (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        Hmm...🤔
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        seems like you don't have access to this page
-                        {/* <br /> communities */}
-                    </div>
-                    <div className={styles.contactText}>
-                        Please reach out to us{" "}
-                        <a
-                            href="https://twitter.com/rep3gg"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            here.
-                        </a>
-                    </div>
-                </div>
-            )}
-            {address ? authWallet() : connectWallet()}
-        </div>
-    )
-    const contributorWallet = () => (
-        <div className={styles.walletContri}>
-            <div className={styles.metaCard}>
-                <div style={{ height: "100%" }}>
-                    <div
-                        style={{
-                            height: "64px",
-                            width: "64px",
-                            borderRadius: "64px",
-                            border: "1px solid #c2c2c2",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <img
-                            src={!jwt ? walletIcon : tickIcon}
-                            alt="wallet"
-                            height={32}
-                            width={32}
-                        />
-                    </div>
-                </div>
+    // const daoWallet = () => (
+    //     <div style={{ width: "100%" }}>
+    //         {isAccess ? (
+    //             <div className={styles.headingCnt}>
+    //                 <div className={`${styles.heading} ${textStyles.ub_53}`}>
+    //                     welcome to rep3
+    //                 </div>
+    //                 <div
+    //                     className={`${styles.greyHeading} ${textStyles.ub_53}`}
+    //                 >
+    //                     Cozy corner for all your
+    //                     <br /> communities
+    //                 </div>
+    //             </div>
+    //         ) : (
+    //             <div className={styles.headingCnt}>
+    //                 <div className={`${styles.heading} ${textStyles.ub_53}`}>
+    //                     Hmm...🤔
+    //                 </div>
+    //                 <div
+    //                     className={`${styles.greyHeading} ${textStyles.ub_53}`}
+    //                 >
+    //                     seems like you don't have access to this page
+    //                     {/* <br /> communities */}
+    //                 </div>
+    //                 <div className={styles.contactText}>
+    //                     Please reach out to us{" "}
+    //                     <a
+    //                         href="https://twitter.com/rep3gg"
+    //                         target="_blank"
+    //                         rel="noreferrer"
+    //                     >
+    //                         here.
+    //                     </a>
+    //                 </div>
+    //             </div>
+    //         )}
+    //         {address ? authWallet() : connectWallet()}
+    //     </div>
+    // )
+    // const contributorWallet = () => (
+    //     <div className={styles.walletContri}>
+    //         <div className={styles.metaCard}>
+    //             <div style={{ height: "100%" }}>
+    //                 <div
+    //                     style={{
+    //                         height: "64px",
+    //                         width: "64px",
+    //                         borderRadius: "64px",
+    //                         border: "1px solid #c2c2c2",
+    //                         display: "flex",
+    //                         alignItems: "center",
+    //                         justifyContent: "center",
+    //                     }}
+    //                 >
+    //                     <img
+    //                         src={!jwt ? walletIcon : tickIcon}
+    //                         alt="wallet"
+    //                         height={32}
+    //                         width={32}
+    //                     />
+    //                 </div>
+    //             </div>
 
-                <div className={styles.rightContent}>
-                    <div>
-                        <div className={styles.walletHeading}>
-                            {!jwt ? "Connect your Wallet" : "Wallet Connected"}
-                        </div>
-                        {!jwt ? (
-                            <div className={styles.walletsubHeading}>
-                                Lorem ipsum dolor sit amet,
-                                <br />
-                                consectetur adipiscing elit.
-                            </div>
-                        ) : (
-                            <div className={styles.connectedText}>
-                                {address?.slice(0, 5)}...{address?.slice(-3)}
-                            </div>
-                        )}
-                    </div>
-                    {!jwt && (
-                        <div
-                            onClick={() => loadWeb3Modal()}
-                            className={styles.connectBtn}
-                        >
-                            <span className={styles.btnTitle}>
-                                {auth ? "Conecting..." : "Connect Wallet"}
-                            </span>
-                        </div>
-                    )}
-                    {address && jwt && (
-                        <div
-                            onClick={() => disconnectContributor()}
-                            className={styles.disconnectDiv}
-                        >
-                            <div className={styles.divider} />
-                            <span className={styles.disconnectTitle}>
-                                Disconnect Wallet
-                            </span>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {/* inline style required */}
-            <div className={styles.metaCard}>
-                <div style={{ height: "100%" }}>
-                    <div
-                        style={{
-                            height: "64px",
-                            width: "64px",
-                            borderRadius: "64px",
-                            border: "1px solid #c2c2c2",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <FaDiscord
-                            size={32}
-                            color={!jwt ? "#B3B3B3" : "#5865F2"}
-                        />
-                    </div>
-                </div>
+    //             <div className={styles.rightContent}>
+    //                 <div>
+    //                     <div className={styles.walletHeading}>
+    //                         {!jwt ? "Connect your Wallet" : "Wallet Connected"}
+    //                     </div>
+    //                     {!jwt ? (
+    //                         <div className={styles.walletsubHeading}>
+    //                             Lorem ipsum dolor sit amet,
+    //                             <br />
+    //                             consectetur adipiscing elit.
+    //                         </div>
+    //                     ) : (
+    //                         <div className={styles.connectedText}>
+    //                             {address?.slice(0, 5)}...{address?.slice(-3)}
+    //                         </div>
+    //                     )}
+    //                 </div>
+    //                 {!jwt && (
+    //                     <div
+    //                         onClick={() => loadWeb3Modal()}
+    //                         className={styles.connectBtn}
+    //                     >
+    //                         <span className={styles.btnTitle}>
+    //                             {auth ? "Conecting..." : "Connect Wallet"}
+    //                         </span>
+    //                     </div>
+    //                 )}
+    //                 {address && jwt && (
+    //                     <div
+    //                         onClick={() => disconnectContributor()}
+    //                         className={styles.disconnectDiv}
+    //                     >
+    //                         <div className={styles.divider} />
+    //                         <span className={styles.disconnectTitle}>
+    //                             Disconnect Wallet
+    //                         </span>
+    //                     </div>
+    //                 )}
+    //             </div>
+    //         </div>
+    //         {/* inline style required */}
+    //         <div className={styles.metaCard}>
+    //             <div style={{ height: "100%" }}>
+    //                 <div
+    //                     style={{
+    //                         height: "64px",
+    //                         width: "64px",
+    //                         borderRadius: "64px",
+    //                         border: "1px solid #c2c2c2",
+    //                         display: "flex",
+    //                         alignItems: "center",
+    //                         justifyContent: "center",
+    //                     }}
+    //                 >
+    //                     <FaDiscord
+    //                         size={32}
+    //                         color={!jwt ? "#B3B3B3" : "#5865F2"}
+    //                     />
+    //                 </div>
+    //             </div>
 
-                <div className={styles.rightContentDown}>
-                    <div>
-                        <div
-                            style={{ color: !jwt && "#B3B3B3" }}
-                            className={styles.walletHeading}
-                        >
-                            Connect Discord
-                        </div>
-                        <div className={styles.walletsubHeading}>
-                            We use Discord to check your name
-                            <br />
-                            and servers you've joined
-                        </div>
-                    </div>
-                    <div
-                        onClick={() => onDiscordAuth()}
-                        className={
-                            !jwt ? styles.connectBtnGrey : styles.connectBtn
-                        }
-                    >
-                        <span className={styles.btnTitle}>Connect Discord</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+    //             <div className={styles.rightContentDown}>
+    //                 <div>
+    //                     <div
+    //                         style={{ color: !jwt && "#B3B3B3" }}
+    //                         className={styles.walletHeading}
+    //                     >
+    //                         Connect Discord
+    //                     </div>
+    //                     <div className={styles.walletsubHeading}>
+    //                         We use Discord to check your name
+    //                         <br />
+    //                         and servers you've joined
+    //                     </div>
+    //                 </div>
+    //                 <div
+    //                     onClick={() => onDiscordAuth()}
+    //                     className={
+    //                         !jwt ? styles.connectBtnGrey : styles.connectBtn
+    //                     }
+    //                 >
+    //                     <span className={styles.btnTitle}>Connect Discord</span>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // )
 
     useEffect(() => {
         console.log("is connected", isConnected, address, signer)
