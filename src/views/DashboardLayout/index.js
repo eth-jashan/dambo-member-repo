@@ -60,6 +60,8 @@ export default function DashboardLayout({
         dispatch(setLoadingState(false))
     }
 
+    console.log("accounts are ", accounts)
+
     const text = (item) => <span>{item}</span>
     return (
         <>

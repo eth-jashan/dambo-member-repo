@@ -37,6 +37,7 @@ import {
     uploadApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import { useNetwork } from "wagmi"
 
 const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const currentTransaction = useSelector(
@@ -48,6 +49,7 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const role = useSelector((x) => x.dao.role)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const address = currentTransaction?.requested_by?.public_address
+    const { chain } = useNetwork()
 
     const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
@@ -550,8 +552,9 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, currentTransaction?.id))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const { chainId } = await provider.getNetwork()
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const { chainId } = await provider.getNetwork()
+            const chainId = chain?.id
             setPocpAction(chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,

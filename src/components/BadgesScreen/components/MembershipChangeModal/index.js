@@ -14,6 +14,7 @@ import {
     setSelectedMember,
     updateTxHash,
 } from "../../../../store/actions/membership-action"
+import { useNetwork } from "wagmi"
 
 export default function MembershipChangeModal({
     closeMembershipChangeModal,
@@ -28,28 +29,18 @@ export default function MembershipChangeModal({
     const dispatch = useDispatch()
     const currentDao = useSelector((x) => x.dao.currentDao)
     // const currentMembershipBadge = selectedMember.memberhips[0].uuid === membershipBadges.uuid
+    const { chain } = useNetwork()
     const selectNewMembership = (x) => {
         setCurrentStep((currentStep) => currentStep + 1)
         setUpgradeMembership(x)
     }
     const upgradMembershipNft = async () => {
-        console.log(proxyContract, selectUpgradeMembership, selectedMember)
         if (proxyContract && !loading) {
             setLoading(true)
 
             if (selectedMember.membership_txns[0].membership_txn_hash) {
                 const res = await getMembershipBadgeFromTxHash(
                     selectedMember.membership_txns[0].membership_txn_hash
-                )
-                console.log(
-                    "res",
-
-                    selectedMember,
-                    selectUpgradeMembership,
-                    {
-                        ...selectedMember,
-                        memberships: [selectUpgradeMembership],
-                    }
                 )
 
                 await upgradeMembershipNft(
@@ -59,13 +50,13 @@ export default function MembershipChangeModal({
                     selectUpgradeMembership.category,
                     selectUpgradeMembership.metadata_hash,
                     (x) => {
-                        console.log("hash is here", x)
                         dispatch(
                             updateTxHash(
                                 x,
                                 "upgrade",
                                 selectedMember.membership_txns[0]
-                                    .membership_txn_hash
+                                    .membership_txn_hash,
+                                chain?.id
                             )
                         )
                     },
@@ -98,14 +89,11 @@ export default function MembershipChangeModal({
                         // closeMembershipChangeModal()
                         closeMembershipChangeModal()
                         // dispatch(setSelectedMember())
-
-                        console.log("Upgrade Confirmed!")
                     }
                 )
             }
         }
     }
-    console.log(selectedMember.memberships, membershipBadges)
     return (
         <div className="membership-change-modal-container">
             <div

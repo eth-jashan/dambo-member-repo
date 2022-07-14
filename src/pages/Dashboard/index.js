@@ -48,6 +48,7 @@ import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
+import { useSigner, useProvider } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -82,9 +83,11 @@ export default function Dashboard() {
     const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
     // gnosis setup
-    const [signer, setSigner] = useState()
+    // const [signer, setSigner] = useState()
+    const { data: signer, isError, isLoading } = useSigner()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
+    const provider = useProvider()
 
     const defaultOptions = {
         loop: true,
@@ -106,19 +109,19 @@ export default function Dashboard() {
         }
     }, [dispatch, payoutToast])
 
-    const setProvider = async () => {
-        const provider = new ethers.providers.Web3Provider(
-            window.ethereum,
-            "any"
-        )
-        await provider.send("eth_requestAccounts", [])
-        const signer = provider.getSigner()
-        setSigner(signer)
-    }
+    // const setProvider = async () => {
+    //     const provider = new ethers.providers.Web3Provider(
+    //         window.ethereum,
+    //         "any"
+    //     )
+    //     await provider.send("eth_requestAccounts", [])
+    //     const signer = provider.getSigner()
+    //     setSigner(signer)
+    // }
 
-    useEffect(() => {
-        setProvider()
-    }, [])
+    // useEffect(() => {
+    //     setProvider()
+    // }, [])
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
@@ -160,13 +163,13 @@ export default function Dashboard() {
         })
     }, [address, jwt])
 
-    async function onInit() {
-        const accounts = await window.ethereum.request({
-            method: "eth_requestAccounts",
-        })
-        const account = accounts[0]
-        return account
-    }
+    // async function onInit() {
+    //     const accounts = await window.ethereum.request({
+    //         method: "eth_requestAccounts",
+    //     })
+    //     const account = accounts[0]
+    //     return account
+    // }
 
     const rep3ProtocolFunctionsCommon = async (currentDaos) => {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
@@ -176,28 +179,31 @@ export default function Dashboard() {
     }
 
     const initialLoad = useCallback(async () => {
-        const account = await onInit()
-        if (address === ethers.utils.getAddress(account)) {
-            dispatch(setLoadingState(true))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = provider.getSigner()
-            const chainId = await signer.getChainId()
-            const { accountRole, currentDaos } = await dispatch(
-                getAllDaowithAddress(chainId)
-            )
-            await rep3ProtocolFunctionsCommon(currentDaos)
-            await initPOCP(currentDaos.uuid)
-            if (accountRole === "ADMIN") {
-                setCurrentPage("badges")
-                await dispatch(getAllDaoMembers())
+        // const account = await onInit()
+        console.log("address and ", address, signer)
+        if (signer) {
+            if (address) {
+                dispatch(setLoadingState(true))
+                // const provider = new ethers.providers.Web3Provider(window.ethereum)
+                // const signer = provider.getSigner()
+                const chainId = await signer.getChainId()
+                const { accountRole, currentDaos } = await dispatch(
+                    getAllDaowithAddress(chainId)
+                )
+                await rep3ProtocolFunctionsCommon(currentDaos)
+                await initPOCP(currentDaos.uuid, provider, signer)
+                if (accountRole === "ADMIN") {
+                    setCurrentPage("badges")
+                    await dispatch(getAllDaoMembers())
+                } else {
+                    // await contributorFetch()
+                    // contribution specific fetch
+                }
             } else {
-                // await contributorFetch()
-                // contribution specific fetch
+                dispatch(setLoadingState(false))
+                dispatch(signout())
+                navigate("/")
             }
-        } else {
-            dispatch(setLoadingState(false))
-            dispatch(signout())
-            navigate("/")
         }
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
@@ -206,7 +212,7 @@ export default function Dashboard() {
         if (!modalPayment) {
             initialLoad()
         }
-    }, [currentDao?.uuid])
+    }, [currentDao?.uuid, signer])
 
     useEffect(() => {
         preventGoingBack()
@@ -340,7 +346,7 @@ export default function Dashboard() {
     )
 
     const onPaymentModal = () => {
-        setProvider()
+        // setProvider()
         setModalPayment(true)
     }
 

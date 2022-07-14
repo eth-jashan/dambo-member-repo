@@ -63,7 +63,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
 
         fileReader.onload = (event) => {
             // csvFileToArray(text)
-            console.log("event in file reader load ", event)
             const arr = event.target?.result?.split(",")
             setBulkAddresses(arr)
             setIsCsvUploaded(true)
@@ -74,7 +73,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         if (bulkMintingStep >= 1) {
             setBulkMintingStep(1)
             await mintVouchers()
-            // console.log("hhere")
             // dispatch(setShowMembershipMintingModal(false))
         } else {
             setBulkMintingStep((bulkMintingStep) => bulkMintingStep + 1)
@@ -83,7 +81,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
 
     const mintVouchers = async () => {
         const mintAddresses = isBulkMinting ? bulkAddresses : addresses
-        console.log(addressValidation.includes(false), addressValidation)
         try {
             await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
             await dispatch(getAllDaoMembers())

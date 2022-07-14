@@ -34,7 +34,6 @@ export default function ContributorBadgeScreen() {
                 ...membershipBadges.membership,
             })
         }
-        console.log("Claimed Token From BE", membershipBadges)
     }
 
     // const getCurrentBadgeUpdated = async () => {
@@ -91,29 +90,20 @@ export default function ContributorBadgeScreen() {
         await getCurrentBadgeUpdated()
     }, [])
 
-    const allMembershipBadges = useSelector(
-        (x) => x.membership.membershipBadges
-    )
-    const membershipVouchers = useSelector(
-        (x) => x.membership.membershipVoucher
-    )
+    // const allMembershipBadges = useSelector(
+    //     (x) => x.membership.membershipBadges
+    // )
+    // const membershipVouchers = useSelector(
+    //     (x) => x.membership.membershipVoucher
+    // )
 
-    console.log("All membership badges are", allMembershipBadges)
+    // const membershipBadgesForAddress = useSelector(
+    //     (x) => x.membership.membershipBadgesForAddress
+    // )
 
-    const membershipBadgesForAddress = useSelector(
-        (x) => x.membership.membershipBadgesForAddress
-    )
-
-    console.log(
-        "membership badges for address from Subgraph are",
-        membershipBadgesForAddress
-    )
-
-    const unClaimedBadges = useSelector(
-        (x) => x.membership.unclaimedMembershipBadges
-    )
-
-    console.log("unclaimed badges are", unClaimedBadges)
+    // const unClaimedBadges = useSelector(
+    //     (x) => x.membership.unclaimedMembershipBadges
+    // )
 
     const membershipBadgeClaimed = useSelector(
         (x) => x.membership.membershipBadgeClaimed
@@ -149,8 +139,6 @@ export default function ContributorBadgeScreen() {
             "_blank"
         )
     }
-
-    console.log("Contribution", contributorClaimedDataBackend)
 
     return (
         <div className="contributor-contribution-screen-container">

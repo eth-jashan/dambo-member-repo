@@ -31,6 +31,7 @@ import {
 import { getIpfsUrl } from "../../../utils/relayFunctions"
 import ContributionBadgeItem from "./ContributionBadgeItem"
 import POCPStatusCard from "../../POCPStatusCard"
+import { useNetwork } from "wagmi"
 
 const PaymentCheckoutModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -50,6 +51,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
     const [showOkay, setShowOkay] = useState(false)
     const [approvingFailed, setApprovingFailed] = useState(false)
     const jwt = useSelector((x) => x.auth.jwt)
+    const { chain } = useNetwork()
 
     const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
@@ -114,10 +116,11 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     clearTimeout(interval)
                     if (cid?.length > 0) {
                         if (communityInfo?.length === 1 && communityInfo) {
-                            const provider = new ethers.providers.Web3Provider(
-                                window.ethereum
-                            )
-                            const { chainId } = await provider.getNetwork()
+                            // const provider = new ethers.providers.Web3Provider(
+                            //     window.ethereum
+                            // )
+                            // const { chainId } = await provider.getNetwork()
+                            const chainId = chain?.id
                             setPocpAction(chainId)
                             setApproverStatus("switching")
                             await processBadgeApprovalToPocp(
@@ -140,10 +143,11 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
         } else {
             if (cid?.length > 0) {
                 if (communityInfo?.length === 1 && communityInfo) {
-                    const provider = new ethers.providers.Web3Provider(
-                        window.ethereum
-                    )
-                    const { chainId } = await provider.getNetwork()
+                    // const provider = new ethers.providers.Web3Provider(
+                    //     window.ethereum
+                    // )
+                    // const { chainId } = await provider.getNetwork()
+                    const chainId = chain?.id
                     setPocpAction(chainId)
                     setApproverStatus("switching")
                     await processBadgeApprovalToPocp(

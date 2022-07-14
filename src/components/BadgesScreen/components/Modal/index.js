@@ -28,7 +28,6 @@ export default function Modal({ closeModal, membershipBadges, isEditing }) {
     const dispatch = useDispatch()
 
     const increaseStep = () => {
-        console.log("membership step is", membershipStep)
         if (membershipStep >= 2) {
             // setMembershipBadges(localMembershipBadges)
             closeModal()

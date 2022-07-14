@@ -23,7 +23,7 @@ export default function Header({
     }
 
     useEffect(async () => {
-        await getNetwork()
+        // await getNetwork()
     })
 
     return (

@@ -13,9 +13,6 @@ export const getSelectedChainId = () => {
     return chainId
 }
 
-export const removeChainSelection = () => {
-    localStorage.removeItem("chain_info")
-}
 export const processDaoToPOCP = async (
     name,
     owner,

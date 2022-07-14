@@ -14,6 +14,7 @@ import confetti from "../../assets/lottie/confett-lottie.json"
 import { ethers } from "ethers"
 import { assets } from "../../constant/assets"
 import NextButton from "../NextButton"
+import { useNetwork } from "wagmi"
 
 const GnosisSuccess = ({ increaseStep }) => {
     const jwt = useSelector((x) => x.auth.jwt)
@@ -21,6 +22,7 @@ const GnosisSuccess = ({ increaseStep }) => {
 
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
+    const { chain } = useNetwork()
 
     const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
@@ -34,8 +36,9 @@ const GnosisSuccess = ({ increaseStep }) => {
     }
     const registerErrorCallback = () => setLoading(false)
     const signupForPocp = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const { chainId } = await provider.getNetwork()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const { chainId } = await provider.getNetwork()
+        const chainId = chain?.id
         setPocpAction(chainId)
         setLoading(true)
         try {

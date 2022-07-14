@@ -24,6 +24,7 @@ import OnboardingError from "../components/OnboardingError"
 import OnboardingOverview from "../components/OnboardingOverview"
 import GnosisSuccess from "../components/GnosisSuccess"
 import { initPOCP } from "../utils/POCPServiceSdk"
+import { useSigner, useNetwork, useProvider } from "wagmi"
 
 export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(1)
@@ -31,7 +32,9 @@ export default function Onboarding() {
     const [newSafeSetup, setNewSafeSetup] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const [deploying, setDeploying] = useState(false)
-    const [signer, setSigner] = useState()
+    // const [signer, setSigner] = useState()
+    const { data: signer } = useSigner
+    const { chain } = useNetwork()
     const [safeAddress, setSafeAddress] = useState()
     const [rep3Setup, setrep3Setup] = useState(false)
     const [isPayout, setIsPayout] = useState(false)
@@ -51,7 +54,7 @@ export default function Onboarding() {
     const [searchParams, _setSearchParams] = useSearchParams()
     const guildId = searchParams.get("guild_id")
     const discordUserId = searchParams.get("discord_user_id")
-
+    const provider = useProvider()
     const steps = [
         "connectWallet",
         "onboardingSteps",
@@ -117,7 +120,7 @@ export default function Onboarding() {
                 setDeploying(false)
             }
         },
-        [address, dispatch, navigate, safeFactory, threshold]
+        [address, dispatch, navigate, safeFactory, threshold, signer]
     )
 
     const onDaoDeploy = async () => {
@@ -131,7 +134,7 @@ export default function Onboarding() {
                         navigate("/dashboard")
                         console.log("Confirmed hash", x)
                         setRegister(false)
-                    })
+                    }, chain?.id)
                 )
             } catch (error) {
                 console.log("error", error)
@@ -139,22 +142,6 @@ export default function Onboarding() {
             }
         }
     }
-
-    const setProvider = async () => {
-        console.log("setting signer")
-        const provider = new ethers.providers.Web3Provider(
-            window.ethereum,
-            "any"
-        )
-        // Prompt user for account connections
-        await provider.send("eth_requestAccounts", [])
-        const signer = provider.getSigner()
-        setSigner(signer)
-    }
-
-    useEffect(() => {
-        setProvider()
-    }, [])
 
     const increaseStep = () => {
         if (currentStep < steps.length - 1) {
@@ -173,54 +160,54 @@ export default function Onboarding() {
         }
     }
 
-    const createDao = async () => {
-        if (hasMultiSignWallet) {
-            const { dao_uuid, name, owners } = await dispatch(registerDao())
-            const owner = [address]
-            if (owners.length > 1) {
-                owners.forEach((x) => {
-                    if (x?.address !== address) {
-                        owner.push(x?.address)
-                    }
-                })
-            }
-            dispatch(lastSelectedId(dao_uuid))
-            if (dao_uuid) {
-                if (guildId) {
-                    const res = await dispatch(
-                        connectDaoToDiscord(dao_uuid, guildId, discordUserId)
-                    )
-                    if (res) {
-                        message.success(
-                            "Discord registered to dao successfully"
-                        )
-                    } else {
-                        message.error(
-                            "Something went wrong please try again later"
-                        )
-                    }
-                }
-                dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
-                increaseStep()
-            } else {
-                navigate(`/onboard/dao`)
-            }
-        } else {
-            try {
-                try {
-                    const owner = []
-                    owners.forEach((item) => {
-                        owner.push(item.address)
-                    })
-                    await deploySafe(owner)
-                } catch (error) {
-                    // console.log("error.... on deploying", error);
-                }
-            } catch (error) {
-                // console.log("error.......", error);
-            }
-        }
-    }
+    // const createDao = async () => {
+    //     if (hasMultiSignWallet) {
+    //         const { dao_uuid, name, owners } = await dispatch(registerDao())
+    //         const owner = [address]
+    //         if (owners.length > 1) {
+    //             owners.forEach((x) => {
+    //                 if (x?.address !== address) {
+    //                     owner.push(x?.address)
+    //                 }
+    //             })
+    //         }
+    //         dispatch(lastSelectedId(dao_uuid))
+    //         if (dao_uuid) {
+    //             if (guildId) {
+    //                 const res = await dispatch(
+    //                     connectDaoToDiscord(dao_uuid, guildId, discordUserId)
+    //                 )
+    //                 if (res) {
+    //                     message.success(
+    //                         "Discord registered to dao successfully"
+    //                     )
+    //                 } else {
+    //                     message.error(
+    //                         "Something went wrong please try again later"
+    //                     )
+    //                 }
+    //             }
+    //             dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
+    //             increaseStep()
+    //         } else {
+    //             navigate(`/onboard/dao`)
+    //         }
+    //     } else {
+    //         try {
+    //             try {
+    //                 const owner = []
+    //                 owners.forEach((item) => {
+    //                     owner.push(item.address)
+    //                 })
+    //                 await deploySafe(owner)
+    //             } catch (error) {
+    //                 // console.log("error.... on deploying", error);
+    //             }
+    //         } catch (error) {
+    //             // console.log("error.......", error);
+    //         }
+    //     }
+    // }
 
     const deployNewSafe = async () => {
         // try {
@@ -262,7 +249,7 @@ export default function Onboarding() {
 
     const increaseFromOverview = async () => {
         try {
-            await initPOCP(false)
+            await initPOCP(false, provider, signer)
             setCurrentStep(5)
         } catch (error) {
             message.error("error on creating instance")
@@ -358,7 +345,6 @@ export default function Onboarding() {
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
                         hasMultiSignWallet={hasMultiSignWallet}
-                        setProvider={setProvider}
                         deploying={deploying}
                     />
                 )
@@ -370,7 +356,6 @@ export default function Onboarding() {
                             increaseFromDaoInfo(name, image)
                         }
                         deploying={deploying}
-                        createDao={createDao}
                         onBack={() => setCurrentStep(1)}
                     />
                 )

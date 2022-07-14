@@ -52,7 +52,7 @@ export const addDaoInfo = (name, logo, email, discord) => {
     }
 }
 
-export const registerDao = (callbackFn) => {
+export const registerDao = (callbackFn, chainId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
@@ -62,9 +62,9 @@ export const registerDao = (callbackFn) => {
         const name = getState().dao.newSafeSetup.dao_name
         const logo = getState().dao.newSafeSetup.dao_logo_url
         const discord = getState().dao.newSafeSetup.dao_discord
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const signer = await provider.getSigner()
+        // const chainId = await signer.getChainId()
         const ownerMeta = []
         const approvers = []
         owners.forEach((item) => {
@@ -86,10 +86,7 @@ export const registerDao = (callbackFn) => {
                         approvers: ownerMeta,
                         logo_url: logo,
                         chain_id: chainId,
-                        txn_chain_id:
-                            getSelectedChainId()?.chainId === 4
-                                ? "80001"
-                                : "137",
+                        txn_chain_id: chainId === 4 ? "80001" : "137",
                     })
                     try {
                         const res = await apiClient.post(

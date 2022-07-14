@@ -13,6 +13,7 @@ import {
 } from "../../store/actions/dao-action"
 import { ethers } from "ethers"
 import { links } from "../../constant/links"
+import { useNetwork } from "wagmi"
 
 const antIcon = (
     <LoadingOutlined
@@ -39,6 +40,7 @@ export default function SettingsScreen() {
     const settingsRef = useRef(null)
     const daoNameInputRef = useRef(null)
     const userNameInputRef = useRef(null)
+    const { chain } = useNetwork()
 
     console.log("currentDao", currentDao)
     console.log("botStatus", botStatus)
@@ -118,9 +120,10 @@ export default function SettingsScreen() {
         setUpdatingUserName(true)
         // TODO: dispatch API call to update DAO Name
         await dispatch(updateUserInfo(userName, currentDao?.uuid))
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const signer = await provider.getSigner()
+        // const chainId = await signer.getChainId()
+        const chainId = chain?.id
 
         dispatch(getAllDaowithAddress(chainId))
         setShowUserNameEdit(false)

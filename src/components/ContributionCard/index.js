@@ -26,6 +26,7 @@ import {
     getAllUnclaimedBadges,
     getContributorOverview,
 } from "../../store/actions/dao-action"
+import { useNetwork } from "wagmi"
 
 export default function ContributionCard({ item }) {
     const dispatch = useDispatch()
@@ -47,6 +48,7 @@ export default function ContributionCard({ item }) {
         setChainInfoAction(chainId)
     }
     const selectionActive = currentTransaction?.id === item.id
+    const { chain } = useNetwork()
 
     const onContributionPress = async () => {
         if (role === "ADMIN") {
@@ -114,8 +116,9 @@ export default function ContributionCard({ item }) {
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, item?.id))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const { chainId } = await provider.getNetwork()
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const { chainId } = await provider.getNetwork()
+            const chainId = chain?.id
             setPocpAction(chainId)
             await processClaimBadgeToPocp(
                 isApprovedToken(unclaimed, item?.id).token[0].id,
