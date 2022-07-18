@@ -10,7 +10,7 @@ import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
 import { ethers } from "ethers"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -75,7 +75,6 @@ export const getAllDaoMembers = () => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setDaoMembers({
                     allDaoMembers: res?.data?.data,
@@ -102,7 +101,6 @@ export const setAllDaoMember = (allDaoMembers) => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setDaoMembers({
                     allDaoMembers,

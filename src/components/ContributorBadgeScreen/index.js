@@ -9,7 +9,7 @@ import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
 import cross from "../../assets/Icons/cross.svg"
 import routes from "../../constant/routes"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 // import axios from "axios"
 
 export default function ContributorBadgeScreen() {
@@ -22,7 +22,7 @@ export default function ContributorBadgeScreen() {
         (x) => x.membership.contributorClaimedDataBackend
     )
     const [upgradedMembership, setUpgradedMembership] = useState(false)
-    const selectedChainId = getSelectedChainId()
+    // const selectedChainId = getSelectedChainId()
 
     const getCurrentBadgeUpdated = () => {
         // const metadatSubgraph = membershipBadgesForAddress.filter(
@@ -82,7 +82,7 @@ export default function ContributorBadgeScreen() {
             )
             setUpgradedMembership(false)
         } catch (error) {
-            console.log("error", error)
+            console.error("error", error)
         }
     }
 

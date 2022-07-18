@@ -3,7 +3,7 @@ import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { message } from "antd"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 import {
     setPayment,
     setTransaction,
@@ -13,7 +13,7 @@ import AccountSwitchModal from "../../components/Modal/AccountSwitchModal"
 import { AiFillCaretDown } from "react-icons/ai"
 import TestnetInfo from "../../components/ToolTip/TestnetInfo"
 import ProfileModal from "../../components/Modal/ProfileModal"
-
+import { useNetwork } from "wagmi"
 const DashboardHeader = ({
     currentPage,
     setCurrentPage,
@@ -32,10 +32,11 @@ const DashboardHeader = ({
     const [profile_modal, setProfileModal] = useState(false)
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
 
-    const currentChainId = getSelectedChainId()?.chainId
+    // const currentChainId = getSelectedChainId()?.chainId
     const dispatch = useDispatch()
 
     const currentUser = useSelector((x) => x.dao.username)
+    const { chain } = useNetwork()
 
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
@@ -167,7 +168,7 @@ const DashboardHeader = ({
                 </div>
             )}
             <div className="profileContainer">
-                {currentChainId === 4 ? (
+                {chain?.id === 4 ? (
                     <div
                         onMouseLeave={() => setTestnetHover(false)}
                         onMouseEnter={() => setTestnetHover(true)}

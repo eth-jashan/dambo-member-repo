@@ -1,4 +1,4 @@
-import { getSelectedChainId } from "./POCPutils"
+import { getSelectedChainId } from "./wagmiHelpers"
 
 export const getSafeServiceUrl = () => {
     const chainId = getSelectedChainId()?.chainId

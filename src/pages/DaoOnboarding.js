@@ -132,12 +132,11 @@ export default function Onboarding() {
                 await dispatch(
                     registerDao((x) => {
                         navigate("/dashboard")
-                        console.log("Confirmed hash", x)
                         setRegister(false)
                     }, chain?.id)
                 )
             } catch (error) {
-                console.log("error", error)
+                console.error("error", error)
                 setRegister(false)
             }
         }
@@ -219,7 +218,7 @@ export default function Onboarding() {
             await deploySafe(owner)
             setCurrentStep(6)
         } catch (error) {
-            console.log("error.... on deploying", error)
+            console.error("error.... on deploying", error)
         }
         // } catch (error) {
         //     console.log("error.......", error)
@@ -252,6 +251,7 @@ export default function Onboarding() {
             await initPOCP(false, provider, signer, chain?.id)
             setCurrentStep(5)
         } catch (error) {
+            console.error("error is", error)
             message.error("error on creating instance")
         }
     }
@@ -281,7 +281,6 @@ export default function Onboarding() {
 
     const backFromAddOwner = () => {
         if (rep3Setup && !hasMultiSignWallet) {
-            console.log("here")
             setCurrentStep(5)
         }
     }

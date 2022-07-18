@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 import { Switch, message, Spin } from "antd"
 import CheckSvg from "../../assets/Icons/check.svg"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -26,7 +26,7 @@ const antIcon = (
 
 export default function SettingsScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const currentChainId = getSelectedChainId().chainId
+    // const currentChainId = getSelectedChainId().chainId
     const address = useSelector((x) => x.auth.address)
     const [showDaoNameEdit, setShowDaoNameEdit] = useState(false)
     const [showUserNameEdit, setShowUserNameEdit] = useState(false)
@@ -42,8 +42,6 @@ export default function SettingsScreen() {
     const userNameInputRef = useRef(null)
     const { chain } = useNetwork()
 
-    console.log("currentDao", currentDao)
-    console.log("botStatus", botStatus)
     const dispatch = useDispatch()
 
     const currentUser = currentDao?.signers.filter(
@@ -72,7 +70,7 @@ export default function SettingsScreen() {
     }
     const openTreasuryOnEtherscan = () => {
         const link = `https://${
-            currentChainId === 4 ? "rinkeby." : ""
+            chain?.id === 4 ? "rinkeby." : ""
         }etherscan.io/address/${currentDao?.safe_public_address}`
         window.open(link)
     }
@@ -80,7 +78,6 @@ export default function SettingsScreen() {
     const onChange = async (checked) => {
         setBotStatus(checked)
         setBotStatusLoading(true)
-        console.log(`switch to ${checked}`)
         const success = await dispatch(toggleBot())
         if (!success) {
             setBotStatus(!checked)

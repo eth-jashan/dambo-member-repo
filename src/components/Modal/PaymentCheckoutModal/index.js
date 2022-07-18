@@ -22,12 +22,12 @@ import {
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
-import {
-    chainSwitch,
-    getSelectedChainId,
-    processBadgeApprovalToPocp,
-    setChainInfoAction,
-} from "../../../utils/POCPutils"
+// import {
+//     chainSwitch,
+//     getSelectedChainId,
+//     processBadgeApprovalToPocp,
+//     setChainInfoAction,
+// } from "../../../utils/POCPutils"
 import { getIpfsUrl } from "../../../utils/relayFunctions"
 import ContributionBadgeItem from "./ContributionBadgeItem"
 import POCPStatusCard from "../../POCPStatusCard"
@@ -44,43 +44,44 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [loading, setLoading] = useState(false)
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+    const { chain } = useNetwork()
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
     const [checkoutType, setCheckoutType] = useState("contribution")
     const [approverStatus, setApproverStatus] = useState(false)
     const [minting, setMinting] = useState(false)
     const [showOkay, setShowOkay] = useState(false)
     const [approvingFailed, setApprovingFailed] = useState(false)
     const jwt = useSelector((x) => x.auth.jwt)
-    const { chain } = useNetwork()
 
     const setPocpAction = (chainId) => {
-        setChainInfoAction(chainId)
+        // setChainInfoAction(chainId)
     }
 
     // const changeCheckoutType = (route) => {
     //     setCheckoutType(route)
     // }
 
-    const onApprovalSuccess = async () => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        setApproverStatus("switching-back-success")
-        await chainSwitch(chainId)
-        setShowOkay(true)
-        setMinting(false)
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        await dispatch(getAllClaimedBadges())
-    }
+    // const onApprovalSuccess = async () => {
+    //     // let chainId = getSelectedChainId()
+    //     let chainId = chain?.id
+    //     chainId = ethers.utils.hexValue(chainId.chainId)
+    //     setApproverStatus("switching-back-success")
+    //     // await chainSwitch(chainId)
+    //     setShowOkay(true)
+    //     setMinting(false)
+    //     await dispatch(getAllApprovedBadges())
+    //     await dispatch(getAllUnclaimedBadges())
+    //     await dispatch(getAllClaimedBadges())
+    // }
 
-    const onErrorCallBack = async () => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        setApproverStatus("switching-back-error")
-        await chainSwitch(chainId)
-        setMinting(false)
-        setApprovingFailed(true)
-    }
+    // const onErrorCallBack = async () => {
+    //     // let chainId = getSelectedChainId()
+    //     chainId = ethers.utils.hexValue(chainId.chainId)
+    //     setApproverStatus("switching-back-error")
+    //     await chainSwitch(chainId)
+    //     setMinting(false)
+    //     setApprovingFailed(true)
+    // }
     const communityInfo = useSelector((x) => x.dao.communityInfo)
     // let communityInfo
 
@@ -123,16 +124,16 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                             const chainId = chain?.id
                             setPocpAction(chainId)
                             setApproverStatus("switching")
-                            await processBadgeApprovalToPocp(
-                                communityInfo[0]?.id,
-                                receiverAddress,
-                                cid,
-                                url,
-                                jwt,
-                                onApprovalSuccess,
-                                onErrorCallBack,
-                                (x) => setApproverStatus(x)
-                            )
+                            // await processBadgeApprovalToPocp(
+                            //     communityInfo[0]?.id,
+                            //     receiverAddress,
+                            //     cid,
+                            //     url,
+                            //     jwt,
+                            //     onApprovalSuccess,
+                            //     onErrorCallBack,
+                            //     (x) => setApproverStatus(x)
+                            // )
                         } else {
                             setApproverStatus("switching-back-error")
                             // await dispatch(getCommunityId())
@@ -150,16 +151,16 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     const chainId = chain?.id
                     setPocpAction(chainId)
                     setApproverStatus("switching")
-                    await processBadgeApprovalToPocp(
-                        communityInfo[0]?.id,
-                        receiverAddress,
-                        cid,
-                        url,
-                        jwt,
-                        onApprovalSuccess,
-                        onErrorCallBack,
-                        (x) => setApproverStatus(x)
-                    )
+                    // await processBadgeApprovalToPocp(
+                    //     communityInfo[0]?.id,
+                    //     receiverAddress,
+                    //     cid,
+                    //     url,
+                    //     jwt,
+                    //     onApprovalSuccess,
+                    //     onErrorCallBack,
+                    //     (x) => setApproverStatus(x)
+                    // )
                 } else {
                     setApproverStatus("switching-back-error")
                     // await dispatch(getCommunityId())
@@ -263,7 +264,6 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
             dispatch(addActivePaymentBadge(true))
             setLoading(false)
         } catch (error) {
-            // //console.log('error.........', error)
             setLoading(false)
         }
         setLoading(false)

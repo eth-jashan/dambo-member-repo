@@ -10,15 +10,15 @@ import {
     setClaimLoading,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
-import { ethers } from "ethers"
-import {
-    chainSwitch,
-    checkClaimApprovedSuccess,
-    getSelectedChainId,
-    isApprovedToken,
-    processClaimBadgeToPocp,
-    setChainInfoAction,
-} from "../../utils/POCPutils"
+// import {
+//     chainSwitch,
+//     checkClaimApprovedSuccess,
+//     getSelectedChainId,
+//     isApprovedToken,
+//     processClaimBadgeToPocp,
+//     setChainInfoAction,
+// } from "../../utils/POCPutils"
+import { setChainInfoAction } from "../../utils/wagmiHelpers"
 import {
     claimUpdate,
     getAllApprovedBadges,
@@ -97,21 +97,21 @@ export default function ContributionCard({ item }) {
         }
     }
 
-    const onClaimEventCallback = async (event) => {
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        dispatch(getContributorOverview())
-        dispatch(setContributionDetail(null))
-        dispatch(claimUpdate(item?.id))
-        dispatch(setClaimLoading(false, item?.id))
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
-    }
-    const onErrorCallBack = () => {
-        dispatch(setClaimLoading(false, item?.id))
-    }
+    // const onClaimEventCallback = async (event) => {
+    //     await dispatch(getAllApprovedBadges())
+    //     await dispatch(getAllClaimedBadges())
+    //     await dispatch(getAllUnclaimedBadges())
+    //     dispatch(getContributorOverview())
+    //     dispatch(setContributionDetail(null))
+    //     dispatch(claimUpdate(item?.id))
+    //     dispatch(setClaimLoading(false, item?.id))
+    //     let chainId = getSelectedChainId()
+    //     chainId = ethers.utils.hexValue(chainId.chainId)
+    //     await chainSwitch(chainId)
+    // }
+    // const onErrorCallBack = () => {
+    //     dispatch(setClaimLoading(false, item?.id))
+    // }
 
     const claimBadges = async () => {
         if (!claim_loading.status) {
@@ -120,13 +120,13 @@ export default function ContributionCard({ item }) {
             // const { chainId } = await provider.getNetwork()
             const chainId = chain?.id
             setPocpAction(chainId)
-            await processClaimBadgeToPocp(
-                isApprovedToken(unclaimed, item?.id).token[0].id,
-                jwt,
-                item?.id,
-                onClaimEventCallback,
-                onErrorCallBack
-            )
+            // await processClaimBadgeToPocp(
+            //     isApprovedToken(unclaimed, item?.id).token[0].id,
+            //     jwt,
+            //     item?.id,
+            //     onClaimEventCallback,
+            //     onErrorCallBack
+            // )
         }
     }
 
@@ -189,25 +189,24 @@ export default function ContributionCard({ item }) {
                                 : getContributionStatus()?.title}
                         </div>
                     }
-                    {item?.tokens.length === 0 &&
-                        item?.mint_badge &&
-                        isApprovedToken(unclaimed, item?.id)?.status && (
-                            <div
-                                onClick={async () => await claimBadges()}
-                                className={`${textStyles.m_16} ${styles.greyish}`}
-                            >
-                                {" "}
-                                •{" "}
-                                {claim_loading.status &&
-                                claim_loading?.id === item?.id
-                                    ? "claiming.."
-                                    : "claim badge"}
-                            </div>
-                        )}
+                    {item?.tokens.length === 0 && item?.mint_badge && (
+                        // isApprovedToken(unclaimed, item?.id)?.status &&
+                        <div
+                            onClick={async () => await claimBadges()}
+                            className={`${textStyles.m_16} ${styles.greyish}`}
+                        >
+                            {" "}
+                            •{" "}
+                            {claim_loading.status &&
+                            claim_loading?.id === item?.id
+                                ? "claiming.."
+                                : "claim badge"}
+                        </div>
+                    )}
                     {item?.status === "APPROVED" &&
                         item?.payout_status === "PAID" &&
-                        item?.tokens.length > 0 &&
-                        isApprovedToken(unclaimed, item?.id)?.status && (
+                        item?.tokens.length > 0 && (
+                            // isApprovedToken(unclaimed, item?.id)?.status &&
                             <div
                                 onClick={async () => await claimBadges()}
                                 className={`${textStyles.m_16} ${styles.greyish}`}
@@ -223,8 +222,8 @@ export default function ContributionCard({ item }) {
                 </div>
             )}
             {role === "ADMIN" &&
-                (checkClaimApprovedSuccess(all_approved_badge, item?.id) &&
-                item?.status === "APPROVED" &&
+                // checkClaimApprovedSuccess(all_approved_badge, item?.id) &&
+                (item?.status === "APPROVED" &&
                 item?.payout_status === "PAID" ? (
                     onHover || selectionActive ? (
                         <img

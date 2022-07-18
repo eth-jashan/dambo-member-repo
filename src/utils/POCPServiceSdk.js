@@ -1,7 +1,7 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
 // import { ethers } from "ethers"
-import { getSelectedChainId } from "./POCPutils"
+import { getSelectedChainId } from "./wagmiHelpers"
 import { web3 } from "../constant/web3"
 import Web3 from "web3"
 const currentNetwork = getSelectedChainId()
@@ -14,21 +14,18 @@ export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     // const signer = provider.getSigner()
     const walletWeb3 = new Web3(provider)
     const walletProvider = walletWeb3.givenProvider
-    console.log(
-        "chain Id is",
-        chainId,
-        signer,
-        provider,
-        walletProvider,
-        walletProvider.length,
-        walletProvider.selectedProvider
-    )
+    // const selectedProvider = walletProvider.providerMap
+    //     ? walletProvider?.overrideIsMetaMask
+    //         ? walletProvider?.providerMap.get("MetaMask")
+    //         : walletProvider.selectedProvider
+    //     : walletProvider
+
     pocpInstance = new Pocp(
         signer,
         provider,
-        walletProvider.selectedProvider
-            ? walletProvider.selectedProvider
-            : walletProvider,
+        // selectedProvider,
+        signer.provider.provider,
+        // temp.givenProvider,
         chainId === 4 ? 80001 : 137,
         chainId === 4
             ? web3.rep3Mumbai

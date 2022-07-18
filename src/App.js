@@ -17,18 +17,17 @@ import {
     setAddress,
 } from "./store/actions/auth-action"
 import AppContext from "./appContext"
-// import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
 import MetamaskError from "./pages/MetamaskError"
-import { useAccount } from "wagmi"
+import { useProvider } from "wagmi"
 import ErrorBoundary from "./components/ErrorBoundary"
+import Web3 from "web3"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
     const isAdmin = useSelector((x) => x.auth.isAdmin)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const addressPersisted = useSelector((x) => x.auth.address)
 
     const [pocpAction, setPocpAction] = useState(false)
     const [chainId, setChainId] = useState(null)
@@ -38,43 +37,14 @@ function App() {
         setPocpAction(status)
         setChainId(chainId)
     }
-    const { address } = useAccount({
-        onConnect({ address: newAddress }) {
-            dispatch(setAddress(newAddress))
-        },
-        onDisconnect() {
-            console.log("setting address as null")
-            dispatch(setAddress(null))
-        },
-    })
-    // const provider = useProvider()
-
-    // console.log(
-    //     "in app",
-    //     address,
-    //     isConnecting,
-    //     isDisconnected,
-    //     isReconnecting,
-    //     isConnected
-    // )
-
-    console.log("address persisited ", addressPersisted)
-
-    // useEffect(() => {
-    //     console.log("address changed", address, addressPersisted)
-    //     if (addressPersisted) {
-    //         if (isAdmin) {
-    //             dispatch(setLoggedIn(false))
-    //             dispatch(signout())
-    //             navigate("/")
-    //         } else {
-    //             dispatch(setLoggedIn(false))
-    //             dispatch(signout())
-    //             dispatch(setAdminStatus(false))
-    //             navigate("/")
-    //         }
-    //     }
-    // }, [address, addressPersisted])
+    const provider = useProvider()
+    const walletWeb3 = new Web3(provider)
+    const walletProvider = walletWeb3.givenProvider
+    const selectedProvider = walletProvider.providerMap
+        ? walletProvider?.overrideIsMetaMask
+            ? walletProvider?.providerMap.get("MetaMask")
+            : walletProvider.selectedProvider
+        : walletProvider
 
     if (window.location.hostname === "pony.rep3.gg" && !redirected) {
         if (window.location.pathname) {
@@ -92,12 +62,15 @@ function App() {
         setPocpActionValue,
     }
 
-    // console.log("provider wagmi", provider._isProvider, provider)
-    // provider.on()
+    selectedProvider.on("accountsChanged", () => {
+        dispatch(signout())
+        window.location.replace(window.location.origin)
+    })
 
-    // provider.on("accountsChanged", () => {
-    //     console.log("account changed in provider")
-    // })
+    selectedProvider.on("chainChanged", (x) => {
+        dispatch(signout())
+        window.location.replace(window.location.origin)
+    })
 
     // if (window.ethereum) {
     //     window.ethereum.on("accountsChanged", () => {

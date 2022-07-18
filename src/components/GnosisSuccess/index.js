@@ -1,12 +1,12 @@
 import React, { useState } from "react"
 import "./styles.scss"
 import texStyles from "../../commonStyles/textType/styles.module.css"
-import {
-    chainSwitch,
-    getSelectedChainId,
-    processDaoToPOCP,
-    setChainInfoAction,
-} from "../../utils/POCPutils"
+// import {
+//     chainSwitch,
+//     getSelectedChainId,
+//     processDaoToPOCP,
+//     setChainInfoAction,
+// } from "../../utils/POCPutils"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import Lottie from "react-lottie"
@@ -24,14 +24,14 @@ const GnosisSuccess = ({ increaseStep }) => {
     const [loading, setLoading] = useState(false)
     const { chain } = useNetwork()
 
-    const setPocpAction = (chainId) => {
-        setChainInfoAction(chainId)
-    }
+    // const setPocpAction = (chainId) => {
+    //     setChainInfoAction(chainId)
+    // }
 
     const registerCallback = async (events) => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
+        // let chainId = getSelectedChainId()
+        // chainId = ethers.utils.hexValue(chainId.chainId)
+        // await chainSwitch(chainId)
         navigate("/dashboard")
     }
     const registerErrorCallback = () => setLoading(false)
@@ -39,17 +39,17 @@ const GnosisSuccess = ({ increaseStep }) => {
         // const provider = new ethers.providers.Web3Provider(window.ethereum)
         // const { chainId } = await provider.getNetwork()
         const chainId = chain?.id
-        setPocpAction(chainId)
+        // setPocpAction(chainId)
         setLoading(true)
         try {
-            await processDaoToPOCP(
-                pocpInfo.name,
-                pocpInfo.owner,
-                pocpInfo.dao_uuid,
-                jwt,
-                registerCallback,
-                registerErrorCallback
-            )
+            // await processDaoToPOCP(
+            //     pocpInfo.name,
+            //     pocpInfo.owner,
+            //     pocpInfo.dao_uuid,
+            //     jwt,
+            //     registerCallback,
+            //     registerErrorCallback
+            // )
             // if (!res) {
             //     setLoading(false)
             // }

@@ -17,8 +17,8 @@ export default function Header({
     const daoName = useSelector((x) => x.contributor.daoName)
 
     const getNetwork = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const { chainId } = await provider.getNetwork()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const { chainId } = await provider.getNetwork()
         setChainId(chainId)
     }
 

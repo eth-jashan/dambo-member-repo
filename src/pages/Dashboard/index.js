@@ -1,5 +1,5 @@
 import { message } from "antd"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
@@ -19,7 +19,7 @@ import textStyles from "../../commonStyles/textType/styles.module.css"
 import ContributionRequestModal from "../../components/Modal/ContributionRequest"
 import { ethers } from "ethers"
 import ContributionCard from "../../components/ContributionCard"
-import { useSafeSdk } from "../../hooks"
+import { useSafeSdk, usePrevious } from "../../hooks"
 
 import PaymentCheckoutModal from "../../components/Modal/PaymentCheckoutModal"
 import PaymentCard from "../../components/PaymentCard"
@@ -48,7 +48,7 @@ import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
-import { useSigner, useProvider } from "wagmi"
+import { useSigner, useProvider, useAccount } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -88,7 +88,8 @@ export default function Dashboard() {
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
     const provider = useProvider()
-
+    const prevSigner = usePrevious(signer)
+    const { isDisconnected } = useAccount()
     const defaultOptions = {
         loop: true,
         autoplay: true,
@@ -108,6 +109,12 @@ export default function Dashboard() {
             clearInterval(interval)
         }
     }, [dispatch, payoutToast])
+
+    useEffect(() => {
+        if (isDisconnected) {
+            navigate("/")
+        }
+    }, [isDisconnected])
 
     // const setProvider = async () => {
     //     const provider = new ethers.providers.Web3Provider(
@@ -180,7 +187,6 @@ export default function Dashboard() {
 
     const initialLoad = useCallback(async () => {
         // const account = await onInit()
-        console.log("address and ", address, signer)
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))
@@ -209,7 +215,7 @@ export default function Dashboard() {
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
     useEffect(() => {
-        if (!modalPayment) {
+        if (!modalPayment && !prevSigner) {
             initialLoad()
         }
     }, [currentDao?.uuid, signer])

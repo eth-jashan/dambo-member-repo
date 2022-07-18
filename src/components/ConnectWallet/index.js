@@ -21,21 +21,9 @@ import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
 import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { setChainInfoAction } from "../../utils/POCPutils"
+import { setChainInfoAction } from "../../utils/wagmiHelpers"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import {
-    useAccount,
-    useSignMessage,
-    useConnect,
-    useDisconnect,
-    useEnsAvatar,
-    useEnsName,
-    useNetwork,
-    useSwitchNetwork,
-    useSigner,
-    useProvider,
-} from "wagmi"
-import Web3 from "web3"
+import { useAccount, useSigner, useProvider } from "wagmi"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     // const address = useSelector((x) => x.auth.address)
@@ -46,17 +34,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [isAccess, setAccess] = useState(true)
-    const { address, connector, isConnected } = useAccount()
-    const { data: ensAvatar } = useEnsAvatar({ addressOrName: address })
-    const { data: ensName } = useEnsName({ address })
-    const { connect, connectors, error, pendingConnector } = useConnect()
-    const { disconnect } = useDisconnect()
-    const { isLoading: loading, signMessage } = useSignMessage({
-        message: "gm wagmi frens",
-    })
-    // const [signer, setSigner] = useState(null)
-    const { chains, error: networkError, switchNetwork } = useSwitchNetwork()
-    const { chain } = useNetwork()
+    const { address, isConnected, isDisconnected, status } = useAccount()
     const {
         data: signer,
         isError,
@@ -69,63 +47,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         // },
     })
     const provider = useProvider()
-
-    console.log("signer info ", signer, isError, isLoading, isSuccess)
-
-    // console.log("address", address1, isConnecting, isDisconnected)
-
-    // console.log("wagmi", data, isLoading, isError, isSuccess)
-
-    // console.log("network data", networkData)
-
-    // if (isConnected) {
-    //     return (
-    //         <div>
-    //             <img src={ensAvatar} alt="ENS Avatar" />
-    //             <div>{ensName ? `${ensName} (${address})` : address}</div>
-    //             <div>Connected to {connector?.name}</div>
-    //             <button style={{ color: "#fff" }} onClick={disconnect}>
-    //                 Disconnect
-    //             </button>
-    //             <button style={{ color: "#fff" }} onClick={() => signMessage()}>
-    //                 Sign Message
-    //             </button>
-    //             {switchNetwork &&
-    //                 chains?.map((x) =>
-    //                     x.id === chain?.id ? null : (
-    //                         <button
-    //                             key={x.id}
-    //                             onClick={() => switchNetwork(x.id)}
-    //                             style={{ color: "#fff" }}
-    //                         >
-    //                             Switch to {x.name}
-    //                         </button>
-    //                     )
-    //                 )}
-    //             {networkError && <div>{networkError?.message}</div>}
-    //         </div>
-    //     )
-    // }
-
-    // const { address: address1, isConnecting, isDisconnected } = useAccount()
-
-    // const web3 = new Web3(Web3.givenProvider)
-
-    // console.log("address", address1, isConnecting, isDisconnected)
-
-    // console.log("wagmi", data, isLoading, isError, isSuccess)
-
-    // if (isConnected) {
-    //     return (
-    //         <div>
-    //             <img src={ensAvatar} alt="ENS Avatar" />
-    //             <div>{ensName ? `${ensName} (${address})` : address}</div>
-    //             <div>Connected to {connector?.name}</div>
-    //             <button onClick={disconnect}>Disconnect</button>
-    //             <button onClick={() => signMessage()}>Sign Message</button>
-    //         </div>
-    //     )
-    // }
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -196,7 +117,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     )
 
     const loadWeb3Modal = useCallback(async () => {
-        console.log(isAdmin)
         setAuth(true)
         try {
             // await window.ethereum.request({
@@ -204,7 +124,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             // })
 
             // const provider = new ethers.providers.Web3Provider(window.ethereum)
-            console.log("asdasdwqwd ", provider, signer, jwt, isAdmin)
             // const signer = await provider.getSigner()
             const chainId = await signer.getChainId()
             const newAddress = await signer.getAddress()
@@ -212,7 +131,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            console.log("chain Id", chainId, newAddress, res)
             if (
                 res &&
                 (chainId === 4 ||
@@ -221,7 +139,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     chainId === 10)
             ) {
                 // has token and chain is selected for rinkeby
-                console.log("in if")
                 setChainInfoAction(chainId)
                 dispatch(setLoggedIn(true))
                 if (isAdmin) {
@@ -301,33 +218,33 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         }
     }, [authWithWallet, dispatch, isAdmin, navigate, uuid, signer])
 
-    const connectWallet = () => (
-        <div className={styles.walletCnt}>
-            <div onClick={() => loadWeb3Modal()} className={styles.walletLogo}>
-                <img
-                    src={metamaskIcon}
-                    alt="metamask"
-                    className={styles.walletImg}
-                />
-                <div className={styles.walletName}>Metamask</div>
-            </div>
-            <img
-                src={chevron_right}
-                className={styles.chevronIcon}
-                width="32px"
-                height="32px"
-                alt="cheveron-right"
-            />
-        </div>
-    )
+    // const connectWallet = () => (
+    //     <div className={styles.walletCnt}>
+    //         <div onClick={() => loadWeb3Modal()} className={styles.walletLogo}>
+    //             <img
+    //                 src={metamaskIcon}
+    //                 alt="metamask"
+    //                 className={styles.walletImg}
+    //             />
+    //             <div className={styles.walletName}>Metamask</div>
+    //         </div>
+    //         <img
+    //             src={chevron_right}
+    //             className={styles.chevronIcon}
+    //             width="32px"
+    //             height="32px"
+    //             alt="cheveron-right"
+    //         />
+    //     </div>
+    // )
     // const { address: address1, isConnecting, isDisconnected } = useAccount()
 
-    const authenticateWallet = async () => {
-        // const provider = new ethers.providers.Web3Provider(window.ethereum)
-        // const signer = provider.getSigner()
-        const chainId = await signer.getChainId()
-        await authWithWallet(address, chainId, signer)
-    }
+    // const authenticateWallet = async () => {
+    //     // const provider = new ethers.providers.Web3Provider(window.ethereum)
+    //     // const signer = provider.getSigner()
+    //     const chainId = await signer.getChainId()
+    //     await authWithWallet(address, chainId, signer)
+    // }
 
     const checkIsAdminInvite = useCallback(() => {
         if (!uuid && !isAdmin) {
@@ -339,77 +256,67 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         checkIsAdminInvite()
     }, [checkIsAdminInvite])
 
-    // useEffect(async () => {
-    //     if (address1) {
-    // signMessage()
-    // const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // const signer = await provider.getSigner()
-    // console.log("signing")
-    // await signer.signMessage(`Signing in to rep3.gg with nonce`)
+    // const onDiscordAuth = () => {
+    //     dispatch(setDiscordOAuth(address, uuid, jwt))
+    //     window.location.replace(`${links.discord_oauth.local}`)
     // }
-    // }, [address1])
 
-    const onDiscordAuth = () => {
-        dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(`${links.discord_oauth.local}`)
-    }
+    // const authWallet = () => (
+    //     <div className={styles.walletCntAuth}>
+    //         <img src={metamaskIcon} alt="metamask" height={32} width={32} />
 
-    const authWallet = () => (
-        <div className={styles.walletCntAuth}>
-            <img src={metamaskIcon} alt="metamask" height={32} width={32} />
+    //         <div className={styles.rightContainer}>
+    //             <div className={styles.walletName}>Metamask</div>
+    //             <div className={styles.addresCnt}>
+    //                 <div className={styles.address}>{address}</div>
+    //                 <div
+    //                     onClick={() => {
+    //                         setAccess(true)
+    //                         dispatch(signout())
+    //                     }}
+    //                     className={styles.disconnectLink}
+    //                 >
+    //                     Disconnect
+    //                 </div>
+    //             </div>
 
-            <div className={styles.rightContainer}>
-                <div className={styles.walletName}>Metamask</div>
-                <div className={styles.addresCnt}>
-                    <div className={styles.address}>{address}</div>
-                    <div
-                        onClick={() => {
-                            setAccess(true)
-                            dispatch(signout())
-                        }}
-                        className={styles.disconnectLink}
-                    >
-                        Disconnect
-                    </div>
-                </div>
+    //             <Divider />
+    //             {isAccess && (
+    //                 <>
+    //                     <div
+    //                         style={{ color: "black", paddingLeft: "1.25rem" }}
+    //                         className={textStyles.m_23}
+    //                     >
+    //                         Signature please! ✍️
+    //                     </div>
+    //                     <div
+    //                         style={{ color: "#999999", paddingLeft: "1.25rem" }}
+    //                         className={styles.authGreyHeading}
+    //                     >
+    //                         Please sign the metamask message to continue.
+    //                     </div>
+    //                 </>
+    //             )}
 
-                <Divider />
-                {isAccess && (
-                    <>
-                        <div
-                            style={{ color: "black", paddingLeft: "1.25rem" }}
-                            className={textStyles.m_23}
-                        >
-                            Signature please! ✍️
-                        </div>
-                        <div
-                            style={{ color: "#999999", paddingLeft: "1.25rem" }}
-                            className={styles.authGreyHeading}
-                        >
-                            Please sign the metamask message to continue.
-                        </div>
-                    </>
-                )}
-
-                {isAccess && (
-                    <div
-                        onClick={
-                            auth
-                                ? () => {}
-                                : async () => await authenticateWallet(address)
-                        }
-                        className={styles.authBtn}
-                    >
-                        <div className={styles.btnTextAuth}>
-                            {auth
-                                ? "Authenticating...."
-                                : "Authenticate wallet"}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+    //             {isAccess && (
+    //                 <div
+    //                     onClick={
+    //                         auth
+    //                             ? () => {}
+    //                             : async () => await authenticateWallet(address)
+    //                     }
+    //                     className={styles.authBtn}
+    //                 >
+    //                     <div className={styles.btnTextAuth}>
+    //                         {auth
+    //                             ? "Authenticating...."
+    //                             : "Authenticate wallet"}
+    //                     </div>
+    //                 </div>
+    //             )}
+    //         </div>
+    //     </div>
+    // )
 
     // const disconnectContributor = () => {
     //     dispatch(signout())
@@ -569,10 +476,17 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     //     </div>
     // )
 
+    // useEffect(() => {
+    //     console.log("is Disconnected", isDisconnected)
+    //     if (isDisconnected) {
+    //         navigate("/")
+    //     }
+    // }, [isDisconnected])
+
     useEffect(() => {
-        console.log("is connected", isConnected, address, signer)
-        if (address && signer) {
-            console.log("setting address as", address)
+        if (status === "disconnected") {
+            navigate("/")
+        } else if (address && signer && isConnected) {
             dispatch(setAddress(address))
             loadWeb3Modal()
             // navigate("/dashboard")
