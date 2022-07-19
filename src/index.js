@@ -9,7 +9,12 @@ import "./assets/fonts/PPTelegraf-Medium.otf"
 import { PersistGate } from "redux-persist/integration/react"
 import "@rainbow-me/rainbowkit/dist/index.css"
 
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import {
+    getDefaultWallets,
+    RainbowKitProvider,
+    wallet,
+    connectorsForWallets,
+} from "@rainbow-me/rainbowkit"
 import {
     chain,
     configureChains,
@@ -18,11 +23,6 @@ import {
     defaultChains,
 } from "wagmi"
 import { infuraProvider } from "wagmi/providers/infura"
-// import { web3 } from "./constant/web3"
-// import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
-// import { InjectedConnector } from "wagmi/connectors/injected"
-// import { MetaMaskConnector } from "wagmi/connectors/metaMask"
-// import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 
 const { chains, provider, webSocketProvider } = configureChains(
     [chain.rinkeby, chain.mainnet, chain.polygon],
@@ -30,36 +30,26 @@ const { chains, provider, webSocketProvider } = configureChains(
     [infuraProvider({ infuraId: "2f446b2b3fb241cfb99bfb807be35c6f" })]
 )
 
-const { connectors } = getDefaultWallets({
-    appName: "My RainbowKit App",
-    chains,
-})
+// const { connectors } = getDefaultWallets({
+//     appName: "My RainbowKit App",
+//     chains,
+// })
+
+const connectors = connectorsForWallets([
+    {
+        groupName: "Recommended",
+        wallets: [
+            wallet.metaMask({ chains }),
+            wallet.coinbase({ chains }),
+            wallet.rainbow({ chains }),
+            wallet.brave({ chains }),
+        ],
+    },
+])
 
 const wagmiClient = createClient({
     autoConnect: true,
     connectors,
-    // connectors: [
-    //     new MetaMaskConnector({ chains }),
-    //     new CoinbaseWalletConnector({
-    //         chains,
-    //         options: {
-    //             appName: "wagmi",
-    //         },
-    //     }),
-    //     new WalletConnectConnector({
-    //         chains,
-    //         options: {
-    //             qrcode: true,
-    //         },
-    //     }),
-    //     new InjectedConnector({
-    //         chains,
-    //         options: {
-    //             name: "Injected",
-    //             shimDisconnect: true,
-    //         },
-    //     }),
-    // ],
     provider,
     webSocketProvider,
 })
@@ -80,16 +70,3 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById("root")
 )
-
-// ReactDOM.render(
-//     <React.StrictMode>
-//         <BrowserRouter>
-//             <Provider store={store}>
-//                 <PersistGate loading={null} persistor={persistor}>
-//                     <App />
-//                 </PersistGate>
-//             </Provider>
-//         </BrowserRouter>
-//     </React.StrictMode>,
-//     document.getElementById("root")
-// )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
@@ -19,7 +19,7 @@ import {
 import AppContext from "./appContext"
 import AddBotFallback from "./pages/AddBotFallback"
 import MetamaskError from "./pages/MetamaskError"
-import { useProvider } from "wagmi"
+import { useSigner } from "wagmi"
 import ErrorBoundary from "./components/ErrorBoundary"
 import Web3 from "web3"
 
@@ -37,14 +37,35 @@ function App() {
         setPocpAction(status)
         setChainId(chainId)
     }
-    const provider = useProvider()
-    const walletWeb3 = new Web3(provider)
-    const walletProvider = walletWeb3.givenProvider
-    const selectedProvider = walletProvider.providerMap
-        ? walletProvider?.overrideIsMetaMask
-            ? walletProvider?.providerMap.get("MetaMask")
-            : walletProvider.selectedProvider
-        : walletProvider
+    // const provider = useProvider()
+    // const walletWeb3 = new Web3(provider)
+    // const walletProvider = walletWeb3.currentProvider
+    const { data: signer } = useSigner()
+    const listenersSet = useRef(null)
+
+    if (signer?.provider?.provider && !listenersSet.current) {
+        console.log("setting listeners")
+        signer.provider?.provider?.on("accountsChanged", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        signer.provider?.provider?.on("chainChanged", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        signer.provider?.provider?.on("disconnect", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        listenersSet.current = true
+    }
+
+    // console.log("wallet provider is", walletProvider)
+    // const selectedProvider = walletProvider.providerMap
+    //     ? walletProvider?.overrideIsMetaMask
+    //         ? walletProvider?.providerMap.get("MetaMask")
+    //         : walletProvider.selectedProvider
+    //     : walletProvider
 
     if (window.location.hostname === "pony.rep3.gg" && !redirected) {
         if (window.location.pathname) {
@@ -62,57 +83,22 @@ function App() {
         setPocpActionValue,
     }
 
-    selectedProvider.on("accountsChanged", () => {
-        dispatch(signout())
-        window.location.replace(window.location.origin)
-    })
+    // walletProvider.on("accountsChanged", () => {
+    //     console.log("accoiunt changed in app provider")
+    //     dispatch(signout())
+    //     window.location.replace(window.location.origin)
+    // })
 
-    selectedProvider.on("chainChanged", (x) => {
-        dispatch(signout())
-        window.location.replace(window.location.origin)
-    })
+    // walletProvider.on("chainChanged", (x) => {
+    //     dispatch(signout())
+    //     window.location.replace(window.location.origin)
+    // })
 
-    // if (window.ethereum) {
-    //     window.ethereum.on("accountsChanged", () => {
-    //         console.log("accounts changed")
-    //         if (isAdmin) {
-    //             dispatch(setLoggedIn(false))
-    //             dispatch(signout())
-    //             navigate("/")
-    //         } else {
-    //             dispatch(setLoggedIn(false))
-    //             dispatch(signout())
-    //             dispatch(setAdminStatus(false))
-    //             navigate("/")
-    //         }
-    //     })
-
-    //     window.ethereum.on("chainChanged", (x) => {
-    //         const selectedChainId = getSelectedChainId()
-    //         const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
-    //         if (
-    //             parseInt(x) !== selectedChainId.chainId &&
-    //             parseInt(x) !== maticNetwork
-    //         ) {
-    //             if (isAdmin) {
-    //                 dispatch(setLoggedIn(false))
-    //                 dispatch(signout())
-    //                 navigate("/")
-    //             } else {
-    //                 dispatch(setLoggedIn(false))
-    //                 dispatch(signout())
-    //                 dispatch(setAdminStatus(false))
-    //                 navigate("/")
-    //             }
-    //         }
-    //     })
-    // }
-
-    useEffect(() => {
-        if (!window.ethereum) {
-            navigate("/metamask-error")
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (!window.ethereum) {
+    //         navigate("/metamask-error")
+    //     }
+    // }, [])
 
     return (
         <ErrorBoundary>
