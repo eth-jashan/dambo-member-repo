@@ -6,17 +6,19 @@ import chevronDown from "../../assets/Icons/chevron_down.svg"
 import styles from "./style.module.css"
 import textStyles from "./../../commonStyles/textType/styles.module.css"
 
-import { ethers } from "ethers"
+// import { ethers } from "ethers"
+import { useNetwork } from "wagmi"
 
 export default function WalletPicker({ signer }) {
     const address = useSelector((x) => x.auth.address)
 
     const [chainId, setChainId] = useState(false)
+    const { chain } = useNetwork
 
     const getNetwork = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const { chainId } = await provider.getNetwork()
-        setChainId(chainId)
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const { chainId } = await provider.getNetwork()
+        setChainId(chain?.id)
     }
 
     useEffect(async () => {

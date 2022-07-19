@@ -14,6 +14,7 @@ import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
 import cross from "../../assets/Icons/cross.svg"
 // import axios from "axios"
+import { useNetwork } from "wagmi"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -23,6 +24,7 @@ export default function ContributorContributionScreen() {
     const membershipVouchers = useSelector(
         (x) => x.membership.membershipVoucher
     )
+    const { chain } = useNetwork()
 
     // const getAllMembershipVouchers = () => {
     //     if (membershipVouchers) {
@@ -41,23 +43,8 @@ export default function ContributorContributionScreen() {
     //     }
     // }
 
-    console.log(
-        "All membership badges are",
-        // getAllMembershipVouchers(),
-        allMembershipBadges
-    )
-    // console.log(
-    //     "membership vouchers for this address from backend are",
-    //     membershipVouchersWithInfo
-    // )
-
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
-    )
-
-    console.log(
-        "membership badges for address from Subgraph are",
-        membershipBadgesForAddress
     )
 
     const unClaimedBadges = useSelector(
@@ -109,7 +96,9 @@ export default function ContributorContributionScreen() {
                 dispatch(setShowMetamaskSignText(true))
             }, 10000)
 
-            await dispatch(claimMembershipVoucher(membershipVoucherInfo))
+            await dispatch(
+                claimMembershipVoucher(membershipVoucherInfo, chain?.id)
+            )
         }
     }
 
@@ -139,8 +128,6 @@ export default function ContributorContributionScreen() {
             "_blank"
         )
     }
-
-    console.log("Unclaimed Vouchers", unClaimedBadges)
 
     return (
         <div className="contributor-contribution-screen-container">

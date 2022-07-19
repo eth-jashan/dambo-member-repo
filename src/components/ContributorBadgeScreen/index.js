@@ -9,7 +9,7 @@ import etherscan_white from "../../assets/Icons/etherscan-white.svg"
 import opensea_white from "../../assets/Icons/opensea-white.svg"
 import cross from "../../assets/Icons/cross.svg"
 import routes from "../../constant/routes"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 // import axios from "axios"
 
 export default function ContributorBadgeScreen() {
@@ -22,7 +22,7 @@ export default function ContributorBadgeScreen() {
         (x) => x.membership.contributorClaimedDataBackend
     )
     const [upgradedMembership, setUpgradedMembership] = useState(false)
-    const selectedChainId = getSelectedChainId()
+    // const selectedChainId = getSelectedChainId()
 
     const getCurrentBadgeUpdated = () => {
         // const metadatSubgraph = membershipBadgesForAddress.filter(
@@ -34,7 +34,6 @@ export default function ContributorBadgeScreen() {
                 ...membershipBadges.membership,
             })
         }
-        console.log("Claimed Token From BE", membershipBadges)
     }
 
     // const getCurrentBadgeUpdated = async () => {
@@ -83,7 +82,7 @@ export default function ContributorBadgeScreen() {
             )
             setUpgradedMembership(false)
         } catch (error) {
-            console.log("error", error)
+            console.error("error", error)
         }
     }
 
@@ -91,29 +90,20 @@ export default function ContributorBadgeScreen() {
         await getCurrentBadgeUpdated()
     }, [])
 
-    const allMembershipBadges = useSelector(
-        (x) => x.membership.membershipBadges
-    )
-    const membershipVouchers = useSelector(
-        (x) => x.membership.membershipVoucher
-    )
+    // const allMembershipBadges = useSelector(
+    //     (x) => x.membership.membershipBadges
+    // )
+    // const membershipVouchers = useSelector(
+    //     (x) => x.membership.membershipVoucher
+    // )
 
-    console.log("All membership badges are", allMembershipBadges)
+    // const membershipBadgesForAddress = useSelector(
+    //     (x) => x.membership.membershipBadgesForAddress
+    // )
 
-    const membershipBadgesForAddress = useSelector(
-        (x) => x.membership.membershipBadgesForAddress
-    )
-
-    console.log(
-        "membership badges for address from Subgraph are",
-        membershipBadgesForAddress
-    )
-
-    const unClaimedBadges = useSelector(
-        (x) => x.membership.unclaimedMembershipBadges
-    )
-
-    console.log("unclaimed badges are", unClaimedBadges)
+    // const unClaimedBadges = useSelector(
+    //     (x) => x.membership.unclaimedMembershipBadges
+    // )
 
     const membershipBadgeClaimed = useSelector(
         (x) => x.membership.membershipBadgeClaimed
@@ -149,8 +139,6 @@ export default function ContributorBadgeScreen() {
             "_blank"
         )
     }
-
-    console.log("Contribution", contributorClaimedDataBackend)
 
     return (
         <div className="contributor-contribution-screen-container">

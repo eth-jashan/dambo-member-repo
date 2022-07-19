@@ -6,12 +6,13 @@ import open_link from "../../../assets/Icons/open_in_new.svg"
 import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import email from "../../../assets/Icons/email_black.svg"
 import setting from "../../../assets/Icons/settings_black.svg"
-import disconnect from "../../../assets/Icons/signal_disconnected.svg"
+import disconnectImg from "../../../assets/Icons/signal_disconnected.svg"
 import { useDispatch, useSelector } from "react-redux"
 import { signout } from "../../../store/actions/auth-action"
 import { message } from "antd"
 import { useNavigate } from "react-router"
-import { getSelectedChainId } from "../../../utils/POCPutils"
+// import { getSelectedChainId } from "../../../utils/POCPutils"
+import { useNetwork, useDisconnect } from "wagmi"
 
 const ProfileModal = ({
     isOnboard = false,
@@ -20,6 +21,8 @@ const ProfileModal = ({
 }) => {
     const address = useSelector((x) => x.auth.address)
     const dispatch = useDispatch()
+    const { chain } = useNetwork()
+    const { disconnect } = useDisconnect()
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
@@ -35,11 +38,12 @@ const ProfileModal = ({
 
     const onDisconnect = () => {
         onActionComplete()
+        disconnect()
         dispatch(signout())
         navigate("/")
     }
 
-    const currentChainId = getSelectedChainId().chainId
+    // const currentChainId = getSelectedChainId().chainId
 
     const openTwitter = () => {
         window.open(`https://twitter.com/rep3gg`, "_blank")
@@ -61,9 +65,7 @@ const ProfileModal = ({
                             // onClick={() => onDisconnect()}
                             className={`${textStyles.m_14} ${styles.disconnect}`}
                         >
-                            {currentChainId === 4
-                                ? "Rinkeby Testnet"
-                                : "Ethereum"}
+                            {chain?.id === 4 ? "Rinkeby Testnet" : "Ethereum"}
                         </div>
                     </div>
                 </div>
@@ -137,7 +139,11 @@ const ProfileModal = ({
 
             <div onClick={() => onDisconnect()} className={styles.singleOption}>
                 <div>
-                    <img src={disconnect} alt="email" className={styles.icon} />
+                    <img
+                        src={disconnectImg}
+                        alt="email"
+                        className={styles.icon}
+                    />
                     <div
                         className={`${textStyles.m_16} ${styles.disconnectText}`}
                     >

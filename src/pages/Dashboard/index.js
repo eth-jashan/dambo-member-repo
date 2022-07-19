@@ -1,5 +1,5 @@
 import { message } from "antd"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
@@ -19,7 +19,7 @@ import textStyles from "../../commonStyles/textType/styles.module.css"
 import ContributionRequestModal from "../../components/Modal/ContributionRequest"
 import { ethers } from "ethers"
 import ContributionCard from "../../components/ContributionCard"
-import { useSafeSdk } from "../../hooks"
+import { useSafeSdk, usePrevious } from "../../hooks"
 
 import PaymentCheckoutModal from "../../components/Modal/PaymentCheckoutModal"
 import PaymentCard from "../../components/PaymentCard"
@@ -48,18 +48,16 @@ import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
+import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
     const [currentPage, setCurrentPage] = useState("request")
-    const [uniPayHover, setUniPayHover] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const payoutToast = useSelector((x) => x.toast.payout)
     const active_payout_notification = useSelector(
         (x) => x.dao.active_payout_notification
     )
-    const accountMode = useSelector((x) => x.dao.account_mode)
-    const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -81,10 +79,14 @@ export default function Dashboard() {
     const payout_request = useSelector((x) => x.dao.payout_filter)
     const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
-    // gnosis setup
-    const [signer, setSigner] = useState()
+
+    const { data: signer } = useSigner()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
+    const provider = useProvider()
+    const prevSigner = usePrevious(signer)
+    const { isDisconnected } = useAccount()
+    const { disconnect } = useDisconnect()
 
     const defaultOptions = {
         loop: true,
@@ -106,19 +108,12 @@ export default function Dashboard() {
         }
     }, [dispatch, payoutToast])
 
-    const setProvider = async () => {
-        const provider = new ethers.providers.Web3Provider(
-            window.ethereum,
-            "any"
-        )
-        await provider.send("eth_requestAccounts", [])
-        const signer = provider.getSigner()
-        setSigner(signer)
-    }
-
     useEffect(() => {
-        setProvider()
-    }, [])
+        if (isDisconnected) {
+            disconnect()
+            navigate("/")
+        }
+    }, [isDisconnected])
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
@@ -160,14 +155,6 @@ export default function Dashboard() {
         })
     }, [address, jwt])
 
-    async function onInit() {
-        const accounts = await window.ethereum.request({
-            method: "eth_requestAccounts",
-        })
-        const account = accounts[0]
-        return account
-    }
-
     const rep3ProtocolFunctionsCommon = async (currentDaos) => {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
@@ -176,37 +163,36 @@ export default function Dashboard() {
     }
 
     const initialLoad = useCallback(async () => {
-        const account = await onInit()
-        if (address === ethers.utils.getAddress(account)) {
-            dispatch(setLoadingState(true))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = provider.getSigner()
-            const chainId = await signer.getChainId()
-            const { accountRole, currentDaos } = await dispatch(
-                getAllDaowithAddress(chainId)
-            )
-            await rep3ProtocolFunctionsCommon(currentDaos)
-            await initPOCP(currentDaos.uuid)
-            if (accountRole === "ADMIN") {
-                setCurrentPage("badges")
-                await dispatch(getAllDaoMembers())
+        if (signer) {
+            if (address) {
+                dispatch(setLoadingState(true))
+                const chainId = await signer.getChainId()
+                const { accountRole, currentDaos } = await dispatch(
+                    getAllDaowithAddress(chainId)
+                )
+                await rep3ProtocolFunctionsCommon(currentDaos)
+                await initPOCP(currentDaos.uuid, provider, signer, chainId)
+                if (accountRole === "ADMIN") {
+                    setCurrentPage("badges")
+                    await dispatch(getAllDaoMembers())
+                } else {
+                    // await contributorFetch()
+                    // contribution specific fetch
+                }
             } else {
-                // await contributorFetch()
-                // contribution specific fetch
+                dispatch(setLoadingState(false))
+                dispatch(signout())
+                navigate("/")
             }
-        } else {
-            dispatch(setLoadingState(false))
-            dispatch(signout())
-            navigate("/")
         }
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
     useEffect(() => {
-        if (!modalPayment) {
+        if (!modalPayment && !prevSigner) {
             initialLoad()
         }
-    }, [currentDao?.uuid])
+    }, [currentDao?.uuid, signer])
 
     useEffect(() => {
         preventGoingBack()
@@ -340,7 +326,6 @@ export default function Dashboard() {
     )
 
     const onPaymentModal = () => {
-        setProvider()
         setModalPayment(true)
     }
 

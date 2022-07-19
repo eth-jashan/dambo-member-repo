@@ -23,7 +23,6 @@ export default function MembershipCreationStep2({
         const files = e.target.files || e.dataTransfer.files
         if (!files.length) return
         const copyOfBadges = membershipBadges.map((ele) => ({ ...ele }))
-        console.log("file selected is", files[0])
         copyOfBadges[badgeIndex].image_url = URL.createObjectURL(files[0])
         copyOfBadges[badgeIndex].is_video = false
         if (files[0].type === "video/mp4") {
@@ -31,12 +30,9 @@ export default function MembershipCreationStep2({
         }
         // const formData = new FormData()
         // formData.append("file", files[0])
-        // console.log("formdata is", files[0])
         copyOfBadges[badgeIndex].file = files[0]
         setMembershipBadges(copyOfBadges)
     }
-
-    console.log("membership badges ", membershipBadges)
 
     return (
         <div className="membership-creation-step2-container">

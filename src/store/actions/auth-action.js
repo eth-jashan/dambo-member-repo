@@ -3,7 +3,7 @@ import routes from "../../constant/routes"
 import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 import apiClient from "../../utils/api_client"
-import { setChainInfoAction } from "../../utils/POCPutils"
+import { setChainInfoAction } from "../../utils/wagmiHelpers"
 
 export const getAuthToken = async (jwt) => {
     const res = await axios.get(
@@ -114,6 +114,7 @@ export const retrieveAddress = () => {
 
 export const setAddress = (address) => {
     return (dispatch) => {
+        console.log("address in set Address", address)
         dispatch(authActions.set_address({ address }))
     }
 }

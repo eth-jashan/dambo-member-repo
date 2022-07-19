@@ -6,7 +6,7 @@ import chevron_down from "../../../assets/Icons/chevron_down.svg"
 import chevron_up from "../../../assets/Icons/chevron_up.svg"
 import etherscanIcon from "../../../assets/Icons/etherscanIcon.svg"
 import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
-import { getSelectedChainId } from "../../../utils/POCPutils"
+// import { getSelectedChainId } from "../../../utils/POCPutils"
 const ContributionOverview = () => {
     const [isToggleOpen, setIsToggleOpen] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -32,7 +32,6 @@ const ContributionOverview = () => {
             ...metadatSubgraph[0],
             ...membershipBadges.membership,
         })
-        console.log("Claimed Token From BE", membershipBadges)
     }
     useEffect(() => {
         if (
@@ -93,9 +92,8 @@ const ContributionOverview = () => {
     }
 
     const openEtherscan = () => {
-        console.log(currentMembershipBadge)
         window.open(
-            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress[0]?.id}?a=${currentMembershipBadge?.tokenID}`,
+            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.[0]?.id}?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
@@ -106,13 +104,6 @@ const ContributionOverview = () => {
             "_blank"
         )
     }
-
-    console.log(
-        "cuurent badge",
-        currentMembershipBadge,
-        currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200",
-        isImage
-    )
 
     return (
         <div className={styles.container}>

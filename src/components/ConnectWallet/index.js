@@ -21,11 +21,12 @@ import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
 import chevron_right from "../../assets/Icons/chevron_right.svg"
 import { links } from "../../constant/links"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { setChainInfoAction } from "../../utils/POCPutils"
-// import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { setChainInfoAction } from "../../utils/wagmiHelpers"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useAccount, useSigner, useProvider } from "wagmi"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
-    const address = useSelector((x) => x.auth.address)
+    // const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     // here jwt
     const uuid = useSelector((x) => x.contributor.invite_code)
@@ -33,6 +34,19 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [isAccess, setAccess] = useState(true)
+    const { address, isConnected, isDisconnected, status } = useAccount()
+    const {
+        data: signer,
+        isError,
+        isLoading,
+        isSuccess,
+    } = useSigner({
+        // onSuccess(data) {
+        //     console.log("data in onSuccess", data)
+        //     setSigner(data)
+        // },
+    })
+    const provider = useProvider()
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -102,34 +116,19 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         [dispatch, isAdmin, navigate, uuid]
     )
 
-    const checkIsAdminInvite = useCallback(() => {
-        if (!uuid && !isAdmin) {
-            dispatch(signout())
-        }
-    }, [])
-
-    useEffect(() => {
-        checkIsAdminInvite()
-    }, [checkIsAdminInvite])
-
-    const onDiscordAuth = () => {
-        dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(`${links.discord_oauth}`)
-    }
-
     const loadWeb3Modal = useCallback(async () => {
-        console.log(isAdmin)
         setAuth(true)
         try {
-            await window.ethereum.request({
-                method: "eth_requestAccounts",
-            })
+            // await window.ethereum.request({
+            //     method: "eth_requestAccounts",
+            // })
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = await provider.getSigner()
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const signer = await provider.getSigner()
             const chainId = await signer.getChainId()
             const newAddress = await signer.getAddress()
-            dispatch(setAddress(newAddress))
+            // dispatch(setAddress(newAddress))
+
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
             if (
@@ -200,6 +199,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 //     await authWithWallet(newAddress, chainId, signer)
                 // } else {
                 // doesn't have valid token and chain is selected one
+                console.log("in else if")
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 await authWithWallet(newAddress, chainId, signer)
@@ -216,138 +216,154 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         } catch (error) {
             message.error("Please Check your metamask")
         }
-    }, [authWithWallet, dispatch, isAdmin, navigate, uuid])
+    }, [authWithWallet, dispatch, isAdmin, navigate, uuid, signer])
 
-    const connectWallet = () => (
-        <div className={styles.walletCnt}>
-            <div onClick={() => loadWeb3Modal()} className={styles.walletLogo}>
-                <img
-                    src={metamaskIcon}
-                    alt="metamask"
-                    className={styles.walletImg}
-                />
-                <div className={styles.walletName}>Metamask</div>
-            </div>
-            <img
-                src={chevron_right}
-                className={styles.chevronIcon}
-                width="32px"
-                height="32px"
-                alt="cheveron-right"
-            />
-        </div>
-    )
+    // const connectWallet = () => (
+    //     <div className={styles.walletCnt}>
+    //         <div onClick={() => loadWeb3Modal()} className={styles.walletLogo}>
+    //             <img
+    //                 src={metamaskIcon}
+    //                 alt="metamask"
+    //                 className={styles.walletImg}
+    //             />
+    //             <div className={styles.walletName}>Metamask</div>
+    //         </div>
+    //         <img
+    //             src={chevron_right}
+    //             className={styles.chevronIcon}
+    //             width="32px"
+    //             height="32px"
+    //             alt="cheveron-right"
+    //         />
+    //     </div>
+    // )
+    // const { address: address1, isConnecting, isDisconnected } = useAccount()
 
-    const authenticateWallet = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = provider.getSigner()
-        const chainId = await signer.getChainId()
-        await authWithWallet(address, chainId, signer)
-    }
+    // const authenticateWallet = async () => {
+    //     // const provider = new ethers.providers.Web3Provider(window.ethereum)
+    //     // const signer = provider.getSigner()
+    //     const chainId = await signer.getChainId()
+    //     await authWithWallet(address, chainId, signer)
+    // }
 
-    const authWallet = () => (
-        <div className={styles.walletCntAuth}>
-            <img src={metamaskIcon} alt="metamask" height={32} width={32} />
+    const checkIsAdminInvite = useCallback(() => {
+        if (!uuid && !isAdmin) {
+            dispatch(signout())
+        }
+    }, [])
 
-            <div className={styles.rightContainer}>
-                <div className={styles.walletName}>Metamask</div>
-                <div className={styles.addresCnt}>
-                    <div className={styles.address}>{address}</div>
-                    <div
-                        onClick={() => {
-                            setAccess(true)
-                            dispatch(signout())
-                        }}
-                        className={styles.disconnectLink}
-                    >
-                        Disconnect
-                    </div>
-                </div>
+    useEffect(() => {
+        checkIsAdminInvite()
+    }, [checkIsAdminInvite])
 
-                <Divider />
-                {isAccess && (
-                    <>
-                        <div
-                            style={{ color: "black", paddingLeft: "1.25rem" }}
-                            className={textStyles.m_23}
-                        >
-                            Signature please! ✍️
-                        </div>
-                        <div
-                            style={{ color: "#999999", paddingLeft: "1.25rem" }}
-                            className={styles.authGreyHeading}
-                        >
-                            Please sign the metamask message to continue.
-                        </div>
-                    </>
-                )}
+    // const onDiscordAuth = () => {
+    //     dispatch(setDiscordOAuth(address, uuid, jwt))
+    //     window.location.replace(`${links.discord_oauth.local}`)
+    // }
 
-                {isAccess && (
-                    <div
-                        onClick={
-                            auth
-                                ? () => {}
-                                : async () => await authenticateWallet(address)
-                        }
-                        className={styles.authBtn}
-                    >
-                        <div className={styles.btnTextAuth}>
-                            {auth
-                                ? "Authenticating...."
-                                : "Authenticate wallet"}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+    // const authWallet = () => (
+    //     <div className={styles.walletCntAuth}>
+    //         <img src={metamaskIcon} alt="metamask" height={32} width={32} />
+
+    //         <div className={styles.rightContainer}>
+    //             <div className={styles.walletName}>Metamask</div>
+    //             <div className={styles.addresCnt}>
+    //                 <div className={styles.address}>{address}</div>
+    //                 <div
+    //                     onClick={() => {
+    //                         setAccess(true)
+    //                         dispatch(signout())
+    //                     }}
+    //                     className={styles.disconnectLink}
+    //                 >
+    //                     Disconnect
+    //                 </div>
+    //             </div>
+
+    //             <Divider />
+    //             {isAccess && (
+    //                 <>
+    //                     <div
+    //                         style={{ color: "black", paddingLeft: "1.25rem" }}
+    //                         className={textStyles.m_23}
+    //                     >
+    //                         Signature please! ✍️
+    //                     </div>
+    //                     <div
+    //                         style={{ color: "#999999", paddingLeft: "1.25rem" }}
+    //                         className={styles.authGreyHeading}
+    //                     >
+    //                         Please sign the metamask message to continue.
+    //                     </div>
+    //                 </>
+    //             )}
+
+    //             {isAccess && (
+    //                 <div
+    //                     onClick={
+    //                         auth
+    //                             ? () => {}
+    //                             : async () => await authenticateWallet(address)
+    //                     }
+    //                     className={styles.authBtn}
+    //                 >
+    //                     <div className={styles.btnTextAuth}>
+    //                         {auth
+    //                             ? "Authenticating...."
+    //                             : "Authenticate wallet"}
+    //                     </div>
+    //                 </div>
+    //             )}
+    //         </div>
+    //     </div>
+    // )
 
     // const disconnectContributor = () => {
     //     dispatch(signout())
     //     dispatch(setAdminStatus(false))
     // }
-    //Cozy corner for all your communities
+    // Cozy corner for all your communities
 
-    const daoWallet = () => (
-        <div style={{ width: "100%" }}>
-            {isAccess ? (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        welcome to rep3
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        Cozy corner for all your
-                        <br /> communities
-                    </div>
-                </div>
-            ) : (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        Hmm...🤔
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        seems like you don't have access to this page
-                        {/* <br /> communities */}
-                    </div>
-                    <div className={styles.contactText}>
-                        Please reach out to us{" "}
-                        <a
-                            href="https://twitter.com/rep3gg"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            here.
-                        </a>
-                    </div>
-                </div>
-            )}
-            {address ? authWallet() : connectWallet()}
-        </div>
-    )
+    // const daoWallet = () => (
+    //     <div style={{ width: "100%" }}>
+    //         {isAccess ? (
+    //             <div className={styles.headingCnt}>
+    //                 <div className={`${styles.heading} ${textStyles.ub_53}`}>
+    //                     welcome to rep3
+    //                 </div>
+    //                 <div
+    //                     className={`${styles.greyHeading} ${textStyles.ub_53}`}
+    //                 >
+    //                     Cozy corner for all your
+    //                     <br /> communities
+    //                 </div>
+    //             </div>
+    //         ) : (
+    //             <div className={styles.headingCnt}>
+    //                 <div className={`${styles.heading} ${textStyles.ub_53}`}>
+    //                     Hmm...🤔
+    //                 </div>
+    //                 <div
+    //                     className={`${styles.greyHeading} ${textStyles.ub_53}`}
+    //                 >
+    //                     seems like you don't have access to this page
+    //                     {/* <br /> communities */}
+    //                 </div>
+    //                 <div className={styles.contactText}>
+    //                     Please reach out to us{" "}
+    //                     <a
+    //                         href="https://twitter.com/rep3gg"
+    //                         target="_blank"
+    //                         rel="noreferrer"
+    //                     >
+    //                         here.
+    //                     </a>
+    //                 </div>
+    //             </div>
+    //         )}
+    //         {address ? authWallet() : connectWallet()}
+    //     </div>
+    // )
     // const contributorWallet = () => (
     //     <div className={styles.walletContri}>
     //         <div className={styles.metaCard}>
@@ -460,8 +476,25 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     //     </div>
     // )
 
-    return isAdmin ? daoWallet() : daoWallet()
-    // return <ConnectButton />
+    // useEffect(() => {
+    //     console.log("is Disconnected", isDisconnected)
+    //     if (isDisconnected) {
+    //         navigate("/")
+    //     }
+    // }, [isDisconnected])
+
+    useEffect(() => {
+        if (status === "disconnected") {
+            navigate("/")
+        } else if (address && signer && isConnected) {
+            dispatch(setAddress(address))
+            loadWeb3Modal()
+            // navigate("/dashboard")
+        }
+    }, [signer])
+
+    // return isAdmin ? daoWallet() : daoWallet()
+    return <ConnectButton />
 }
 
 export default ConnectWallet

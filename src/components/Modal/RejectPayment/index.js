@@ -16,6 +16,7 @@ import {
     setRejectModal,
 } from "../../../store/actions/transaction-action"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import { useNetwork } from "wagmi"
 
 const RejectPayment = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -24,7 +25,8 @@ const RejectPayment = ({ onClose, signer }) => {
     const [loading, setLoading] = useState(false)
 
     const currentPayment = useSelector((x) => x.transaction.currentPayment)
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+    const { chain } = useNetwork()
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
     const rejectTransaction = async (hash) => {
         setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
