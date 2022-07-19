@@ -48,19 +48,16 @@ import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
-import { useSigner, useProvider, useAccount } from "wagmi"
+import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
     const [currentPage, setCurrentPage] = useState("request")
-    const [uniPayHover, setUniPayHover] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const payoutToast = useSelector((x) => x.toast.payout)
     const active_payout_notification = useSelector(
         (x) => x.dao.active_payout_notification
     )
-    const accountMode = useSelector((x) => x.dao.account_mode)
-    const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -82,14 +79,15 @@ export default function Dashboard() {
     const payout_request = useSelector((x) => x.dao.payout_filter)
     const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
-    // gnosis setup
-    // const [signer, setSigner] = useState()
-    const { data: signer, isError, isLoading } = useSigner()
+
+    const { data: signer } = useSigner()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
     const provider = useProvider()
     const prevSigner = usePrevious(signer)
     const { isDisconnected } = useAccount()
+    const { disconnect } = useDisconnect()
+
     const defaultOptions = {
         loop: true,
         autoplay: true,
@@ -112,23 +110,10 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (isDisconnected) {
+            disconnect()
             navigate("/")
         }
     }, [isDisconnected])
-
-    // const setProvider = async () => {
-    //     const provider = new ethers.providers.Web3Provider(
-    //         window.ethereum,
-    //         "any"
-    //     )
-    //     await provider.send("eth_requestAccounts", [])
-    //     const signer = provider.getSigner()
-    //     setSigner(signer)
-    // }
-
-    // useEffect(() => {
-    //     setProvider()
-    // }, [])
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
@@ -170,14 +155,6 @@ export default function Dashboard() {
         })
     }, [address, jwt])
 
-    // async function onInit() {
-    //     const accounts = await window.ethereum.request({
-    //         method: "eth_requestAccounts",
-    //     })
-    //     const account = accounts[0]
-    //     return account
-    // }
-
     const rep3ProtocolFunctionsCommon = async (currentDaos) => {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
@@ -186,12 +163,9 @@ export default function Dashboard() {
     }
 
     const initialLoad = useCallback(async () => {
-        // const account = await onInit()
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))
-                // const provider = new ethers.providers.Web3Provider(window.ethereum)
-                // const signer = provider.getSigner()
                 const chainId = await signer.getChainId()
                 const { accountRole, currentDaos } = await dispatch(
                     getAllDaowithAddress(chainId)
@@ -352,7 +326,6 @@ export default function Dashboard() {
     )
 
     const onPaymentModal = () => {
-        // setProvider()
         setModalPayment(true)
     }
 
