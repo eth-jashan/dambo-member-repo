@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
-// import { getSelectedChainId } from "../../utils/POCPutils"
 import { Switch, message, Spin } from "antd"
 import CheckSvg from "../../assets/Icons/check.svg"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -11,7 +10,6 @@ import {
     toggleBot,
     getAllDaowithAddress,
 } from "../../store/actions/dao-action"
-import { ethers } from "ethers"
 import { links } from "../../constant/links"
 import { useNetwork } from "wagmi"
 
@@ -44,7 +42,7 @@ export default function SettingsScreen() {
 
     const dispatch = useDispatch()
 
-    const currentUser = currentDao?.signers.filter(
+    const currentUser = currentDao?.signers?.filter(
         (x) => x.public_address === address
     )
 
