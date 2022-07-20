@@ -8,10 +8,7 @@ import DaoInfo from "../components/DaoInfo"
 import { useDispatch, useSelector } from "react-redux"
 import {
     addSafeAddress,
-    lastSelectedId,
-    pocpRegistrationInfo,
     registerDao,
-    connectDaoToDiscord,
     getAllSafeFromAddress,
     addDaoInfo,
 } from "../store/actions/dao-action"
@@ -158,55 +155,6 @@ export default function Onboarding() {
             increaseStep()
         }
     }
-
-    // const createDao = async () => {
-    //     if (hasMultiSignWallet) {
-    //         const { dao_uuid, name, owners } = await dispatch(registerDao())
-    //         const owner = [address]
-    //         if (owners.length > 1) {
-    //             owners.forEach((x) => {
-    //                 if (x?.address !== address) {
-    //                     owner.push(x?.address)
-    //                 }
-    //             })
-    //         }
-    //         dispatch(lastSelectedId(dao_uuid))
-    //         if (dao_uuid) {
-    //             if (guildId) {
-    //                 const res = await dispatch(
-    //                     connectDaoToDiscord(dao_uuid, guildId, discordUserId)
-    //                 )
-    //                 if (res) {
-    //                     message.success(
-    //                         "Discord registered to dao successfully"
-    //                     )
-    //                 } else {
-    //                     message.error(
-    //                         "Something went wrong please try again later"
-    //                     )
-    //                 }
-    //             }
-    //             dispatch(pocpRegistrationInfo(dao_uuid, name, owner))
-    //             increaseStep()
-    //         } else {
-    //             navigate(`/onboard/dao`)
-    //         }
-    //     } else {
-    //         try {
-    //             try {
-    //                 const owner = []
-    //                 owners.forEach((item) => {
-    //                     owner.push(item.address)
-    //                 })
-    //                 await deploySafe(owner)
-    //             } catch (error) {
-    //                 // console.log("error.... on deploying", error);
-    //             }
-    //         } catch (error) {
-    //             // console.log("error.......", error);
-    //         }
-    //     }
-    // }
 
     const deployNewSafe = async () => {
         // try {

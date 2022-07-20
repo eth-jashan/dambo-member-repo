@@ -47,6 +47,8 @@ const DashboardHeader = ({
         }
     }
 
+    console.log("current dao is ", currentDao)
+
     const onProfileModal = () => {
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -61,8 +63,9 @@ const DashboardHeader = ({
         setSwitchRoleModal(!switchRoleModal)
     }
 
-    const accountSwitchPress = () => {
-        setCurrentPage("request")
+    const accountSwitchPress = (role) => {
+        if (role === "ADMIN") setCurrentPage("badges")
+        else setCurrentPage("request")
         setShowSettings(false)
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
@@ -154,17 +157,21 @@ const DashboardHeader = ({
                     >
                         Request
                     </div>
-                    <div
-                        className={
-                            currentPage === "treasury" ? "activePageLink" : ""
-                        }
-                        onClick={() => {
-                            setCurrentPage("treasury")
-                            setShowSettings(false)
-                        }}
-                    >
-                        Treasury
-                    </div>
+                    {currentDao?.safe_public_address && (
+                        <div
+                            className={
+                                currentPage === "treasury"
+                                    ? "activePageLink"
+                                    : ""
+                            }
+                            onClick={() => {
+                                setCurrentPage("treasury")
+                                setShowSettings(false)
+                            }}
+                        >
+                            Treasury
+                        </div>
+                    )}
                 </div>
             )}
             <div className="profileContainer">
@@ -220,7 +227,7 @@ const DashboardHeader = ({
                     {switchRoleModal && (
                         <AccountSwitchModal
                             route={route}
-                            onChange={() => accountSwitchPress()}
+                            onChange={(role) => accountSwitchPress(role)}
                         />
                     )}
                 </div>

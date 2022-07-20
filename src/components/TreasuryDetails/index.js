@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
 import {
@@ -7,8 +7,6 @@ import {
 } from "../../store/actions/dao-action"
 import DashboardSearchTab from "../DashboardSearchTab"
 import PaymentCard from "../PaymentCard"
-import { ethers } from "ethers"
-// import { getSelectedChainId } from "../../utils/POCPutils"
 import TreasurySignersModal from "../Modal/TreasurySignersModal"
 import { useSigner, useNetwork } from "wagmi"
 export default function TreasuryDetails() {
@@ -18,12 +16,10 @@ export default function TreasuryDetails() {
     const NFTs = useSelector((x) => x.dao.NFTs)
     const [selectedNav, setSelectedNav] = useState("tokens")
     const payout_request = useSelector((x) => x.dao.payout_filter)
-    // const [signer, setSigner] = useState()
 
     const dispatch = useDispatch()
-    // const currentChainId = getSelectedChainId().chainId
     const [isModalVisible, setIsModalVisible] = useState(false)
-    const { data: signer, isError, isLoading } = useSigner()
+    const { data: signer } = useSigner()
     const { chain } = useNetwork()
 
     const showModal = () => {
@@ -33,25 +29,6 @@ export default function TreasuryDetails() {
     const handleClose = () => {
         setIsModalVisible(false)
     }
-
-    // useEffect(() => {
-    //     dispatch(getAllTokensOfSafe())
-    //     dispatch(getAllNFTsOfSafe())
-    // }, [currentDao?.uuid])
-
-    // const setProvider = async () => {
-    //     const provider = new ethers.providers.Web3Provider(
-    //         window.ethereum,
-    //         "any"
-    //     )
-    //     await provider.send("eth_requestAccounts", [])
-    //     const signer = provider.getSigner()
-    //     setSigner(signer)
-    // }
-
-    // useEffect(() => {
-    //     setProvider()
-    // }, [])
 
     const copySafeAddress = async () => {
         if ("clipboard" in navigator) {

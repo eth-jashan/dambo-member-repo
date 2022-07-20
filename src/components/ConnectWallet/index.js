@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { ethers } from "ethers"
+// import { ethers } from "ethers"
 import { useSelector, useDispatch } from "react-redux"
 import {
     authWithSign,
@@ -9,18 +9,19 @@ import {
     setLoggedIn,
     signout,
 } from "../../store/actions/auth-action"
-import styles from "./style.module.css"
-import metamaskIcon from "../../assets/Icons/metamask.svg"
+// import styles from "./style.module.css"
+import "./styles.scss"
+// import metamaskIcon from "../../assets/Icons/metamask.svg"
 import { Divider, message } from "antd"
 import { useNavigate } from "react-router"
-import walletIcon from "../../assets/Icons/wallet.svg"
-import tickIcon from "../../assets/Icons/tick.svg"
-import { FaDiscord } from "react-icons/fa"
+// import walletIcon from "../../assets/Icons/wallet.svg"
+// import tickIcon from "../../assets/Icons/tick.svg"
+// import { FaDiscord } from "react-icons/fa"
 import { getAddressMembership } from "../../store/actions/gnosis-action"
 import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
-import chevron_right from "../../assets/Icons/chevron_right.svg"
-import { links } from "../../constant/links"
-import textStyles from "../../commonStyles/textType/styles.module.css"
+// import chevron_right from "../../assets/Icons/chevron_right.svg"
+// import { links } from "../../constant/links"
+// import textStyles from "../../commonStyles/textType/styles.module.css"
 import { setChainInfoAction } from "../../utils/wagmiHelpers"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useAccount, useSigner, useProvider } from "wagmi"
@@ -34,19 +35,15 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [isAccess, setAccess] = useState(true)
-    const { address, isConnected, isDisconnected, status } = useAccount()
-    const {
-        data: signer,
-        isError,
-        isLoading,
-        isSuccess,
-    } = useSigner({
+    const { address, isConnected, status } = useAccount()
+    const { data: signer } = useSigner({
         // onSuccess(data) {
         //     console.log("data in onSuccess", data)
         //     setSigner(data)
         // },
     })
     const provider = useProvider()
+    const [showConnectBtn, setShowConnectBtn] = useState(true)
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -119,18 +116,13 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const loadWeb3Modal = useCallback(async () => {
         setAuth(true)
         try {
-            // await window.ethereum.request({
-            //     method: "eth_requestAccounts",
-            // })
-
-            // const provider = new ethers.providers.Web3Provider(window.ethereum)
-            // const signer = await provider.getSigner()
             const chainId = await signer.getChainId()
             const newAddress = await signer.getAddress()
             // dispatch(setAddress(newAddress))
 
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
+            console.log("response of getJwt ", res, chainId)
             if (
                 res &&
                 (chainId === 4 ||
@@ -150,7 +142,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     } else {
                         setAuth(false)
                         setAccess(false)
-                        // message.error("Closed For Beta Test")
                         navigate("/onboard/dao")
                     }
                 } else {
@@ -486,15 +477,138 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     useEffect(() => {
         if (status === "disconnected") {
             navigate("/")
-        } else if (address && signer && isConnected) {
+        } else if (address && signer && isConnected && !showConnectBtn) {
             dispatch(setAddress(address))
             loadWeb3Modal()
             // navigate("/dashboard")
         }
     }, [signer])
 
+    if (isConnected && showConnectBtn) {
+        return (
+            <div className="connect-wallet-container">
+                <ConnectButton />
+                <button
+                    className="sign-in-btn"
+                    onClick={() => {
+                        dispatch(setAddress(address))
+                        loadWeb3Modal()
+                    }}
+                >
+                    Sign in
+                </button>
+            </div>
+        )
+    }
+
     // return isAdmin ? daoWallet() : daoWallet()
-    return <ConnectButton />
+    // return <ConnectButton />
+    return (
+        <div className="connect-wallet-container">
+            <ConnectButton.Custom>
+                {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    mounted,
+                }) => {
+                    return (
+                        <div
+                            {...(!mounted && {
+                                "aria-hidden": true,
+                                style: {
+                                    opacity: 0,
+                                    pointerEvents: "none",
+                                    userSelect: "none",
+                                },
+                            })}
+                        >
+                            {(() => {
+                                if (!mounted || !account || !chain) {
+                                    return (
+                                        <button
+                                            onClick={() => {
+                                                openConnectModal()
+                                                setShowConnectBtn(false)
+                                            }}
+                                            type="button"
+                                        >
+                                            Connect Wallet
+                                        </button>
+                                    )
+                                }
+
+                                if (chain.unsupported) {
+                                    return (
+                                        <button
+                                            onClick={openChainModal}
+                                            type="button"
+                                        >
+                                            Wrong network
+                                        </button>
+                                    )
+                                }
+
+                                return (
+                                    <div style={{ display: "flex", gap: 12 }}>
+                                        <button
+                                            onClick={openChainModal}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                            type="button"
+                                        >
+                                            {chain.hasIcon && (
+                                                <div
+                                                    style={{
+                                                        background:
+                                                            chain.iconBackground,
+                                                        width: 12,
+                                                        height: 12,
+                                                        borderRadius: 999,
+                                                        overflow: "hidden",
+                                                        marginRight: 4,
+                                                    }}
+                                                >
+                                                    {chain.iconUrl && (
+                                                        <img
+                                                            alt={
+                                                                chain.name ??
+                                                                "Chain icon"
+                                                            }
+                                                            src={chain.iconUrl}
+                                                            style={{
+                                                                width: 12,
+                                                                height: 12,
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
+                                            {chain.name}
+                                        </button>
+
+                                        <button
+                                            onClick={openAccountModal}
+                                            type="button"
+                                        >
+                                            {account.displayName}
+                                            {account.displayBalance
+                                                ? ` (${account.displayBalance})`
+                                                : ""}
+                                        </button>
+                                    </div>
+                                )
+                            })()}
+                        </div>
+                    )
+                }}
+            </ConnectButton.Custom>
+        </div>
+    )
 }
 
 export default ConnectWallet
