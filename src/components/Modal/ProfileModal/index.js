@@ -88,7 +88,7 @@ const ProfileModal = ({
 
             <div className={styles.divider} />
 
-            {/* {!isOnboard && (
+            {!isOnboard && (
                 <div
                     className={styles.singleOption}
                     onClick={() => {
@@ -110,18 +110,18 @@ const ProfileModal = ({
                         className={styles.chevron}
                     />
                 </div>
-            )} */}
+            )}
 
-            {/* {!isOnboard && (
+            {!isOnboard && (
                 <div
                     style={{
                         marginTop: "4px",
-                        width: "90%",
+                        width: "100%",
                         alignSelf: "center",
                     }}
                     className={styles.divider}
                 />
-            )} */}
+            )}
 
             <div className={styles.singleOption} onClick={openTwitter}>
                 <div>
