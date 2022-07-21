@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
 import {
@@ -7,10 +7,8 @@ import {
 } from "../../store/actions/dao-action"
 import DashboardSearchTab from "../DashboardSearchTab"
 import PaymentCard from "../PaymentCard"
-import { ethers } from "ethers"
-import { getSelectedChainId } from "../../utils/POCPutils"
 import TreasurySignersModal from "../Modal/TreasurySignersModal"
-
+import { useSigner, useNetwork } from "wagmi"
 export default function TreasuryDetails() {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const currentUserAddress = useSelector((x) => x.auth.address)
@@ -18,11 +16,11 @@ export default function TreasuryDetails() {
     const NFTs = useSelector((x) => x.dao.NFTs)
     const [selectedNav, setSelectedNav] = useState("tokens")
     const payout_request = useSelector((x) => x.dao.payout_filter)
-    const [signer, setSigner] = useState()
 
     const dispatch = useDispatch()
-    const currentChainId = getSelectedChainId().chainId
     const [isModalVisible, setIsModalVisible] = useState(false)
+    const { data: signer } = useSigner()
+    const { chain } = useNetwork()
 
     const showModal = () => {
         setIsModalVisible(true)
@@ -31,25 +29,6 @@ export default function TreasuryDetails() {
     const handleClose = () => {
         setIsModalVisible(false)
     }
-
-    // useEffect(() => {
-    //     dispatch(getAllTokensOfSafe())
-    //     dispatch(getAllNFTsOfSafe())
-    // }, [currentDao?.uuid])
-
-    const setProvider = async () => {
-        const provider = new ethers.providers.Web3Provider(
-            window.ethereum,
-            "any"
-        )
-        await provider.send("eth_requestAccounts", [])
-        const signer = provider.getSigner()
-        setSigner(signer)
-    }
-
-    useEffect(() => {
-        setProvider()
-    }, [])
 
     const copySafeAddress = async () => {
         if ("clipboard" in navigator) {
@@ -67,7 +46,7 @@ export default function TreasuryDetails() {
 
     const openTreasuryOnEtherscan = () => {
         const link = `https://${
-            currentChainId === 4 ? "rinkeby." : ""
+            chain?.id === 4 ? "rinkeby." : ""
         }etherscan.io/address/${currentDao?.safe_public_address}`
         window.open(link)
     }
@@ -94,14 +73,14 @@ export default function TreasuryDetails() {
 
     const openGnosisNft = () => {
         window.open(
-            `https://gnosis-safe.io/app/${currentChainId === 4 ? "rin:" : ""}${
+            `https://gnosis-safe.io/app/${chain?.id === 4 ? "rin:" : ""}${
                 currentDao?.safe_public_address
             }/balances/nfts`
         )
     }
 
     const gnosisSignerLink = `https://gnosis-safe.io/app/${
-        currentChainId === 4 ? "rin:" : ""
+        chain?.id === 4 ? "rin:" : ""
     }${currentDao?.safe_public_address}/settings/owners`
 
     return (
@@ -257,7 +236,7 @@ export default function TreasuryDetails() {
                                     )}
                                     <a
                                         href={`https://gnosis-safe.io/app/${
-                                            currentChainId === 4 ? "rin:" : ""
+                                            chain?.id === 4 ? "rin:" : ""
                                         }${currentDao?.safe_public_address}`}
                                         target="_blank"
                                         className="view-on-gnosis"

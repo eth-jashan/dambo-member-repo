@@ -12,15 +12,15 @@ import {
 } from "../../../store/actions/contibutor-action"
 import POCPBadge from "../../POCPBadge"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import {
-    chainSwitch,
-    checkClaimApprovedSuccess,
-    getSelectedChainId,
-    isApprovedToken,
-    processBadgeApprovalToPocp,
-    processClaimBadgeToPocp,
-    setChainInfoAction,
-} from "../../../utils/POCPutils"
+// import {
+//     chainSwitch,
+//     checkClaimApprovedSuccess,
+//     getSelectedChainId,
+//     isApprovedToken,
+//     processBadgeApprovalToPocp,
+//     processClaimBadgeToPocp,
+//     setChainInfoAction,
+// } from "../../../utils/POCPutils"
 
 import { ethers } from "ethers"
 import {
@@ -37,6 +37,7 @@ import {
     uploadApproveMetaDataUpload,
 } from "../../../utils/relayFunctions"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import { useNetwork } from "wagmi"
 
 const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const currentTransaction = useSelector(
@@ -48,9 +49,10 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     const role = useSelector((x) => x.dao.role)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const address = currentTransaction?.requested_by?.public_address
+    const { chain } = useNetwork()
 
     const setPocpAction = (chainId) => {
-        setChainInfoAction(chainId)
+        // setChainInfoAction(chainId)
     }
     const jwt = useSelector((x) => x.auth.jwt)
     const [txInfo, setTxInfo] = useState([])
@@ -73,7 +75,7 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
         }
     }
 
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl())
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
     const getTransactionInfo = useCallback(async () => {
         let tx
 
@@ -531,35 +533,36 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
 
     const [load, setLoad] = useState(false)
 
-    const onClaimEventCallback = async (event) => {
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllClaimedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        dispatch(getContributorOverview())
-        dispatch(setContributionDetail(null))
-        dispatch(claimUpdate(currentTransaction?.id))
-        dispatch(setClaimLoading(false, currentTransaction?.id))
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
-    }
-    const onErrorCallBack = () => {
-        dispatch(setClaimLoading(false, currentTransaction?.id))
-    }
+    // const onClaimEventCallback = async (event) => {
+    //     await dispatch(getAllApprovedBadges())
+    //     await dispatch(getAllClaimedBadges())
+    //     await dispatch(getAllUnclaimedBadges())
+    //     dispatch(getContributorOverview())
+    //     dispatch(setContributionDetail(null))
+    //     dispatch(claimUpdate(currentTransaction?.id))
+    //     dispatch(setClaimLoading(false, currentTransaction?.id))
+    //     let chainId = getSelectedChainId()
+    //     chainId = ethers.utils.hexValue(chainId.chainId)
+    //     await chainSwitch(chainId)
+    // }
+    // const onErrorCallBack = () => {
+    //     dispatch(setClaimLoading(false, currentTransaction?.id))
+    // }
 
     const claimBadges = async () => {
         if (!claim_loading.status) {
             dispatch(setClaimLoading(true, currentTransaction?.id))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const { chainId } = await provider.getNetwork()
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const { chainId } = await provider.getNetwork()
+            const chainId = chain?.id
             setPocpAction(chainId)
-            await processClaimBadgeToPocp(
-                isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
-                jwt,
-                currentTransaction?.id,
-                onClaimEventCallback,
-                onErrorCallBack
-            )
+            // await processClaimBadgeToPocp(
+            //     isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
+            //     jwt,
+            //     currentTransaction?.id,
+            //     onClaimEventCallback,
+            //     onErrorCallBack
+            // )
         }
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
@@ -593,31 +596,31 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
         }
     }
 
-    const onApprovalSuccess = async (events) => {
-        let chainId = getSelectedChainId()
-        chainId = ethers.utils.hexValue(chainId.chainId)
-        await chainSwitch(chainId)
+    // const onApprovalSuccess = async (events) => {
+    //     let chainId = getSelectedChainId()
+    //     chainId = ethers.utils.hexValue(chainId.chainId)
+    //     await chainSwitch(chainId)
 
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getAllUnclaimedBadges())
-        await dispatch(getAllClaimedBadges())
+    //     await dispatch(getAllApprovedBadges())
+    //     await dispatch(getAllUnclaimedBadges())
+    //     await dispatch(getAllClaimedBadges())
 
-        onContributionCrossPress()
-        setLoad(false)
-    }
+    //     onContributionCrossPress()
+    //     setLoad(false)
+    // }
 
     const approvePOCPBadgeWithUrl = async () => {
         setLoad(true)
         if (currentTransaction?.ipfs_url) {
-            await processBadgeApprovalToPocp(
-                parseInt(communityInfo[0]?.id),
-                [currentTransaction?.requested_by?.public_address],
-                [currentTransaction?.id?.toString()],
-                [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
-                jwt,
-                onApprovalSuccess,
-                onApprovalSuccess
-            )
+            // await processBadgeApprovalToPocp(
+            //     parseInt(communityInfo[0]?.id),
+            //     [currentTransaction?.requested_by?.public_address],
+            //     [currentTransaction?.id?.toString()],
+            //     [`https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}`],
+            //     jwt,
+            //     onApprovalSuccess,
+            //     onApprovalSuccess
+            // )
         } else {
             const res = await uploadApproveMetatoIpfs()
             if (res.status) {
@@ -643,32 +646,32 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
                         if (status) {
                             clearTimeout(interval)
                             if (cid?.length > 0) {
-                                await processBadgeApprovalToPocp(
-                                    parseInt(communityInfo[0]?.id),
-                                    [
-                                        currentTransaction?.requested_by
-                                            ?.public_address,
-                                    ],
-                                    [currentTransaction?.id?.toString()],
-                                    url,
-                                    jwt,
-                                    onApprovalSuccess,
-                                    onApprovalSuccess
-                                )
+                                // await processBadgeApprovalToPocp(
+                                //     parseInt(communityInfo[0]?.id),
+                                //     [
+                                //         currentTransaction?.requested_by
+                                //             ?.public_address,
+                                //     ],
+                                //     [currentTransaction?.id?.toString()],
+                                //     url,
+                                //     jwt,
+                                //     onApprovalSuccess,
+                                //     onApprovalSuccess
+                                // )
                             }
                         }
                     }, 2000)
                 } else {
                     if (cid?.length > 0) {
-                        await processBadgeApprovalToPocp(
-                            parseInt(communityInfo[0]?.id),
-                            [currentTransaction?.requested_by?.public_address],
-                            [currentTransaction?.id?.toString()],
-                            url,
-                            jwt,
-                            onApprovalSuccess,
-                            onApprovalSuccess
-                        )
+                        // await processBadgeApprovalToPocp(
+                        //     parseInt(communityInfo[0]?.id),
+                        //     [currentTransaction?.requested_by?.public_address],
+                        //     [currentTransaction?.id?.toString()],
+                        //     url,
+                        //     jwt,
+                        //     onApprovalSuccess,
+                        //     onApprovalSuccess
+                        // )
                     }
                 }
             }
@@ -818,10 +821,10 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
             <div className={styles.divider} />
             {renderSigners_admin()}
             {role === "ADMIN" &&
-                !checkClaimApprovedSuccess(
-                    all_approved_badge,
-                    currentTransaction?.id
-                ) &&
+                // !checkClaimApprovedSuccess(
+                //     all_approved_badge,
+                //     currentTransaction?.id
+                // ) &&
                 txInfo?.isExecuted &&
                 txInfo?.value !== "0" &&
                 currentDao?.tx_hash &&
@@ -861,35 +864,36 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
                         </div>
                     </div>
                 )}
-            {isApprovedToken(unclaimed, currentTransaction?.id).status &&
+            {
+                // isApprovedToken(unclaimed, currentTransaction?.id).status &&
                 !isAdmin &&
-                // currentTransaction?.status !== "REQUESTED" &&
-                // currentTransaction?.status !== "REJECTED" &&
-                (txInfo
-                    ? txInfo?.isExecuted
-                    : isApprovedToken(unclaimed, currentTransaction?.id)
-                          .status) && (
-                    <div className={styles.claim_container}>
-                        <div className={styles.deletContainer}>
-                            <img
-                                src={delete_icon}
-                                alt="cross"
-                                className={styles.delete}
-                            />
-                        </div>
-                        <div
-                            onClick={async () => await claimBadges()}
-                            className={styles.payNow}
-                        >
-                            <div className={`${textStyle.ub_16}`}>
-                                {claim_loading.status &&
-                                claim_loading?.id === currentTransaction?.id
-                                    ? "Claiming...."
-                                    : "Claim Badge"}
+                    // currentTransaction?.status !== "REQUESTED" &&
+                    // currentTransaction?.status !== "REJECTED" &&
+                    txInfo?.isExecuted && (
+                        // : isApprovedToken(unclaimed, currentTransaction?.id)
+                        //   .status
+                        <div className={styles.claim_container}>
+                            <div className={styles.deletContainer}>
+                                <img
+                                    src={delete_icon}
+                                    alt="cross"
+                                    className={styles.delete}
+                                />
+                            </div>
+                            <div
+                                onClick={async () => await claimBadges()}
+                                className={styles.payNow}
+                            >
+                                <div className={`${textStyle.ub_16}`}>
+                                    {claim_loading.status &&
+                                    claim_loading?.id === currentTransaction?.id
+                                        ? "Claiming...."
+                                        : "Claim Badge"}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )
+            }
         </div>
     )
 }

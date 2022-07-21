@@ -7,7 +7,7 @@ import { tranactionAction } from "../reducers/transaction-slice"
 import { PocpGetters } from "pocp-service-sdk"
 import { ethers } from "ethers"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
-import { getSelectedChainId } from "../../utils/POCPutils"
+import { getSelectedChainId } from "../../utils/wagmiHelpers"
 import {
     claimVoucher,
     getMembershipBadgeFromTxHash,
@@ -19,7 +19,6 @@ import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 
 const currentNetwork = getSelectedChainId()
-console.log("link", getSafeServiceUrl())
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
 export const setChainId = (chainId) => {
@@ -52,7 +51,7 @@ export const addDaoInfo = (name, logo, email, discord) => {
     }
 }
 
-export const registerDao = (callbackFn) => {
+export const registerDao = (callbackFn, chainId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
@@ -62,9 +61,9 @@ export const registerDao = (callbackFn) => {
         const name = getState().dao.newSafeSetup.dao_name
         const logo = getState().dao.newSafeSetup.dao_logo_url
         const discord = getState().dao.newSafeSetup.dao_discord
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const signer = await provider.getSigner()
+        // const chainId = await signer.getChainId()
         const ownerMeta = []
         const approvers = []
         owners.forEach((item) => {
@@ -86,10 +85,7 @@ export const registerDao = (callbackFn) => {
                         approvers: ownerMeta,
                         logo_url: logo,
                         chain_id: chainId,
-                        txn_chain_id:
-                            getSelectedChainId()?.chainId === 4
-                                ? "80001"
-                                : "137",
+                        txn_chain_id: chainId === 4 ? "80001" : "137",
                     })
                     try {
                         const res = await apiClient.post(
@@ -123,13 +119,13 @@ export const registerDao = (callbackFn) => {
                             return 0
                         }
                     } catch (error) {
-                        console.log("error", error)
+                        console.error("error", error)
                     }
                 },
                 (x) => callbackFn(x)
             )
         } catch (error) {
-            console.log("error on deploying", error)
+            console.error("error on deploying", error)
         }
     }
 }
@@ -181,10 +177,6 @@ export const getAllDaowithAddress = (chainId) => {
                         }
                     })
                 }
-                console.log(
-                    "Roles defined...",
-                    dao_details[selectionIndex].memberships
-                )
                 dispatch(
                     daoAction.set_current_dao({
                         dao: dao_details[selectionIndex].dao_details,
@@ -411,7 +403,6 @@ export const lastSelectedId = (dao_uuid) => {
 }
 
 export const set_dao = (dao, index) => {
-    console.log("daos", dao)
     return async (dispatch) => {
         dispatch(
             daoAction.set_current_dao({
@@ -569,7 +560,6 @@ export const getContriRequest = () => {
                 return 0
             }
         } catch (error) {
-            // //console.log("error...", error)
             dispatch(
                 daoAction.set_contri_list({
                     list: [],
@@ -1219,7 +1209,7 @@ export const getAllSafeFromAddress = () => {
             )
             dispatch(daoAction.set_allSafe({ list: res.data.data }))
         } catch (error) {
-            console.log("Error", error)
+            console.error("Error", error)
             list = []
             dispatch(daoAction.set_allSafe({ list: [] }))
         }
@@ -1611,7 +1601,6 @@ export const updateUserInfo = (name, daoUuid) => {
                     },
                 }
             )
-            console.log("res from update user", res)
         } catch (err) {
             console.error(err)
         }
@@ -1634,7 +1623,6 @@ export const toggleBot = () => {
                     },
                 }
             )
-            console.log("res from toggle bot", res)
             return res.data.data.success
         } catch (err) {
             console.error(err)

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
-import { getSelectedChainId } from "../../utils/POCPutils"
 import { Switch, message, Spin } from "antd"
 import CheckSvg from "../../assets/Icons/check.svg"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -11,8 +10,8 @@ import {
     toggleBot,
     getAllDaowithAddress,
 } from "../../store/actions/dao-action"
-import { ethers } from "ethers"
 import { links } from "../../constant/links"
+import { useNetwork } from "wagmi"
 
 const antIcon = (
     <LoadingOutlined
@@ -25,7 +24,7 @@ const antIcon = (
 
 export default function SettingsScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const currentChainId = getSelectedChainId().chainId
+    // const currentChainId = getSelectedChainId().chainId
     const address = useSelector((x) => x.auth.address)
     const [showDaoNameEdit, setShowDaoNameEdit] = useState(false)
     const [showUserNameEdit, setShowUserNameEdit] = useState(false)
@@ -39,12 +38,11 @@ export default function SettingsScreen() {
     const settingsRef = useRef(null)
     const daoNameInputRef = useRef(null)
     const userNameInputRef = useRef(null)
+    const { chain } = useNetwork()
 
-    console.log("currentDao", currentDao)
-    console.log("botStatus", botStatus)
     const dispatch = useDispatch()
 
-    const currentUser = currentDao?.signers.filter(
+    const currentUser = currentDao?.signers?.filter(
         (x) => x.public_address === address
     )
 
@@ -70,7 +68,7 @@ export default function SettingsScreen() {
     }
     const openTreasuryOnEtherscan = () => {
         const link = `https://${
-            currentChainId === 4 ? "rinkeby." : ""
+            chain?.id === 4 ? "rinkeby." : ""
         }etherscan.io/address/${currentDao?.safe_public_address}`
         window.open(link)
     }
@@ -78,7 +76,6 @@ export default function SettingsScreen() {
     const onChange = async (checked) => {
         setBotStatus(checked)
         setBotStatusLoading(true)
-        console.log(`switch to ${checked}`)
         const success = await dispatch(toggleBot())
         if (!success) {
             setBotStatus(!checked)
@@ -118,9 +115,10 @@ export default function SettingsScreen() {
         setUpdatingUserName(true)
         // TODO: dispatch API call to update DAO Name
         await dispatch(updateUserInfo(userName, currentDao?.uuid))
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const signer = await provider.getSigner()
+        // const chainId = await signer.getChainId()
+        const chainId = chain?.id
 
         dispatch(getAllDaowithAddress(chainId))
         setShowUserNameEdit(false)

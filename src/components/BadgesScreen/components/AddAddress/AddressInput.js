@@ -29,7 +29,6 @@ const AddressInput = ({
 
     const getMembershipNftForAddress = async (address) => {
         const isAddress = ethers.utils.isAddress(address)
-        console.log(isAddress)
         if (isAddress) {
             setLoading(true)
             try {
@@ -39,7 +38,6 @@ const AddressInput = ({
                 //     currentDao?.uuid
                 // )
                 const res = await dispatch(getAllMembershipVouchers(address))
-                console.log("Here", res)
                 setLoading(false)
                 // if (res.data.membershipNFTs.length > 0) {
                 if (res.length > 0) {

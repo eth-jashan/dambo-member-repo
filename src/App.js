@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
-import ContributorOnboarding from "./pages/ContributorOnboarding"
+import ContributorOnbording from "./pages/ContributorOnboarding"
 import AuthWallet from "./pages/AuthWallet"
 import "./App.scss"
 import DiscordFallback from "./pages/DiscordFallback"
@@ -14,12 +14,14 @@ import {
     setAdminStatus,
     setLoggedIn,
     signout,
+    setAddress,
 } from "./store/actions/auth-action"
 import AppContext from "./appContext"
-import { getSelectedChainId } from "./utils/POCPutils"
 import AddBotFallback from "./pages/AddBotFallback"
 import MetamaskError from "./pages/MetamaskError"
+import { useSigner } from "wagmi"
 import ErrorBoundary from "./components/ErrorBoundary"
+import Web3 from "web3"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
@@ -35,6 +37,35 @@ function App() {
         setPocpAction(status)
         setChainId(chainId)
     }
+    // const provider = useProvider()
+    // const walletWeb3 = new Web3(provider)
+    // const walletProvider = walletWeb3.currentProvider
+    const { data: signer } = useSigner()
+    const listenersSet = useRef(null)
+
+    if (signer?.provider?.provider && !listenersSet.current) {
+        console.log("setting listeners")
+        signer.provider?.provider?.on("accountsChanged", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        signer.provider?.provider?.on("chainChanged", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        signer.provider?.provider?.on("disconnect", () => {
+            dispatch(signout())
+            window.location.replace(window.location.origin)
+        })
+        listenersSet.current = true
+    }
+
+    // console.log("wallet provider is", walletProvider)
+    // const selectedProvider = walletProvider.providerMap
+    //     ? walletProvider?.overrideIsMetaMask
+    //         ? walletProvider?.providerMap.get("MetaMask")
+    //         : walletProvider.selectedProvider
+    //     : walletProvider
 
     if (window.location.hostname === "pony.rep3.gg" && !redirected) {
         if (window.location.pathname) {
@@ -52,46 +83,22 @@ function App() {
         setPocpActionValue,
     }
 
-    if (window.ethereum) {
-        window.ethereum.on("accountsChanged", () => {
-            if (isAdmin) {
-                dispatch(setLoggedIn(false))
-                dispatch(signout())
-                navigate("/")
-            } else {
-                dispatch(setLoggedIn(false))
-                dispatch(signout())
-                dispatch(setAdminStatus(false))
-                navigate("/")
-            }
-        })
+    // walletProvider.on("accountsChanged", () => {
+    //     console.log("accoiunt changed in app provider")
+    //     dispatch(signout())
+    //     window.location.replace(window.location.origin)
+    // })
 
-        window.ethereum.on("chainChanged", (x) => {
-            const selectedChainId = getSelectedChainId()
-            const maticNetwork = selectedChainId.chainId === 4 ? 80001 : 137
-            if (
-                parseInt(x) !== selectedChainId.chainId &&
-                parseInt(x) !== maticNetwork
-            ) {
-                if (isAdmin) {
-                    dispatch(setLoggedIn(false))
-                    dispatch(signout())
-                    navigate("/")
-                } else {
-                    dispatch(setLoggedIn(false))
-                    dispatch(signout())
-                    dispatch(setAdminStatus(false))
-                    navigate("/")
-                }
-            }
-        })
-    }
+    // walletProvider.on("chainChanged", (x) => {
+    //     dispatch(signout())
+    //     window.location.replace(window.location.origin)
+    // })
 
-    useEffect(() => {
-        if (!window.ethereum) {
-            navigate("/metamask-error")
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (!window.ethereum) {
+    //         navigate("/metamask-error")
+    //     }
+    // }, [])
 
     return (
         <ErrorBoundary>
@@ -110,7 +117,7 @@ function App() {
                             />
                             <Route
                                 path="onboard/contributor/:id"
-                                element={<ContributorOnboarding />}
+                                element={<ContributorOnbording />}
                             />
                             <Route path="dashboard" element={<Dashboard />} />
                             <Route

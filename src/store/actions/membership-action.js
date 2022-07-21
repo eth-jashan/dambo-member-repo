@@ -10,7 +10,7 @@ import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
 import { ethers } from "ethers"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -75,7 +75,6 @@ export const getAllDaoMembers = () => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setDaoMembers({
                     allDaoMembers: res?.data?.data,
@@ -102,7 +101,6 @@ export const setAllDaoMember = (allDaoMembers) => {
                     },
                 }
             )
-            console.log("res.data is", res.data)
             dispatch(
                 membershipAction.setDaoMembers({
                     allDaoMembers,
@@ -159,7 +157,7 @@ const wait = function (ms = 1000) {
     })
 }
 
-export const claimMembershipVoucher = (membershipVoucherInfo) => {
+export const claimMembershipVoucher = (membershipVoucherInfo, chainId) => {
     return async (dispatch, getState) => {
         const proxyContract = getState().dao.daoProxyAddress
         try {
@@ -177,7 +175,7 @@ export const claimMembershipVoucher = (membershipVoucherInfo) => {
                 currentDao?.uuid,
                 async (x) => {
                     console.log("Tx emitted is", x)
-                    dispatch(updateTxHash(x, "claim"))
+                    dispatch(updateTxHash(x, "claim", null, chainId))
                 },
                 async (x) => {
                     console.log("event emitted is", x)
@@ -661,16 +659,16 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
     }
 }
 
-export const updateTxHash = (txnHash, type, prevHash) => {
+export const updateTxHash = (txnHash, type, prevHash, chainId) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = await provider.getSigner()
-        const chainId = await signer.getChainId()
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+        // const signer = await provider.getSigner()
+        // const chainId = await signer.getChainId()
         const currentDao = getState().dao.currentDao
         const data = {
             txn_hash: txnHash,
-            chain_id: getSelectedChainId()?.chainId === 4 ? "80001" : "137",
+            chain_id: chainId === 4 ? "80001" : "137",
             prev_txn_hash: type === "claim" ? null : prevHash,
             type,
             dao_uuid: currentDao?.uuid,

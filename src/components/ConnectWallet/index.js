@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { ethers } from "ethers"
 import { useSelector, useDispatch } from "react-redux"
 import {
     authWithSign,
@@ -9,30 +8,31 @@ import {
     setLoggedIn,
     signout,
 } from "../../store/actions/auth-action"
-import styles from "./style.module.css"
-import metamaskIcon from "../../assets/Icons/metamask.svg"
-import { Divider, message } from "antd"
+import "./styles.scss"
+import { message } from "antd"
 import { useNavigate } from "react-router"
-import walletIcon from "../../assets/Icons/wallet.svg"
-import tickIcon from "../../assets/Icons/tick.svg"
-import { FaDiscord } from "react-icons/fa"
 import { getAddressMembership } from "../../store/actions/gnosis-action"
-import { getRole, setDiscordOAuth } from "../../store/actions/contibutor-action"
-import chevron_right from "../../assets/Icons/chevron_right.svg"
-import { links } from "../../constant/links"
+import { getRole } from "../../store/actions/contibutor-action"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { setChainInfoAction } from "../../utils/POCPutils"
-// import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { setChainInfoAction } from "../../utils/wagmiHelpers"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useAccount, useSigner, useDisconnect } from "wagmi"
+import account_balance_wallet from "../../assets/Icons/account_balance_wallet.svg"
+import right_arrow_white from "../../assets/Icons/right_arrow_white.svg"
+import metamask_circular from "../../assets/Icons/metamask_circular.svg"
+import coinbase_circular from "../../assets/Icons/coinbase_circular.svg"
+import rainbow_circular from "../../assets/Icons/rainbow_circular.svg"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
-    const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
-    // here jwt
     const uuid = useSelector((x) => x.contributor.invite_code)
     const [auth, setAuth] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [isAccess, setAccess] = useState(true)
+    const { address, isConnected, status } = useAccount()
+    const { data: signer } = useSigner()
+    const [showConnectBtn, setShowConnectBtn] = useState(true)
+    const { disconnect } = useDisconnect()
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -49,12 +49,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     )
                     if (res) {
                         if (!isAdmin) {
-                            // console.log("contributor", uuid)
-                            // navigate(`/onboard/contributor/${uuid}`, {
-                            //     state: {
-                            //         discordUserId: "userId",
-                            //     },
-                            // })
                             const res = await dispatch(getRole(uuid))
                             if (res) {
                                 message.success("Already a member")
@@ -67,7 +61,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    // setAccess(false)
                                 }
                             } else {
                                 navigate(`/onboard/contributor/${uuid}`, {
@@ -77,7 +70,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } else {
-                            // setAccess(false)
                             await afterConnectWalletCallback(setAuth)
                         }
                     } else {
@@ -102,36 +94,16 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         [dispatch, isAdmin, navigate, uuid]
     )
 
-    const checkIsAdminInvite = useCallback(() => {
-        if (!uuid && !isAdmin) {
-            dispatch(signout())
-        }
-    }, [])
-
-    useEffect(() => {
-        checkIsAdminInvite()
-    }, [checkIsAdminInvite])
-
-    const onDiscordAuth = () => {
-        dispatch(setDiscordOAuth(address, uuid, jwt))
-        window.location.replace(`${links.discord_oauth}`)
-    }
-
     const loadWeb3Modal = useCallback(async () => {
-        console.log(isAdmin)
         setAuth(true)
         try {
-            await window.ethereum.request({
-                method: "eth_requestAccounts",
-            })
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = await provider.getSigner()
             const chainId = await signer.getChainId()
             const newAddress = await signer.getAddress()
-            dispatch(setAddress(newAddress))
+            // dispatch(setAddress(newAddress))
+
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
+            console.log("response of getJwt ", res, chainId)
             if (
                 res &&
                 (chainId === 4 ||
@@ -150,8 +122,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         navigate(`/dashboard`)
                     } else {
                         setAuth(false)
-                        setAccess(false)
-                        // message.error("Closed For Beta Test")
                         navigate("/onboard/dao")
                     }
                 } else {
@@ -170,8 +140,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                     navigate(`/dashboard`)
                                 } else {
                                     setAuth(false)
-                                    setAccess(false)
-                                    // message.error("Closed For Beta Test")
                                     // navigate("/onboard/dao")
                                 }
                                 // navigate(`/dashboard`)
@@ -184,7 +152,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 })
                             }
                         } catch (error) {
-                            setAccess(false)
                             message.error("Error on getting role")
                         }
                     }
@@ -200,6 +167,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 //     await authWithWallet(newAddress, chainId, signer)
                 // } else {
                 // doesn't have valid token and chain is selected one
+                console.log("in else if")
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 await authWithWallet(newAddress, chainId, signer)
@@ -216,85 +184,141 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         } catch (error) {
             message.error("Please Check your metamask")
         }
-    }, [authWithWallet, dispatch, isAdmin, navigate, uuid])
-
-    const connectWallet = () => (
-        <div className={styles.walletCnt}>
-            <div onClick={() => loadWeb3Modal()} className={styles.walletLogo}>
-                <img
-                    src={metamaskIcon}
-                    alt="metamask"
-                    className={styles.walletImg}
-                />
-                <div className={styles.walletName}>Metamask</div>
-            </div>
-            <img
-                src={chevron_right}
-                className={styles.chevronIcon}
-                width="32px"
-                height="32px"
-                alt="cheveron-right"
-            />
-        </div>
-    )
+    }, [authWithWallet, dispatch, isAdmin, navigate, uuid, signer])
 
     const authenticateWallet = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = provider.getSigner()
         const chainId = await signer.getChainId()
         await authWithWallet(address, chainId, signer)
     }
 
+    const checkIsAdminInvite = useCallback(() => {
+        if (!uuid && !isAdmin) {
+            dispatch(signout())
+        }
+    }, [])
+
+    useEffect(() => {
+        checkIsAdminInvite()
+    }, [checkIsAdminInvite])
+
     const authWallet = () => (
-        <div className={styles.walletCntAuth}>
-            <img src={metamaskIcon} alt="metamask" height={32} width={32} />
+        <div className="walletCntAuth">
+            <div className="rightContainer">
+                <ConnectButton.Custom>
+                    {({
+                        account,
+                        chain,
+                        openAccountModal,
+                        openChainModal,
+                        openConnectModal,
+                        mounted,
+                    }) => {
+                        return (
+                            <div
+                                {...(!mounted && {
+                                    "aria-hidden": true,
+                                    style: {
+                                        opacity: 0,
+                                        pointerEvents: "none",
+                                        userSelect: "none",
+                                    },
+                                })}
+                            >
+                                {(() => {
+                                    if (!mounted || !account || !chain) {
+                                        return (
+                                            <button
+                                                onClick={() => {
+                                                    openConnectModal()
+                                                    setShowConnectBtn(false)
+                                                }}
+                                                type="button"
+                                                className="rainbow-connect-button"
+                                            >
+                                                <div className="wallet-images-wrapper">
+                                                    <img
+                                                        src={metamask_circular}
+                                                        alt=""
+                                                    />
+                                                    <img
+                                                        src={coinbase_circular}
+                                                        alt=""
+                                                    />
+                                                    <img
+                                                        src={rainbow_circular}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                Connect Wallet
+                                                <img
+                                                    src={right_arrow_white}
+                                                    alt=""
+                                                    className="right-arrow-img"
+                                                />
+                                            </button>
+                                        )
+                                    }
 
-            <div className={styles.rightContainer}>
-                <div className={styles.walletName}>Metamask</div>
-                <div className={styles.addresCnt}>
-                    <div className={styles.address}>{address}</div>
-                    <div
-                        onClick={() => {
-                            setAccess(true)
-                            dispatch(signout())
-                        }}
-                        className={styles.disconnectLink}
-                    >
-                        Disconnect
-                    </div>
-                </div>
+                                    if (chain.unsupported) {
+                                        return (
+                                            <button
+                                                onClick={openChainModal}
+                                                type="button"
+                                            >
+                                                Wrong network
+                                            </button>
+                                        )
+                                    }
 
-                <Divider />
-                {isAccess && (
-                    <>
-                        <div
-                            style={{ color: "black", paddingLeft: "1.25rem" }}
-                            className={textStyles.m_23}
-                        >
-                            Signature please! ✍️
-                        </div>
-                        <div
-                            style={{ color: "#999999", paddingLeft: "1.25rem" }}
-                            className={styles.authGreyHeading}
-                        >
-                            Please sign the metamask message to continue.
-                        </div>
-                    </>
-                )}
+                                    return (
+                                        <>
+                                            <div className="connect-address-line">
+                                                <div className="connect-address-left">
+                                                    <div className="connect-address-name">
+                                                        {account.displayName}{" "}
+                                                        &bull;{" "}
+                                                    </div>
+                                                    <div className="connect-address-chain-name">
+                                                        {chain.name} |{" "}
+                                                        {account.displayBalance}
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className="connect-address-right"
+                                                    onClick={disconnect}
+                                                >
+                                                    Disconnect
+                                                </div>
+                                            </div>
+                                        </>
+                                    )
+                                })()}
+                            </div>
+                        )
+                    }}
+                </ConnectButton.Custom>
 
-                {isAccess && (
+                {address && (
                     <div
                         onClick={
                             auth
                                 ? () => {}
                                 : async () => await authenticateWallet(address)
                         }
-                        className={styles.authBtn}
+                        className="authBtn"
                     >
-                        <div className={styles.btnTextAuth}>
-                            {auth
-                                ? "Authenticating...."
-                                : "Authenticate wallet"}
+                        <div className="btnTextAuth">
+                            <img
+                                src={account_balance_wallet}
+                                alt=""
+                                className="wallet-img"
+                            />
+                            Sign Wallet
+                            <img
+                                src={right_arrow_white}
+                                alt=""
+                                className="right-arrow-img"
+                            />
                         </div>
                     </div>
                 )}
@@ -302,166 +326,29 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         </div>
     )
 
-    // const disconnectContributor = () => {
-    //     dispatch(signout())
-    //     dispatch(setAdminStatus(false))
-    // }
-    //Cozy corner for all your communities
+    useEffect(() => {
+        if (status === "disconnected") {
+            navigate("/")
+        } else if (address && signer && isConnected && !showConnectBtn) {
+            dispatch(setAddress(address))
+            loadWeb3Modal()
+        }
+    }, [signer])
 
-    const daoWallet = () => (
-        <div style={{ width: "100%" }}>
-            {isAccess ? (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        welcome to rep3
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        Cozy corner for all your
-                        <br /> communities
-                    </div>
+    return (
+        <div className="connect-wallet-container">
+            <div className="headingCnt">
+                <div className={`heading ${textStyles.ub_53}`}>
+                    welcome to rep3
                 </div>
-            ) : (
-                <div className={styles.headingCnt}>
-                    <div className={`${styles.heading} ${textStyles.ub_53}`}>
-                        Hmm...🤔
-                    </div>
-                    <div
-                        className={`${styles.greyHeading} ${textStyles.ub_53}`}
-                    >
-                        seems like you don't have access to this page
-                        {/* <br /> communities */}
-                    </div>
-                    <div className={styles.contactText}>
-                        Please reach out to us{" "}
-                        <a
-                            href="https://twitter.com/rep3gg"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            here.
-                        </a>
-                    </div>
+                <div className={`greyHeading ${textStyles.ub_53}`}>
+                    Cozy corner for all your
+                    <br /> communities
                 </div>
-            )}
-            {address ? authWallet() : connectWallet()}
+            </div>
+            {authWallet()}
         </div>
     )
-    // const contributorWallet = () => (
-    //     <div className={styles.walletContri}>
-    //         <div className={styles.metaCard}>
-    //             <div style={{ height: "100%" }}>
-    //                 <div
-    //                     style={{
-    //                         height: "64px",
-    //                         width: "64px",
-    //                         borderRadius: "64px",
-    //                         border: "1px solid #c2c2c2",
-    //                         display: "flex",
-    //                         alignItems: "center",
-    //                         justifyContent: "center",
-    //                     }}
-    //                 >
-    //                     <img
-    //                         src={!jwt ? walletIcon : tickIcon}
-    //                         alt="wallet"
-    //                         height={32}
-    //                         width={32}
-    //                     />
-    //                 </div>
-    //             </div>
-
-    //             <div className={styles.rightContent}>
-    //                 <div>
-    //                     <div className={styles.walletHeading}>
-    //                         {!jwt ? "Connect your Wallet" : "Wallet Connected"}
-    //                     </div>
-    //                     {!jwt ? (
-    //                         <div className={styles.walletsubHeading}>
-    //                             Lorem ipsum dolor sit amet,
-    //                             <br />
-    //                             consectetur adipiscing elit.
-    //                         </div>
-    //                     ) : (
-    //                         <div className={styles.connectedText}>
-    //                             {address?.slice(0, 5)}...{address?.slice(-3)}
-    //                         </div>
-    //                     )}
-    //                 </div>
-    //                 {!jwt && (
-    //                     <div
-    //                         onClick={() => loadWeb3Modal()}
-    //                         className={styles.connectBtn}
-    //                     >
-    //                         <span className={styles.btnTitle}>
-    //                             {auth ? "Conecting..." : "Connect Wallet"}
-    //                         </span>
-    //                     </div>
-    //                 )}
-    //                 {address && jwt && (
-    //                     <div
-    //                         onClick={() => disconnectContributor()}
-    //                         className={styles.disconnectDiv}
-    //                     >
-    //                         <div className={styles.divider} />
-    //                         <span className={styles.disconnectTitle}>
-    //                             Disconnect Wallet
-    //                         </span>
-    //                     </div>
-    //                 )}
-    //             </div>
-    //         </div>
-    //         {/* inline style required */}
-    //         <div className={styles.metaCard}>
-    //             <div style={{ height: "100%" }}>
-    //                 <div
-    //                     style={{
-    //                         height: "64px",
-    //                         width: "64px",
-    //                         borderRadius: "64px",
-    //                         border: "1px solid #c2c2c2",
-    //                         display: "flex",
-    //                         alignItems: "center",
-    //                         justifyContent: "center",
-    //                     }}
-    //                 >
-    //                     <FaDiscord
-    //                         size={32}
-    //                         color={!jwt ? "#B3B3B3" : "#5865F2"}
-    //                     />
-    //                 </div>
-    //             </div>
-
-    //             <div className={styles.rightContentDown}>
-    //                 <div>
-    //                     <div
-    //                         style={{ color: !jwt && "#B3B3B3" }}
-    //                         className={styles.walletHeading}
-    //                     >
-    //                         Connect Discord
-    //                     </div>
-    //                     <div className={styles.walletsubHeading}>
-    //                         We use Discord to check your name
-    //                         <br />
-    //                         and servers you've joined
-    //                     </div>
-    //                 </div>
-    //                 <div
-    //                     onClick={() => onDiscordAuth()}
-    //                     className={
-    //                         !jwt ? styles.connectBtnGrey : styles.connectBtn
-    //                     }
-    //                 >
-    //                     <span className={styles.btnTitle}>Connect Discord</span>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </div>
-    // )
-
-    return isAdmin ? daoWallet() : daoWallet()
-    // return <ConnectButton />
 }
 
 export default ConnectWallet

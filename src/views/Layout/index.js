@@ -1,10 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import styles from "./style.module.css"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import Lottie from "react-lottie"
 import background from "../../assets/lottie/onboarding_background.json"
 import ProfileModal from "../../components/Modal/ProfileModal"
-
+import { useAccount } from "wagmi"
+import { useNavigate } from "react-router-dom"
 export default function Layout({ children, contributorWallet, signer }) {
     const [walletCenter, setWalletCenterModal] = useState(false)
 
@@ -16,6 +17,15 @@ export default function Layout({ children, contributorWallet, signer }) {
             preserveAspectRatio: "xMidYMid slice",
         },
     }
+
+    const { isDisconnected } = useAccount()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (isDisconnected) {
+            navigate("/")
+        }
+    }, [isDisconnected])
 
     return (
         <>

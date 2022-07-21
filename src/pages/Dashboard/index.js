@@ -17,9 +17,8 @@ import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import ContributionRequestModal from "../../components/Modal/ContributionRequest"
-import { ethers } from "ethers"
 import ContributionCard from "../../components/ContributionCard"
-import { useSafeSdk } from "../../hooks"
+import { useSafeSdk, usePrevious } from "../../hooks"
 
 import PaymentCheckoutModal from "../../components/Modal/PaymentCheckoutModal"
 import PaymentCard from "../../components/PaymentCard"
@@ -33,7 +32,6 @@ import {
     setLoadingState,
     setPayoutToast,
 } from "../../store/actions/toast-action"
-import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
@@ -43,29 +41,26 @@ import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
-import { web3 } from "../../constant/web3"
 import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
+import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
-    const [currentPage, setCurrentPage] = useState("request")
-    const [uniPayHover, setUniPayHover] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const payoutToast = useSelector((x) => x.toast.payout)
     const active_payout_notification = useSelector(
         (x) => x.dao.active_payout_notification
     )
-    const accountMode = useSelector((x) => x.dao.account_mode)
-    const account_index = useSelector((x) => x.dao.account_index)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
+    const [currentPage, setCurrentPage] = useState("badges")
     const approve_contri = useSelector(
         (x) => x.transaction.approvedContriRequest
     )
@@ -81,10 +76,16 @@ export default function Dashboard() {
     const payout_request = useSelector((x) => x.dao.payout_filter)
     const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
-    // gnosis setup
-    const [signer, setSigner] = useState()
+
+    const { data: signer } = useSigner()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const [showSettings, setShowSettings] = useState(false)
+    const provider = useProvider()
+    const prevSigner = usePrevious(signer)
+    const { isDisconnected } = useAccount()
+    const { disconnect } = useDisconnect()
+
+    console.log("role in dashboard", role)
 
     const defaultOptions = {
         loop: true,
@@ -106,19 +107,12 @@ export default function Dashboard() {
         }
     }, [dispatch, payoutToast])
 
-    const setProvider = async () => {
-        const provider = new ethers.providers.Web3Provider(
-            window.ethereum,
-            "any"
-        )
-        await provider.send("eth_requestAccounts", [])
-        const signer = provider.getSigner()
-        setSigner(signer)
-    }
-
     useEffect(() => {
-        setProvider()
-    }, [])
+        if (isDisconnected) {
+            disconnect()
+            navigate("/")
+        }
+    }, [isDisconnected])
 
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
@@ -160,14 +154,6 @@ export default function Dashboard() {
         })
     }, [address, jwt])
 
-    async function onInit() {
-        const accounts = await window.ethereum.request({
-            method: "eth_requestAccounts",
-        })
-        const account = accounts[0]
-        return account
-    }
-
     const rep3ProtocolFunctionsCommon = async (currentDaos) => {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
@@ -176,37 +162,36 @@ export default function Dashboard() {
     }
 
     const initialLoad = useCallback(async () => {
-        const account = await onInit()
-        if (address === ethers.utils.getAddress(account)) {
-            dispatch(setLoadingState(true))
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = provider.getSigner()
-            const chainId = await signer.getChainId()
-            const { accountRole, currentDaos } = await dispatch(
-                getAllDaowithAddress(chainId)
-            )
-            await rep3ProtocolFunctionsCommon(currentDaos)
-            await initPOCP(currentDaos.uuid)
-            if (accountRole === "ADMIN") {
-                setCurrentPage("badges")
-                await dispatch(getAllDaoMembers())
+        if (signer) {
+            if (address) {
+                dispatch(setLoadingState(true))
+                const chainId = await signer.getChainId()
+                const { accountRole, currentDaos } = await dispatch(
+                    getAllDaowithAddress(chainId)
+                )
+                await rep3ProtocolFunctionsCommon(currentDaos)
+                await initPOCP(currentDaos.uuid, provider, signer, chainId)
+                if (accountRole === "ADMIN") {
+                    // setCurrentPage("badges")
+                    await dispatch(getAllDaoMembers())
+                } else {
+                    // await contributorFetch()
+                    // contribution specific fetch
+                    setCurrentPage("request")
+                }
             } else {
-                // await contributorFetch()
-                // contribution specific fetch
+                dispatch(signout())
+                navigate("/")
             }
-        } else {
-            dispatch(setLoadingState(false))
-            dispatch(signout())
-            navigate("/")
         }
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
     useEffect(() => {
-        if (!modalPayment) {
+        if (!modalPayment && !prevSigner) {
             initialLoad()
         }
-    }, [currentDao?.uuid])
+    }, [currentDao?.uuid, signer])
 
     useEffect(() => {
         preventGoingBack()
@@ -214,16 +199,6 @@ export default function Dashboard() {
 
     const onRouteChange = async (route) => {
         setTab(route)
-    }
-
-    const onUniModalOpen = async () => {
-        if (!loadingState) {
-            const ethPrice = await convertTokentoUsd("ETH")
-            if (ethPrice) {
-                dispatch(setEthPrice(ethPrice))
-                setModalUniPayment(true)
-            }
-        }
     }
 
     const renderTab = () => (
@@ -340,7 +315,6 @@ export default function Dashboard() {
     )
 
     const onPaymentModal = () => {
-        setProvider()
         setModalPayment(true)
     }
 
@@ -438,37 +412,9 @@ export default function Dashboard() {
                 width: "100%",
             }}
         >
-            {/* {dataSource.length > 0 */}
             {dataSource.map((x, i) => (
                 <BadgeItem item={x} key={i} />
             ))}
-        </div>
-    )
-    const renderEmptyBadgesScreen = () => (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gridGap: 0,
-                overflowY: "auto",
-                marginBottom: "2rem",
-            }}
-        >
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
         </div>
     )
     const renderPayment = () =>

@@ -3,7 +3,7 @@ import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { message } from "antd"
 import textStyles from "../../commonStyles/textType/styles.module.css"
-import { getSelectedChainId } from "../../utils/POCPutils"
+// import { getSelectedChainId } from "../../utils/POCPutils"
 import {
     setPayment,
     setTransaction,
@@ -13,7 +13,7 @@ import AccountSwitchModal from "../../components/Modal/AccountSwitchModal"
 import { AiFillCaretDown } from "react-icons/ai"
 import TestnetInfo from "../../components/ToolTip/TestnetInfo"
 import ProfileModal from "../../components/Modal/ProfileModal"
-
+import { useNetwork } from "wagmi"
 const DashboardHeader = ({
     currentPage,
     setCurrentPage,
@@ -32,10 +32,11 @@ const DashboardHeader = ({
     const [profile_modal, setProfileModal] = useState(false)
     const [switchRoleModal, setSwitchRoleModal] = useState(false)
 
-    const currentChainId = getSelectedChainId()?.chainId
+    // const currentChainId = getSelectedChainId()?.chainId
     const dispatch = useDispatch()
 
     const currentUser = useSelector((x) => x.dao.username)
+    const { chain } = useNetwork()
 
     async function copyTextToClipboard(textToCopy) {
         if ("clipboard" in navigator) {
@@ -45,6 +46,8 @@ const DashboardHeader = ({
             return document.execCommand("copy", true, address)
         }
     }
+
+    console.log("current dao is ", currentDao)
 
     const onProfileModal = () => {
         dispatch(setPayment(null))
@@ -60,8 +63,9 @@ const DashboardHeader = ({
         setSwitchRoleModal(!switchRoleModal)
     }
 
-    const accountSwitchPress = () => {
-        setCurrentPage("request")
+    const accountSwitchPress = (role) => {
+        if (role === "ADMIN") setCurrentPage("badges")
+        else setCurrentPage("request")
         setShowSettings(false)
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
@@ -153,21 +157,25 @@ const DashboardHeader = ({
                     >
                         Request
                     </div>
-                    <div
-                        className={
-                            currentPage === "treasury" ? "activePageLink" : ""
-                        }
-                        onClick={() => {
-                            setCurrentPage("treasury")
-                            setShowSettings(false)
-                        }}
-                    >
-                        Treasury
-                    </div>
+                    {currentDao?.safe_public_address && (
+                        <div
+                            className={
+                                currentPage === "treasury"
+                                    ? "activePageLink"
+                                    : ""
+                            }
+                            onClick={() => {
+                                setCurrentPage("treasury")
+                                setShowSettings(false)
+                            }}
+                        >
+                            Treasury
+                        </div>
+                    )}
                 </div>
             )}
             <div className="profileContainer">
-                {currentChainId === 4 ? (
+                {chain?.id === 4 ? (
                     <div
                         onMouseLeave={() => setTestnetHover(false)}
                         onMouseEnter={() => setTestnetHover(true)}
@@ -219,7 +227,7 @@ const DashboardHeader = ({
                     {switchRoleModal && (
                         <AccountSwitchModal
                             route={route}
-                            onChange={() => accountSwitchPress()}
+                            onChange={(role) => accountSwitchPress(role)}
                         />
                     )}
                 </div>
