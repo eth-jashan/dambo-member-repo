@@ -1,292 +1,108 @@
-// .heading {
-//     font-family: "TelegrafBolder";
-//     font-style: normal;
-//     font-weight: 800;
-//     font-size: 3.375rem;
-//     line-height: 3.5rem;
-// }
-
-// .greyHeading {
-//     font-family: "TelegrafBolder";
-//     font-style: normal;
-//     font-weight: 800;
-//     font-size: 3.375rem;
-//     line-height: 3.5rem;
-//     color: #999999;
-//     margin-bottom: 5.5%;
-// }
-
-// .walletName {
-//     font-family: "TelegrafBold";
-//     font-style: normal;
-//     font-weight: 800;
-//     font-size: 1.188rem;
-//     line-height: 2rem;
-//     margin-left: 1.25rem;
-// }
-
-// .walletCnt {
-//     display: flex;
-//     width: 100%;
-//     border: 1px solid #e0e0e0;
-//     padding: 1.25rem;
-//     border-left-width: 0;
-//     border-right-width: 0;
-//     /* border-bottom-width: 0; */
-//     align-items: center;
-//     justify-content: space-between;
-//     cursor: pointer;
-//     /* margin-top: 40px; */
-// }
-
-// .walletCntAuth {
-//     display: flex;
-//     width: 100%;
-//     border: 1px solid #e0e0e0;
-//     padding: 12px;
-//     border-left-width: 0;
-//     border-right-width: 0;
-//     border-bottom-width: 0;
-//     cursor: pointer;
-//     margin-top: 40px;
-//     /* background: red; */
-// }
-
-// .walletLogo {
-//     display: flex;
-//     flex-direction: row;
-//     width: 100%;
-//     align-items: center;
-// }
-// .walletImg {
-//     height: 2rem;
-//     width: 2rem;
-// }
-// .addresCnt {
-//     width: 100%;
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: space-between;
-//     margin-left: 1.25rem;
-//     /* background: blue; */
-//     /* border: 1px solid #e0e0e0; */
-// }
-
-// .address {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 1rem;
-//     line-height: 1.5rem;
-// }
-
-// .disconnectLink {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 1rem;
-//     line-height: 1.5rem;
-//     text-decoration-line: underline;
-// }
-
-// .rightContainer {
-//     width: 100%;
-// }
-// .authHeading {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 1.438rem;
-//     line-height: 2rem;
-// }
-
-// .authGreyHeading {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 1.438rem;
-//     line-height: 2rem;
-//     color: #999999;
-// }
-
-// .authBtn {
-//     background: black;
-//     width: 40%;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     padding: 0.75rem;
-//     margin-top: 2rem;
-//     border-radius: 2rem;
-//     margin-left: 1.25rem;
-// }
-
-// .btnTextAuth {
-//     font-family: "TelegrafBolder";
-//     font-style: normal;
-//     font-weight: bold;
-//     font-size: 1rem;
-//     line-height: 1.5rem;
-//     color: white;
-// }
-
-// .metaCard {
-//     width: 80%;
-//     min-height: 18.75rem;
-//     padding: 2.5rem;
-//     background: white;
-//     position: relative;
-//     border-radius: 1.5rem;
-//     display: flex;
-//     flex-direction: row;
-//     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08),
-//         0px 0px 20px rgba(0, 0, 0, 0.12);
-// }
-
-// .walletContri {
-//     width: 100%;
-//     height: 90%;
-//     /* padding: 20px; */
-//     position: relative;
-//     display: flex;
-//     align-items: center;
-//     justify-content: space-around;
-//     flex-direction: column;
-// }
-
-// .walletHeading {
-//     font-family: "TelegrafBolder";
-//     font-style: normal;
-//     font-weight: 800;
-//     font-size: 2.25rem;
-//     line-height: 2.75rem;
-//     color: #000000;
-//     text-align: start;
-// }
-
-// .walletsubHeading {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 1.5rem;
-//     line-height: 2rem;
-//     color: #000000;
-//     opacity: 0.4;
-//     text-align: start;
-// }
-
-// .connectBtn {
-//     width: 30%;
-//     background: #6852ff;
-//     padding: 0.75rem 1.25rem;
-//     border-radius: 100px;
-//     margin-top: 44px;
-//     cursor: pointer;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-// }
-
-// .connectBtnGrey {
-//     width: 30%;
-//     background: #b3b3b3;
-//     padding: 0.75rem 1.25rem;
-//     border-radius: 100px;
-//     margin-top: 44px;
-//     cursor: pointer;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-// }
-
-// .btnTitle {
-//     font-family: "TelegrafBold";
-//     font-style: normal;
-//     font-weight: 800;
-//     font-size: 1rem;
-//     line-height: 1.5rem;
-//     color: white;
-// }
-
-// .rightContent {
-//     padding-left: 36px;
-//     width: 100%;
-// }
-
-// .rightContentDown {
-//     padding-left: 36px;
-//     width: 100%;
-//     /* margin-top: 20px; */
-//     /* position: relative; */
-// }
-
-// .connectedText {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 2.25rem;
-//     line-height: 3rem;
-//     /* identical to box height, or 133% */
-//     color: #1d7f60;
-//     text-align: start;
-// }
-
-// .disconnectDiv {
-//     margin-top: 72px;
-//     width: 100%;
-//     display: flex;
-//     flex-direction: column;
-// }
-
-// .disconnectTitle {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 23px;
-//     line-height: 32px;
-//     margin-top: 20px;
-//     text-align: start;
-//     text-decoration-line: underline;
-//     color: #000000;
-//     opacity: 0.4;
-// }
-
-// .divider {
-//     height: 1px;
-//     background: #000000;
-//     opacity: 0.12;
-// }
-
-// .greyedText {
-//     background: #b3b3b3;
-// }
-
-// .contactText {
-//     font-family: "TelegrafMedium";
-//     font-style: normal;
-//     font-weight: 400;
-//     font-size: 36px;
-//     line-height: 40px;
-//     color: rgba(0, 0, 0, 0.5);
-// }
-
-// .contactText > a {
-//     text-decoration: underline;
-//     color: rgba(0, 0, 0, 0.5);
-// }
-
-// .contactText > a:hover {
-//     color: rgba(0, 0, 0, 0.5);
-//     text-decoration: underline;
-// }
-
 .connect-wallet-container {
-    .sign-in-btn {
-        background-color: #6852ff;
-        color: #fff;
+    .heading {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 3.375rem;
+        line-height: 3.5rem;
     }
-    button {
-        background-color: #6852ff;
+
+    .greyHeading {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 3.375rem;
+        line-height: 3.5rem;
+        color: #999999;
+        margin-bottom: 5.5%;
+    }
+
+    .walletCnt {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .walletCntAuth {
+        display: flex;
+        width: 100%;
+        margin-top: 40px;
+    }
+
+    .rightContainer {
+        width: 100%;
+    }
+
+    .authBtn {
+        background: black;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        margin-top: 2rem;
+        border-radius: 2rem;
+        cursor: pointer;
+    }
+
+    .btnTextAuth {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 19px;
+        line-height: 28px;
+        color: white;
+        .wallet-img {
+            margin-right: 1rem;
+        }
+        .right-arrow-img {
+            margin-left: 6rem;
+        }
+    }
+
+    .connect-address-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 1.3rem 0;
+        border-top: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
+        .connect-address-left {
+            display: flex;
+            .connect-address-name {
+                font-weight: bold;
+            }
+            .connect-address-chain-name {
+                margin-left: 0.125rem;
+            }
+        }
+        .connect-address-right {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+    .rainbow-connect-button {
+        display: flex;
+        background-color: #000000;
+        padding: 0.5rem 1.5rem;
         color: #fff;
+        width: fit-content;
+        cursor: pointer;
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 19px;
+        line-height: 28px;
+        .wallet-images-wrapper {
+            display: flex;
+            margin-right: 1rem;
+            img {
+                margin-left: -1rem;
+            }
+        }
+        .right-arrow-img {
+            margin-left: 3rem;
+        }
     }
 }
