@@ -1,5 +1,5 @@
 import { message } from "antd"
-import React, { useCallback, useEffect, useState, useRef } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
@@ -17,7 +17,6 @@ import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import ContributionRequestModal from "../../components/Modal/ContributionRequest"
-import { ethers } from "ethers"
 import ContributionCard from "../../components/ContributionCard"
 import { useSafeSdk, usePrevious } from "../../hooks"
 
@@ -33,7 +32,6 @@ import {
     setLoadingState,
     setPayoutToast,
 } from "../../store/actions/toast-action"
-import { convertTokentoUsd } from "../../utils/conversion"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
@@ -43,7 +41,6 @@ import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
 import TreasuryDetails from "../../components/TreasuryDetails"
 import DashboardSideCard from "../../components/SideCard/DashboardSideCard"
 import SettingsScreen from "../../components/SettingsScreen"
-import { web3 } from "../../constant/web3"
 import BadgesScreen from "../../components/BadgesScreen"
 import ContributorContributionScreen from "../../components/ContributorContributionScreen"
 import { initPOCP } from "../../utils/POCPServiceSdk"
@@ -52,7 +49,6 @@ import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
-    const [currentPage, setCurrentPage] = useState("request")
     const currentDao = useSelector((x) => x.dao.currentDao)
     const payoutToast = useSelector((x) => x.toast.payout)
     const active_payout_notification = useSelector(
@@ -64,6 +60,7 @@ export default function Dashboard() {
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
     const role = useSelector((x) => x.dao.role)
+    const [currentPage, setCurrentPage] = useState("badges")
     const approve_contri = useSelector(
         (x) => x.transaction.approvedContriRequest
     )
@@ -87,6 +84,8 @@ export default function Dashboard() {
     const prevSigner = usePrevious(signer)
     const { isDisconnected } = useAccount()
     const { disconnect } = useDisconnect()
+
+    console.log("role in dashboard", role)
 
     const defaultOptions = {
         loop: true,
@@ -173,14 +172,14 @@ export default function Dashboard() {
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
-                    setCurrentPage("badges")
+                    // setCurrentPage("badges")
                     await dispatch(getAllDaoMembers())
                 } else {
                     // await contributorFetch()
                     // contribution specific fetch
+                    setCurrentPage("request")
                 }
             } else {
-                dispatch(setLoadingState(false))
                 dispatch(signout())
                 navigate("/")
             }
@@ -200,16 +199,6 @@ export default function Dashboard() {
 
     const onRouteChange = async (route) => {
         setTab(route)
-    }
-
-    const onUniModalOpen = async () => {
-        if (!loadingState) {
-            const ethPrice = await convertTokentoUsd("ETH")
-            if (ethPrice) {
-                dispatch(setEthPrice(ethPrice))
-                setModalUniPayment(true)
-            }
-        }
     }
 
     const renderTab = () => (
@@ -423,37 +412,9 @@ export default function Dashboard() {
                 width: "100%",
             }}
         >
-            {/* {dataSource.length > 0 */}
             {dataSource.map((x, i) => (
                 <BadgeItem item={x} key={i} />
             ))}
-        </div>
-    )
-    const renderEmptyBadgesScreen = () => (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gridGap: 0,
-                overflowY: "auto",
-                marginBottom: "2rem",
-            }}
-        >
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
-            <div className={styles.emptyBadge}>
-                <div className={`${textStyles.m_16} ${styles.emptySlot}`}>
-                    Empty Slot
-                </div>
-            </div>
         </div>
     )
     const renderPayment = () =>

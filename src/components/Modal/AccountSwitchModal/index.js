@@ -29,29 +29,25 @@ const AccountSwitchModal = ({ onChange, route }) => {
     const changeRole = async (role) => {
         dispatch(refreshContributionList())
         dispatch(switchRole(role))
-        onChange()
+        onChange(role)
         dispatch(setLoadingState(true))
         await dispatch(getAllApprovedBadges())
         await dispatch(getContriRequest())
         console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
         if (route === "contributions" && role === "ADMIN") {
-            dispatch(setLoadingState(false))
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
-            dispatch(setLoadingState(false))
         } else if (role !== "ADMIN") {
             await dispatch(getAllClaimedBadges())
             await dispatch(getAllUnclaimedBadges())
             dispatch(getContributorOverview())
             await dispatch(getMembershipVoucher())
-            dispatch(setLoadingState(false))
         } else if (route !== "contributions" && role === "ADMIN") {
             await dispatch(getPayoutRequest())
             await dispatch(set_payout_filter("PENDING"))
             await dispatch(syncTxDataWithGnosis())
-            dispatch(setLoadingState(false))
         }
         dispatch(setLoadingState(false))
     }

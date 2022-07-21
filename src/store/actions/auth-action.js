@@ -71,7 +71,7 @@ export const getJwt = (address, jwt) => {
 
         if (jwtInfo?.jwt) {
             try {
-                const res = await apiClient.get(
+                const res = await axios.get(
                     // `${"https://2eac-106-51-36-15.ngrok.io/dao_tool_server"}/auth/ping`,
                     `${process.env.REACT_APP_DAO_TOOL_URL}/auth/ping`,
                     {
@@ -92,6 +92,7 @@ export const getJwt = (address, jwt) => {
             } catch (error) {
                 localStorage.removeItem(address)
                 dispatch(authActions.set_signing({ jwt: false }))
+                return 0
             }
         } else {
             localStorage.removeItem(address)
