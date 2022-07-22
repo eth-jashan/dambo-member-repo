@@ -4,6 +4,7 @@ import { Biconomy } from "@biconomy/mexa"
 import { getSelectedChainId } from "./wagmiHelpers"
 import { web3 } from "../constant/web3"
 import Web3 from "web3"
+import axios from "axios"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
@@ -147,21 +148,6 @@ export const getMembershipBadgeFromTxHash = (txHash, uuid) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
-export const getMembershipBadgeFromClaimer = (
-    claimer,
-    contractAddress,
-    uuid
-) => {
-    const pocpGetter = new PocpGetters(
-        currentNetwork?.chainId === 4
-            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-mumbai"
-            : uuid === "981349a995c140d8b7fb5c110b0d133b"
-            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
-            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
-    )
-    return pocpGetter.membershipNftWithClaimerOfDao(claimer, contractAddress)
-}
-
 export const getInfoHash = async (txHash, uuid) => {
     const pocpGetter = new PocpGetters(
         currentNetwork?.chainId === 4
@@ -199,4 +185,43 @@ export const createMembershipVoucher = async (
     } catch (error) {
         console.log("error", error)
     }
+}
+
+export const createContributionVoucher = async (
+    contractAddress,
+    arrayOfMemberTokenId,
+    arrayofBadgeType,
+    arrayOfTokenUri,
+    arrayOfNounce
+) => {
+    try {
+        return await pocpInstance.createBadgeVoucher(
+            contractAddress,
+            arrayOfMemberTokenId,
+            arrayofBadgeType,
+            arrayOfTokenUri,
+            arrayOfNounce
+        )
+    } catch (error) {
+        console.log("error", error)
+    }
+}
+
+export const createContributionMetadataUri = async () => {
+    try {
+        const res = await axios.post(
+            `http://localhost:3001/arweave_server/contribution-badge`,
+            JSON.stringify({
+                title: "FE Revamp",
+                daoName: "Rep3 Club",
+                approveDate: "25 Apr 2021",
+                logoUrl:
+                    "https://framerusercontent.com/images/bz0ApDhqh4t9MhFLWXXx8MWCctw.png",
+            })
+        )
+        if (res.data.success) {
+            console.log(res.data)
+            return [res.data.data.metaData]
+        }
+    } catch (error) {}
 }

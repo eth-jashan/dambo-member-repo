@@ -13,11 +13,11 @@ export const set_invite_id = (id) => {
     }
 }
 
-export const setDiscordOAuth = (address, id, jwt) => {
-    return () => {
-        localStorage.setItem("discord", JSON.stringify({ address, id, jwt }))
-    }
-}
+// export const setDiscordOAuth = (address, id, jwt) => {
+//     return () => {
+//         localStorage.setItem("discord", JSON.stringify({ address, id, jwt }))
+//     }
+// }
 
 export const getRole = (uuid) => {
     return async (dispatch, getState) => {
@@ -127,104 +127,184 @@ export const createContributionrequest = (
     }
 }
 
+export const createContributionBadgeSchema = (schemaArray, id) => {
+    return async (dispatch, getState) => {
+        const uuid = getState().dao.currentDao?.uuid
+        const jwt = getState().auth.jwt
+
+        const data = {
+            dao_uuid: uuid,
+            schema: schemaArray,
+            version: 1,
+        }
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createSchema}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+
+            if (res.data.success) {
+                dispatch(
+                    contributorAction.set_contributor_schema({
+                        schema: schemaArray,
+                        id,
+                    })
+                )
+                return 1
+            } else {
+                dispatch(
+                    contributorAction.set_contributor_schema({
+                        schema: [],
+                        id: 0,
+                    })
+                )
+                return 0
+            }
+        } catch (error) {
+            console.log("error, on schema creation", error)
+        }
+    }
+}
+
 export const setContributionDetail = (item) => {
     return (dispatch) => {
         dispatch(contributorAction.set_contribution_detail({ item }))
     }
 }
 
-export const setBadgesAfterClaim = (
-    claimer,
-    approver,
-    ipfs,
-    tokenId,
-    communityId
-) => {
-    return (dispatch, getState) => {
-        const claimedToken = getState().contributor.claimed
-        const unClaimedToken = getState().contributor.unclaimed
-        const newClaimed = claimedToken.concat([
-            {
-                id: tokenId,
-                approver,
-                claimer,
-                ipfsMetaUri: ipfs,
-                community: communityId,
-            },
-        ])
-
-        dispatch(
-            daoAction.set_claimed_badges({
-                claimedTokens: newClaimed,
-                unclaimed: unClaimedToken.filter(
-                    (x) => x.id !== tokenId.toString()
-                ),
-            })
-        )
-        dispatch(
-            daoAction.set_unclaimed_badges({
-                unclaimedToken: unClaimedToken.filter(
-                    (x) => x.id !== tokenId.toString()
-                ),
-            })
-        )
-    }
-}
-
-export const getAllBadges = (address) => {
-    return (dispatch, getState) => {
-        const all_claimed_badge = getState().dao.all_claimed_badge
-        const all_approved_badge = getState().dao.all_approved_badge
-        // //console.log()
-        const communityId = getState().dao.communityInfo
-        const cid = getState().dao.contribution_id
-
-        const claimed = all_claimed_badge.filter(
-            (x) =>
-                ethers.utils.hexlify(x.claimer) ===
-                    ethers.utils.hexlify(address) &&
-                x?.community?.id === communityId[0]?.id
-        )
-        const allApproved = all_approved_badge.filter(
-            (x) => x?.community?.id === communityId[0]?.id
-        )
-        const claimed_identifier = []
-        const unclaimed = []
-
-        // filtering out current unclaimed token
-        allApproved.forEach((x) => {
-            const isClaimed = claimed.filter((y) => y.id === x?.id)
-            if (isClaimed.length === 0) {
-                cid.forEach((y) => {
-                    if (y.id.toString() === x.identifier) {
-                        unclaimed.push(x)
-                    }
-                })
-            }
-            claimed.forEach((z) => {
-                if (x.id === z.id) {
-                    claimed_identifier.push({ ...z, identifier: x?.identifier })
-                }
-            })
-        })
-
-        dispatch(
-            contributorAction.set_badges({
-                claimed: claimed_identifier,
-                unclaimed,
-            })
-        )
-    }
-}
-
-export const setClaimLoading = (status, id) => {
-    return (dispatch) => {
-        dispatch(contributorAction.set_claim_loading({ status, id }))
-    }
-}
-
 export const setDaoName = (name) => {
     return (dispatch) => {
         dispatch(contributorAction.setDaoName({ name }))
+    }
+}
+
+export const actionOnGenerateSchemaModal = (status) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_schema_modal({ status }))
+    }
+}
+
+export const successConfirmationModal = (status) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_success_modal({ status }))
+    }
+}
+
+export const actionOnContributionRequestModal = (status) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_contribution_badge_modal({ status }))
+    }
+}
+
+export const getContributorNounce = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/membership/get_contrib_schema`}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                return res.data
+            } else {
+                return false
+            }
+        } catch (error) {
+            return false
+        }
+    }
+}
+
+export const createContributionVouchers = (
+    membership_id,
+    contrib_schema_id,
+    signed_voucher,
+    details
+) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const address = getState().auth.address
+        const uuid = getState().dao.currentDao?.uuid
+        const data = {
+            created_for: address,
+            request: false,
+            dao_uuid: uuid,
+            membership_id,
+            contrib_schema_id,
+            signed_voucher,
+            details,
+        }
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
+                JSON.stringify(data),
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                // dispatch(
+                //     contributorAction.set_contributor_schema({
+                //         schema: res.data.data.schema,
+                //         id: res.data.data.version,
+                //     })
+                // )
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            return false
+        }
+    }
+}
+
+export const getContributionSchema = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/get_contrib_schema`}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                dispatch(
+                    contributorAction.set_contributor_schema({
+                        schema: res.data.data.schema,
+                        id: res.data.data.version,
+                    })
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            dispatch(
+                contributorAction.set_contributor_schema({
+                    schema: [],
+                    id: 0,
+                })
+            )
+        }
     }
 }

@@ -19,6 +19,9 @@ import {
     setShowMembershipMintingModal,
 } from "../../store/actions/membership-action"
 import ContributionSchemaModal from "../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
+import ConfirmationBadgesModal from "../SecondaryBadges/component/ConfirmationModal"
+import BadgeRequestModal from "../SecondaryBadges/component/BadgeRequestModal"
+import { actionOnGenerateSchemaModal } from "../../store/actions/contibutor-action"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
@@ -29,9 +32,23 @@ export default function BadgesScreen() {
     const [showMembershipOverviewModal, setShowMembershipOverviewModal] =
         useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
+    const contributorSchema = useSelector(
+        (x) => x.contributor.contributorSchema
+    )
+    const contributorRequestModal = useSelector(
+        (x) => x.contributor.contributionBadgeModal
+    )
 
     const showMembershipChangeModal = useSelector(
         (x) => x.membership.showMembershipChangeModal
+    )
+
+    const showContributorSchemaModal = useSelector(
+        (x) => x.contributor.schemaModal
+    )
+
+    const showContributorSuccessModal = useSelector(
+        (x) => x.contributor.successModal
     )
 
     const showMembershipCreateModal = useSelector(
@@ -65,6 +82,8 @@ export default function BadgesScreen() {
     const closeMembershipChangeModal = () => {
         dispatch(setShowMembershipChangeModal(false))
     }
+
+    const schemaTemplate = useSelector((x) => x.contributor.contributorSchema)
 
     return (
         <div className="badges-screen-container">
@@ -143,7 +162,25 @@ export default function BadgesScreen() {
                     membershipBadges={membershipBadges}
                 />
             )}
-            <ContributionSchemaModal />
+            {showContributorSchemaModal && (
+                <ContributionSchemaModal
+                    closeModal={() =>
+                        dispatch(actionOnGenerateSchemaModal(false))
+                    }
+                />
+            )}
+            {showContributorSuccessModal && (
+                <ConfirmationBadgesModal
+                    badgeSchema={contributorSchema}
+                    type={"Contribution"}
+                />
+            )}
+            {contributorRequestModal && (
+                <BadgeRequestModal
+                    badgeSchema={schemaTemplate}
+                    type="Contribution"
+                />
+            )}
         </div>
     )
 }

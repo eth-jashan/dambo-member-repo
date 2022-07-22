@@ -3,6 +3,11 @@ import { createSlice } from "@reduxjs/toolkit"
 const contributorSlice = createSlice({
     name: "contributor",
     initialState: {
+        contributorSchema: [],
+        contributorSchemaId: 0,
+        successModal: false,
+        contributionBadgeModal: false,
+        schemaModal: false,
         invite_code: null,
         discord_auth: false,
         contributionRequests: [],
@@ -18,6 +23,19 @@ const contributorSlice = createSlice({
     reducers: {
         set_invite_code(state, action) {
             state.invite_code = action.payload.id
+        },
+        set_success_modal(state, action) {
+            state.successModal = action.payload.status
+        },
+        set_contribution_badge_modal(state, action) {
+            state.contributionBadgeModal = action.payload.status
+        },
+        set_schema_modal(state, action) {
+            state.schemaModal = action.payload.status
+        },
+        set_contributor_schema(state, action) {
+            state.contributorSchema = action.payload.schema
+            state.contributorSchemaId = action.payload.id
         },
         set_discord(state, action) {
             state.discord_auth = action.payload.status

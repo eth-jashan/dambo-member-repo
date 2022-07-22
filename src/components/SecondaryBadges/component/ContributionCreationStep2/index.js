@@ -3,6 +3,7 @@ import plus_black from "../../../../assets/Icons/plus_black.svg"
 import "./style.scss"
 import NextButton from "../../../NextButton"
 import { assets } from "../../../../constant/assets"
+import pocp_bg from "../../../../assets/POCP_background.svg"
 
 export default function ContributionCreationStep2({
     increaseStep,
@@ -36,6 +37,32 @@ export default function ContributionCreationStep2({
         return isDisabled
     }
 
+    const renderContributionBadge = () => (
+        <div className="contribution-badge-div">
+            <div className="date-div">
+                <div className="date-info">4 April 2021</div>
+                <div className="rectangle" />
+                <div className="triangle" />
+            </div>
+            <div className="meta-info-div">
+                <div className="name">Rep4 DAO</div>
+                <div className="title">Contribution Title</div>
+            </div>
+            <div className="right-angle-triangle-cut" />
+            <div className="protocol-info">
+                <div>PROOF OF CONTRIBUTION</div>
+                <img src={assets.icons.rep3BadgeLogo} />
+            </div>
+            <div className="contribution-right-corner">
+                <div className="triangle-cut" />
+                <div className="dao-logo-container">
+                    <div className="upper-triangle" />
+                    <div className="bottom-triangle" />
+                </div>
+            </div>
+        </div>
+    )
+
     const renderDesignChangeRequest = () => (
         <div className="design-change-div">
             <img src={assets.icons.errorIcon} />
@@ -54,7 +81,8 @@ export default function ContributionCreationStep2({
                 <div className="contribution-right">
                     <div>
                         <div className="contribution-card">
-                            {renderDesignChangeRequest()}
+                            {renderContributionBadge()}
+                            {/* {renderDesignChangeRequest()} */}
                         </div>
                     </div>
                     <div className="schema-overview-div">

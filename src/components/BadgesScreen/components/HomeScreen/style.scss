@@ -1,8 +1,6 @@
 .badges-home-screen-container {
     text-align: left;
     .membership-badge-wrapper {
-        // border-radius: 14px;
-        // overflow: hidden;
         color: #fff;
         .membership-badge {
             display: flex;
@@ -10,7 +8,6 @@
             margin-top: 1.25rem;
             justify-content: space-between;
             border: 1px solid rgba(255, 255, 255, 0.16);
-            // overflow: hidden;
             padding: 1.25rem;
             .membership-badge-left {
                 display: flex;
@@ -122,6 +119,96 @@
             }
         }
     }
+    .contribution-div {
+        border-radius: 0.875rem;
+        padding: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.75rem;
+        margin-top: 1.25rem;
+        .contribution-div-row {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            .badge-row-left {
+                display: flex;
+                align-items: center;
+                .contribution-title-div {
+                    .contribution-badge-stats {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 1rem;
+                        line-height: 1.5rem;
+                        opacity: 0.5;
+                    }
+                }
+                img {
+                    margin-right: 1rem;
+                }
+            }
+            .btn-steps {
+                background: #333333;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: white;
+                box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
+                    0px 3px 6px rgba(0, 0, 0, 0.08);
+                border-radius: 24px;
+                padding: 0.5rem 6px 0.5rem 1rem;
+                img {
+                    height: 1.5rem;
+                    width: 1.5rem;
+                }
+                div {
+                    font-family: "TelegrafBolder";
+                    font-style: normal;
+                    font-weight: 800;
+                    font-size: 14px;
+                    line-height: 20px;
+                }
+            }
+        }
+        .contribution-bottom-div {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            margin-top: 1.25rem;
+            .psuedo-space {
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+            .contribution-schema-div {
+                border-top: solid rgba(255, 255, 255, 0.12) 1px;
+                padding-top: 1.25rem;
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                .schema-title {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 0.75rem;
+                    line-height: 1.25rem;
+                    margin-left: 1rem;
+                    color: rgba(255, 255, 255, 0.5);
+                }
+                .schema-edit {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 0.75rem;
+                    line-height: 1.25rem;
+                    margin-left: 1rem;
+                    color: rgba(255, 255, 255, 0.5);
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
     .rest-badges {
         border-radius: 0.875rem;
         font-family: "TelegrafMedium";
@@ -145,6 +232,16 @@
             .badge-row-left {
                 display: flex;
                 align-items: center;
+                .contribution-title-div {
+                    .contribution-badge-stats {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 1rem;
+                        line-height: 1.5rem;
+                        opacity: 0.5;
+                    }
+                }
                 img {
                     margin-right: 1rem;
                 }

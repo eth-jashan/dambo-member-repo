@@ -21,6 +21,7 @@ import checkIcon from "../assets/Icons/check.svg"
 import redWarningIcon from "../assets/Icons/error_icon_red.svg"
 import chevronRightWhite from "../assets/Icons/chevron_right_white.svg"
 import crossBlack from "../assets/Icons/cross.svg"
+import rep3BadgeLogo from "../assets/rep3BadgeLogo.svg"
 
 export const assets = {
     icons: {
@@ -47,5 +48,6 @@ export const assets = {
         redWarningIcon,
         chevronRightWhite,
         crossBlack,
+        rep3BadgeLogo,
     },
 }

@@ -94,6 +94,21 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
         [dispatch, isAdmin, navigate, uuid]
     )
 
+    const checkIsAdminInvite = useCallback(() => {
+        if (!uuid && !isAdmin) {
+            dispatch(signout())
+        }
+    }, [])
+
+    useEffect(() => {
+        checkIsAdminInvite()
+    }, [checkIsAdminInvite])
+
+    const onDiscordAuth = () => {
+        // dispatch(setDiscordOAuth(address, uuid, jwt))
+        window.location.replace(`${links.discord_oauth}`)
+    }
+
     const loadWeb3Modal = useCallback(async () => {
         setAuth(true)
         try {

@@ -11062,10 +11062,10 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-pocp-service-sdk@4.0.1--beta:
-  version "4.0.1--beta"
-  resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-4.0.1--beta.tgz#283c733758f8abaf9bb318b02a519a7e82c695dd"
-  integrity sha512-kQmhIGvYYdAo0Aoq7AM7dqaTx0HcZlMYbQAbvTyTRGGodZ1xOS3LeiAVyjWEotFCr3Wosrq5QAQiY/Q339iCUQ==
+pocp-service-sdk@^5.0.0--beta:
+  version "5.0.0--beta"
+  resolved "https://registry.yarnpkg.com/pocp-service-sdk/-/pocp-service-sdk-5.0.0--beta.tgz#9668edbe3ed49e393663c78a3173b580a171866d"
+  integrity sha512-d/Clljxe5drdw8NPO+RXl7r93Hx6e8HybWZaaeTNV14FVniD9D8yMSwxUs79h+5Vz5EtOh0tzy28N1ZsVAujoA==
 
 portfinder@^1.0.26:
   version "1.0.28"

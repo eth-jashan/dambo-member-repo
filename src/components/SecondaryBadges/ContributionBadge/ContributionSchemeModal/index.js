@@ -1,9 +1,15 @@
 import React, { useState } from "react"
 import "./style.scss"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ContributionCreationStep1 from "../../component/ContributionCreationStep1"
 import ContributionCreationStep2 from "../../component/ContributionCreationStep2"
 import { assets } from "../../../../constant/assets"
+import { current } from "immer"
+import {
+    actionOnGenerateSchemaModal,
+    createContributionBadgeSchema,
+    successConfirmationModal,
+} from "../../../../store/actions/contibutor-action"
 
 export default function ContributionSchemaModal({
     closeModal,
@@ -12,6 +18,8 @@ export default function ContributionSchemaModal({
 }) {
     const [contributionStep, setContributionStep] = useState(1)
     const [badgeType, setBadgeType] = useState(null)
+    const schema = useSelector((x) => x.contributor.contributorSchema)
+    const schemaId = useSelector((x) => x.contributor.contributorSchemaId)
     const [schemaTemplate, setSchemaTemplate] = useState(
         isEditing
             ? membershipBadges
@@ -41,30 +49,23 @@ export default function ContributionSchemaModal({
 
     const dispatch = useDispatch()
 
-    const increaseStep = () => {
-        setContributionStep(2)
-        // console.log("membership step is", membershipStep)
-        // if (membershipStep >= 2) {
-        //     closeModal()
-        //     setMembershipStep(1)
-        //     const formData = new FormData()
-        //     localMembershipBadges.forEach((badge, index) => {
-        //         formData.append("file", badge.file)
-        //         formData.append("name", badge.name)
-        //         formData.append("level", badge.level || index + 1)
-        //         formData.append("category", 1)
-        //         formData.append("description", badge.description)
-        //     })
-        //     dispatch(
-        //         createMembershipBadges(
-        //             formData,
-        //             localMembershipBadges,
-        //             isEditing
-        //         )
-        //     )
-        // } else {
-        //     setMembershipStep((membershipStep) => membershipStep + 1)
-        // }
+    const increaseStep = async () => {
+        if (contributionStep === 1) {
+            setContributionStep(2)
+        } else {
+            try {
+                await dispatch(
+                    createContributionBadgeSchema(schemaTemplate, schemaId + 1)
+                )
+                dispatch(successConfirmationModal(true))
+                dispatch(actionOnGenerateSchemaModal(false))
+                setContributionStep(1)
+                console.log("error on creating schema", schemaId + 1)
+            } catch (error) {
+                console.log("error on creating schema", error)
+            }
+        }
+        console.log("current step", contributionStep, schema)
     }
 
     const SelectBadgeType = () => {

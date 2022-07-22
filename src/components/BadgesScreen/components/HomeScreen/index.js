@@ -13,6 +13,12 @@ import {
 import { useDispatch, useSelector } from "react-redux"
 import { setContractAddress } from "../../../../store/actions/dao-action"
 import ContributionSchemaModal from "../../../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
+import {
+    actionOnContributionRequestModal,
+    actionOnGenerateSchemaModal,
+} from "../../../../store/actions/contibutor-action"
+
+import pocpBadgeBg from "../../../../assets/pocp_contri_bg.svg"
 
 export default function HomeScreen({
     membershipBadges,
@@ -27,6 +33,26 @@ export default function HomeScreen({
         await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
         dispatch(setShowMembershipMintingModal(true))
     }
+    const contributionSchema = useSelector(
+        (x) => x.contributor.contributorSchema
+    )
+
+    const displaySchemas = (schema) => {
+        const contribFeild = []
+        schema.forEach((x, i) => {
+            console.log(i)
+            if (i < 3) {
+                contribFeild.push(x.fieldName)
+            }
+        })
+        contribFeild.toString()
+        return contribFeild.toString().replaceAll(",", " / ")
+    }
+    console.log(
+        "Contributors",
+        contributionSchema,
+        displaySchemas(contributionSchema)
+    )
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -75,25 +101,10 @@ export default function HomeScreen({
                             </div>
                         </div>
                         <div className="membership-badge-right">
-                            {/* {currentDao?.uuid !==
-                            "93ba937e02ea4fdb9633c2cb27345200" ? ( */}
-                            {/* <div className="stack-card"> */}
-                            {/* {["1", "2", "3"].map((x, i) => ( */}
                             <img
-                                // key={i}
                                 src={membershipBadges?.[0]?.image_url}
                                 alt=""
-                                // style={{ right: `${i * 10}px` }}
                             />
-                            {/* ))} */}
-                            {/* </div> */}
-                            {/* ) : (
-                                <video autoPlay loop muted>
-                                    <source
-                                        src={membershipBadges?.[0]?.image_url}
-                                    />
-                                </video>
-                            )} */}
                         </div>
                     </div>
                 ) : (
@@ -110,24 +121,82 @@ export default function HomeScreen({
                 )}
             </div>
             <div className="rest-badges">
-                <div className="rest-badge-row">
-                    <div className="badge-row-left">
-                        <img src={contributionIconWhite} alt="" />
-                        <span>Contribution Badge </span>
+                <div className="contribution-div">
+                    <div className="contribution-div-row">
+                        <div className="badge-row-left">
+                            <img src={contributionIconWhite} alt="" />
+                            <div className="contribution-title-div">
+                                <span>Contribution Badge </span>
+                                {contributionSchema.length > 0 && (
+                                    <div className="contribution-badge-stats">
+                                        01 Approved | 00 Claimed
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="badge-row-right">
+                            {membershipBadges?.length ? (
+                                <button
+                                    onClick={() => {
+                                        if (contributionSchema.length === 0) {
+                                            dispatch(
+                                                actionOnGenerateSchemaModal(
+                                                    true
+                                                )
+                                            )
+                                        } else {
+                                            dispatch(
+                                                actionOnContributionRequestModal(
+                                                    true
+                                                )
+                                            )
+                                        }
+                                    }}
+                                    style={{
+                                        background:
+                                            contributionSchema.length > 0 &&
+                                            "#6852FF",
+                                    }}
+                                    className="btn-steps"
+                                >
+                                    <div>
+                                        {contributionSchema.length > 0
+                                            ? "Mint Badges"
+                                            : "Enable Badges"}
+                                    </div>
+                                    <img
+                                        src={assets.icons.chevronRightWhite}
+                                        alt=""
+                                    />
+                                </button>
+                            ) : (
+                                <span>Setup membership badge to enable it</span>
+                            )}
+                        </div>
                     </div>
-                    <div className="badge-row-right">
-                        {membershipBadges?.length ? (
-                            <button className="btn-steps">
-                                <div>Enable Badges</div>
-                                <img
-                                    src={assets.icons.chevronRightWhite}
-                                    alt=""
-                                />
-                            </button>
-                        ) : (
-                            <span>Setup membership badge to enable it</span>
-                        )}
-                    </div>
+                    {contributionSchema.length > 0 && (
+                        <div className="contribution-bottom-div">
+                            <div className="psuedo-space" />
+                            <div className="contribution-schema-div">
+                                <div className="schema-title">
+                                    {displaySchemas(contributionSchema)}{" "}
+                                    {contributionSchema.length > 3 &&
+                                        `and ${contributionSchema.length - 3}
+                                    more`}
+                                </div>
+                                <div
+                                    onClick={() =>
+                                        dispatch(
+                                            actionOnGenerateSchemaModal(true)
+                                        )
+                                    }
+                                    className="schema-edit"
+                                >
+                                    Edit Schema
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div className="rest-badge-row">
                     <div className="badge-row-left">
