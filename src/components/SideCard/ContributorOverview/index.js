@@ -39,6 +39,7 @@ const ContributionOverview = () => {
             ...membershipBadges.membership,
         })
     }
+    //<<<<<<< HEAD
 
     const levels = [
         {
@@ -51,6 +52,9 @@ const ContributionOverview = () => {
         },
     ]
 
+    // =======
+    //     console.log(membershipBadges)
+    // >>>>>>> contribution-revamp
     useEffect(() => {
         if (
             currentDao &&
@@ -122,6 +126,7 @@ const ContributionOverview = () => {
             "_blank"
         )
     }
+    console.log(currentMembershipBadge)
 
     return (
         <div className="contributor-side-card-overview-container">

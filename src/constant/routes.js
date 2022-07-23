@@ -16,6 +16,7 @@ const routes = {
     },
     contribution: {
         createContri: "/contrib",
+        createSchema: "/contrib/add_contrib_schema",
         updatePayout: "/contrib/payout/update",
         payout: "/contrib/payout",
         externalPayout: "/contrib/external_payout",

@@ -212,29 +212,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                 <>
                     <div className="mint-membership-badge-addresses-wrapper">
                         {addresses.map((address, index) => (
-                            // <div className="address-row" key={index}>
-                            //     <div className="input-div">
-                            //         <input
-                            //             type="text"
-                            //             className="address-input"
-                            //             value={address}
-                            //             onChange={(e) =>
-                            //                 updateAddress(e.target.value, index)
-                            //             }
-                            //             placeholder="Enter Address"
-                            //         />
-                            //         <img
-                            //             className="check-icon"
-                            //             src={assets.icons.checkIcon}
-                            //         />
-                            //     </div>
-                            //     <div
-                            //         className="address-delete"
-                            //         onClick={() => deleteAddress(index)}
-                            //     >
-                            //         <img src={cross} alt="" />
-                            //     </div>
-                            // </div>
                             <AddressInput
                                 index={index}
                                 key={index}

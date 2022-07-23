@@ -34,7 +34,10 @@ import {
 } from "../../store/actions/toast-action"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
-import { setContributionDetail } from "../../store/actions/contibutor-action"
+import {
+    getContributionSchema,
+    setContributionDetail,
+} from "../../store/actions/contibutor-action"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
@@ -163,6 +166,7 @@ export default function Dashboard() {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
         await dispatch(getMembershipVoucher())
+        await dispatch(getContributionSchema())
         await dispatch(getAllMembershipBadgesForAddress())
     }
 

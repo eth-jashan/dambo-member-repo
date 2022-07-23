@@ -1,17 +1,16 @@
 .badges-home-screen-container {
     text-align: left;
     .membership-badge-wrapper {
-        border-radius: 14px;
-        overflow: hidden;
         color: #fff;
         .membership-badge {
             display: flex;
+            border-radius: 14px;
+            margin-top: 1.25rem;
             justify-content: space-between;
             border: 1px solid rgba(255, 255, 255, 0.16);
-            overflow: hidden;
+            padding: 1.25rem;
             .membership-badge-left {
                 display: flex;
-                padding: 1.25rem;
                 font-family: "TelegrafMedium";
                 font-style: normal;
                 font-weight: 500;
@@ -71,9 +70,22 @@
                 margin-right: 1rem;
             }
             .membership-badge-right {
+                width: 252px;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                // background-color: red;
+                .stack-card {
+                    display: flex;
+                    flex-direction: row;
+                    // position: absolute;
+                }
                 img {
-                    height: 252px;
-                    border-radius: 0 14px 14px 0;
+                    height: 13.25rem;
+                    width: 13.25rem;
+                    border-radius: 0.75rem;
+                    filter: drop-shadow(0px 0px 16px rgba(0, 0, 0, 0.32));
                 }
                 video {
                     height: 252px;
@@ -107,30 +119,129 @@
             }
         }
     }
-    .rest-badges {
-        border: 1px solid rgba(255, 255, 255, 0.12);
+    .contribution-div {
         border-radius: 0.875rem;
-        overflow: hidden;
+        padding: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.75rem;
+        margin-top: 1.25rem;
+        .contribution-div-row {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            .badge-row-left {
+                display: flex;
+                align-items: center;
+                .contribution-title-div {
+                    .contribution-badge-stats {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 1rem;
+                        line-height: 1.5rem;
+                        opacity: 0.5;
+                    }
+                }
+                img {
+                    margin-right: 1rem;
+                }
+            }
+            .btn-steps {
+                background: #333333;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: white;
+                box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
+                    0px 3px 6px rgba(0, 0, 0, 0.08);
+                border-radius: 24px;
+                padding: 0.5rem 6px 0.5rem 1rem;
+                img {
+                    height: 1.5rem;
+                    width: 1.5rem;
+                }
+                div {
+                    font-family: "TelegrafBolder";
+                    font-style: normal;
+                    font-weight: 800;
+                    font-size: 14px;
+                    line-height: 20px;
+                }
+            }
+        }
+        .contribution-bottom-div {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            margin-top: 1.25rem;
+            .psuedo-space {
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+            .contribution-schema-div {
+                border-top: solid rgba(255, 255, 255, 0.12) 1px;
+                padding-top: 1.25rem;
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                .schema-title {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 0.75rem;
+                    line-height: 1.25rem;
+                    margin-left: 1rem;
+                    color: rgba(255, 255, 255, 0.5);
+                }
+                .schema-edit {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 0.75rem;
+                    line-height: 1.25rem;
+                    margin-left: 1rem;
+                    color: rgba(255, 255, 255, 0.5);
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    .rest-badges {
+        border-radius: 0.875rem;
         font-family: "TelegrafMedium";
         font-style: normal;
         font-weight: 500;
         font-size: 1rem;
         line-height: 1.5rem;
         color: rgba(255, 255, 255, 0.86);
-        margin-top: 1.25rem;
+        margin-bottom: 1.25rem;
         .rest-badge-row {
             display: flex;
-            // background-color: red;
+            margin: 1.25rem 0rem 1.25rem 0rem;
             justify-content: space-between;
             padding: 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             align-items: center;
+            border-radius: 0.75rem;
             &:last-of-type {
-                border-bottom: 0;
+                // border-bottom: 0;
             }
             .badge-row-left {
                 display: flex;
                 align-items: center;
+                .contribution-title-div {
+                    .contribution-badge-stats {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 1rem;
+                        line-height: 1.5rem;
+                        opacity: 0.5;
+                    }
+                }
                 img {
                     margin-right: 1rem;
                 }
@@ -145,14 +256,25 @@
             }
             .btn-steps {
                 background: #333333;
-                // opacity: 0.2;
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                justify-content: space-between;
                 color: white;
                 box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.12),
                     0px 3px 6px rgba(0, 0, 0, 0.08);
-                border-radius: 18px;
+                border-radius: 24px;
+                padding: 0.5rem 6px 0.5rem 1rem;
+                img {
+                    height: 1.5rem;
+                    width: 1.5rem;
+                }
+                div {
+                    font-family: "TelegrafBolder";
+                    font-style: normal;
+                    font-weight: 800;
+                    font-size: 14px;
+                    line-height: 20px;
+                }
             }
         }
     }

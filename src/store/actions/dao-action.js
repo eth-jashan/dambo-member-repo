@@ -17,6 +17,7 @@ import {
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
+import { contributorAction } from "../reducers/contributor-slice"
 
 const currentNetwork = getSelectedChainId()
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -172,8 +173,6 @@ export const getAllDaowithAddress = (chainId) => {
                                 isLastSelection[0]?.dao_uuid
                         ) {
                             selectionIndex = index
-                        } else {
-                            // //console.log("last remember not there")
                         }
                     })
                 }
@@ -189,6 +188,16 @@ export const getAllDaowithAddress = (chainId) => {
                     })
                 )
 
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        contributorClaimedDataBackend: {
+                            membership:
+                                dao_details[selectionIndex].memberships[0],
+                            recentlyUpdate:
+                                dao_details[selectionIndex].membership_update,
+                        },
+                    })
+                )
                 dispatch(
                     membershipAction.setClaimedDataFromBE({
                         contributorClaimedDataBackend: {
