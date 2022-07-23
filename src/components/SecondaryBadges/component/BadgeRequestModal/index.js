@@ -11,7 +11,10 @@ import {
     getMembershipBadgeFromClaimer,
 } from "../../../../utils/POCPServiceSdk"
 import { useDispatch, useSelector } from "react-redux"
-import { actionOnContributionRequestModal } from "../../../../store/actions/contibutor-action"
+import {
+    actionOnContributionRequestModal,
+    createContributionVouchers,
+} from "../../../../store/actions/contibutor-action"
 import Lottie from "react-lottie"
 import white_loader from "../../../../assets/lottie/Loader_White_lottie.json"
 const { TextArea } = Input
@@ -214,29 +217,32 @@ export default function BadgeRequestModal({
 
                                 try {
                                     setLoading(true)
-                                    const metadata =
-                                        await createContributionMetadataUri()
+                                    console.log(address, proxyContract)
+                                    // const metadata =
+                                    //     await createContributionMetadataUri()
                                     const memberTokenId =
                                         await getAllMembershipBadges(
                                             address[0],
                                             proxyContract,
                                             [1]
                                         )
-                                    createContributionVoucher(
-                                        proxyContract,
-                                        [
-                                            parseInt(
-                                                memberTokenId.data
-                                                    .membershipNFTs[0].tokenID
-                                            ),
-                                        ],
+                                    const msg = await createContributionVoucher(
+                                        "0xB20F972552633A1E8e9562Ce5Ad5Ec415D47909d",
+                                        [0],
                                         [1],
-                                        [metadata],
+                                        ["metadatasds;D;"],
                                         [1]
+                                    )
+                                    await dispatch(
+                                        createContributionVouchers(
+                                            1,
+                                            msg,
+                                            uploadMetadata
+                                        )
                                     )
                                     console.log(
                                         "signed message",
-                                        metadata,
+                                        // metadata,
                                         proxyContract,
 
                                         [1]

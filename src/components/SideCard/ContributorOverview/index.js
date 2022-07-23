@@ -33,6 +33,7 @@ const ContributionOverview = () => {
             ...membershipBadges.membership,
         })
     }
+    console.log(membershipBadges)
     useEffect(() => {
         if (
             currentDao &&
@@ -104,6 +105,7 @@ const ContributionOverview = () => {
             "_blank"
         )
     }
+    console.log(currentMembershipBadge)
 
     return (
         <div className={styles.container}>

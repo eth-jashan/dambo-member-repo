@@ -115,7 +115,7 @@ export default function ContributionCard({ item }) {
 
     const claimBadges = async () => {
         if (!claim_loading.status) {
-            dispatch(setClaimLoading(true, item?.id))
+            // dispatch(setClaimLoading(true, item?.id))
             // const provider = new ethers.providers.Web3Provider(window.ethereum)
             // const { chainId } = await provider.getNetwork()
             const chainId = chain?.id

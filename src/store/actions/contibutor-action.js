@@ -229,7 +229,6 @@ export const getContributorNounce = () => {
 
 export const createContributionVouchers = (
     membership_id,
-    contrib_schema_id,
     signed_voucher,
     details
 ) => {
@@ -237,39 +236,42 @@ export const createContributionVouchers = (
         const jwt = getState().auth.jwt
         const address = getState().auth.address
         const uuid = getState().dao.currentDao?.uuid
+        const contrib_schema_id = getState().contributor.contributorSchemaId
+        console.log("contributor", contrib_schema_id, details)
         const data = {
             created_for: address,
             request: false,
             dao_uuid: uuid,
             membership_id,
-            contrib_schema_id,
+            contrib_schema_id: 2,
             signed_voucher,
             details,
         }
-        try {
-            const res = await apiClient.post(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
-                JSON.stringify(data),
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (res.data.success) {
-                // dispatch(
-                //     contributorAction.set_contributor_schema({
-                //         schema: res.data.data.schema,
-                //         id: res.data.data.version,
-                //     })
-                // )
-                return true
-            } else {
-                return false
-            }
-        } catch (error) {
-            return false
-        }
+        console.log("data", data)
+        // try {
+        //     const res = await apiClient.post(
+        //         `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
+        //         JSON.stringify(data),
+        //         {
+        //             headers: {
+        //                 Authorization: `Bearer ${jwt}`,
+        //             },
+        //         }
+        //     )
+        //     if (res.data.success) {
+        //         // dispatch(
+        //         //     contributorAction.set_contributor_schema({
+        //         //         schema: res.data.data.schema,
+        //         //         id: res.data.data.version,
+        //         //     })
+        //         // )
+        //         return true
+        //     } else {
+        //         return false
+        //     }
+        // } catch (error) {
+        //     return false
+        // }
     }
 }
 

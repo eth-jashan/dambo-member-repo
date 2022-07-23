@@ -22,6 +22,7 @@ import right_arrow_white from "../../assets/Icons/right_arrow_white.svg"
 import metamask_circular from "../../assets/Icons/metamask_circular.svg"
 import coinbase_circular from "../../assets/Icons/coinbase_circular.svg"
 import rainbow_circular from "../../assets/Icons/rainbow_circular.svg"
+import { links } from "../../constant/links"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const jwt = useSelector((x) => x.auth.jwt)
@@ -203,14 +204,15 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
     const authenticateWallet = async () => {
         const chainId = await signer.getChainId()
+        dispatch(setAddress(address))
         await authWithWallet(address, chainId, signer)
     }
 
-    const checkIsAdminInvite = useCallback(() => {
-        if (!uuid && !isAdmin) {
-            dispatch(signout())
-        }
-    }, [])
+    // const checkIsAdminInvite = useCallback(() => {
+    //     if (!uuid && !isAdmin) {
+    //         dispatch(signout())
+    //     }
+    // }, [])
 
     useEffect(() => {
         checkIsAdminInvite()
