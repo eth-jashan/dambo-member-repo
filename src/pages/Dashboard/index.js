@@ -46,6 +46,10 @@ import ContributorContributionScreen from "../../components/ContributorContribut
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
 import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
+import DashboardSearchTab from "../../components/DashboardSearchTab"
+import UniversalPaymentModal from "../../components/Modal/UniversalPaymentModal"
+import plus_black from "../../assets/Icons/plus_black.svg"
+import plus_gray from "../../assets/Icons/plus_gray.svg"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -84,6 +88,7 @@ export default function Dashboard() {
     const prevSigner = usePrevious(signer)
     const { isDisconnected } = useAccount()
     const { disconnect } = useDisconnect()
+    const [uniPayHover, setUniPayHover] = useState(false)
 
     console.log("role in dashboard", role)
 
@@ -239,35 +244,36 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* <div> */}
-            {/* {role === "ADMIN" && (
-                    <div
-                        onMouseEnter={() => setUniPayHover(true)}
-                        onMouseLeave={() => setUniPayHover(false)}
-                        style={{ background: modalUniPayment ? "white" : null }}
-                        onClick={
-                            role === "ADMIN"
-                                ? async () => await onUniModalOpen()
-                                : () => setModalContri(true)
+            {role === "ADMIN" && (
+                <div
+                    onMouseEnter={() => setUniPayHover(true)}
+                    onMouseLeave={() => setUniPayHover(false)}
+                    style={{ background: modalUniPayment ? "white" : null }}
+                    onClick={
+                        role === "ADMIN"
+                            ? // ? async () => await onUniModalOpen()
+                              () => {}
+                            : () => setModalContri(true)
+                    }
+                    className={styles.addPaymentContainer}
+                >
+                    <img
+                        src={
+                            uniPayHover || modalUniPayment
+                                ? plus_black
+                                : plus_gray
                         }
-                        className={styles.addPaymentContainer}
-                    >
-                        <img
-                            src={
-                                uniPayHover || modalUniPayment
-                                    ? plus_black
-                                    : plus_gray
-                            }
-                            alt="plus"
-                        />
-                    </div>
-                )}
-
-                {modalUniPayment && (
-                    <UniversalPaymentModal
-                        signer={signer}
-                        onClose={() => setModalUniPayment(false)}
+                        alt="plus"
                     />
-                )} */}
+                </div>
+            )}
+
+            {modalUniPayment && (
+                <UniversalPaymentModal
+                    signer={signer}
+                    onClose={() => setModalUniPayment(false)}
+                />
+            )}
             {/* </div> */}
         </div>
     )
@@ -469,7 +475,7 @@ export default function Dashboard() {
                     />
                 )}
                 {renderTab()}
-                {/* {<DashboardSearchTab route={tab} />} */}
+                {<DashboardSearchTab route={tab} />}
                 {loadingState ? (
                     renderLoadingScreen()
                 ) : role === "ADMIN" ? (
