@@ -225,4 +225,46 @@
         color: rgba(255, 255, 255, 0.5);
         margin-left: 2rem;
     }
+
+    .non-empty-contrib-screen {
+        display: flex;
+    }
+
+    .empty-contrib-screen {
+        .white-header {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 2.75rem;
+            line-height: 3.25rem;
+            color: white;
+        }
+        .gray-header {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 2.75rem;
+            line-height: 3.25rem;
+            color: white;
+            opacity: 0.6;
+        }
+        .contributor-modal-btn {
+            padding: 0.5rem 1.25rem;
+            background: #6852ff;
+            border-radius: 2.375rem;
+            display: flex;
+            justify-content: center;
+            width: 271px;
+            margin-top: 2.5rem;
+            .title {
+                font-family: "TelegrafMedium";
+                color: white;
+                font-style: normal;
+                font-weight: 800;
+                font-size: 1rem;
+                line-height: 1.5rem;
+                align-items: center;
+            }
+        }
+    }
 }

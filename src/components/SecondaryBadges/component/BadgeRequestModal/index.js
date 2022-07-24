@@ -20,16 +20,7 @@ import white_loader from "../../../../assets/lottie/Loader_White_lottie.json"
 const { TextArea } = Input
 const { Option } = Select
 
-export default function BadgeRequestModal({
-    closeModal,
-    type,
-    badgeSchema,
-    isEditing,
-}) {
-    const dismissModal = () => {
-        closeModal()
-    }
-
+export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const [address, setAddress] = useState([""])
 
     const onEdit = () => {}
@@ -242,13 +233,13 @@ export default function BadgeRequestModal({
                                     )
                                     console.log(
                                         "signed message",
-                                        // metadata,
                                         proxyContract,
-
                                         [1]
                                     )
                                     setLoading(false)
-                                    closeModal()
+                                    dispatch(
+                                        actionOnContributionRequestModal(false)
+                                    )
                                 } catch (error) {
                                     console.log("error", error.toString())
                                     setLoading(false)

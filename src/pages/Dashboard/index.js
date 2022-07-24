@@ -35,6 +35,7 @@ import {
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
 import {
+    getContributionAsContributorApproved,
     getContributionSchema,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
@@ -92,8 +93,6 @@ export default function Dashboard() {
     const { isDisconnected } = useAccount()
     const { disconnect } = useDisconnect()
     const [uniPayHover, setUniPayHover] = useState(false)
-
-    console.log("role in dashboard", role)
 
     const defaultOptions = {
         loop: true,
@@ -170,6 +169,10 @@ export default function Dashboard() {
         await dispatch(getAllMembershipBadgesForAddress())
     }
 
+    const contributionFlowAsContributor = async () => {
+        await dispatch(getContributionAsContributorApproved())
+    }
+
     const initialLoad = useCallback(async () => {
         if (signer) {
             if (address) {
@@ -181,11 +184,9 @@ export default function Dashboard() {
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
-                    // setCurrentPage("badges")
                     await dispatch(getAllDaoMembers())
                 } else {
-                    // await contributorFetch()
-                    // contribution specific fetch
+                    contributionFlowAsContributor()
                     setCurrentPage("request")
                 }
             } else {
@@ -479,7 +480,7 @@ export default function Dashboard() {
                     />
                 )}
                 {renderTab()}
-                {<DashboardSearchTab route={tab} />}
+                {/* {<DashboardSearchTab route={tab} />} */}
                 {loadingState ? (
                     renderLoadingScreen()
                 ) : role === "ADMIN" ? (
@@ -489,7 +490,6 @@ export default function Dashboard() {
                 ) : dataSource?.length > 0 ? (
                     renderBadges()
                 ) : (
-                    // renderEmptyBadgesScreen()
                     <ContributorBadgeScreen />
                 )}
                 {rejectModal && (

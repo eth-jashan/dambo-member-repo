@@ -5,6 +5,7 @@ const contributorSlice = createSlice({
     initialState: {
         contributorSchema: [],
         contributorSchemaId: 0,
+        contributorSelectionContribution: false,
         successModal: false,
         contributionBadgeModal: false,
         schemaModal: false,
@@ -14,6 +15,8 @@ const contributorSlice = createSlice({
         contribution_detail: null,
         unclaimed: [],
         claimed: [],
+        contributionForContributorApproved: [],
+        contributionForContributorPending: [],
         claim_loading: {
             status: false,
             id: null,
@@ -53,6 +56,13 @@ const contributorSlice = createSlice({
         },
         setDaoName(state, action) {
             state.daoName = action.payload.name
+        },
+        set_contributor_contribution_approved(state, action) {
+            state.contributionForContributorApproved = action.payload.approved
+            //state.contributionForContributorPending = action.payload.pending
+        },
+        set_contribution_selection(state, action) {
+            state.contributorSelectionContribution = action.payload.contribution
         },
     },
 })

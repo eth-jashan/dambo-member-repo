@@ -15,6 +15,8 @@ import opensea_white from "../../assets/Icons/opensea-white.svg"
 import cross from "../../assets/Icons/cross.svg"
 // import axios from "axios"
 import { useNetwork } from "wagmi"
+import ContributionRequestModal from "../Modal/ContributionRequest"
+import RequestCollapsable from "../ContributorFlow/component/RequestCollapsable"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -26,50 +28,15 @@ export default function ContributorContributionScreen() {
     )
     const { chain } = useNetwork()
 
-    // const getAllMembershipVouchers = () => {
-    //     if (membershipVouchers) {
-    //         const membershipVouchersWithInfo = membershipVouchers?.map(
-    //             (badge) => {
-    //                 const badgeInfo = allMembershipBadges?.find(
-    //                     (ele) => ele.uuid === badge.membership_uuid
-    //                 )
-    //                 return {
-    //                     ...badge,
-    //                     ...badgeInfo,
-    //                 }
-    //             }
-    //         )
-    //         return membershipVouchersWithInfo
-    //     }
-    // }
-
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
-
+    const contributionForContributorApproved = useSelector(
+        (x) => x.contributor.contributionForContributorApproved
+    )
     const unClaimedBadges = useSelector(
         (x) => x.membership.unclaimedMembershipBadges
     )
-
-    // const filterOutUnclaimedBadges = () => {
-    //     const unClaimedBadges = getAllMembershipVouchers()?.filter((badge) => {
-    //         const indexOfBadge = membershipBadgesForAddress?.findIndex(
-    //             (ele) =>
-    //                 ele?.level?.toString() === badge?.level?.toString() &&
-    //                 ele?.category?.toString() === badge?.category?.toString() &&
-    //                 ele?.level &&
-    //                 ele?.category
-    //         )
-    //         return indexOfBadge === -1
-    //     })
-    //     setUnclaimedBadges(unClaimedBadges)
-    // }
-
-    // useEffect(() => {
-    //     if (getAllMembershipVouchers()) {
-    //         filterOutUnclaimedBadges()
-    //     }
-    // }, [filterOutUnclaimedBadges, unClaimedBadges])
 
     const membershipBadgeClaimed = useSelector(
         (x) => x.membership.membershipBadgeClaimed
@@ -79,7 +46,7 @@ export default function ContributorContributionScreen() {
         (x) => x.membership.claimMembershipLoading
     )
 
-    // const [showClaimTakingTime, setShowClaimTakingTime] = useState(false)
+    const [contriModal, setContriModal] = useState(false)
     const showClaimTakingTime = useSelector((x) => x.membership.claimTakingTime)
     const disableClaimBtn = useSelector((x) => x.membership.disableClaimBtn)
     const showMetamaskSignText = useSelector(
@@ -101,6 +68,46 @@ export default function ContributorContributionScreen() {
             )
         }
     }
+
+    const contribution = [
+        {
+            created_for: "0x9C3f331473602e818E92CD16C948af4e924F81Eb",
+            request: false,
+            dao_uuid: "bc9cd815177d4075a9990d29d1b14cb5",
+            membership_id: 1,
+            contrib_schema_id: 2,
+            signed_voucher: {
+                index: 0,
+                memberTokenIds: [0],
+                type_: [1],
+                tokenUri: "metadatasds;D;,",
+                data: [0],
+                nonces: [1],
+                signature:
+                    "0x52975260305db40ef82dfcb913ebd594f4fc06fc11828e177ae48cedd75d3a170c5c757246bc67f987d24418b1c522b5f21ea659371195ef89b7a6939110a0b61c",
+            },
+            details: [
+                {
+                    fieldName: "Contribution Title",
+                    fieldType: "Text Field",
+                    options: [],
+                    value: "asfljb",
+                },
+                {
+                    fieldName: "Additional Notes",
+                    fieldType: "Long text",
+                    options: [],
+                    value: "afl",
+                },
+                {
+                    fieldName: "Time Spent in Hours",
+                    fieldType: "Numbers",
+                    options: [],
+                    value: "1",
+                },
+            ],
+        },
+    ]
 
     const closeClaimedModal = () => {
         dispatch(setMembershipBadgeClaimed(null))
@@ -128,6 +135,32 @@ export default function ContributorContributionScreen() {
             "_blank"
         )
     }
+
+    console.log("Current dao schema", currentDao?.contrib_schema?.schema)
+
+    const renderEmptyContributorScreen = () => (
+        <div className="empty-contrib-screen">
+            <div className="white-header">No contribution request</div>
+            <div className="gray-header">
+                Initiate contribution request for whatever work you have done
+            </div>
+            <div
+                onClick={() => setContriModal(true)}
+                className="contributor-modal-btn"
+            >
+                <div className="title">Create Contribution Request</div>
+            </div>
+        </div>
+    )
+
+    const renderNonEmptyScreen = () => (
+        <div className="non-empty-contrib-screen">
+            <RequestCollapsable
+                contributions={contributionForContributorApproved}
+                title={`Approved Requests  •  ${contributionForContributorApproved.length}`}
+            />
+        </div>
+    )
 
     return (
         <div className="contributor-contribution-screen-container">
@@ -175,24 +208,7 @@ export default function ContributorContributionScreen() {
                                         ) : (
                                             <img src={magic_button} alt="" />
                                         )}
-                                        {/* {claimMembershipLoading.status &&
-                                        claimMembershipLoading.membership_uuid ===
-                                            badge.membership_uuid ? (
-                                                disableClaimBtn ?
-                                            <Spin indicator={antIcon} />
-                                        ) : (
-                                            <img src={magic_button} alt="" />
-                                        )} */}
                                     </button>
-                                    {/* {showClaimTakingTime &&
-                                        claimMembershipLoading?.status &&
-                                        claimMembershipLoading.membership_uuid ===
-                                            badge.membership_uuid && (
-                                            <span className="takingTimeText">
-                                                Takes around 10sec, please don’t
-                                                leave the page
-                                            </span>
-                                        )} */}
 
                                     {!txHashFetched && showMetamaskSignText && (
                                         <span className="takingTimeText">
@@ -218,17 +234,28 @@ export default function ContributorContributionScreen() {
                     ))}
                 </div>
             ) : (
-                <div className="noMembershipBadge">
-                    <div>
-                        <div className="noMembershipHeading">
-                            A new beginning! ✨
+                <div
+                    className={contribution.length === 0 && "noMembershipBadge"}
+                >
+                    {currentDao?.contrib_schema?.schema.length > 0 ? (
+                        contribution.length > 0 ? (
+                            renderNonEmptyScreen()
+                        ) : (
+                            renderEmptyContributorScreen()
+                        )
+                    ) : (
+                        <div>
+                            <div className="noMembershipHeading">
+                                A new beginning! ✨
+                            </div>
+                            <div className="noMembershipContent">
+                                Welcome to {currentDao?.name}, we’re glad to
+                                have you here. This space will fill up with
+                                badges and rewards as you participate in the
+                                community.
+                            </div>
                         </div>
-                        <div className="noMembershipContent">
-                            Welcome to {currentDao?.name}, we’re glad to have
-                            you here. This space will fill up with badges and
-                            rewards as you participate in the community.
-                        </div>
-                    </div>
+                    )}
                 </div>
             )}
             {membershipBadgeClaimed && (
@@ -250,7 +277,6 @@ export default function ContributorContributionScreen() {
                         <video className="claimedBadgeImg" autoPlay loop muted>
                             <source
                                 src={membershipBadgeClaimed?.image_url}
-                                // src="http://arweave.net/Gtv0Tn-hW52C_9nIWDs6PM_gwKWsXbsqHoF8b4WzxGI"
                                 type="video/mp4"
                             />
                         </video>
@@ -298,6 +324,9 @@ export default function ContributorContributionScreen() {
                         </div>
                     </div>
                 </div>
+            )}
+            {contriModal && (
+                <ContributionRequestModal setVisibility={setContriModal} />
             )}
         </div>
     )

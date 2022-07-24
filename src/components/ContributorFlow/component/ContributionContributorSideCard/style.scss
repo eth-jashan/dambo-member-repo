@@ -1,0 +1,127 @@
+.contributor-contribution-side-card-container {
+    width: 100%;
+    height: 100%;
+    // .cross-icon {
+    //     position: absolute;
+    //     top: ;
+    // }
+    .contri-title {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 23px;
+        line-height: 2rem;
+        color: white;
+        width: 12.5rem;
+        text-align: start;
+        margin-bottom: 1.5rem;
+    }
+    .contri-info {
+        .contributor-info {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            text-align: start;
+            color: #ffffff;
+        }
+        .contri-type {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            /* identical to box height, or 150% */
+            color: #ffffff;
+            text-align: start;
+            opacity: 0.5;
+        }
+        .contri-description {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* or 150% */
+            color: #ffffff;
+            text-align: start;
+            opacity: 0.5;
+            margin-top: 1rem;
+        }
+        .contri-description-more {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* or 150% */
+            color: #ffffff;
+            text-align: start;
+            // opacity: 0.5;
+        }
+    }
+    .badge-sign-collapsable {
+        .closed-div {
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
+            border-bottom: 1px solid rgba(255, 252, 252, 0.16);
+            display: flex;
+            flex-direction: row;
+            padding: 1.25rem 0rem;
+            justify-content: space-between;
+            img {
+                opacity: 0.5;
+            }
+            .title {
+                font-family: "TelegrafMedium";
+                font-style: normal;
+                font-weight: 500;
+                font-size: 1rem;
+                line-height: 1.5rem;
+                /* identical to box height, or 150% */
+                color: #9fffba;
+            }
+        }
+    }
+    .claim-bottom-btn {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 1.5rem 1.25rem 1rem;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
+
+        .claim-btn {
+            background-color: white;
+            padding: 0.5rem 3.125rem;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
+                0px 2px 4px rgba(0, 0, 0, 0.16);
+            border-radius: 1.5rem;
+            .btn-title {
+                font-family: "TelegrafBolder";
+                font-style: normal;
+                font-weight: 800;
+                font-size: 1rem;
+                line-height: 1.5rem;
+                /* identical to box height, or 150% */
+                color: #6852ff;
+            }
+        }
+        .reject-btn {
+            font-family: "TelegrafBolder";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            text-decoration-line: underline;
+            color: #ffffff;
+        }
+    }
+}

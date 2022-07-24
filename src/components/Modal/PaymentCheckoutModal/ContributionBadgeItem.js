@@ -194,11 +194,11 @@ const ContributionBadgeItem = ({
     const cancelContribution = async () => {
         if (checkoutType === "contribution") {
             await dispatch(rejectApproval(item?.id))
-            await dispatch(getContriRequest())
+            // await dispatch(getContriRequest())
             onClose()
         } else if (checkoutType === "payment") {
             await dispatch(rejectApproval(item?.id))
-            await dispatch(getContriRequest())
+            // await dispatch(getContriRequest())
             onClose()
         }
     }

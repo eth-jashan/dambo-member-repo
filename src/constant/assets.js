@@ -20,8 +20,13 @@ import tuneIcon from "../assets/Icons/tune.svg"
 import checkIcon from "../assets/Icons/check.svg"
 import redWarningIcon from "../assets/Icons/error_icon_red.svg"
 import chevronRightWhite from "../assets/Icons/chevron_right_white.svg"
+import chevronUpWhite from "../assets/Icons/chevron_up_white.svg"
+import chevronDownWhite from "../assets/Icons/chevron_down_white.svg"
+import sentWhite from "../assets/Icons/sent_arrow.svg"
 import crossBlack from "../assets/Icons/cross.svg"
+import crossWhite from "../assets/Icons/cross_white.svg"
 import rep3BadgeLogo from "../assets/rep3BadgeLogo.svg"
+// import downWhite from "../assets/Icons/down_white.svg"
 
 export const assets = {
     icons: {
@@ -49,5 +54,9 @@ export const assets = {
         chevronRightWhite,
         crossBlack,
         rep3BadgeLogo,
+        chevronDownWhite,
+        chevronUpWhite,
+        sentWhite,
+        crossWhite,
     },
 }

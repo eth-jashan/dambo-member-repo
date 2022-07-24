@@ -11,35 +11,40 @@ import twitterIcon from "../../../assets/Icons/twitter-icon.svg"
 import ContributionIconGrey from "../../../assets/Icons/ContributionIconGrey.svg"
 import appreciationIconGrey from "../../../assets/Icons/appreciationIconGrey.svg"
 import payoutInfo from "../../../assets/Icons/payoutInfo.svg"
+import ContributionContributorSideCard from "../../ContributorFlow/component/ContributionContributorSideCard"
+import { assets } from "../../../constant/assets"
 
 // import { getSelectedChainId } from "../../../utils/POCPutils"
 const ContributionOverview = () => {
     const [isToggleOpen, setIsToggleOpen] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
-
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
-
-    const all_claimed_badge = useSelector((x) => x.dao.all_claimed_badge)
-    const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
+    const membershipBadges = useSelector((x) => x.membership.membershipBadges)
     const contributionOverview = useSelector((x) => x.dao.contributionOverview)
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
-    const membershipBadges = useSelector(
-        (x) => x.membership.contributorClaimedDataBackend
+    const contributorSelectionContribution = useSelector(
+        (x) => x.contributor.contributorSelectionContribution
     )
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
     const getCurrentBadgeUpdated = () => {
-        const metadatSubgraph = membershipBadgesForAddress.filter(
-            (x) => x?.level === membershipBadges?.membership?.level.toString()
-        )
+        const membershipInfo = []
+        membershipBadgesForAddress.map((item, i) => {
+            membershipBadges.forEach((x) => {
+                if (item.level === x.level.toString()) {
+                    membershipInfo.push(x)
+                }
+            })
+        })
+
+        console.log("this membership", membershipInfo)
 
         setCurrentMembershipBadge({
-            ...metadatSubgraph[0],
-            ...membershipBadges.membership,
+            ...membershipBadgesForAddress[0],
+            ...membershipInfo[0],
         })
     }
-    //<<<<<<< HEAD
 
     const levels = [
         {
@@ -52,9 +57,8 @@ const ContributionOverview = () => {
         },
     ]
 
-    // =======
-    //     console.log(membershipBadges)
-    // >>>>>>> contribution-revamp
+    console.log(membershipBadges, membershipBadgesForAddress)
+
     useEffect(() => {
         if (
             currentDao &&
@@ -129,18 +133,28 @@ const ContributionOverview = () => {
     console.log(currentMembershipBadge)
 
     return (
-        <div className="contributor-side-card-overview-container">
-            <div
-                style={{ color: "white", textAlign: "start" }}
-                className={textStyle.ub_23}
-            >
-                Overview
-            </div>
+        <div
+            style={{ paddingTop: contributorSelectionContribution && 0 }}
+            className="contributor-side-card-overview-container"
+        >
+            {contributorSelectionContribution && (
+                <img className="cross-icon" src={assets.icons.crossWhite} />
+            )}
+            {!contributorSelectionContribution && (
+                <div
+                    style={{ color: "white", textAlign: "start" }}
+                    className={textStyle.ub_23}
+                >
+                    Overview
+                </div>
+            )}
             {!currentMembershipBadge ? (
                 <div className="overviewText">
                     All your membership, contribution, and payout overview will
                     come here.
                 </div>
+            ) : contributorSelectionContribution ? (
+                <ContributionContributorSideCard />
             ) : (
                 <>
                     <div className="badgeOverview">

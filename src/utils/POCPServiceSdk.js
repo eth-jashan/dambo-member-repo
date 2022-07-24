@@ -207,6 +207,26 @@ export const createContributionVoucher = async (
     }
 }
 
+export const claimContributionBadge = async (
+    contractAddress,
+    voucher,
+    memberTokenId,
+    approveIndex,
+    hashCallbackFn,
+    callbackFn
+) => {
+    try {
+        return await pocpInstance.claimContributionBadges(
+            contractAddress,
+            voucher,
+            memberTokenId,
+            approveIndex,
+            hashCallbackFn,
+            callbackFn
+        )
+    } catch (error) {}
+}
+
 export const createContributionMetadataUri = async () => {
     try {
         const res = await axios.post(
@@ -223,5 +243,7 @@ export const createContributionMetadataUri = async () => {
             console.log(res.data)
             return [res.data.data.metaData]
         }
-    } catch (error) {}
+    } catch (error) {
+        console.log("error ", error)
+    }
 }

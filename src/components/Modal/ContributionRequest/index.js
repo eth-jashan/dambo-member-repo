@@ -4,12 +4,19 @@ import { MdChevronRight } from "react-icons/all"
 import cross from "../../../assets/Icons/cross.svg"
 import InputText from "../../InputComponent/Input"
 import { Input, message, Progress, InputNumber } from "antd"
-import { useDispatch } from "react-redux"
-import { createContributionrequest } from "../../../store/actions/contibutor-action"
+import { useDispatch, useSelector } from "react-redux"
+import {
+    createContributionrequest,
+    raiseContributionRequest,
+} from "../../../store/actions/contibutor-action"
 import Select from "react-select"
 import { getContriRequest } from "../../../store/actions/dao-action"
+import { getAllMembershipBadges } from "../../../utils/POCPServiceSdk"
 
 const ContributionRequestModal = ({ setVisibility }) => {
+    const schemaOfDao = useSelector((x) => x.contributor.contributorSchema)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
+    const address = useSelector((x) => x.auth.address)
     const [title, setTile] = useState("")
     const [time, setTime] = useState("")
     const [link, setLink] = useState("")
@@ -22,6 +29,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
     const [linkError, setLinkError] = useState(false)
 
     const dispatch = useDispatch()
+    const [schemaTemplate, setSchemaTemplate] = useState(schemaOfDao)
 
     const isValid = () => {
         const urlExpression =
@@ -40,24 +48,21 @@ const ContributionRequestModal = ({ setVisibility }) => {
     const onSubmit = async () => {
         if (!loading) {
             setLoading(true)
-            if (isValid()) {
-                const res = await dispatch(
-                    createContributionrequest(
-                        title,
-                        contributionType.value,
-                        link,
-                        time,
-                        comments
-                    )
+            const memberTokenId = await getAllMembershipBadges(
+                address,
+                proxyContract,
+                false
+            )
+            console.log(
+                schemaTemplate,
+                memberTokenId.data.membershipNFTs[0].tokenID
+            )
+            dispatch(
+                raiseContributionRequest(
+                    parseInt(memberTokenId.data.membershipNFTs[0].tokenID),
+                    schemaTemplate
                 )
-                if (res) {
-                    message.success("Request Submitted Successfully")
-                    setVisibility(false)
-                } else {
-                    message.error("Try creating again")
-                }
-                await dispatch(getContriRequest())
-            }
+            )
             setLoading(false)
         }
     }
@@ -79,6 +84,144 @@ const ContributionRequestModal = ({ setVisibility }) => {
         }
     }
 
+    const onChangeText = (values, index) => {
+        console.log("index", index)
+        const newCopy = schemaTemplate.map((item, i) => {
+            if (i === index) {
+                return { ...item, value: values }
+            } else {
+                return item
+            }
+        })
+        setSchemaTemplate(newCopy)
+        console.log("After", newCopy)
+    }
+    const onMultiTextChange = (values, index) => {
+        console.log("index", values, index)
+        const newCopy = schemaTemplate.map((item, i) => {
+            if (i === index) {
+                return { ...item, value: values }
+            } else {
+                return item
+            }
+        })
+        setSchemaTemplate(newCopy)
+        console.log("After", newCopy)
+    }
+
+    const textInput = (placeholder, index) => (
+        <div className="contribution-title-input-wrapper">
+            <InputText
+                key={index}
+                placeholder={placeholder}
+                onChange={(e) => onChangeText(e.target?.value, index)}
+                value={schemaTemplate[index].value}
+            />
+        </div>
+    )
+
+    const numberInput = (placeholder, index) => (
+        <div className="rowInput">
+            <div className="contribution-time-input-wrapper">
+                <InputNumber
+                    key={index}
+                    placeholder={placeholder}
+                    onChange={(e) => onChangeText(e.target?.value, index)}
+                    value={schemaTemplate[index].value}
+                    min={0}
+                    onFocus={() => setFocusOnTime(true)}
+                    onBlur={() => setFocusOnTime(false)}
+                    className={`numberInput ${
+                        !focusOnTime && time ? "timeDark" : ""
+                    }`}
+                />
+            </div>
+        </div>
+    )
+
+    const buildMultiOptions = (options) => {
+        const newOptions = []
+        options.forEach((x) => {
+            newOptions.push({ value: x, label: x })
+        })
+        return newOptions
+    }
+
+    const selectInput = (placeholder, index) => (
+        <div className="contribution-type-input-wrapper">
+            <div>
+                <Select
+                    classNamePrefix="select"
+                    closeMenuOnSelect
+                    onChange={(x) => onMultiTextChange(x.value, index)}
+                    isSearchable={false}
+                    name="color"
+                    options={buildMultiOptions(schemaTemplate[index].options)}
+                    placeholder={placeholder}
+                    onFocus={() => setFocusOnSelect(true)}
+                    onBlur={() => setFocusOnSelect(false)}
+                    className={`select-input ${
+                        !focusOnSelect && contributionType?.value
+                            ? "selectDark"
+                            : ""
+                    }`}
+                />
+            </div>
+        </div>
+    )
+
+    const longTextInput = (placeholder, index) => (
+        <div
+            className={`text-area-wrapper ${
+                descriptionFocus ? "text-area-focused" : ""
+            } ${
+                !descriptionFocus && comments?.length > 0
+                    ? "text-area-dark"
+                    : ""
+            }`}
+        >
+            <Input.TextArea
+                placeholder={placeholder}
+                key={index}
+                className="textArea"
+                onFocus={() => setDescriptionFocus(true)}
+                onBlur={() => setDescriptionFocus(false)}
+                autoSize={{ maxRows: 3 }}
+                maxLength={200}
+                bordered={false}
+                value={schemaTemplate[index]?.value}
+                onChange={(e) => onChangeText(e.target?.value, index)}
+            />
+            <Progress
+                trailColor="#CCCCCC"
+                strokeColor="#6852FF"
+                strokeWidth={10}
+                style={{
+                    bottom: 12,
+                    right: 12,
+                    position: "absolute",
+                }}
+                width={20}
+                type="circle"
+                showInfo={false}
+                percent={(schemaTemplate[index]?.value?.length / 200) * 100}
+            />
+        </div>
+    )
+
+    const getInputField = (type, placeholder, index) => {
+        switch (type) {
+            case "Text Field":
+                return textInput(placeholder, index)
+            case "Numbers":
+                return numberInput(placeholder, index)
+            case "Long text":
+                return longTextInput(placeholder, index)
+            case "Multiselect":
+                return selectInput(placeholder, index)
+        }
+    }
+
     return (
         <div className="backdrop contribution-request-container">
             <div className="modal">
@@ -93,103 +236,13 @@ const ContributionRequestModal = ({ setVisibility }) => {
                         New contribution
                         <br /> request
                     </div>
-
-                    <div className="contribution-title-input-wrapper">
-                        <InputText
-                            placeholder="Contribution Title"
-                            onChange={(e) => setTile(e.target.value)}
-                            value={title}
-                        />
-                    </div>
-
-                    <div className="rowInput">
-                        <div className="contribution-time-input-wrapper">
-                            <InputNumber
-                                placeholder="Time Spent (in hours)"
-                                onChange={(value) => setTime(value)}
-                                value={time}
-                                min={0}
-                                onFocus={() => setFocusOnTime(true)}
-                                onBlur={() => setFocusOnTime(false)}
-                                className={`numberInput ${
-                                    !focusOnTime && time ? "timeDark" : ""
-                                }`}
-                            />
-                        </div>
-                        <div
-                            className={`external-link-input-wrapper ${
-                                linkError ? "external-link-error" : ""
-                            }`}
-                        >
-                            <InputText
-                                placeholder="External Link"
-                                onChange={(e) => setLink(e.target.value)}
-                                value={link}
-                                onBlur={handleLinkBlur}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="contribution-type-input-wrapper">
-                        <div>
-                            <Select
-                                classNamePrefix="select"
-                                closeMenuOnSelect
-                                onChange={setContributionType}
-                                isSearchable={false}
-                                name="color"
-                                options={contributionTypeOptions}
-                                placeholder="Contribution Type"
-                                onFocus={() => setFocusOnSelect(true)}
-                                onBlur={() => setFocusOnSelect(false)}
-                                className={`select-input ${
-                                    !focusOnSelect && contributionType?.value
-                                        ? "selectDark"
-                                        : ""
-                                }`}
-                            />
-                        </div>
-                    </div>
-
-                    <div
-                        className={`text-area-wrapper ${
-                            descriptionFocus ? "text-area-focused" : ""
-                        } ${
-                            !descriptionFocus && comments?.length > 0
-                                ? "text-area-dark"
-                                : ""
-                        }`}
-                    >
-                        <Input.TextArea
-                            placeholder="Write your feedback here"
-                            className="textArea"
-                            onFocus={() => setDescriptionFocus(true)}
-                            onBlur={() => setDescriptionFocus(false)}
-                            autoSize={{ maxRows: 3 }}
-                            maxLength={200}
-                            bordered={false}
-                            value={comments}
-                            onChange={(e) => setComments(e.target.value)}
-                        />
-                        <Progress
-                            trailColor="#CCCCCC"
-                            strokeColor="#6852FF"
-                            strokeWidth={10}
-                            style={{
-                                bottom: 12,
-                                right: 12,
-                                position: "absolute",
-                            }}
-                            width={20}
-                            type="circle"
-                            showInfo={false}
-                            percent={(comments.length / 200) * 100}
-                        />
-                    </div>
+                    {schemaTemplate.map((badge, index) =>
+                        getInputField(badge.fieldType, badge.fieldName, index)
+                    )}
                 </div>
 
                 <div onClick={() => onSubmit()} className="buttonSubmit">
-                    <div className={isValid() ? "validText" : "greyedText"}>
+                    <div className={"validText"}>
                         {loading ? "Creating..." : "Create Request"}
                     </div>
                     <MdChevronRight color={isValid() ? "white" : "#B4A8FF"} />

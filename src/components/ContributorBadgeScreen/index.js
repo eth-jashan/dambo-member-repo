@@ -22,48 +22,14 @@ export default function ContributorBadgeScreen() {
         (x) => x.membership.contributorClaimedDataBackend
     )
     const [upgradedMembership, setUpgradedMembership] = useState(false)
-    // const selectedChainId = getSelectedChainId()
 
     const getCurrentBadgeUpdated = () => {
-        // const metadatSubgraph = membershipBadgesForAddress.filter(
-        //     (x) => x?.level === membershipBadges?.membership?.level.toString()
-        // )
         if (membershipBadges.recentlyUpdate) {
             setUpgradedMembership({
-                // ...metadatSubgraph[0],
                 ...membershipBadges.membership,
             })
         }
     }
-
-    // const getCurrentBadgeUpdated = async () => {
-    //     try {
-    //         const res = await apiClient.get(
-    //             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.getDaoMembership}`,
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${jwt}`,
-    //                 },
-    //             }
-    //         )
-
-    //         if (res.data.data.length > 0) {
-    //             res.data.data.forEach((x) => {
-    //                 if (
-    //                     x.dao_details.chain_id === selectedChainId.chainId &&
-    //                     x.dao_details.uuid === currentDao?.uuid &&
-    //                     x.membership_update
-    //                 ) {
-    //                     // dao_details.push(x)
-    //                     setUpgradedMembership(x)
-    //                 }
-    //             })
-    //             console.log(upgradedMembership, selectedChainId, currentDao)
-    //         }
-    //     } catch (error) {
-    //         console.log("error", error)
-    //     }
-    // }
 
     const updateUpgrade = async () => {
         try {
@@ -89,21 +55,6 @@ export default function ContributorBadgeScreen() {
     useEffect(async () => {
         await getCurrentBadgeUpdated()
     }, [])
-
-    // const allMembershipBadges = useSelector(
-    //     (x) => x.membership.membershipBadges
-    // )
-    // const membershipVouchers = useSelector(
-    //     (x) => x.membership.membershipVoucher
-    // )
-
-    // const membershipBadgesForAddress = useSelector(
-    //     (x) => x.membership.membershipBadgesForAddress
-    // )
-
-    // const unClaimedBadges = useSelector(
-    //     (x) => x.membership.unclaimedMembershipBadges
-    // )
 
     const membershipBadgeClaimed = useSelector(
         (x) => x.membership.membershipBadgeClaimed

@@ -5,7 +5,6 @@ import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 
 import apiClient from "../../utils/api_client"
-import { daoAction } from "../reducers/dao-slice"
 
 export const set_invite_id = (id) => {
     return (dispatch) => {
@@ -13,11 +12,48 @@ export const set_invite_id = (id) => {
     }
 }
 
-// export const setDiscordOAuth = (address, id, jwt) => {
-//     return () => {
-//         localStorage.setItem("discord", JSON.stringify({ address, id, jwt }))
-//     }
-// }
+export const getContributionAsContributorApproved = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib`}?dao_uuid=${uuid}&contributor=1&voucher=1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                const approvedContribution = []
+                res.data.data.contributions.forEach((x) => {
+                    if (x.voucher_id) {
+                        approvedContribution.push(x)
+                    }
+                })
+                dispatch(
+                    contributorAction.set_contributor_contribution_approved({
+                        approved: approvedContribution,
+                        // pending: pendingContribution,
+                    })
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            dispatch(
+                contributorAction.set_contributor_schema({
+                    schema: [],
+                    id: 0,
+                })
+            )
+        }
+    }
+}
 
 export const getRole = (uuid) => {
     return async (dispatch, getState) => {
@@ -85,28 +121,29 @@ export const getDiscordUserId = (grant_code, redirect_uri) => {
     }
 }
 
-export const createContributionrequest = (
-    title,
-    type,
-    link,
-    time,
-    comments
+export const raiseContributionRequest = (
+    membership_id,
+    // signed_voucher,
+    details
 ) => {
     return async (dispatch, getState) => {
-        const uuid = getState().dao.currentDao?.uuid
         const jwt = getState().auth.jwt
-
+        const address = getState().auth.address
+        const uuid = getState().dao.currentDao?.uuid
+        const contrib_schema_id = getState().contributor.contributorSchemaId
+        console.log("contributor", contrib_schema_id, details)
         const data = {
+            created_for: address,
+            request: true,
             dao_uuid: uuid,
-            stream: type,
-            title,
-            description: comments,
-            link,
-            time_spent: time,
+            membership_id,
+            contrib_schema_id: 2,
+            details,
         }
+        console.log("data", data)
         try {
             const res = await apiClient.post(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
                 data,
                 {
                     headers: {
@@ -114,15 +151,13 @@ export const createContributionrequest = (
                     },
                 }
             )
-
             if (res.data.success) {
-                // //console.log('suucessfully created !')
-                return 1
+                return true
             } else {
-                return 0
+                return false
             }
         } catch (error) {
-            // //console.log('error....', error)
+            return false
         }
     }
 }
@@ -248,30 +283,24 @@ export const createContributionVouchers = (
             details,
         }
         console.log("data", data)
-        // try {
-        //     const res = await apiClient.post(
-        //         `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
-        //         JSON.stringify(data),
-        //         {
-        //             headers: {
-        //                 Authorization: `Bearer ${jwt}`,
-        //             },
-        //         }
-        //     )
-        //     if (res.data.success) {
-        //         // dispatch(
-        //         //     contributorAction.set_contributor_schema({
-        //         //         schema: res.data.data.schema,
-        //         //         id: res.data.data.version,
-        //         //     })
-        //         // )
-        //         return true
-        //     } else {
-        //         return false
-        //     }
-        // } catch (error) {
-        //     return false
-        // }
+        try {
+            const res = await apiClient.post(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            return false
+        }
     }
 }
 
@@ -308,5 +337,11 @@ export const getContributionSchema = () => {
                 })
             )
         }
+    }
+}
+
+export const setContributionSelection = (contribution) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_contribution_selection({ contribution }))
     }
 }
