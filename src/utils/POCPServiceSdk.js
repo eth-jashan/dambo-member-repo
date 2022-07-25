@@ -281,7 +281,7 @@ export const createContributionMetadataUri = async (
             })
         )
         const res = await axios.post(
-            `http://localhost:3002/arweave_server/contribution-badge`,
+            `https://test-staging.api.drepute.xyz/arweave_server/contribution-badge`,
             JSON.stringify({
                 title,
                 daoName,
@@ -290,7 +290,6 @@ export const createContributionMetadataUri = async (
             })
         )
         if (res.data.success) {
-            // console.log("Res data", res.data.data)
             return res.data.data
         }
     } catch (error) {
