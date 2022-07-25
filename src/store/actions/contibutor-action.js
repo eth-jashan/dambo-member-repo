@@ -385,13 +385,13 @@ export const updateContributionVoucher = (
 // }
 
 export const createContributionVouchers = (
-    membership_id,
+    address,
     signed_voucher,
     details
 ) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-        const address = getState().auth.address
+        // const address = getState().auth.address
         const uuid = getState().dao.currentDao?.uuid
         const contrib_schema_id = getState().contributor.contributorSchemaId
         console.log("contributor", contrib_schema_id, signed_voucher)
@@ -399,8 +399,8 @@ export const createContributionVouchers = (
             created_for: address,
             request: false,
             dao_uuid: uuid,
-            membership_id,
-            contrib_schema_id: 2,
+            // membership_id,
+            contrib_schema_id,
             signed_voucher,
             details,
         }

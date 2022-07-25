@@ -53,7 +53,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const onEdit = () => {}
 
     const updateAddress = async (x, i) => {
-        // await getClaimedMembershipNft()
+        await getClaimedMembershipNft()
         const copyOfAddresses = [...address]
         copyOfAddresses[i] = x
         setAddress(copyOfAddresses)
@@ -94,7 +94,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 placeholder="Enter Address"
                 onChange={(e) => updateAddress(e.target.value, index)}
             />
-            {/* <div className="cross-div"></div> */}
+            <div className="cross-div"></div>
         </div>
     )
 
@@ -298,9 +298,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                         if (msg) {
                                             await dispatch(
                                                 createContributionVouchers(
-                                                    memberTokenId.data
-                                                        .membershipNFTs[0]
-                                                        .tokenID,
+                                                    address[0],
                                                     msg,
                                                     uploadMetadata
                                                 )
