@@ -33,11 +33,14 @@ export default function ContributionCardV2({
     }
 
     const [isHovered, setIsHovered] = useState(false)
+    const [showMore, setShowMore] = useState(false)
 
     let totalAmountInUsd = 0
     item?.tokens.forEach((token) => {
         totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
     })
+
+    console.log("item is", item)
 
     return (
         <div
@@ -50,6 +53,7 @@ export default function ContributionCardV2({
             ${contributionType === "approved" && isFirst && "with-checkbox"}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onClick={isFirst ? () => {} : () => onContributionSelection()}
         >
             {isHovered && isFirst && (
                 <div
@@ -68,65 +72,8 @@ export default function ContributionCardV2({
                     className="contribution-approve-checkbox"
                 />
             )}
-            {/* {!isMinimum && (
-                <div className="maximum-div">
-                    <div
-                        onClick={onContributionSelection}
-                        className="contri-info"
-                    >
-                        <div className="flex-div">
-                            <img src={assets.icons.sentWhite} />
-                            <div className="contri-meta">
-                                <div className="contri-title">
-                                    {
-                                        item?.details?.find(
-                                            (x) =>
-                                                x.fieldName ===
-                                                "Contribution Title"
-                                        )?.value
-                                    }
-                                </div>
-                                <div className="contri-type">
-                                    design •{" "}
-                                    {item?.details?.find(
-                                        (x) =>
-                                            x.fieldName === "Contribution Title"
-                                    )?.value &&
-                                        `${
-                                            item?.details?.find(
-                                                (x) =>
-                                                    x.fieldName ===
-                                                    "Time Spent in Hours"
-                                            )?.value
-                                        }hrs`}
-                                </div>
-                                <div className="submission-link">
-                                    Submission link
-                                </div>
-                            </div>
-                        </div>
-                        <div className="contri-feedback">
-                            “incredible work and really appreciate coming onver
-                            the weekend, love you man, no homo”
-                        </div>
-                    </div>
-                    <div className="action-btn">
-                        <div className="claim-btn">
-                            <div>Claim Badge</div>
-                        </div>
-                        <div className="reject-btn">
-                            <div>Reject Badge</div>
-                        </div>
-                    </div>
-                </div>
-            )} */}
             {isMinimum && (
-                <div
-                    className="minimum-div"
-                    onClick={
-                        isFirst ? () => {} : () => onContributionSelection()
-                    }
-                >
+                <div className="minimum-div">
                     <div className="contri-left-min">
                         <div className="contri-title-min">
                             <img
@@ -192,8 +139,10 @@ export default function ContributionCardV2({
                                                 ""
                                             )}
                                         </>
+                                    ) : item?.payout_status === "REJECTED" ? (
+                                        "rejected"
                                     ) : (
-                                        ""
+                                        "some"
                                     )}
                                 </div>
                             </div>
@@ -217,14 +166,14 @@ export default function ContributionCardV2({
                                             }
                                         ${item?.tokens[1]?.details?.symbol}`}
                                         {item?.tokens?.length > 2 &&
-                                            `and ${
+                                            ` and ${
                                                 item?.tokens?.length - 2
                                             } more`}
                                     </div>
                                     <div>Payment waiting for execution</div>
                                 </div>
                                 <div className="payout-token-details">
-                                    {item?.tokens?.map((token, index) => (
+                                    {/* {item?.tokens?.map((token, index) => (
                                         <div
                                             className="payout-token-row"
                                             key={index}
@@ -239,7 +188,75 @@ export default function ContributionCardV2({
                                                 $
                                             </div>
                                         </div>
-                                    ))}
+                                    ))} */}
+
+                                    {item?.tokens
+                                        ?.slice(0, 2)
+                                        .map((token, index) => (
+                                            <div
+                                                className="payout-token-row"
+                                                key={index}
+                                            >
+                                                <div className="highlighted">
+                                                    {token?.amount}{" "}
+                                                    {token?.details?.symbol}
+                                                </div>
+                                                <div>
+                                                    {token?.usd_amount *
+                                                        token?.amount}
+                                                    $
+                                                </div>
+                                            </div>
+                                        ))}
+                                    {item?.tokens?.length > 2 && (
+                                        <div>
+                                            {showMore ? (
+                                                <>
+                                                    {item?.tokens
+                                                        ?.slice(2)
+                                                        .map((token, index) => (
+                                                            <div
+                                                                className="payout-token-row"
+                                                                key={index}
+                                                            >
+                                                                <div className="highlighted">
+                                                                    {
+                                                                        token?.amount
+                                                                    }{" "}
+                                                                    {
+                                                                        token
+                                                                            ?.details
+                                                                            ?.symbol
+                                                                    }
+                                                                </div>
+                                                                <div>
+                                                                    {token?.usd_amount *
+                                                                        token?.amount}
+                                                                    $
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    <div
+                                                        onClick={() =>
+                                                            setShowMore(false)
+                                                        }
+                                                        className="show-more-or-less"
+                                                    >
+                                                        Show less
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div
+                                                    onClick={() =>
+                                                        setShowMore(true)
+                                                    }
+                                                    className="show-more-or-less"
+                                                >
+                                                    Show More
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         ) : (

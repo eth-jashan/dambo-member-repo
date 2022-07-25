@@ -4,12 +4,22 @@ import ContributionCardV2 from "../ContributionCard"
 import {
     contributionBadgeClaim,
     getContributionAsContributorApproved,
+    rejectContributionVoucher,
 } from "../../../../store/actions/contibutor-action"
 import { getAllMembershipBadges } from "../../../../utils/POCPServiceSdk"
 import { useAccount } from "wagmi"
 import { useDispatch, useSelector } from "react-redux"
-import { message } from "antd"
+import { message, Spin } from "antd"
+import { LoadingOutlined } from "@ant-design/icons"
 
+const antIcon = (
+    <LoadingOutlined
+        style={{
+            fontSize: 24,
+        }}
+        spin
+    />
+)
 export default function ApprovedVoucherClub({ voucher, isFirst }) {
     const [contributionsWithCheckbox, setContributionWithCheckbox] = useState(
         []
@@ -17,17 +27,22 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
     const { address } = useAccount()
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         let contributions = []
+        let voucher_uuid = null
         for (const key in voucher) {
             if (voucher?.[key]?.contributions?.length) {
                 contributions = voucher[key]?.contributions
+                voucher_uuid = key
+                console.log("voucher uuid is", key)
             }
         }
         const mappedContributions = contributions.map((ele) => ({
             ...ele,
             isChecked: true,
+            voucher_uuid,
         }))
         setContributionWithCheckbox([...mappedContributions])
     }, [voucher])
@@ -54,28 +69,49 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
 
     const claimBadge = async () => {
         console.log("claim badge")
+        setIsLoading(true)
+        try {
+            const memberTokenId = await getAllMembershipBadges(
+                address,
+                proxyContract,
+                false
+            )
+            console.log(
+                "claim badge member token id",
+                memberTokenId.data.membershipNFTs[0].tokenID
+            )
+            const membership_token_id =
+                memberTokenId.data.membershipNFTs[0].tokenID
+            await dispatch(
+                contributionBadgeClaim(
+                    contributionsWithCheckbox[0]?.uuid,
+                    membership_token_id,
+                    (x) => {
+                        console.log("success callback", x)
+                        dispatch(getContributionAsContributorApproved())
+                        setIsLoading(false)
+                        message.success("Claimed Badge Successfully")
+                    },
+                    contributionsWithCheckbox
+                )
+            )
+        } catch (err) {
+            setIsLoading(false)
+        }
+    }
 
+    const rejectVoucher = async () => {
         const memberTokenId = await getAllMembershipBadges(
             address,
             proxyContract,
             false
         )
-        console.log(
-            "claim badge member token id",
-            memberTokenId.data.membershipNFTs[0].tokenID
-        )
-        await dispatch(
-            contributionBadgeClaim(
-                contributionsWithCheckbox[0]?.uuid,
-                memberTokenId.data.membershipNFTs[0].tokenID,
-                [0],
-                (x) => console.log("hash callback", x),
-                (x) => {
-                    console.log("success callback", x)
-                    dispatch(getContributionAsContributorApproved())
-                    message.success("Claimed Badge Successfully")
-                },
-                contributionsWithCheckbox
+
+        const membership_token_id = memberTokenId.data.membershipNFTs[0].tokenID
+        dispatch(
+            rejectContributionVoucher(
+                membership_token_id,
+                contributionsWithCheckbox[0]?.voucher_uuid
             )
         )
     }
@@ -89,11 +125,15 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                         claim
                     </div>
                     <div className="approved-header-action-btns">
-                        <button className="reject-outline-btn">
+                        <button
+                            className="reject-outline-btn"
+                            onClick={rejectVoucher}
+                        >
                             Reject all
                         </button>
                         <button onClick={claimBadge}>
                             Claim Badge • {totalSelected}
+                            {isLoading && <Spin indicator={antIcon} />}
                         </button>
                     </div>
                 </div>

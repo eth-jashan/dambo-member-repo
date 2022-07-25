@@ -230,6 +230,11 @@
                     justify-content: space-between;
                     margin-top: 1rem;
                 }
+                .show-more-or-less {
+                    text-decoration: underline;
+                    cursor: pointer;
+                    margin-top: 0.5rem;
+                }
             }
         }
     }

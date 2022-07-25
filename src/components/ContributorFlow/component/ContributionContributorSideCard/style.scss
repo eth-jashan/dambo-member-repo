@@ -89,9 +89,16 @@
             padding: 0.75rem 0 0;
             margin-top: 0.75rem;
         }
+        .show-more-or-less {
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
     }
 
     .contri-info {
+        margin-top: 1.25rem;
+
         .contributor-info {
             font-family: "TelegrafMedium";
             font-style: normal;

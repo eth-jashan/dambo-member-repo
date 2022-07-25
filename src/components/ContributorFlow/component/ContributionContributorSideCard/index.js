@@ -116,12 +116,18 @@ export default function ContributionContributorSideCard({
                                                 </div>
                                             </div>
                                         ))}
-                                    <div onClick={() => setShowMore(false)}>
+                                    <div
+                                        onClick={() => setShowMore(false)}
+                                        className="show-more-or-less"
+                                    >
                                         Show less
                                     </div>
                                 </>
                             ) : (
-                                <div onClick={() => setShowMore(true)}>
+                                <div
+                                    onClick={() => setShowMore(true)}
+                                    className="show-more-or-less"
+                                >
                                     Show More
                                 </div>
                             )}

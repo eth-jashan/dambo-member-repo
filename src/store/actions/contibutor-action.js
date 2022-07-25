@@ -419,8 +419,6 @@ export const getPastContributions = () => {
 export const contributionBadgeClaim = (
     contributionUuid,
     memberTokenId,
-    approveIndex,
-    hashCallbackFn,
     callbackOnSuccess,
     contributions
 ) => {
@@ -443,12 +441,7 @@ export const contributionBadgeClaim = (
             )
             if (res.data.success) {
                 // return res.data
-                console.log(
-                    "Voucher",
-                    res.data.data,
-                    memberTokenId,
-                    approveIndex
-                )
+                console.log("Voucher", res.data.data, memberTokenId)
                 const tokens =
                     res.data?.data?.signed_voucher?.tokenUri?.split(",")
                 console.log("tokens are", tokens)
@@ -461,6 +454,18 @@ export const contributionBadgeClaim = (
                     }
                 })
                 console.log("approve Indexes", approveIndexes)
+                const hashCallbackFn = (x) => {
+                    console.log("hash callback", x)
+                    dispatch(
+                        sendClaimTxHash(
+                            x,
+                            memberTokenId,
+                            approveIndexes,
+                            contributions[0].voucher_uuid
+                        )
+                    )
+                }
+
                 await claimContributionBadge(
                     proxyContract,
                     res.data?.data?.signed_voucher,
@@ -479,7 +484,7 @@ export const contributionBadgeClaim = (
     }
 }
 
-export const rejectContributionVoucher = (token_id) => {
+export const rejectContributionVoucher = (token_id, voucher_uuid) => {
     return async (dispatch, getState) => {
         console.log("in contributionBadgeClaim")
         const jwt = getState().auth.jwt
@@ -492,6 +497,46 @@ export const rejectContributionVoucher = (token_id) => {
                 {
                     dao_uuid: uuid,
                     token_id,
+                    voucher_uuid,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                console.log("res", res.data)
+                dispatch(getContributionAsContributorApproved())
+            }
+        } catch (err) {
+            console.error("err", err)
+            return false
+        }
+    }
+}
+
+export const sendClaimTxHash = (
+    tx_hash,
+    membership_token_id,
+    claimed_indexes,
+    voucher_uuid
+) => {
+    return async (dispatch, getState) => {
+        console.log("in sendClaimTxHash")
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.post(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/update/voucher`}`,
+                {
+                    dao_uuid: uuid,
+                    voucher_uuid,
+                    tx_hash,
+                    membership_token_id,
+                    claimed_indexes,
                 },
                 {
                     headers: {
