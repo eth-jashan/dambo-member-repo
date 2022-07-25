@@ -35,6 +35,7 @@ export default function ContributionContributorSideCard({
     const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
 
     const [signersInfo, setSignersInfo] = useState(null)
+    const safeInfo = useSelector((x) => x.dao.safeInfo)
 
     const getPayoutInfo = async () => {
         if (contributorSelectionContribution?.gnosis_reference_id) {
@@ -224,7 +225,7 @@ export default function ContributionContributorSideCard({
                                     : signersInfo?.confirmations?.length ===
                                       signersInfo?.confirmationsRequired
                                     ? "waiting for execution"
-                                    : `waiting for signing • ${signersInfo?.confirmations?.length}/${signersInfo?.confirmationsRequired}`}
+                                    : `waiting for signing • ${signersInfo?.confirmations?.length}/${safeInfo?.threshold}`}
                             </div>
                             <img
                                 src={
@@ -246,7 +247,7 @@ export default function ContributionContributorSideCard({
                             signersInfo?.confirmationsRequired ? (
                                 <>
                                     <div>Signing Done</div>
-                                    <div>
+                                    <div className="signer-time">
                                         {dayjs(signersInfo?.modified).fromNow()}
                                     </div>
                                 </>
@@ -265,6 +266,11 @@ export default function ContributionContributorSideCard({
                                     )}
                                 </>
                             )}
+                            <div>|</div>
+                            <div>Request Approved</div>
+                            <div className="signer-time">
+                                {dayjs(signersInfo?.submissionDate).fromNow()}
+                            </div>
                         </div>
                     </>
                 )}
