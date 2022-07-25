@@ -17,6 +17,7 @@ import {
 } from "../../utils/POCPServiceSdk"
 import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
+import { contributorAction } from "../reducers/contributor-slice"
 
 const currentNetwork = getSelectedChainId()
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -172,8 +173,6 @@ export const getAllDaowithAddress = (chainId) => {
                                 isLastSelection[0]?.dao_uuid
                         ) {
                             selectionIndex = index
-                        } else {
-                            // //console.log("last remember not there")
                         }
                     })
                 }
@@ -189,6 +188,16 @@ export const getAllDaowithAddress = (chainId) => {
                     })
                 )
 
+                dispatch(
+                    membershipAction.setClaimedDataFromBE({
+                        contributorClaimedDataBackend: {
+                            membership:
+                                dao_details[selectionIndex].memberships[0],
+                            recentlyUpdate:
+                                dao_details[selectionIndex].membership_update,
+                        },
+                    })
+                )
                 dispatch(
                     membershipAction.setClaimedDataFromBE({
                         contributorClaimedDataBackend: {
@@ -356,6 +365,7 @@ export const set_contri_filter = (filter_key, number) => {
     }
 }
 
+// required for gnosis
 export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
@@ -364,7 +374,10 @@ export const gnosisDetailsofDao = () => {
                 const balance = await serviceClient.getBalances(
                     currentDao?.safe_public_address
                 )
-
+                const safeInfo = await serviceClient.getSafeInfo(
+                    currentDao?.safe_public_address
+                )
+                console.log("safe info...", safeInfo)
                 const tokenType = []
                 balance.forEach((item) => {
                     if (item.tokenAddress === null) {
@@ -384,6 +397,7 @@ export const gnosisDetailsofDao = () => {
                         balance: tokenType,
                     })
                 )
+                dispatch(daoAction.set_safe_info({ details: safeInfo }))
             } catch (error) {
                 dispatch(
                     daoAction.set_gnosis_details({
@@ -441,135 +455,135 @@ export const resetApprovedBadges = () => {
     }
 }
 
-export const getContriRequest = () => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        const uuid = getState().dao.currentDao?.uuid
-        dispatch(daoAction.reset_approved_badges())
-        dispatch(tranactionAction.reset_approved_request())
-        const approvedBadges = getState().dao.approvedBadges
+// export const getContriRequest = () => {
+//     return async (dispatch, getState) => {
+//         const jwt = getState().auth.jwt
+//         const uuid = getState().dao.currentDao?.uuid
+//         dispatch(daoAction.reset_approved_badges())
+//         dispatch(tranactionAction.reset_approved_request())
+//         const approvedBadges = getState().dao.approvedBadges
 
-        const url =
-            getState().dao.role === "ADMIN"
-                ? `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
-                : `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
-        try {
-            const res = await apiClient.get(url, {
-                headers: {
-                    Authorization: `Bearer ${jwt}`,
-                },
-            })
-            if (res.data.success) {
-                const cid = []
-                res?.data?.data?.contributions?.forEach((item) => {
-                    const payout = []
-                    cid.push(item)
+//         const url =
+//             getState().dao.role === "ADMIN"
+//                 ? `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}`
+//                 : `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`
+//         try {
+//             const res = await apiClient.get(url, {
+//                 headers: {
+//                     Authorization: `Bearer ${jwt}`,
+//                 },
+//             })
+//             if (res.data.success) {
+//                 const cid = []
+//                 res?.data?.data?.contributions?.forEach((item) => {
+//                     const payout = []
+//                     cid.push(item)
 
-                    // Approved Payout Request without creating payout
-                    if (
-                        item?.tokens?.length > 0 &&
-                        item?.payout_status === null &&
-                        item?.status === "APPROVED" &&
-                        item?.gnosis_reference_id === ""
-                    ) {
-                        item?.tokens.forEach((x) => {
-                            payout.push({
-                                amount: x?.amount,
-                                token_type: {
-                                    token: x?.details,
-                                },
-                                address: x?.addr,
-                                usd_amount: x?.usd_amount,
-                            })
-                        })
-                        if (payout?.length > 0) {
-                            dispatch(
-                                tranactionAction.set_approved_request({
-                                    item: {
-                                        contri_detail: item,
-                                        payout,
-                                    },
-                                })
-                            )
-                        }
-                    }
+//                     // Approved Payout Request without creating payout
+//                     if (
+//                         item?.tokens?.length > 0 &&
+//                         item?.payout_status === null &&
+//                         item?.status === "APPROVED" &&
+//                         item?.gnosis_reference_id === ""
+//                     ) {
+//                         item?.tokens.forEach((x) => {
+//                             payout.push({
+//                                 amount: x?.amount,
+//                                 token_type: {
+//                                     token: x?.details,
+//                                 },
+//                                 address: x?.addr,
+//                                 usd_amount: x?.usd_amount,
+//                             })
+//                         })
+//                         if (payout?.length > 0) {
+//                             dispatch(
+//                                 tranactionAction.set_approved_request({
+//                                     item: {
+//                                         contri_detail: item,
+//                                         payout,
+//                                     },
+//                                 })
+//                             )
+//                         }
+//                     }
 
-                    if (
-                        item?.status === "APPROVED" &&
-                        item?.mint_badge &&
-                        !item?.approved_tx
-                    ) {
-                        // Approved Badge Request without pocp interaction
-                        if (approvedBadges.length > 0) {
-                            approvedBadges.forEach((x) => {
-                                if (x?.id !== item?.id) {
-                                    dispatch(approveBadge(item))
-                                }
-                            })
-                        } else {
-                            dispatch(approveBadge(item))
-                        }
-                    }
-                })
+//                     if (
+//                         item?.status === "APPROVED" &&
+//                         item?.mint_badge &&
+//                         !item?.approved_tx
+//                     ) {
+//                         // Approved Badge Request without pocp interaction
+//                         if (approvedBadges.length > 0) {
+//                             approvedBadges.forEach((x) => {
+//                                 if (x?.id !== item?.id) {
+//                                     dispatch(approveBadge(item))
+//                                 }
+//                             })
+//                         } else {
+//                             dispatch(approveBadge(item))
+//                         }
+//                     }
+//                 })
 
-                dispatch(daoAction.set_contribution_id({ cid }))
-                if (getState().dao.role === "ADMIN") {
-                    dispatch(
-                        daoAction.set_contri_list({
-                            list: res.data?.data?.contributions.filter(
-                                (x) => x.status === "REQUESTED"
-                            ),
-                            number: 1,
-                        })
-                    )
-                    return 1
-                } else {
-                    dispatch(
-                        daoAction.set_contri_list({
-                            list: res.data?.data?.contributions.filter(
-                                (x) =>
-                                    // newly created contribution
-                                    x.status === "REQUESTED" ||
-                                    // contribution approved as only badge and token
-                                    (x.status === "APPROVED" &&
-                                        x.tokens.length === 0 &&
-                                        x.mint_badge &&
-                                        !x.claimed_tx) ||
-                                    // only created through token in active till payment
-                                    x.payout_status === "REQUESTED" ||
-                                    (x.payout_status === "APPROVED" &&
-                                        !x.mint_badge) ||
-                                    // for both badge and token  active till badge payment
-                                    x.payout_status === "REQUESTED" ||
-                                    x.payout_status === "APPROVED" ||
-                                    (x.payout_status === "PAID" &&
-                                        x.mint_badge &&
-                                        !x.claimed_tx)
-                            ),
-                            number: 1,
-                        })
-                    )
-                }
-            } else {
-                dispatch(
-                    daoAction.set_contri_list({
-                        list: [],
-                        number: 1,
-                    })
-                )
-                return 0
-            }
-        } catch (error) {
-            dispatch(
-                daoAction.set_contri_list({
-                    list: [],
-                    number: 1,
-                })
-            )
-            return 0
-        }
-    }
-}
+//                 dispatch(daoAction.set_contribution_id({ cid }))
+//                 if (getState().dao.role === "ADMIN") {
+//                     dispatch(
+//                         daoAction.set_contri_list({
+//                             list: res.data?.data?.contributions.filter(
+//                                 (x) => x.status === "REQUESTED"
+//                             ),
+//                             number: 1,
+//                         })
+//                     )
+//                     return 1
+//                 } else {
+//                     dispatch(
+//                         daoAction.set_contri_list({
+//                             list: res.data?.data?.contributions.filter(
+//                                 (x) =>
+//                                     // newly created contribution
+//                                     x.status === "REQUESTED" ||
+//                                     // contribution approved as only badge and token
+//                                     (x.status === "APPROVED" &&
+//                                         x.tokens.length === 0 &&
+//                                         x.mint_badge &&
+//                                         !x.claimed_tx) ||
+//                                     // only created through token in active till payment
+//                                     x.payout_status === "REQUESTED" ||
+//                                     (x.payout_status === "APPROVED" &&
+//                                         !x.mint_badge) ||
+//                                     // for both badge and token  active till badge payment
+//                                     x.payout_status === "REQUESTED" ||
+//                                     x.payout_status === "APPROVED" ||
+//                                     (x.payout_status === "PAID" &&
+//                                         x.mint_badge &&
+//                                         !x.claimed_tx)
+//                             ),
+//                             number: 1,
+//                         })
+//                     )
+//                 }
+//             } else {
+//                 dispatch(
+//                     daoAction.set_contri_list({
+//                         list: [],
+//                         number: 1,
+//                     })
+//                 )
+//                 return 0
+//             }
+//         } catch (error) {
+//             dispatch(
+//                 daoAction.set_contri_list({
+//                     list: [],
+//                     number: 1,
+//                 })
+//             )
+//             return 0
+//         }
+//     }
+// }
 
 export const updateSingleTransaction = () => {}
 
@@ -582,7 +596,6 @@ export const addActivePaymentBadge = (status) => {
 export const getPayoutRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
         if (safe_address !== "") {
@@ -596,11 +609,14 @@ export const getPayoutRequest = () => {
                     }
                 )
 
+                console.log("payout request from BE", res.data)
+
                 const pendingTxs = await serviceClient.getPendingTransactions(
                     safe_address
                 )
-
+                console.log("gnosis request from gnosis", pendingTxs)
                 const list_of_tx = []
+
                 if (res.data.success) {
                     // all payout from server
                     dispatch(
@@ -990,7 +1006,7 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
             dao_uuid: uuid,
             nonce,
         }
-
+        console.log("external", isExternal ? data_external : data)
         const res = await apiClient.post(
             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}`,
             isExternal ? data_external : data,
@@ -1328,57 +1344,56 @@ export const getAllClaimedBadges = () => {
     }
 }
 
-export const getAllUnclaimedBadges = () => {
-    return async (dispatch, getState) => {
-        const communityInfo = getState().dao.communityInfo
-        // const pocpGetter = new PocpGetters(currentNetwork === 4 ? 137 : 137)
-        const pocpGetter = new PocpGetters(
-            currentNetwork?.chainId === 4 ? 80001 : 137
-        )
-        const uuid = getState().dao.currentDao?.uuid
-        const jwt = getState().auth.jwt
-        try {
-            const res = await apiClient.get(
-                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (res.data.success) {
-                const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
-                    communityInfo[0]?.id?.toString()
-                )
-                const unclaimedBadges = []
-                res.data.data.contributions.forEach((contribution) => {
-                    unclaimedTokens.forEach((badge) => {
-                        if (contribution.id === parseInt(badge.identifier)) {
-                            unclaimedBadges.push(badge)
-                        }
-                    })
-                })
-                dispatch(
-                    daoAction.set_unclaimed_badges({
-                        unclaimedToken: unclaimedBadges,
-                    })
-                )
-            } else {
-                dispatch(
-                    daoAction.set_claimed_badges({
-                        unclaimedToken: [],
-                    })
-                )
-            }
-        } catch (error) {
-            dispatch(
-                daoAction.set_claimed_badges({
-                    unclaimedToken: [],
-                })
-            )
-        }
-    }
-}
+// export const getAllUnclaimedBadges = () => {
+//     return async (dispatch, getState) => {
+//         const communityInfo = getState().dao.communityInfo
+//         const pocpGetter = new PocpGetters(
+//             currentNetwork?.chainId === 4 ? 80001 : 137
+//         )
+//         const uuid = getState().dao.currentDao?.uuid
+//         const jwt = getState().auth.jwt
+//         try {
+//             const res = await apiClient.get(
+//                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${jwt}`,
+//                     },
+//                 }
+//             )
+//             if (res.data.success) {
+//                 const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
+//                     communityInfo[0]?.id?.toString()
+//                 )
+//                 const unclaimedBadges = []
+//                 res.data.data.contributions.forEach((contribution) => {
+//                     unclaimedTokens.forEach((badge) => {
+//                         if (contribution.id === parseInt(badge.identifier)) {
+//                             unclaimedBadges.push(badge)
+//                         }
+//                     })
+//                 })
+//                 dispatch(
+//                     daoAction.set_unclaimed_badges({
+//                         unclaimedToken: unclaimedBadges,
+//                     })
+//                 )
+//             } else {
+//                 dispatch(
+//                     daoAction.set_claimed_badges({
+//                         unclaimedToken: [],
+//                     })
+//                 )
+//             }
+//         } catch (error) {
+//             dispatch(
+//                 daoAction.set_claimed_badges({
+//                     unclaimedToken: [],
+//                 })
+//             )
+//         }
+//     }
+// }
 
 export const pocpRegistrationInfo = (dao_uuid, name, owner) => {
     return (dispatch) => {
@@ -1439,31 +1454,48 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
     }
 }
 
+// contrib/update
+// uuid,status,tokens,feedback APPROVED
+
 export const approveBadge = (contribution, feedback = false, token = false) => {
     return async (dispatch) => {
-        const updatedContribution = {
-            id: contribution?.id,
-            title: contribution?.title,
-            requested_by: contribution?.requested_by,
-            stream: contribution.stream,
-            time_spent: contribution.time_spent,
-            status: contribution.status,
-            description: contribution.description,
-            feedback: feedback || contribution.feedback,
-            payout_status: contribution.payout_status,
-            tokens: token || contribution.tokens,
-            gnosis_reference_id: contribution.gnosis_reference_id,
-            ipfs_url: contribution.ipfs_url,
-            contribution_badge_id: contribution.contribution_badge_id,
-            badge_status: contribution.badge_status,
-            approved_tx: contribution.approved_tx,
-            approved_tx_status: contribution.approved_tx_status,
-            claimed_tx: contribution.claimed_tx,
-            claimed_tx_status: contribution.claimed_tx_status,
-            mint_badge: contribution.mint_badge,
-        }
+        console.log(
+            "contributions....",
+            JSON.stringify({
+                ...contribution,
+                feedback: feedback || false,
+                tokens: token || false,
+            })
+        )
+        // const updatedContribution = {
+        //     id: contribution?.id,
+        //     title: contribution?.title,
+        //     requested_by: contribution?.requested_by,
+        //     stream: contribution.stream,
+        //     time_spent: contribution.time_spent,
+        //     status: contribution.status,
+        //     description: contribution.description,
+        //     feedback: feedback || contribution.feedback,
+        //     payout_status: contribution.payout_status,
+        //     tokens: token || contribution.tokens,
+        //     gnosis_reference_id: contribution.gnosis_reference_id,
+        //     ipfs_url: contribution.ipfs_url,
+        //     contribution_badge_id: contribution.contribution_badge_id,
+        //     badge_status: contribution.badge_status,
+        //     approved_tx: contribution.approved_tx,
+        //     approved_tx_status: contribution.approved_tx_status,
+        //     claimed_tx: contribution.claimed_tx,
+        //     claimed_tx_status: contribution.claimed_tx_status,
+        //     mint_badge: contribution.mint_badge,
+        // }
         dispatch(
-            daoAction.add_approved_badges({ contribution: updatedContribution })
+            daoAction.add_approved_badges({
+                contribution: {
+                    ...contribution,
+                    feedback: feedback || false,
+                    tokens: token || false,
+                },
+            })
         )
     }
 }
@@ -1547,6 +1579,7 @@ export const getAllPastTransactions = () => {
                         }
                     })
                 })
+                console.log("past contribution", pastContributions)
                 dispatch(
                     daoAction.setPastContributions({
                         pastContributions,

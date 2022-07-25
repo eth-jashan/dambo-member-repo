@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./style.scss"
 import { useSelector, useDispatch } from "react-redux"
 import {
@@ -59,6 +59,10 @@ export default function TreasuryDetails() {
         }
         setSelectedNav(linkName)
     }
+
+    useEffect(() => {
+        dispatch(getAllTokensOfSafe())
+    }, [selectedNav])
 
     const getTokenBalance = (tokenDetails) => {
         if (tokenDetails.token) {

@@ -32,10 +32,11 @@ const PaymentSlideCard = ({ signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
     const address = useSelector((x) => x.auth.address)
-    const delegates = currentDao?.signers
+
     const isReject = currentPayment?.status === "REJECTED"
     const nonce = useSelector((x) => x.dao.active_nonce)
-
+    const safeInfo = useSelector((x) => x.dao.safeInfo)
+    const delegates = safeInfo.owners
     const executePaymentLoading = useSelector(
         (x) => x.dao.executePaymentLoading
     )
@@ -123,6 +124,8 @@ const PaymentSlideCard = ({ signer }) => {
                 jwt,
                 currentDao?.uuid
             )
+            await dispatch(getPayoutRequest())
+            await dispatch(syncTxDataWithGnosis())
         } catch (error) {
             if (error.toString() === "Error: Not enough Ether funds") {
                 message.error("Not enough funds in safe")
@@ -310,8 +313,8 @@ const PaymentSlideCard = ({ signer }) => {
                 </div>
 
                 <div className={styles.singleHeaderContainer_signer}>
-                    {delegates.length !==
-                    currentPayment?.gnosis?.confirmations.length ? (
+                    {delegates?.length !==
+                    currentPayment?.gnosis?.confirmations?.length ? (
                         <div className={styles.childrenTimeline_signer}>
                             {approve.map((item, index) => (
                                 <div
@@ -384,8 +387,8 @@ const PaymentSlideCard = ({ signer }) => {
                 </div>
 
                 {!(
-                    currentPayment.gnosis.confirmations.length ===
-                        delegates.length &&
+                    currentPayment.gnosis.confirmations?.length ===
+                        delegates?.length &&
                     nonce === currentPayment?.gnosis?.nonce
                 ) && (
                     <div className={styles.singleHeaderContainer_signer}>
@@ -409,7 +412,7 @@ const PaymentSlideCard = ({ signer }) => {
     const getButtonTitle = () => {
         if (
             checkApproval() &&
-            delegates.length ===
+            delegates?.length ===
                 currentPayment?.gnosis?.confirmations?.length &&
             !isReject
         ) {
@@ -420,7 +423,7 @@ const PaymentSlideCard = ({ signer }) => {
             }
         } else if (
             checkApproval() &&
-            delegates.length !==
+            delegates?.length !==
                 currentPayment?.gnosis?.confirmations?.length &&
             !isReject
         ) {
@@ -437,7 +440,7 @@ const PaymentSlideCard = ({ signer }) => {
             }
         } else if (
             isReject &&
-            delegates.length === currentPayment?.gnosis?.confirmations?.length
+            delegates?.length === currentPayment?.gnosis?.confirmations?.length
         ) {
             return {
                 title: "Reject Payment",
@@ -456,7 +459,7 @@ const PaymentSlideCard = ({ signer }) => {
     const getRejectButton = () => {
         if (
             checkApproval() &&
-            delegates.length === currentPayment?.gnosis?.confirmations?.length
+            delegates?.length === currentPayment?.gnosis?.confirmations?.length
         ) {
             return {
                 title: "Reject Payment",
@@ -465,7 +468,7 @@ const PaymentSlideCard = ({ signer }) => {
             }
         } else if (
             checkApproval() &&
-            delegates.length !== currentPayment?.gnosis?.confirmations?.length
+            delegates?.length !== currentPayment?.gnosis?.confirmations?.length
         ) {
             return {
                 title: "Payment Rejected",
@@ -505,11 +508,11 @@ const PaymentSlideCard = ({ signer }) => {
                     {item?.title}
                 </div>
                 <div className={`${textStyle.m_16} ${styles.greyishText}`}>
-                    {item?.requested_by?.metadata?.name?.split(" ")[0]} •{" "}
-                    {`${item?.requested_by?.public_address.slice(
+                    {item?.contributor?.name?.split(" ")[0]} •{" "}
+                    {`${item?.contributor?.public_address.slice(
                         0,
                         5
-                    )}...${item?.requested_by?.public_address.slice(-3)}`}
+                    )}...${item?.contributor?.public_address.slice(-3)}`}
                 </div>
             </div>
         </div>
@@ -522,7 +525,7 @@ const PaymentSlideCard = ({ signer }) => {
                 await executeTransaction(hash)
             } else if (
                 checkApproval() &&
-                delegates.length !==
+                delegates?.length !==
                     currentPayment?.gnosis?.confirmations?.length
             ) {
                 // console.log("Payment Already Signed")

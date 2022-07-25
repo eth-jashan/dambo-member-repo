@@ -33,11 +33,12 @@ export default function PaymentCard({ item, signer }) {
     const jwt = useSelector((x) => x.auth.jwt)
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
-
+    const safeInfo = useSelector((x) => x.dao.safeInfo)
+    console.log("Payment", item, safeInfo)
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const delegates = currentDao?.signers
+    const delegates = safeInfo.owners
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
     const isReject = item?.status === "REJECTED"
 
@@ -52,7 +53,7 @@ export default function PaymentCard({ item, signer }) {
             usd_amount.push(item?.usd_amount * parseFloat(item?.amount))
         })
         let amount_total
-        usd_amount.length === 0
+        usd_amount?.length === 0
             ? (amount_total = 0)
             : (amount_total = usd_amount.reduce((a, b) => a + b))
         return amount_total.toFixed(2)
@@ -66,7 +67,7 @@ export default function PaymentCard({ item, signer }) {
                 usd_amount_all.push(x?.usd_amount * parseFloat(x?.amount))
             })
         })
-        if (usd_amount_all.length > 0) {
+        if (usd_amount_all?.length > 0) {
             const amount_total = usd_amount_all?.reduce((a, b) => a + b)
             return parseFloat(amount_total)?.toFixed(2)
         } else {
@@ -90,6 +91,7 @@ export default function PaymentCard({ item, signer }) {
         })
 
         tokens = tokens?.slice(0, 2)?.toString()
+        console.log(x)
 
         return (
             <div key={index} className={styles.singleItem}>
@@ -124,7 +126,7 @@ export default function PaymentCard({ item, signer }) {
                         <div
                             className={`${textStyles.m_16} ${styles.greyedText}`}
                         >
-                            {x?.tokens.length < 3
+                            {x?.tokens?.length < 3
                                 ? tokens.replace(/,/g, "+")
                                 : `${tokens.replace(/,/g, "+")} & ${
                                       x.tokens?.length - 3
@@ -135,10 +137,10 @@ export default function PaymentCard({ item, signer }) {
 
                 <div className={styles.addressContainer}>
                     <div className={`${textStyles.m_16} ${styles.greyedText}`}>
-                        {x?.requested_by?.metadata?.name?.split(" ")[0]} •{" "}
-                        {x?.requested_by?.public_address?.slice(0, 5) +
+                        {x?.contributor?.name} •{" "}
+                        {x?.contributor?.public_address?.slice(0, 5) +
                             "..." +
-                            x?.requested_by?.public_address?.slice(-3)}
+                            x?.contributor?.public_address?.slice(-3)}
                     </div>
                 </div>
             </div>
@@ -180,7 +182,10 @@ export default function PaymentCard({ item, signer }) {
                         >
                             {item?.metaInfo.contributions?.length > 1
                                 ? `Bundled Payments  •  ${item?.metaInfo.contributions?.length}`
-                                : item?.metaInfo.contributions[0]?.title}
+                                : item?.metaInfo.contributions[0]?.details.find(
+                                      (x) =>
+                                          x.fieldName === "Contribution Title"
+                                  )?.value}
                         </div>
                     </div>
 
@@ -188,7 +193,7 @@ export default function PaymentCard({ item, signer }) {
                         <div
                             className={`${textStyles.m_16} ${styles.whiterText}`}
                         >
-                            {tokenSymbol.length > 3
+                            {tokenSymbol?.length > 3
                                 ? `${tokenSymbol
                                       .slice(0, 2)
                                       ?.toString()
@@ -243,7 +248,7 @@ export default function PaymentCard({ item, signer }) {
                                     className={`${textStyles.m_16} ${styles.whiterText}`}
                                 >
                                     {item?.gnosis.confirmations?.length}/
-                                    {delegates.length}
+                                    {safeInfo.owners?.length}
                                 </div>
                             </div>
 
@@ -352,6 +357,7 @@ export default function PaymentCard({ item, signer }) {
                 currentDao?.uuid
             )
         } catch (error) {
+            console.log(error)
             if (error.toString() === "Error: Not enough Ether funds") {
                 message.error("Not enough funds in safe")
             } else if (error.code === "TRANSACTION_REPLACED") {
@@ -374,7 +380,7 @@ export default function PaymentCard({ item, signer }) {
     const getButtonProperty = () => {
         if (
             checkApproval() &&
-            delegates.length === item?.gnosis?.confirmations?.length &&
+            delegates?.length === item?.gnosis?.confirmations?.length &&
             !isReject
         ) {
             return {
@@ -384,7 +390,7 @@ export default function PaymentCard({ item, signer }) {
             }
         } else if (
             checkApproval() &&
-            delegates.length !== item?.gnosis?.confirmations?.length &&
+            delegates?.length !== item?.gnosis?.confirmations?.length &&
             !isReject
         ) {
             return {
@@ -410,7 +416,7 @@ export default function PaymentCard({ item, signer }) {
             }
         } else if (
             isReject &&
-            delegates.length === item?.gnosis?.confirmations?.length
+            delegates?.length === item?.gnosis?.confirmations?.length
         ) {
             return {
                 title: "Execute Reject",
@@ -439,7 +445,7 @@ export default function PaymentCard({ item, signer }) {
     const buttonFunc = async (tranx) => {
         if (!executePaymentLoading.loadingStatus) {
             dispatch(setLoading(true, item?.metaInfo?.id))
-            if (delegates.length === item?.gnosis?.confirmations?.length) {
+            if (delegates?.length === item?.gnosis?.confirmations?.length) {
                 await executeFunction()
             } else if (checkApproval()) {
                 // console.log('Already Signed !!!')

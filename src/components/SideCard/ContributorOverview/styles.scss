@@ -1,0 +1,231 @@
+.contributor-side-card-overview-container {
+    padding: 3.5rem 1.5rem 0rem 1.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .cross-icon {
+        align-self: flex-start;
+        margin: 1.5rem 0rem 3rem 0rem;
+        text-align: left;
+        display: flex;
+    }
+    .payoutContainer {
+        margin-top: 1.5rem;
+        background-color: #1f1f1f;
+        border-radius: 0.75rem;
+        padding: 1.25rem 1rem;
+    }
+
+    .flex_totalPayout {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .divider {
+        /* position: absolute; */
+        right: 0;
+        left: 0;
+        height: 1px;
+        background: #3a3a3a;
+    }
+
+    .contributionContainer {
+        margin-top: 1rem;
+        border: 1px solid #292929;
+        border-radius: 0.75rem;
+    }
+
+    .overviewText {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1.5rem;
+        line-height: 2rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: left;
+        margin-top: 1.5rem;
+    }
+
+    .badgeOverview {
+        background: #1f1f1f;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 1.5rem;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: #fff;
+        text-align: left;
+    }
+    .badgeImage {
+        width: 100%;
+        border-radius: 12px;
+    }
+    .toggleContent {
+        max-height: 0;
+        transition: all 0.2s ease-in-out;
+    }
+    .toggleContentShown {
+        max-height: 15rem;
+    }
+    .lineBreak {
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+        margin: 0;
+    }
+    .toggleContentRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .toggleContentRow:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .toggleHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+    }
+
+    .level-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-family: "TelegrafMedium";
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        img {
+            margin-right: 0.5rem;
+        }
+    }
+    .badge-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+        .footer-icons {
+            display: flex;
+            .badge-footer-icon {
+                padding: 0.25rem;
+                border-radius: 50%;
+                background: #333333;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 2.5rem;
+                height: 2.5rem;
+                margin-right: 0.675rem;
+                cursor: pointer;
+            }
+        }
+        button {
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            background: #333333;
+            border-radius: 1.5rem;
+            font-family: "TelegrafMedium";
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            cursor: pointer;
+            img {
+                width: 1rem;
+                height: 1rem;
+                margin-left: 0.675rem;
+            }
+        }
+    }
+
+    .other-badge-and-payout-overview {
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 1.25rem;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: #fff;
+        text-align: left;
+        border: 1px solid #292929;
+        .other-badge-background {
+            padding: 0.25rem 0;
+            background: #1f1f1f;
+            .other-info-row {
+                padding: 1rem;
+                font-family: "TelegrafMedium";
+                font-weight: 500;
+                font-size: 1rem;
+                line-height: 1.5rem;
+                .subrow-details {
+                    color: rgba(255, 255, 255, 0.4);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    .subrow-icons-wrapper {
+                        display: flex;
+                        background: #333;
+                        border-radius: 0.5rem;
+                        // padding: 0.25rem;
+                        .other-badge-wrapper {
+                            padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+                            &:first-of-type {
+                                border-right: 1px solid
+                                    rgba(255, 255, 255, 0.12);
+                            }
+                        }
+                    }
+                    .subrow-payout {
+                        color: #ecffb8;
+                    }
+                }
+            }
+            .horizontal-divider {
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+            }
+        }
+        .payout-row-wrapper {
+            padding: 0.75rem 0;
+            .payout-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 1rem;
+            }
+        }
+        .last-payout-info {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 1rem 0.25rem 1rem 1rem;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            .right-shim {
+                position: absolute;
+                right: 0;
+                top: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                width: 0.75rem;
+                height: 2.5rem;
+            }
+        }
+    }
+}
+.contributor-side-card-overview-container::-webkit-scrollbar {
+    display: none;
+}

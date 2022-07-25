@@ -68,13 +68,23 @@
         padding: 1.3rem 0;
         border-top: 1px solid #e0e0e0;
         border-bottom: 1px solid #e0e0e0;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 19px;
+        line-height: 28px;
         .connect-address-left {
             display: flex;
             .connect-address-name {
                 font-weight: bold;
+                margin-right: 0.5rem;
             }
             .connect-address-chain-name {
-                margin-left: 0.125rem;
+                margin: 0 0.5rem;
+            }
+            .switch-chain-text {
+                text-decoration: underline;
+                margin-left: 0.5rem;
             }
         }
         .connect-address-right {

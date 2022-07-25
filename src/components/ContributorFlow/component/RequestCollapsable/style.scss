@@ -1,0 +1,26 @@
+.contributor-request-collapsable-container {
+    margin: 1.25rem 0rem;
+    .collapsable-div {
+        display: flex;
+        flex-direction: row;
+        cursor: pointer;
+        img {
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+        .approver-title {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 800;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: #ffffff;
+            margin-left: 0.5rem;
+        }
+    }
+    .open-collapsable {
+        border-radius: 1rem;
+        // background-color: #1f1f1f;
+        margin-top: 1.25rem;
+    }
+}

@@ -5,7 +5,10 @@ import { useNavigate } from "react-router"
 import { signout } from "../../store/actions/auth-action"
 import {
     getAllDaowithAddress,
+    getPayoutRequest,
+    gnosisDetailsofDao,
     setContractAddress,
+    set_active_nonce,
 } from "../../store/actions/dao-action"
 import {
     getAllMembershipBadgesList,
@@ -34,7 +37,12 @@ import {
 } from "../../store/actions/toast-action"
 import RejectPayment from "../../components/Modal/RejectPayment"
 import BadgeItem from "../../components/BadgeItem"
-import { setContributionDetail } from "../../store/actions/contibutor-action"
+import {
+    getContributionAsAdmin,
+    getContributionAsContributorApproved,
+    getContributionSchema,
+    setContributionDetail,
+} from "../../store/actions/contibutor-action"
 import dashboardLoader from "../../assets/lottie/dashboardLoader.json"
 import Lottie from "react-lottie"
 import ApproveCheckoutButton from "../../components/ApproveCheckoutButton"
@@ -46,6 +54,10 @@ import ContributorContributionScreen from "../../components/ContributorContribut
 import { initPOCP } from "../../utils/POCPServiceSdk"
 import ContributorBadgeScreen from "../../components/ContributorBadgeScreen"
 import { useSigner, useProvider, useAccount, useDisconnect } from "wagmi"
+import DashboardSearchTab from "../../components/DashboardSearchTab"
+import UniversalPaymentModal from "../../components/Modal/UniversalPaymentModal"
+import plus_black from "../../assets/Icons/plus_black.svg"
+import plus_gray from "../../assets/Icons/plus_gray.svg"
 
 export default function Dashboard() {
     const [tab, setTab] = useState("contributions")
@@ -56,6 +68,9 @@ export default function Dashboard() {
     )
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const contributionPending = useSelector(
+        (x) => x.contributor.contributionForAdmin
+    )
 
     const address = useSelector((x) => x.auth.address)
     const jwt = useSelector((x) => x.auth.jwt)
@@ -73,7 +88,7 @@ export default function Dashboard() {
     const rejectModal = useSelector((x) => x.transaction.rejectModal)
 
     const contribution_request = useSelector((x) => x.dao.contribution_request)
-    const payout_request = useSelector((x) => x.dao.payout_filter)
+    const payout_request = useSelector((x) => x.dao.payout_request)
     const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
 
@@ -84,8 +99,7 @@ export default function Dashboard() {
     const prevSigner = usePrevious(signer)
     const { isDisconnected } = useAccount()
     const { disconnect } = useDisconnect()
-
-    console.log("role in dashboard", role)
+    const [uniPayHover, setUniPayHover] = useState(false)
 
     const defaultOptions = {
         loop: true,
@@ -158,7 +172,28 @@ export default function Dashboard() {
         await dispatch(setContractAddress(currentDaos?.proxy_txn_hash))
         await dispatch(getAllMembershipBadgesList())
         await dispatch(getMembershipVoucher())
+        await dispatch(getContributionSchema())
         await dispatch(getAllMembershipBadgesForAddress())
+    }
+
+    const gnosisFunctionsAdmin = async (dao) => {
+        console.log("current safe dao", dao)
+        if (dao?.safe_public_address) {
+            dispatch(gnosisDetailsofDao())
+            dispatch(getPayoutRequest())
+            if (safeSdk) {
+                const nonce = await safeSdk.getNonce()
+                dispatch(set_active_nonce(nonce))
+            }
+        }
+    }
+    const gnosisFunctionsContributor = () => {}
+
+    const contributionFlowAsContributor = async () => {
+        await dispatch(getContributionAsContributorApproved())
+    }
+    const contributionFlowAsAdmin = async () => {
+        await dispatch(getContributionAsAdmin())
     }
 
     const initialLoad = useCallback(async () => {
@@ -172,12 +207,37 @@ export default function Dashboard() {
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
-                    // setCurrentPage("badges")
+                    console.log("started here")
+                    await gnosisFunctionsAdmin(currentDaos)
                     await dispatch(getAllDaoMembers())
+                    await contributionFlowAsAdmin()
                 } else {
-                    // await contributorFetch()
-                    // contribution specific fetch
+                    contributionFlowAsContributor()
                     setCurrentPage("request")
+                }
+            } else {
+                dispatch(signout())
+                navigate("/")
+            }
+        }
+        dispatch(setLoadingState(false))
+    }, [address, dispatch, navigate, role, safeSdk, signer])
+
+    const onAccountSwitch = useCallback(async () => {
+        console.log("account switch......")
+        if (signer) {
+            if (address) {
+                dispatch(setLoadingState(true))
+                const chainId = await signer.getChainId()
+                await rep3ProtocolFunctionsCommon(currentDao)
+                await initPOCP(currentDao.uuid, provider, signer, chainId)
+                if (role === "ADMIN") {
+                    await gnosisFunctionsAdmin(currentDao)
+                    await dispatch(getAllDaoMembers())
+                    await contributionFlowAsAdmin()
+                } else {
+                    contributionFlowAsContributor()
+                    setCurrentPage("contributions")
                 }
             } else {
                 dispatch(signout())
@@ -194,11 +254,24 @@ export default function Dashboard() {
     }, [currentDao?.uuid, signer])
 
     useEffect(() => {
+        if (!modalPayment) {
+            onAccountSwitch()
+        }
+    }, [currentDao?.uuid])
+
+    useEffect(() => {
         preventGoingBack()
     }, [preventGoingBack])
 
     const onRouteChange = async (route) => {
         setTab(route)
+        if (role === "ADMIN" && route === "payments") {
+            console.log("To Payments")
+            await gnosisFunctionsAdmin()
+        } else if (role === "ADMIN" && route === "contributions") {
+            console.log("To Contributions")
+            await contributionFlowAsAdmin()
+        }
     }
 
     const renderTab = () => (
@@ -239,36 +312,36 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* <div> */}
-            {/* {role === "ADMIN" && (
-                    <div
-                        onMouseEnter={() => setUniPayHover(true)}
-                        onMouseLeave={() => setUniPayHover(false)}
-                        style={{ background: modalUniPayment ? "white" : null }}
-                        onClick={
-                            role === "ADMIN"
-                                ? async () => await onUniModalOpen()
-                                : () => setModalContri(true)
+            {
+                <div
+                    onMouseEnter={() => setUniPayHover(true)}
+                    onMouseLeave={() => setUniPayHover(false)}
+                    style={{ background: modalUniPayment ? "white" : null }}
+                    onClick={
+                        role === "ADMIN"
+                            ? // ? async () => await onUniModalOpen()
+                              () => {}
+                            : () => setModalContri(true)
+                    }
+                    className={styles.addPaymentContainer}
+                >
+                    <img
+                        src={
+                            uniPayHover || modalUniPayment
+                                ? plus_black
+                                : plus_gray
                         }
-                        className={styles.addPaymentContainer}
-                    >
-                        <img
-                            src={
-                                uniPayHover || modalUniPayment
-                                    ? plus_black
-                                    : plus_gray
-                            }
-                            alt="plus"
-                        />
-                    </div>
-                )}
-
-                {modalUniPayment && (
-                    <UniversalPaymentModal
-                        signer={signer}
-                        onClose={() => setModalUniPayment(false)}
+                        alt="plus"
                     />
-                )} */}
-            {/* </div> */}
+                </div>
+            }
+
+            {modalUniPayment && (
+                <UniversalPaymentModal
+                    signer={signer}
+                    onClose={() => setModalUniPayment(false)}
+                />
+            )}
         </div>
     )
 
@@ -383,16 +456,11 @@ export default function Dashboard() {
     )
 
     const renderContribution = () =>
-        contribution_request?.length > 0 ? (
+        contributionPending?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
                 <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {contribution_request.map((item, index) => (
-                        <ContributionCard
-                            // community_id={community_id[0]?.id}
-                            // signer={signer}
-                            item={item}
-                            key={index}
-                        />
+                    {contributionPending.map((item, index) => (
+                        <ContributionCard item={item} key={index} />
                     ))}
                 </div>
             </div>
@@ -417,6 +485,7 @@ export default function Dashboard() {
             ))}
         </div>
     )
+    console.log("payout", payout_request)
     const renderPayment = () =>
         payout_request?.length > 0 ? (
             <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
@@ -446,6 +515,45 @@ export default function Dashboard() {
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))
     }
+    // const contribution = [
+    //     {
+    //         created_for: "0x9C3f331473602e818E92CD16C948af4e924F81Eb",
+    //         request: false,
+    //         dao_uuid: "bc9cd815177d4075a9990d29d1b14cb5",
+    //         membership_id: 1,
+    //         contrib_schema_id: 2,
+    //         signed_voucher: {
+    //             index: 0,
+    //             memberTokenIds: [0],
+    //             type_: [1],
+    //             tokenUri: "metadatasds;D;,",
+    //             data: [0],
+    //             nonces: [1],
+    //             signature:
+    //                 "0x52975260305db40ef82dfcb913ebd594f4fc06fc11828e177ae48cedd75d3a170c5c757246bc67f987d24418b1c522b5f21ea659371195ef89b7a6939110a0b61c",
+    //         },
+    //         details: [
+    //             {
+    //                 fieldName: "Contribution Title",
+    //                 fieldType: "Text Field",
+    //                 options: [],
+    //                 value: "asfljb",
+    //             },
+    //             {
+    //                 fieldName: "Additional Notes",
+    //                 fieldType: "Long text",
+    //                 options: [],
+    //                 value: "afl",
+    //             },
+    //             {
+    //                 fieldName: "Time Spent in Hours",
+    //                 fieldType: "Numbers",
+    //                 options: [],
+    //                 value: "1",
+    //             },
+    //         ],
+    //     },
+    // ]
 
     const RequestScreen = () => {
         return (
@@ -479,7 +587,6 @@ export default function Dashboard() {
                 ) : dataSource?.length > 0 ? (
                     renderBadges()
                 ) : (
-                    // renderEmptyBadgesScreen()
                     <ContributorBadgeScreen />
                 )}
                 {rejectModal && (

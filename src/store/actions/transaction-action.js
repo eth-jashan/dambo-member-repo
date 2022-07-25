@@ -5,6 +5,7 @@ import routes from "../../constant/routes"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { contributorAction } from "../reducers/contributor-slice"
 
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
@@ -60,7 +61,8 @@ export const approveContriRequest = (
     payout,
     isExternal = false,
     feedback,
-    mint_badge
+    mint_badge,
+    metadata_hash
 ) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
@@ -87,46 +89,48 @@ export const approveContriRequest = (
                     })
                 )
             }
-            if (payout.length > 0) {
-                payout.forEach((item) => {
-                    if (!item?.token_type) {
-                        newPayout.push({
-                            amount: item.amount,
-                            usd_amount: item?.usd_amount,
-                            address: item?.address,
-                            details: {
-                                name: "Ethereum",
-                                symbol: "ETH",
-                                decimals: "18",
-                                logo_url:
-                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
-                                address: "",
-                            },
-                        })
-                    } else {
-                        newPayout.push({
-                            amount: item.amount,
-                            usd_amount: item?.usd_amount,
-                            address: item?.address,
-                            details: {
-                                name: item?.token_type?.token?.name,
-                                symbol: item?.token_type?.token?.symbol,
-                                decimals: item?.token_type?.token?.decimals,
-                                logo_url: item?.token_type?.token?.logoUri,
-                                address: item?.token_type?.tokenAddress,
-                            },
-                        })
-                    }
-                })
-            }
+            // if (payout.length > 0) {
+            //     payout.forEach((item) => {
+            //         if (!item?.token_type) {
+            //             newPayout.push({
+            //                 amount: item.amount,
+            //                 usd_amount: item?.usd_amount,
+            //                 address: item?.address,
+            //                 details: {
+            //                     name: "Ethereum",
+            //                     symbol: "ETH",
+            //                     decimals: "18",
+            //                     logo_url:
+            //                         "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+            //                     address: "",
+            //                 },
+            //             })
+            //         } else {
+            //             newPayout.push({
+            //                 amount: item.amount,
+            //                 usd_amount: item?.usd_amount,
+            //                 address: item?.address,
+            //                 details: {
+            //                     name: item?.token_type?.token?.name,
+            //                     symbol: item?.token_type?.token?.symbol,
+            //                     decimals: item?.token_type?.token?.decimals,
+            //                     logo_url: item?.token_type?.token?.logoUri,
+            //                     address: item?.token_type?.tokenAddress,
+            //                 },
+            //             })
+            //         }
+            //     })
+            // }
 
             const data = {
                 status: "APPROVED",
-                tokens: payout.length > 0 ? newPayout : [],
-                id: currentTransaction.id,
+                tokens: payout.length > 0 ? payout : [],
+                uuid: currentTransaction.uuid,
                 feedback,
                 mint_badge,
+                metadata_hash,
             }
+            // console.log(data)
 
             try {
                 const res = await apiClient.post(
@@ -140,14 +144,12 @@ export const approveContriRequest = (
                 )
                 if (res.data.success) {
                     const contri_request =
-                        getState().dao.contribution_request.filter(
-                            (x) => x.id !== currentTransaction.id
+                        getState().contributor.contributionForAdmin.filter(
+                            (x) => x.uuid !== currentTransaction.uuid
                         )
                     dispatch(
-                        daoAction.set_contri_list({
-                            list: contri_request,
-                            key: contri_filter,
-                            number: contri_filter_key,
+                        contributorAction.set_admin_contribution({
+                            contribution: contri_request,
                         })
                     )
 
@@ -199,14 +201,14 @@ export const rejectContriRequest = (id) => {
     }
 }
 
-export const rejectApproval = (id) => {
+export const rejectApproval = (uuid) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
 
         const data = {
             status: "REQUESTED",
             tokens: [],
-            id,
+            uuid,
         }
 
         try {
@@ -221,7 +223,7 @@ export const rejectApproval = (id) => {
             )
 
             if (res.data.success) {
-                dispatch(tranactionAction.set_reject_request({ id }))
+                dispatch(tranactionAction.set_reject_request({ uuid }))
                 return 1
             } else {
                 return 0

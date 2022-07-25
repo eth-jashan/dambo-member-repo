@@ -5,49 +5,45 @@ import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
 import { useDispatch, useSelector } from "react-redux"
-import {
-    getAllApprovedBadges,
-    getAllClaimedBadges,
-    getAllUnclaimedBadges,
-    getContributorOverview,
-    getContriRequest,
-    getPayoutRequest,
-    refreshContributionList,
-    set_payout_filter,
-    switchRole,
-    syncTxDataWithGnosis,
-} from "../../../store/actions/dao-action"
+import { switchRole } from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
 import {
     getAllMembershipBadgesForAddress,
     getMembershipVoucher,
 } from "../../../store/actions/membership-action"
+import {
+    getContributionAsAdmin,
+    getContributionAsContributorApproved,
+    // getContributionAsContributorApproved,
+    getPastContributions,
+} from "../../../store/actions/contibutor-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
     const dispatch = useDispatch()
     const address = useSelector((x) => x.auth.address)
+    const contributionFlowAsContributor = async () => {
+        await dispatch(getContributionAsContributorApproved())
+        dispatch(getPastContributions())
+    }
+    const contributionFlowAsAdmin = async () => {
+        await dispatch(getContributionAsAdmin())
+    }
     const changeRole = async (role) => {
-        dispatch(refreshContributionList())
         dispatch(switchRole(role))
         onChange(role)
         dispatch(setLoadingState(true))
-        await dispatch(getAllApprovedBadges())
-        await dispatch(getContriRequest())
         console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
+
         if (route === "contributions" && role === "ADMIN") {
-            await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING"))
-            await dispatch(syncTxDataWithGnosis())
+            await contributionFlowAsAdmin()
         } else if (role !== "ADMIN") {
-            await dispatch(getAllClaimedBadges())
-            await dispatch(getAllUnclaimedBadges())
-            dispatch(getContributorOverview())
             await dispatch(getMembershipVoucher())
+            await contributionFlowAsContributor()
         } else if (route !== "contributions" && role === "ADMIN") {
-            await dispatch(getPayoutRequest())
-            await dispatch(set_payout_filter("PENDING"))
-            await dispatch(syncTxDataWithGnosis())
+            // await dispatch(getPayoutRequest())
+            // await dispatch(set_payout_filter("PENDING"))
+            // await dispatch(syncTxDataWithGnosis())
         }
         dispatch(setLoadingState(false))
     }

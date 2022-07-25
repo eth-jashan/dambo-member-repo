@@ -10,34 +10,18 @@ import {
     setClaimLoading,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
-// import {
-//     chainSwitch,
-//     checkClaimApprovedSuccess,
-//     getSelectedChainId,
-//     isApprovedToken,
-//     processClaimBadgeToPocp,
-//     setChainInfoAction,
-// } from "../../utils/POCPutils"
+
 import { setChainInfoAction } from "../../utils/wagmiHelpers"
-import {
-    claimUpdate,
-    getAllApprovedBadges,
-    getAllClaimedBadges,
-    getAllUnclaimedBadges,
-    getContributorOverview,
-} from "../../store/actions/dao-action"
+
 import { useNetwork } from "wagmi"
 
 export default function ContributionCard({ item }) {
     const dispatch = useDispatch()
 
-    const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
-
     const claim_loading = useSelector((x) => x.contributor.claim_loading)
     const jwt = useSelector((x) => x.auth.jwt)
     const contri_filter_key = useSelector((x) => x.dao.contri_filter_key)
     const role = useSelector((x) => x.dao.role)
-    const unclaimed = useSelector((x) => x.dao.all_unclaimed_badges)
     const currentTransaction = useSelector(
         role === "ADMIN"
             ? (x) => x.transaction.currentTransaction
@@ -47,17 +31,19 @@ export default function ContributionCard({ item }) {
     const setPocpAction = (chainId) => {
         setChainInfoAction(chainId)
     }
-    const selectionActive = currentTransaction?.id === item.id
+    const selectionActive = currentTransaction?.uuid === item.uuid
     const { chain } = useNetwork()
 
     const onContributionPress = async () => {
         if (role === "ADMIN") {
             const ethPrice = await convertTokentoUsd("ETH")
-            if (ethPrice && contri_filter_key !== 0) {
-                dispatch(setTransaction(item, ethPrice))
-            } else if (contri_filter_key === 0) {
-                dispatch(setTransaction(item, ethPrice))
-            }
+            console.log("eth price", ethPrice, item)
+            // if (ethPrice && contri_filter_key !== 0) {
+            //     dispatch(setTransaction(item, ethPrice))
+            // } else if (contri_filter_key === 0) {
+            //     dispatch(setTransaction(item, ethPrice))
+            // }
+            dispatch(setTransaction(item, ethPrice))
         } else {
             dispatch(setContributionDetail(item))
         }
@@ -97,36 +83,10 @@ export default function ContributionCard({ item }) {
         }
     }
 
-    // const onClaimEventCallback = async (event) => {
-    //     await dispatch(getAllApprovedBadges())
-    //     await dispatch(getAllClaimedBadges())
-    //     await dispatch(getAllUnclaimedBadges())
-    //     dispatch(getContributorOverview())
-    //     dispatch(setContributionDetail(null))
-    //     dispatch(claimUpdate(item?.id))
-    //     dispatch(setClaimLoading(false, item?.id))
-    //     let chainId = getSelectedChainId()
-    //     chainId = ethers.utils.hexValue(chainId.chainId)
-    //     await chainSwitch(chainId)
-    // }
-    // const onErrorCallBack = () => {
-    //     dispatch(setClaimLoading(false, item?.id))
-    // }
-
     const claimBadges = async () => {
         if (!claim_loading.status) {
-            dispatch(setClaimLoading(true, item?.id))
-            // const provider = new ethers.providers.Web3Provider(window.ethereum)
-            // const { chainId } = await provider.getNetwork()
             const chainId = chain?.id
             setPocpAction(chainId)
-            // await processClaimBadgeToPocp(
-            //     isApprovedToken(unclaimed, item?.id).token[0].id,
-            //     jwt,
-            //     item?.id,
-            //     onClaimEventCallback,
-            //     onErrorCallBack
-            // )
         }
     }
 
@@ -147,10 +107,14 @@ export default function ContributionCard({ item }) {
                     }}
                     className={`${textStyles.m_16} ${styles.title}`}
                 >
-                    {item?.title}
+                    {
+                        item?.details?.find(
+                            (x) => x.fieldName === "Contribution Title"
+                        )?.value
+                    }
                 </div>
             </div>
-            <div className={styles.statusContainer}>
+            {/* <div className={styles.statusContainer}>
                 {contri_filter_key && role !== "ADMIN" ? null : (
                     <div
                         className={textStyles.m_16}
@@ -162,14 +126,20 @@ export default function ContributionCard({ item }) {
                         {getStatusProperty()?.title}
                     </div>
                 )}
-            </div>
+            </div> */}
             <div className={styles.descriptionContainer}>
                 <div
                     style={{ color: (onHover || selectionActive) && "white" }}
                     className={`${textStyles.m_16} ${styles.description}`}
-                >{`${item?.requested_by?.metadata?.name?.toLowerCase()}  •  ${item?.stream?.toLowerCase()}  •  ${
-                    item?.time_spent
-                } hrs`}</div>
+                >
+                    {item?.contributor?.name} • design •{" "}
+                    {
+                        item?.details?.find(
+                            (x) => x.fieldName === "Time Spent in Hours"
+                        )?.value
+                    }{" "}
+                    hrs
+                </div>
             </div>
             {role === "ADMIN" ? null : (
                 <div className={styles.statusContributorContainer}>

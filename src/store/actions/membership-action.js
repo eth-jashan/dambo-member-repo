@@ -408,11 +408,10 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
 
         try {
             const response = await apiClient.post(
-                `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
-                // `http://localhost:3000/arweave_server/membership`,
+                // `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
+                `https://test-staging.api.drepute.xyz/arweave_server/membership`,
                 formData
             )
-            console.log("response is ", response.data)
             if (response?.data?.success) {
                 const arweaveHashArray = response.data?.data
                 let arweaveArrayIndex = 0

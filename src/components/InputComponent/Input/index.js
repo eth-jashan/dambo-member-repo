@@ -15,11 +15,11 @@ const InputText = ({
     const [onFocus, setOnFocus] = useState()
 
     const backGroundStatus = () => {
-        if (value.length > 0 && onFocus) {
+        if (value?.length > 0 && onFocus) {
             return "white"
         } else if (onFocus) {
             return "white"
-        } else if (value.length > 0 && !onFocus) {
+        } else if (value?.length > 0 && !onFocus) {
             return "#E1DCFF"
         } else {
             return "white"

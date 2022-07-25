@@ -25,9 +25,8 @@ import {
 import { infuraProvider } from "wagmi/providers/infura"
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [chain.rinkeby, chain.mainnet, chain.polygon],
-    // defaultChains,
-    [infuraProvider({ infuraId: "2f446b2b3fb241cfb99bfb807be35c6f" })]
+    [chain.rinkeby, chain.polygon, chain.mainnet, chain.polygon],
+    [infuraProvider({ infuraId: "25f28dcc7e6b4c85b74ddfb3eeda03e5" })]
 )
 
 // const { connectors } = getDefaultWallets({
@@ -54,10 +53,15 @@ const wagmiClient = createClient({
     webSocketProvider,
 })
 
+const savedChainId = JSON.parse(window.localStorage.getItem("chainId"))
+
 ReactDOM.render(
     <React.StrictMode>
         <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
+            <RainbowKitProvider
+                chains={chains}
+                initialChain={savedChainId?.chainId || 4}
+            >
                 <BrowserRouter>
                     <Provider store={store}>
                         <PersistGate loading={null} persistor={persistor}>

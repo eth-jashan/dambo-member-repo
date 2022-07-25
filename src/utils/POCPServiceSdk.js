@@ -1,31 +1,25 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
-// import { ethers } from "ethers"
+import apiClient from "../utils/api_client"
 import { getSelectedChainId } from "./wagmiHelpers"
 import { web3 } from "../constant/web3"
 import Web3 from "web3"
+import axios from "axios"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
 
 export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // const signer = provider.getSigner()
     const walletWeb3 = new Web3(provider)
     const walletProvider = walletWeb3.givenProvider
-    // const selectedProvider = walletProvider.providerMap
-    //     ? walletProvider?.overrideIsMetaMask
-    //         ? walletProvider?.providerMap.get("MetaMask")
-    //         : walletProvider.selectedProvider
-    //     : walletProvider
 
     pocpInstance = new Pocp(
         signer,
         provider,
-        // selectedProvider,
+
         signer.provider.provider,
-        // temp.givenProvider,
+
         chainId === 4 ? 80001 : 137,
         chainId === 4
             ? web3.rep3Mumbai
@@ -147,21 +141,6 @@ export const getMembershipBadgeFromTxHash = (txHash, uuid) => {
     return pocpGetter.getMembershipNftsForHash(txHash)
 }
 
-export const getMembershipBadgeFromClaimer = (
-    claimer,
-    contractAddress,
-    uuid
-) => {
-    const pocpGetter = new PocpGetters(
-        currentNetwork?.chainId === 4
-            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-mumbai"
-            : uuid === "981349a995c140d8b7fb5c110b0d133b"
-            ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
-            : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
-    )
-    return pocpGetter.membershipNftWithClaimerOfDao(claimer, contractAddress)
-}
-
 export const getInfoHash = async (txHash, uuid) => {
     const pocpGetter = new PocpGetters(
         currentNetwork?.chainId === 4
@@ -198,5 +177,123 @@ export const createMembershipVoucher = async (
         )
     } catch (error) {
         console.log("error", error)
+    }
+}
+
+export const getArrayOfMemberToken = async (
+    arrayOfAddress,
+    contractAddress
+) => {
+    // const tokenId = []
+    const result = Promise.all(
+        arrayOfAddress.map(async (x) => {
+            const memberships = await getAllMembershipBadges(
+                x,
+                contractAddress,
+                false
+            )
+            console.log(
+                "memberships",
+                memberships.data.membershipNFTs[0].tokenID
+            )
+            return parseInt(memberships.data.membershipNFTs[0].tokenID)
+        })
+    )
+    return result
+}
+
+export const getArrayOfNounce = async (arrayOfMemberToken, dao_uuid, jwt) => {
+    const result = Promise.all(
+        arrayOfMemberToken.map(async (x) => {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/membership/get_next_nonce`}?token_id=${x}&dao_uuid=${dao_uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                return res.data.data
+            }
+        })
+    )
+    return result
+}
+
+export const createContributionVoucher = async (
+    contractAddress,
+    arrayOfMemberTokenId,
+    arrayofBadgeType,
+    arrayOfTokenUri,
+    arrayOfNounce,
+    arrayOfData
+) => {
+    try {
+        return await pocpInstance.createBadgeVoucher(
+            contractAddress,
+            arrayOfMemberTokenId,
+            arrayofBadgeType,
+            arrayOfTokenUri,
+            arrayOfNounce,
+            arrayOfData
+        )
+    } catch (error) {
+        console.log("error", error)
+    }
+}
+
+export const claimContributionBadge = async (
+    contractAddress,
+    voucher,
+    memberTokenId,
+    approveIndex,
+    hashCallbackFn,
+    callbackFn
+) => {
+    try {
+        return await pocpInstance.claimContributionBadges(
+            contractAddress,
+            voucher,
+            memberTokenId,
+            approveIndex,
+            hashCallbackFn,
+            callbackFn
+        )
+    } catch (error) {}
+}
+
+export const createContributionMetadataUri = async (
+    title,
+    daoName,
+    approveDate,
+    logoUrl
+) => {
+    try {
+        console.log(
+            JSON.stringify({
+                title,
+                daoName,
+                approveDate,
+                logoUrl,
+            })
+        )
+        const res = await axios.post(
+            `http://localhost:3002/arweave_server/contribution-badge`,
+            JSON.stringify({
+                title,
+                daoName,
+                approveDate,
+                logoUrl,
+            })
+        )
+        if (res.data.success) {
+            // console.log("Res data", res.data.data)
+            return res.data.data
+        }
+    } catch (error) {
+        console.log("error ", error)
     }
 }

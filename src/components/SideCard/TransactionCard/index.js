@@ -15,9 +15,10 @@ import {
 import ApprovalSelectionToggle from "../../ApprovalSelectionToggle"
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { assets } from "../../../constant/assets"
-import { approveBadge } from "../../../store/actions/dao-action"
+import { approveBadge, setLoading } from "../../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { uploadApproveMetaDataUpload } from "../../../utils/relayFunctions"
+import { createContributionMetadataUri } from "../../../utils/POCPServiceSdk"
 
 const TransactionCard = () => {
     const currentTransaction = useSelector(
@@ -25,11 +26,12 @@ const TransactionCard = () => {
     )
     const [payToken, setPayToken] = useState(false)
     const [mint, setMint] = useState(false)
-    const address = currentTransaction?.requested_by?.public_address
+    const address = currentTransaction?.contributor?.public_address
     const dispatch = useDispatch()
 
     const [feedBackShow, setFeedBackSow] = useState(false)
     const [feedback, setFeedback] = useState("")
+    const [loading, setLoading] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
 
@@ -75,67 +77,96 @@ const TransactionCard = () => {
         dispatch(setTransaction(null))
     }
 
-    const uploadApproveMetatoIpfs = async () => {
-        const metaInfo = []
-        const cid = []
-        const to = []
-
-        metaInfo.push({
-            dao_name: currentDao?.name,
-            contri_title: currentTransaction?.title,
-            signer: address,
-            claimer: currentTransaction?.requested_by?.public_address,
-            date_of_approve: dayjs().format("D MMM YYYY"),
-            id: currentTransaction?.id,
-            dao_logo_url:
-                currentDao?.logo_url ||
-                "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-            work_type: currentTransaction?.stream.toString(),
-        })
-        cid.push(currentTransaction?.id)
-        to.push(currentTransaction?.requested_by?.public_address)
-
-        const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
-        if (response) {
-            return { status: true, cid, to }
-        } else {
-            return { status: false, cid: [], to: [] }
-        }
-    }
     const onApproveTransaction = async () => {
+        setLoading(true)
         if (mint && !payToken) {
-            const res = await uploadApproveMetatoIpfs()
-            if (res.status) {
-                dispatch(approveBadge(currentTransaction, feedback))
+            //
+            const res = await createContributionMetadataUri(
+                currentTransaction?.details.find(
+                    (x) => x.fieldName === "Contribution Title"
+                )?.value,
+                currentDao?.name,
+                `25 July'22`,
+                currentDao?.logo_url
+            )
+            if (res) {
                 dispatch(
+                    approveBadge(
+                        { ...currentTransaction, metadata_hash: res.metadata },
+                        feedback
+                    )
+                )
+                await dispatch(
                     approveContriRequest(
                         payToken ? payDetail : [],
                         false,
                         feedback,
-                        mint ? 1 : 0
+                        mint ? 1 : 0,
+                        res.metadata
                     )
                 )
             }
         } else if (mint && payToken) {
+            console.log("here")
             if (
                 payDetail[0]?.amount !== 0 &&
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
-                const res = await uploadApproveMetatoIpfs()
-                if (res.status) {
-                    dispatch(
-                        approveBadge(currentTransaction, feedback, payDetail)
-                    )
-                    dispatch(
-                        approveContriRequest(
-                            payToken ? payDetail : [],
-                            false,
-                            feedback,
-                            mint ? 1 : 0
-                        )
-                    )
-                }
+                const newPayout = []
+                payDetail.forEach((item) => {
+                    if (!item?.token_type) {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: "Ethereum",
+                                symbol: "ETH",
+                                decimals: "18",
+                                logo_url:
+                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                                address: "",
+                            },
+                        })
+                    } else {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: item?.token_type?.token?.name,
+                                symbol: item?.token_type?.token?.symbol,
+                                decimals: item?.token_type?.token?.decimals,
+                                logo_url: item?.token_type?.token?.logoUri,
+                                address: item?.token_type?.tokenAddress,
+                            },
+                        })
+                    }
+                })
+                console.log("neww payout", newPayout)
+                // const res = await createContributionMetadataUri(
+                //     currentTransaction?.details.find(
+                //         (x) => x.fieldName === "Contribution Title"
+                //     )?.value,
+                //     currentDao?.name,
+                //     `25 July'22`,
+                //     currentDao?.logo_url
+                // )
+                // if (res) {
+                //     dispatch(
+                //         approveBadge(currentTransaction, feedback, newPayout)
+                //     )
+                //     await dispatch(
+                //         approveContriRequest(
+                //             payToken ? newPayout : [],
+                //             false,
+                //             feedback,
+                //             mint ? 1 : 0,
+                //             res.metadata
+                //         )
+                //     )
+                // }
             }
         } else if (payToken && !mint) {
             if (
@@ -143,17 +174,52 @@ const TransactionCard = () => {
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
-                dispatch(
+                const newPayout = []
+                payDetail.forEach((item) => {
+                    if (!item?.token_type) {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address:
+                                currentTransaction?.contributor?.public_address,
+                            details: {
+                                name: "Ethereum",
+                                symbol: "ETH",
+                                decimals: "18",
+                                logo_url:
+                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                                address: "",
+                            },
+                        })
+                    } else {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address:
+                                currentTransaction?.contributor?.public_address,
+                            details: {
+                                name: item?.token_type?.token?.name,
+                                symbol: item?.token_type?.token?.symbol,
+                                decimals: item?.token_type?.token?.decimals,
+                                logo_url: item?.token_type?.token?.logoUri,
+                                address: item?.token_type?.tokenAddress,
+                            },
+                        })
+                    }
+                })
+                console.log("new payout", newPayout)
+                await dispatch(
                     approveContriRequest(
-                        payToken ? payDetail : [],
+                        payToken ? newPayout : [],
                         false,
                         feedback,
-                        mint ? 1 : 0
+                        mint ? 1 : 0,
+                        false
                     )
                 )
             }
         }
-
+        setLoading(false)
         dispatch(setTransaction(null))
     }
 
@@ -168,7 +234,7 @@ const TransactionCard = () => {
             return "Approve Badge"
         }
     }
-
+    console.log("cuurent", currentDao)
     return (
         <div className={styles.container}>
             <img
@@ -182,23 +248,38 @@ const TransactionCard = () => {
                 ellipsis={{ rows: 2 }}
                 className={`${textStyle.ub_23} ${styles.title}`}
             >
-                {`${currentTransaction?.title}`}
+                {
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Contribution Title"
+                    )?.value
+                }
+                {/* {`${currentTransaction?.title}`} */}
             </span>
 
             <div className={styles.contributorContainer}>
                 <img className={styles.faceIcon} src={assets.icons.faceIcon} />
-                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${
-                    currentTransaction?.requested_by?.metadata?.name
-                } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}</div>
+                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
+                    {/* aviral • aviralsb.eth */}
+                    {`${
+                        currentTransaction?.contributor?.name
+                    } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}
+                </div>
             </div>
 
             <div className={styles.timelineContainer}>
                 <img className={styles.faceIcon} src={assets.icons.feedIcon} />
-                <div
-                    className={`${textStyle.m_16} ${styles.ownerInfo}`}
-                >{`${currentTransaction?.stream?.toLowerCase()} ${
+                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
+                    {/* {`${currentTransaction?.stream?.toLowerCase()} ${
                     currentTransaction?.time_spent
-                } hrs`}</div>
+                } hrs`} */}
+                    design •{" "}
+                    {
+                        currentTransaction?.details.find(
+                            (x) => x.fieldName === "Time Spent in Hours"
+                        )?.value
+                    }{" "}
+                    hrs
+                </div>
             </div>
 
             <Typography.Paragraph
@@ -229,22 +310,26 @@ const TransactionCard = () => {
                 setActive={() => setMint(!mint)}
             />
 
-            <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
-                <ApprovalSelectionToggle
-                    toggleTitle="Pay in tokens"
-                    type="token"
-                    feedbackShow={feedBackShow}
-                    setFeedBackSow={(x) => setFeedBackSow(x)}
-                    payDetail={payDetail}
-                    addToken={() => addToken()}
-                    updatedPayDetail={(e, index) => updatedPayDetail(e, index)}
-                    updateTokenType={(value, index) =>
-                        updateTokenType(value, index)
-                    }
-                    active={payToken}
-                    setActive={() => setPayToken(!payToken)}
-                />
-            </div>
+            {currentDao && (
+                <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
+                    <ApprovalSelectionToggle
+                        toggleTitle="Pay in tokens"
+                        type="token"
+                        feedbackShow={feedBackShow}
+                        setFeedBackSow={(x) => setFeedBackSow(x)}
+                        payDetail={payDetail}
+                        addToken={() => addToken()}
+                        updatedPayDetail={(e, index) =>
+                            updatedPayDetail(e, index)
+                        }
+                        updateTokenType={(value, index) =>
+                            updateTokenType(value, index)
+                        }
+                        active={payToken}
+                        setActive={() => setPayToken(!payToken)}
+                    />
+                </div>
+            )}
             <div className={styles.buttonContainer}>
                 <div
                     onClick={async () => {
@@ -263,11 +348,13 @@ const TransactionCard = () => {
                 </div>
 
                 <div
-                    onClick={() => onApproveTransaction()}
+                    onClick={async () =>
+                        !loading && (await onApproveTransaction())
+                    }
                     className={styles.payNow}
                 >
                     <div className={`${textStyle.ub_16}`}>
-                        {getButtonTitle()}
+                        {loading ? "Approving...." : getButtonTitle()}
                     </div>
                 </div>
             </div>

@@ -551,18 +551,8 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
 
     const claimBadges = async () => {
         if (!claim_loading.status) {
-            dispatch(setClaimLoading(true, currentTransaction?.id))
-            // const provider = new ethers.providers.Web3Provider(window.ethereum)
-            // const { chainId } = await provider.getNetwork()
             const chainId = chain?.id
             setPocpAction(chainId)
-            // await processClaimBadgeToPocp(
-            //     isApprovedToken(unclaimed, currentTransaction?.id).token[0].id,
-            //     jwt,
-            //     currentTransaction?.id,
-            //     onClaimEventCallback,
-            //     onErrorCallBack
-            // )
         }
         dispatch(setTransaction(null))
         dispatch(setContributionDetail(null))

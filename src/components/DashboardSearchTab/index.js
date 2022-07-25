@@ -231,7 +231,7 @@ const DashboardSearchTab = ({ route }) => {
             ) : (
                 renderLoader()
             )}
-            <div style={{ display: "flex", flexDirection: "row" }}>
+            {/* <div style={{ display: "flex", flexDirection: "row" }}>
                 {!search ? (
                     <div
                         onClick={() => setSearch(true)}
@@ -261,9 +261,8 @@ const DashboardSearchTab = ({ route }) => {
                             }`}
                         />
                     </div>
-                    {/* <FilterModal isContribution={route==='contributions'} onClose={() => setFilterShow(false)} show={filterShow} /> */}
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

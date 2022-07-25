@@ -43,9 +43,8 @@
             margin-top: 1rem;
             margin-bottom: 1rem;
             width: 100%;
-            .contribution-time-input-wrapper,
-            .external-link-input-wrapper {
-                width: 48%;
+            .contribution-time-input-wrapper {
+                width: 100%;
             }
 
             .contribution-time-input-wrapper {
@@ -105,6 +104,7 @@
 
         .contribution-type-input-wrapper {
             width: 100%;
+            margin-top: 1rem;
             .select-input {
                 .select__control {
                     width: 100%;
@@ -183,7 +183,7 @@
             /* align-self: flex-start; */
         }
         .heading {
-            font-family: "TelegrafMedium";
+            font-family: "TelegrafBold";
             font-style: normal;
             font-weight: normal;
             font-size: 3rem;

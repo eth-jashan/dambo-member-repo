@@ -30,8 +30,10 @@ const RejectPayment = ({ onClose, signer }) => {
     const rejectTransaction = async (hash) => {
         setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
-
-        if (!safeSdk) return
+        console.log(safeSdk)
+        if (!safeSdk) {
+            setLoading(false)
+        }
 
         const rejectionTransaction = await safeSdk.createRejectionTransaction(
             transaction.nonce
@@ -39,7 +41,6 @@ const RejectPayment = ({ onClose, signer }) => {
         const safeTxHash = await safeSdk.getTransactionHash(
             rejectionTransaction
         )
-
         const safeSignature = await safeSdk.signTransactionHash(safeTxHash)
         try {
             await serviceClient.proposeTransaction(
@@ -50,7 +51,7 @@ const RejectPayment = ({ onClose, signer }) => {
             )
             await dispatch(getPayoutRequest())
             await dispatch(syncTxDataWithGnosis())
-            await dispatch(set_payout_filter("PENDING"))
+            // await dispatch(set_payout_filter("PENDING"))
             dispatch(setRejectModal(false))
             dispatch(setPayment(null))
         } catch (error) {

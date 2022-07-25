@@ -56,6 +56,7 @@ const daoSlice = createSlice({
         approvedBadges: [],
         pastContributions: [],
         username: "",
+        safeInfo: false,
     },
     reducers: {
         set_chainId(state, action) {
@@ -114,6 +115,9 @@ const daoSlice = createSlice({
         set_gnosis_details(state, action) {
             state.balance = action.payload.balance
         },
+        set_safe_info(state, action) {
+            state.safeInfo = action.payload.details
+        },
         set_contribution_filter(state, action) {
             state.contri_filter_key = action.payload.number
             state.contribution_request = action.payload.list
@@ -171,9 +175,14 @@ const daoSlice = createSlice({
             state.all_unclaimed_badges = action.payload.unclaimedToken
         },
         add_approved_badges(state, action) {
-            state.approvedBadges = state.approvedBadges.concat([
-                action.payload.contribution,
-            ])
+            const approve_list = state.approvedBadges
+            const copyCheck = approve_list.filter(
+                (x) => x.id === action.payload.contribution?.id
+            )
+            if (copyCheck.length === 0) {
+                approve_list.push(action.payload.contribution)
+                state.approvedBadges = approve_list
+            }
         },
         reset_approved_badges(state) {
             state.approvedBadges = []
