@@ -77,7 +77,9 @@
     .claimBadgeBtn > img {
         margin-left: 0.675rem;
     }
-
+    .contribution-screen-wrapper {
+        height: 100%;
+    }
     .noMembershipBadge {
         display: flex;
         height: 100%;
@@ -228,6 +230,26 @@
 
     .non-empty-contrib-screen {
         display: flex;
+        flex-direction: column;
+        .pending-contributions,
+        .past-contributions {
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
+        }
+        .approve-request-more-text {
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: left;
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+        .approve-voucher-wrapper {
+            margin-top: 1.25rem;
+        }
     }
 
     .empty-contrib-screen {

@@ -16,7 +16,13 @@ import { getRole } from "../../store/actions/contibutor-action"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { setChainInfoAction } from "../../utils/wagmiHelpers"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useAccount, useSigner, useDisconnect } from "wagmi"
+import {
+    useAccount,
+    useSigner,
+    useDisconnect,
+    useNetwork,
+    useSwitchNetwork,
+} from "wagmi"
 import account_balance_wallet from "../../assets/Icons/account_balance_wallet.svg"
 import right_arrow_white from "../../assets/Icons/right_arrow_white.svg"
 import metamask_circular from "../../assets/Icons/metamask_circular.svg"
@@ -34,6 +40,9 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const { data: signer } = useSigner()
     const [showConnectBtn, setShowConnectBtn] = useState(true)
     const { disconnect } = useDisconnect()
+    const { chain } = useNetwork()
+    const { chains, error, isLoading, pendingChainId, switchNetwork } =
+        useSwitchNetwork()
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -126,8 +135,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 (chainId === 4 ||
                     chainId === 1 ||
                     chainId === 5 ||
-                    chainId === 137 ||
-                    chainId === 10)
+                    chainId === 10 ||
+                    chainId === 137)
             ) {
                 // has token and chain is selected for rinkeby
                 setChainInfoAction(chainId)
@@ -296,11 +305,18 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                                 <div className="connect-address-left">
                                                     <div className="connect-address-name">
                                                         {account.displayName}{" "}
-                                                        &bull;{" "}
                                                     </div>
+                                                    &bull;{" "}
                                                     <div className="connect-address-chain-name">
                                                         {chain.name} |{" "}
                                                         {account.displayBalance}
+                                                    </div>
+                                                    &bull;{" "}
+                                                    <div
+                                                        className="switch-chain-text"
+                                                        onClick={openChainModal}
+                                                    >
+                                                        Switch chain
                                                     </div>
                                                 </div>
                                                 <div
@@ -351,9 +367,19 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
             navigate("/")
         } else if (address && signer && isConnected && !showConnectBtn) {
             dispatch(setAddress(address))
-            loadWeb3Modal()
+            // loadWeb3Modal()
         }
     }, [signer])
+
+    useEffect(() => {
+        console.log("chain is", chain)
+        if (chain) {
+            window.localStorage.setItem(
+                "chainId",
+                JSON.stringify({ chainId: chain.id })
+            )
+        }
+    }, [chain])
 
     return (
         <div className="connect-wallet-container">

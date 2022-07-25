@@ -1,6 +1,7 @@
 .contributor-contribution-side-card-container {
     width: 100%;
     height: 100%;
+    text-align: left;
     // .cross-icon {
     //     position: absolute;
     //     top: ;
@@ -16,7 +17,88 @@
         text-align: start;
         margin-bottom: 1.5rem;
     }
+    .contri-badge-wrapper {
+        background: #1f1f1f;
+        border-radius: 12px;
+        .contri-badge {
+            position: relative;
+            .contri-badge-bg {
+                width: 100%;
+            }
+            .contri-badge-dao {
+                position: absolute;
+                top: 5%;
+                left: 1.25rem;
+                font-family: "TelegrafBolder";
+                font-weight: 800;
+                line-height: 1.5rem;
+                font-size: 1.25rem;
+                img {
+                    width: 2.25rem;
+                    border-radius: 50%;
+                    margin-right: 0.5rem;
+                }
+            }
+            .contri-badge-contribution-info {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                .contri-badge-title {
+                    font-family: "TelegrafBolder";
+                    font-weight: 800;
+                    font-size: 2.5rem;
+                    line-height: 3.25rem;
+                    padding: 0 1.25rem;
+                }
+                .contri-badge-bottom-row {
+                    display: flex;
+                    justify-content: space-between;
+                    border-top: 1px solid #d9d9d9;
+                    padding: 0.75rem 1.25rem;
+                    font-family: "TelegrafMedium";
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                }
+            }
+        }
+        .contri-feedback {
+            padding: 1rem;
+            font-family: "TelegrafMedium";
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: left;
+        }
+    }
+    .contri-payout-info {
+        background: #2e3022;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: rgba(236, 255, 184, 0.5);
+        margin-top: 1.25rem;
+        font-family: "TelegrafMedium";
+        font-size: 1rem;
+        line-height: 1.5rem;
+        .highlighted {
+            color: rgb(236, 255, 184);
+        }
+        .token-payout-row {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.75rem 0 0;
+            margin-top: 0.75rem;
+        }
+        .show-more-or-less {
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+    }
+
     .contri-info {
+        margin-top: 1.25rem;
+
         .contributor-info {
             font-family: "TelegrafMedium";
             font-style: normal;
@@ -82,6 +164,18 @@
                 line-height: 1.5rem;
                 /* identical to box height, or 150% */
                 color: #9fffba;
+                img {
+                    margin-right: 0.5rem;
+                    opacity: 1;
+                }
+            }
+            &.pending {
+                img {
+                    opacity: 1;
+                }
+                .title {
+                    color: #ffc664;
+                }
             }
         }
     }
@@ -94,8 +188,15 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        padding: 1.5rem 1.5rem 1.25rem 1rem;
+        padding: 1.5rem 1.5rem 1.25rem 1.5rem;
         background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
+        color: #fff;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        padding-top: 4rem;
 
         .claim-btn {
             background-color: white;

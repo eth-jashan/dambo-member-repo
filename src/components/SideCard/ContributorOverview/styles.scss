@@ -6,9 +6,12 @@
     scrollbar-width: none; /* Firefox */
     display: flex;
     flex-direction: column;
+    height: 100%;
     .cross-icon {
         align-self: flex-start;
         margin: 1.5rem 0rem 3rem 0rem;
+        text-align: left;
+        display: flex;
     }
     .payoutContainer {
         margin-top: 1.5rem;

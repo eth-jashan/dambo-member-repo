@@ -137,159 +137,171 @@ const ContributionOverview = () => {
             style={{ paddingTop: contributorSelectionContribution && 0 }}
             className="contributor-side-card-overview-container"
         >
-            {contributorSelectionContribution && (
-                <img className="cross-icon" src={assets.icons.crossWhite} />
-            )}
-            {!contributorSelectionContribution && (
-                <div
-                    style={{ color: "white", textAlign: "start" }}
-                    className={textStyle.ub_23}
-                >
-                    Overview
-                </div>
-            )}
-            {!currentMembershipBadge ? (
-                <div className="overviewText">
-                    All your membership, contribution, and payout overview will
-                    come here.
-                </div>
-            ) : contributorSelectionContribution ? (
-                <ContributionContributorSideCard />
-            ) : (
-                <>
-                    <div className="badgeOverview">
-                        {isImage ? (
-                            <img
-                                src={currentMembershipBadge.image_url}
-                                alt=""
-                                className="badgeImage"
-                            />
-                        ) : (
-                            <video autoPlay loop className="badgeImage" muted>
-                                <source
-                                    src={currentMembershipBadge?.image_url}
+            <div>
+                {contributorSelectionContribution && (
+                    <img className="cross-icon" src={assets.icons.crossWhite} />
+                )}
+                {!contributorSelectionContribution && (
+                    <div
+                        style={{ color: "white", textAlign: "start" }}
+                        className={textStyle.ub_23}
+                    >
+                        Overview
+                    </div>
+                )}
+                {!currentMembershipBadge ? (
+                    <div className="overviewText">
+                        All your membership, contribution, and payout overview
+                        will come here.
+                    </div>
+                ) : contributorSelectionContribution ? (
+                    <ContributionContributorSideCard />
+                ) : (
+                    <>
+                        <div className="badgeOverview">
+                            {isImage ? (
+                                <img
+                                    src={currentMembershipBadge.image_url}
+                                    alt=""
+                                    className="badgeImage"
                                 />
-                            </video>
-                        )}
-
-                        <div>
-                            <div className="toggleHeader" onClick={toggle}>
-                                <div>
-                                    <div>{currentMembershipBadge.name}</div>
-                                    {/* <div>2 months ago</div> */}
-                                </div>
-                                <div>
-                                    <img
-                                        src={
-                                            isToggleOpen
-                                                ? chevron_up
-                                                : chevron_down
-                                        }
-                                        alt=""
+                            ) : (
+                                <video
+                                    autoPlay
+                                    loop
+                                    className="badgeImage"
+                                    muted
+                                >
+                                    <source
+                                        src={currentMembershipBadge?.image_url}
                                     />
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            className={`${
-                                isToggleOpen ? "toggleContentShown" : ""
-                            } toggleContent`}
-                        >
+                                </video>
+                            )}
+
                             <div>
-                                {levels.map((level, index) => (
-                                    <div className="level-row" key={index}>
-                                        <div>
-                                            <img src={compare_arrows} alt="" />
-                                            {level?.name}
-                                        </div>
-                                        <div className="level-time">
-                                            {level.time}
-                                        </div>
+                                <div className="toggleHeader" onClick={toggle}>
+                                    <div>
+                                        <div>{currentMembershipBadge.name}</div>
+                                        {/* <div>2 months ago</div> */}
                                     </div>
-                                ))}
-                            </div>
-                            <div className="lineBreak"></div>
-                            <div className="badge-footer">
-                                <div className="footer-icons">
-                                    <div
-                                        className="badge-footer-icon"
-                                        onClick={openOpensea}
-                                    >
-                                        <img src={openseaIcon} alt="" />
-                                    </div>
-                                    <div
-                                        className="badge-footer-icon"
-                                        onClick={openEtherscan}
-                                    >
-                                        <img src={etherscanIcon} alt="" />
+                                    <div>
+                                        <img
+                                            src={
+                                                isToggleOpen
+                                                    ? chevron_up
+                                                    : chevron_down
+                                            }
+                                            alt=""
+                                        />
                                     </div>
                                 </div>
+                            </div>
+                            <div
+                                className={`${
+                                    isToggleOpen ? "toggleContentShown" : ""
+                                } toggleContent`}
+                            >
                                 <div>
-                                    <button>
-                                        Share Badge{" "}
-                                        <img src={twitterIcon} alt="" />
-                                    </button>
+                                    {levels.map((level, index) => (
+                                        <div className="level-row" key={index}>
+                                            <div>
+                                                <img
+                                                    src={compare_arrows}
+                                                    alt=""
+                                                />
+                                                {level?.name}
+                                            </div>
+                                            <div className="level-time">
+                                                {level.time}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="lineBreak"></div>
+                                <div className="badge-footer">
+                                    <div className="footer-icons">
+                                        <div
+                                            className="badge-footer-icon"
+                                            onClick={openOpensea}
+                                        >
+                                            <img src={openseaIcon} alt="" />
+                                        </div>
+                                        <div
+                                            className="badge-footer-icon"
+                                            onClick={openEtherscan}
+                                        >
+                                            <img src={etherscanIcon} alt="" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button>
+                                            Share Badge{" "}
+                                            <img src={twitterIcon} alt="" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="other-badge-and-payout-overview">
-                        <div className="other-badge-background">
-                            <div className="other-info-row">
-                                <div className="row-heading">
-                                    23 Contributions
-                                </div>
-                                <div className="subrow-details">
-                                    <div>123 badges</div>
-                                    <div className="subrow-icons-wrapper">
-                                        <div className="other-badge-wrapper">
-                                            <img
-                                                src={ContributionIconGrey}
-                                                alt=""
-                                            />
-                                            36
+                        <div className="other-badge-and-payout-overview">
+                            <div className="other-badge-background">
+                                <div className="other-info-row">
+                                    <div className="row-heading">
+                                        23 Contributions
+                                    </div>
+                                    <div className="subrow-details">
+                                        <div>123 badges</div>
+                                        <div className="subrow-icons-wrapper">
+                                            <div className="other-badge-wrapper">
+                                                <img
+                                                    src={ContributionIconGrey}
+                                                    alt=""
+                                                />
+                                                36
+                                            </div>
+                                            <div className="other-badge-wrapper">
+                                                <img
+                                                    src={appreciationIconGrey}
+                                                    alt=""
+                                                />
+                                                87
+                                            </div>
                                         </div>
-                                        <div className="other-badge-wrapper">
-                                            <img
-                                                src={appreciationIconGrey}
-                                                alt=""
-                                            />
-                                            87
+                                    </div>
+                                </div>
+                                <div className="horizontal-divider" />
+                                <div className="other-info-row">
+                                    <div className="row-heading">
+                                        23 Contributions
+                                    </div>
+                                    <div className="subrow-details">
+                                        <div>123 badges</div>
+                                        <div className="subrow-payout">
+                                            1250$
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="horizontal-divider" />
-                            <div className="other-info-row">
-                                <div className="row-heading">
-                                    23 Contributions
+                            <div className="payout-row-wrapper">
+                                <div className="payout-row">
+                                    <div>0.25 ETH</div>
+                                    <div>1250$</div>
                                 </div>
-                                <div className="subrow-details">
-                                    <div>123 badges</div>
-                                    <div className="subrow-payout">1250$</div>
+                                <div className="payout-row">
+                                    <div>0.500 USDC</div>
+                                    <div>1250$</div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="payout-row-wrapper">
-                            <div className="payout-row">
-                                <div>0.25 ETH</div>
-                                <div>1250$</div>
-                            </div>
-                            <div className="payout-row">
-                                <div>0.500 USDC</div>
-                                <div>1250$</div>
+                            <div className="last-payout-info">
+                                <img src={payoutInfo} alt="" />
+                                500 USDC and 0.25 ETH transferred on 3
+                                <div className="right-shim" />
                             </div>
                         </div>
-                        <div className="last-payout-info">
-                            <img src={payoutInfo} alt="" />
-                            500 USDC and 0.25 ETH transferred on 3
-                            <div className="right-shim" />
-                        </div>
-                    </div>
-                </>
-            )}
-            {/* {payoutInfo()} */}
-            {/* {contributionStats()} */}
+                    </>
+                )}
+                {/* {payoutInfo()} */}
+                {/* {contributionStats()} */}
+            </div>
         </div>
     )
 }

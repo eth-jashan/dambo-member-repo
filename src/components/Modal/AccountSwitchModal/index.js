@@ -14,6 +14,8 @@ import {
 import {
     getContributionAsAdmin,
     getContributionAsContributorApproved,
+    // getContributionAsContributorApproved,
+    getPastContributions,
 } from "../../../store/actions/contibutor-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
@@ -21,6 +23,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
     const address = useSelector((x) => x.auth.address)
     const contributionFlowAsContributor = async () => {
         await dispatch(getContributionAsContributorApproved())
+        dispatch(getPastContributions())
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())

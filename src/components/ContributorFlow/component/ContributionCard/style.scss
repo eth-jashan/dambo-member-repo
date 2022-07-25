@@ -1,126 +1,155 @@
 .contributor-contribution-card-container {
     padding: 1.5rem;
     width: 100%;
-    // overflow: hidden;
-    .maximum-div {
-        .contri-info {
-            display: flex;
-            flex-direction: row;
-            margin-left: 1rem;
-            justify-content: space-between;
-            .flex-div {
-                width: 50%;
-                display: flex;
-                flex-direction: row;
-                img {
-                    height: 1.5rem;
-                    width: 1.5rem;
-                }
-                .contri-meta {
-                    text-align: start;
-                    margin-left: 1rem;
-                    .contri-title {
-                        font-family: "TelegrafMedium";
-                        font-style: normal;
-                        font-weight: 500;
-                        font-size: 23px;
-                        line-height: 2rem;
-                        /* identical to box height, or 139% */
-                        color: #ffffff;
-                    }
-                    .contri-type {
-                        font-family: "TelegrafMedium";
-                        font-style: normal;
-                        font-weight: 500;
-                        font-size: 23px;
-                        line-height: 2rem;
-                        /* identical to box height, or 139% */
-                        color: #ffffff;
-                        opacity: 0.5;
-                    }
-                    .submission-link {
-                        font-family: "TelegrafMedium";
-                        font-style: normal;
-                        font-weight: 500;
-                        font-size: 23px;
-                        line-height: 2rem;
-                        text-decoration: underline;
-                        color: #ffffff;
-                        opacity: 0.5;
-                    }
-                }
-            }
-            .contri-feedback {
-                font-family: "TelegrafMedium";
-                font-style: normal;
-                font-weight: 500;
-                font-size: 19px;
-                line-height: 28px;
-                justify-content: flex-end;
-                // background-color: red;
-                text-align: start;
-                color: #ffffff;
-                width: 44%;
-                opacity: 0.5;
-            }
-        }
-
-        .action-btn {
-            display: flex;
-            flex-direction: row;
-            margin-top: 1.25rem;
-            margin-left: 2.5rem;
-            .claim-btn {
-                background: #ecffb8;
-                box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
-                    0px 2px 4px rgba(0, 0, 0, 0.16);
-                border-radius: 1.25rem;
-                padding: 0.5rem 1.5rem;
-                div {
-                    /* 16 UB */
-                    font-family: "TelegrafMedium";
-                    font-style: normal;
-                    font-weight: 800;
-                    font-size: 1rem;
-                    line-height: 1.5rem;
-                    /* identical to box height, or 150% */
-                    color: #000000;
-                }
-            }
-
-            .reject-btn {
-                margin-left: 12px;
-                border: 1px solid #ecffb8;
-                box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
-                    0px 2px 4px rgba(0, 0, 0, 0.16);
-                border-radius: 1.25rem;
-                padding: 0.5rem 1.5rem;
-                div {
-                    font-family: "TelegrafMedium";
-                    font-style: normal;
-                    font-weight: 800;
-                    font-size: 1rem;
-                    line-height: 1.5rem;
-                    color: #ecffb8;
-                }
-            }
+    position: relative;
+    cursor: pointer;
+    &.with-checkbox {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        .minimum-div {
+            width: 96%;
         }
     }
+    .contribution-approve-checkbox {
+        margin-top: 0.25rem;
+        border: 1px solid #fff;
+    }
+    .more-details-hover {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        color: #fff;
+        text-decoration: underline;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        // background: rgba(0, 0, 0, 0.2);
+        padding: 0.25rem;
+        z-index: 2;
+    }
+    // overflow: hidden;
+    // .maximum-div {
+    //     .contri-info {
+    //         display: flex;
+    //         flex-direction: row;
+    //         margin-left: 1rem;
+    //         justify-content: space-between;
+    //         .flex-div {
+    //             width: 50%;
+    //             display: flex;
+    //             flex-direction: row;
+    //             img {
+    //                 height: 1.5rem;
+    //                 width: 1.5rem;
+    //             }
+    //             .contri-meta {
+    //                 text-align: start;
+    //                 margin-left: 1rem;
+    //                 .contri-title {
+    //                     font-family: "TelegrafMedium";
+    //                     font-style: normal;
+    //                     font-weight: 500;
+    //                     font-size: 23px;
+    //                     line-height: 2rem;
+    //                     /* identical to box height, or 139% */
+    //                     color: #ffffff;
+    //                 }
+    //                 .contri-type {
+    //                     font-family: "TelegrafMedium";
+    //                     font-style: normal;
+    //                     font-weight: 500;
+    //                     font-size: 23px;
+    //                     line-height: 2rem;
+    //                     /* identical to box height, or 139% */
+    //                     color: #ffffff;
+    //                     opacity: 0.5;
+    //                 }
+    //                 .submission-link {
+    //                     font-family: "TelegrafMedium";
+    //                     font-style: normal;
+    //                     font-weight: 500;
+    //                     font-size: 23px;
+    //                     line-height: 2rem;
+    //                     text-decoration: underline;
+    //                     color: #ffffff;
+    //                     opacity: 0.5;
+    //                 }
+    //             }
+    //         }
+    //         .contri-feedback {
+    //             font-family: "TelegrafMedium";
+    //             font-style: normal;
+    //             font-weight: 500;
+    //             font-size: 19px;
+    //             line-height: 28px;
+    //             justify-content: flex-end;
+    //             // background-color: red;
+    //             text-align: start;
+    //             color: #ffffff;
+    //             width: 44%;
+    //             opacity: 0.5;
+    //         }
+    //     }
+
+    //     .action-btn {
+    //         display: flex;
+    //         flex-direction: row;
+    //         margin-top: 1.25rem;
+    //         margin-left: 2.5rem;
+    //         .claim-btn {
+    //             background: #ecffb8;
+    //             box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
+    //                 0px 2px 4px rgba(0, 0, 0, 0.16);
+    //             border-radius: 1.25rem;
+    //             padding: 0.5rem 1.5rem;
+    //             div {
+    //                 /* 16 UB */
+    //                 font-family: "TelegrafMedium";
+    //                 font-style: normal;
+    //                 font-weight: 800;
+    //                 font-size: 1rem;
+    //                 line-height: 1.5rem;
+    //                 /* identical to box height, or 150% */
+    //                 color: #000000;
+    //             }
+    //         }
+
+    //         .reject-btn {
+    //             margin-left: 12px;
+    //             border: 1px solid #ecffb8;
+    //             box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.12),
+    //                 0px 2px 4px rgba(0, 0, 0, 0.16);
+    //             border-radius: 1.25rem;
+    //             padding: 0.5rem 1.5rem;
+    //             div {
+    //                 font-family: "TelegrafMedium";
+    //                 font-style: normal;
+    //                 font-weight: 800;
+    //                 font-size: 1rem;
+    //                 line-height: 1.5rem;
+    //                 color: #ecffb8;
+    //             }
+    //         }
+    //     }
+    // }
     .minimum-div {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         flex-direction: row;
         justify-content: space-between;
         .contri-left-min {
             display: flex;
             align-items: center;
             flex-direction: row;
-            width: 60%;
+            width: 40%;
             justify-content: space-between;
             .contri-title-min {
                 display: flex;
                 flex-direction: row;
-                width: 50%;
+                width: 100%;
                 img {
                     height: 1.5rem;
                     width: 1.5rem;
@@ -135,6 +164,23 @@
                     color: #ffffff;
                 }
             }
+        }
+        .contri-right-min {
+            width: 60%;
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: left;
+            .contri-right-row {
+                display: flex;
+                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
             .contri-type-min {
                 font-family: "TelegrafMedium";
                 font-style: normal;
@@ -144,19 +190,65 @@
                 color: #ffffff;
                 opacity: 0.5;
             }
-        }
-        .contri-incentive {
-            div {
-                font-family: "TelegrafMedium";
-                font-style: normal;
-                font-weight: 500;
-                font-size: 1rem;
-                line-height: 1.5rem;
-                /* identical to box height, or 150% */
-                text-align: right;
-                color: #ecffb8;
-                opacity: 0.5;
+
+            .contri-incentive {
+                div {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                    text-align: right;
+                    color: #ecffb8;
+                    opacity: 0.5;
+                    img {
+                        margin-left: 0.5rem;
+                    }
+                }
+                &.pending {
+                    div {
+                        color: #ffb22e;
+                        opacity: 1;
+                    }
+                }
+                &.past {
+                    opacity: 1;
+                }
+            }
+            .contri-feedback {
+                padding: 1rem 3rem 1rem 0;
+                color: rgba(255, 255, 255, 0.75);
+            }
+            .payout-details-text {
+                padding: 1rem 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.16);
+            }
+            .payout-token-details {
+                border-top: 1px dashed rgba(255, 255, 255, 0.16);
+                .payout-token-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 1rem;
+                }
+                .show-more-or-less {
+                    text-decoration: underline;
+                    cursor: pointer;
+                    margin-top: 0.5rem;
+                }
             }
         }
+    }
+    &:hover {
+        background: #333;
+    }
+    &.selected-contribution {
+        background: #333;
+    }
+    &.first-contribution {
+        border-radius: 1rem 1rem 0 0;
+    }
+    &.last-contribution {
+        border-bottom-right-radius: 1rem;
+        border-bottom-left-radius: 1rem;
     }
 }

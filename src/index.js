@@ -53,10 +53,15 @@ const wagmiClient = createClient({
     webSocketProvider,
 })
 
+const savedChainId = JSON.parse(window.localStorage.getItem("chainId"))
+
 ReactDOM.render(
     <React.StrictMode>
         <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
+            <RainbowKitProvider
+                chains={chains}
+                initialChain={savedChainId.chainId || 4}
+            >
                 <BrowserRouter>
                     <Provider store={store}>
                         <PersistGate loading={null} persistor={persistor}>

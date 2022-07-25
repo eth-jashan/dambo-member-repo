@@ -18,11 +18,13 @@ const contributorSlice = createSlice({
         contributionForContributorApproved: [],
         contributionForAdmin: [],
         contributionForContributorPending: [],
+        contributionForContributorPast: [],
         claim_loading: {
             status: false,
             id: null,
         },
         daoName: null,
+        contribution_counts: null,
     },
     reducers: {
         set_invite_code(state, action) {
@@ -66,6 +68,15 @@ const contributorSlice = createSlice({
         },
         set_contribution_selection(state, action) {
             state.contributorSelectionContribution = action.payload.contribution
+        },
+        set_contributor_contribution_pending(state, action) {
+            state.contributionForContributorPending = action.payload.pending
+        },
+        set_contributor_contribution_past(state, action) {
+            state.contributionForContributorPast = action.payload.past
+        },
+        set_contribution_counts(state, action) {
+            state.contribution_counts = action.payload.contribution_counts
         },
     },
 })

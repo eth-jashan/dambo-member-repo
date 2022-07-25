@@ -1,99 +1,267 @@
-import React from "react"
+import React, { useState } from "react"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
-
-// import axios from "axios"
-import { useNetwork } from "wagmi"
 import { assets } from "../../../../constant/assets"
 import { setContributionSelection } from "../../../../store/actions/contibutor-action"
+import payments_orange from "../../../../assets/Icons/payments_orange.svg"
+import received_white from "../../../../assets/Icons/received_white.svg"
+import dayjs from "dayjs"
 
 export default function ContributionCardV2({
     item,
     isMinimum,
     index,
     selected,
+    isLast,
+    isFirst,
+    contributionType,
+    updateCheckbox,
 }) {
-    const currentDao = useSelector((x) => x.dao.currentDao)
+    const contributionSelected = useSelector(
+        (x) => x.contributor.contributorSelectionContribution
+    )
     const dispatch = useDispatch()
 
-    const contributionSelection = () => {
-        console.log(item)
-        dispatch(setContributionSelection(item))
+    const onContributionSelection = () => {
+        dispatch(
+            setContributionSelection({
+                ...item,
+                contributionType,
+                isFirst,
+            })
+        )
     }
+
+    const [isHovered, setIsHovered] = useState(false)
+    const [showMore, setShowMore] = useState(false)
+
+    let totalAmountInUsd = 0
+    item?.tokens.forEach((token) => {
+        totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
+    })
+
+    console.log("item is", item)
 
     return (
         <div
-            style={{
-                background: selected ? "#333333" : "#1F1F1F",
-                borderRadius: index === 0 && "1rem 1rem 0rem 0rem",
-            }}
-            className="contributor-contribution-card-container"
+            className={`contributor-contribution-card-container ${
+                contributionSelected?.uuid === item?.uuid
+                    ? "selected-contribution"
+                    : ""
+            } ${index === 0 && !isFirst ? "first-contribution" : ""}
+            ${isLast ? "last-contribution" : ""}
+            ${contributionType === "approved" && isFirst && "with-checkbox"}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={isFirst ? () => {} : () => onContributionSelection()}
         >
-            {!isMinimum && (
-                <div className="maximum-div">
-                    <div
-                        onClick={contributionSelection}
-                        className="contri-info"
-                    >
-                        <div className="flex-div">
-                            <img src={assets.icons.sentWhite} />
-                            <div className="contri-meta">
-                                <div className="contri-title">
-                                    {
-                                        item?.details?.find(
-                                            (x) =>
-                                                x.fieldName ===
-                                                "Contribution Title"
-                                        )?.value
-                                    }
-                                </div>
-                                <div className="contri-type">
-                                    design •{" "}
-                                    {item?.details?.find(
-                                        (x) =>
-                                            x.fieldName === "Contribution Title"
-                                    )?.value &&
-                                        `${
-                                            item?.details?.find(
-                                                (x) =>
-                                                    x.fieldName ===
-                                                    "Time Spent in Hours"
-                                            )?.value
-                                        }hrs`}
-                                </div>
-                                <div className="submission-link">
-                                    Submission link
-                                </div>
-                            </div>
-                        </div>
-                        <div className="contri-feedback">
-                            “incredible work and really appreciate coming onver
-                            the weekend, love you man, no homo”
-                        </div>
-                    </div>
-                    <div className="action-btn">
-                        <div className="claim-btn">
-                            <div>Claim Badge</div>
-                        </div>
-                        <div className="reject-btn">
-                            <div>Reject Badge</div>
-                        </div>
-                    </div>
+            {isHovered && isFirst && (
+                <div
+                    className="more-details-hover"
+                    onClick={onContributionSelection}
+                >
+                    more details
                 </div>
+            )}
+            {contributionType === "approved" && isFirst && (
+                <input
+                    type="checkbox"
+                    value={item.isChecked}
+                    checked={item.isChecked}
+                    onChange={(e) => updateCheckbox(e, index)}
+                    className="contribution-approve-checkbox"
+                />
             )}
             {isMinimum && (
                 <div className="minimum-div">
                     <div className="contri-left-min">
                         <div className="contri-title-min">
-                            <img src={assets.icons.sentWhite} />
+                            <img
+                                src={
+                                    item?.created_by_id === item?.created_for_id
+                                        ? assets.icons.sentWhite
+                                        : received_white
+                                }
+                            />
                             <div className="title-min">
-                                Landing page UI explorations
+                                {
+                                    item?.details?.find(
+                                        (x) =>
+                                            x.fieldName === "Contribution Title"
+                                    )?.value
+                                }
                             </div>
                         </div>
-                        <div className="contri-type-min">design • 40 hrs</div>
                     </div>
-                    <div className="contri-incentive">
-                        <div>Badge Available</div>
+                    <div className="contri-right-min">
+                        <div className="contri-right-row">
+                            <div className="contri-type-min">
+                                {
+                                    item?.details?.find(
+                                        (x) =>
+                                            x.fieldName ===
+                                            "Contribution Category"
+                                    )?.value
+                                }{" "}
+                                •{" "}
+                                {`${
+                                    item?.details?.find(
+                                        (x) =>
+                                            x.fieldName ===
+                                            "Time Spent in Hours"
+                                    )?.value
+                                }hrs`}{" "}
+                                {contributionType !== "approved" &&
+                                    `• ${dayjs(item?.createdAt).format(
+                                        "DD MMM"
+                                    )}`}
+                            </div>
+                            <div
+                                className={`contri-incentive ${contributionType}`}
+                            >
+                                <div>
+                                    {contributionType === "approved" ? (
+                                        `${dayjs(item?.createdAt).format(
+                                            "DD MMM"
+                                        )}`
+                                    ) : contributionType === "pending" ? (
+                                        <>
+                                            {!item?.tokens?.length &&
+                                            !item?.voucher_id
+                                                ? "waiting for approval"
+                                                : "waiting for signing"}
+                                            {item?.tokens?.length ? (
+                                                <img
+                                                    src={payments_orange}
+                                                    alt=""
+                                                />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </>
+                                    ) : item?.payout_status === "REJECTED" ? (
+                                        "rejected"
+                                    ) : (
+                                        "some"
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        {item?.feedback && (
+                            <div className="contri-feedback">
+                                {item?.feedback}
+                            </div>
+                        )}
+                        {item?.tokens?.length ? (
+                            <>
+                                <div className="payout-details-text">
+                                    <div>
+                                        {totalAmountInUsd}$ Total Payout in{" "}
+                                        {item?.tokens[0]?.details?.symbol}
+                                        {item?.tokens?.length > 1 &&
+                                            `${
+                                                item?.tokens?.length > 2
+                                                    ? ", "
+                                                    : "and "
+                                            }
+                                        ${item?.tokens[1]?.details?.symbol}`}
+                                        {item?.tokens?.length > 2 &&
+                                            ` and ${
+                                                item?.tokens?.length - 2
+                                            } more`}
+                                    </div>
+                                    <div>Payment waiting for execution</div>
+                                </div>
+                                <div className="payout-token-details">
+                                    {/* {item?.tokens?.map((token, index) => (
+                                        <div
+                                            className="payout-token-row"
+                                            key={index}
+                                        >
+                                            <div>
+                                                {token?.amount}{" "}
+                                                {token?.details?.symbol}
+                                            </div>
+                                            <div>
+                                                {token?.usd_amount *
+                                                    token?.amount}
+                                                $
+                                            </div>
+                                        </div>
+                                    ))} */}
+
+                                    {item?.tokens
+                                        ?.slice(0, 2)
+                                        .map((token, index) => (
+                                            <div
+                                                className="payout-token-row"
+                                                key={index}
+                                            >
+                                                <div className="highlighted">
+                                                    {token?.amount}{" "}
+                                                    {token?.details?.symbol}
+                                                </div>
+                                                <div>
+                                                    {token?.usd_amount *
+                                                        token?.amount}
+                                                    $
+                                                </div>
+                                            </div>
+                                        ))}
+                                    {item?.tokens?.length > 2 && (
+                                        <div>
+                                            {showMore ? (
+                                                <>
+                                                    {item?.tokens
+                                                        ?.slice(2)
+                                                        .map((token, index) => (
+                                                            <div
+                                                                className="payout-token-row"
+                                                                key={index}
+                                                            >
+                                                                <div className="highlighted">
+                                                                    {
+                                                                        token?.amount
+                                                                    }{" "}
+                                                                    {
+                                                                        token
+                                                                            ?.details
+                                                                            ?.symbol
+                                                                    }
+                                                                </div>
+                                                                <div>
+                                                                    {token?.usd_amount *
+                                                                        token?.amount}
+                                                                    $
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    <div
+                                                        onClick={() =>
+                                                            setShowMore(false)
+                                                        }
+                                                        className="show-more-or-less"
+                                                    >
+                                                        Show less
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div
+                                                    onClick={() =>
+                                                        setShowMore(true)
+                                                    }
+                                                    className="show-more-or-less"
+                                                >
+                                                    Show More
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
             )}
