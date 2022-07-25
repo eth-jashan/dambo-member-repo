@@ -24,6 +24,7 @@ const contributorSlice = createSlice({
         },
         daoName: null,
         contribution_counts: null,
+        claimLoading: false,
     },
     reducers: {
         set_invite_code(state, action) {
@@ -73,6 +74,9 @@ const contributorSlice = createSlice({
         },
         set_contribution_counts(state, action) {
             state.contribution_counts = action.payload.contribution_counts
+        },
+        setClaimLoading(state, action) {
+            state.claimLoading = action.payload.claimLoading
         },
     },
 })

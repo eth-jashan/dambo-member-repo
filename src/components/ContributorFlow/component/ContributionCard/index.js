@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { assets } from "../../../../constant/assets"
 import { setContributionSelection } from "../../../../store/actions/contibutor-action"
 import payments_orange from "../../../../assets/Icons/payments_orange.svg"
+import payments_green from "../../../../assets/Icons/payments_green.svg"
 import received_white from "../../../../assets/Icons/received_white.svg"
 import dayjs from "dayjs"
 
@@ -139,41 +140,81 @@ export default function ContributionCardV2({
                                                 ""
                                             )}
                                         </>
-                                    ) : item?.payout_status === "REJECTED" ? (
-                                        "rejected"
                                     ) : (
-                                        "some"
+                                        <>
+                                            {item?.status === "REJECTED" ? (
+                                                <div className="rejected">
+                                                    Rejected
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    {item?.is_badge ? (
+                                                        item?.badge_status ===
+                                                        "CLAIMED" ? (
+                                                            "Claimer"
+                                                        ) : (
+                                                            <div className="rejected">
+                                                                Rejected
+                                                            </div>
+                                                        )
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                    {item?.tokens?.length ? (
+                                                        <img
+                                                            src={payments_green}
+                                                            alt=""
+                                                        />
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                </>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        {item?.feedback && (
-                            <div className="contri-feedback">
-                                {item?.feedback}
-                            </div>
-                        )}
-                        {item?.tokens?.length ? (
+                        {item?.contributionType === "approved" && (
                             <>
-                                <div className="payout-details-text">
-                                    <div>
-                                        {totalAmountInUsd}$ Total Payout in{" "}
-                                        {item?.tokens[0]?.details?.symbol}
-                                        {item?.tokens?.length > 1 &&
-                                            `${
-                                                item?.tokens?.length > 2
-                                                    ? ", "
-                                                    : "and "
-                                            }
-                                        ${item?.tokens[1]?.details?.symbol}`}
-                                        {item?.tokens?.length > 2 &&
-                                            ` and ${
-                                                item?.tokens?.length - 2
-                                            } more`}
+                                {item?.feedback && (
+                                    <div className="contri-feedback">
+                                        {item?.feedback}
                                     </div>
-                                    <div>Payment waiting for execution</div>
-                                </div>
-                                <div className="payout-token-details">
-                                    {/* {item?.tokens?.map((token, index) => (
+                                )}
+                                {item?.tokens?.length ? (
+                                    <>
+                                        <div className="payout-details-text">
+                                            <div>
+                                                {totalAmountInUsd}$ Total Payout
+                                                in{" "}
+                                                {
+                                                    item?.tokens[0]?.details
+                                                        ?.symbol
+                                                }
+                                                {item?.tokens?.length > 1 &&
+                                                    `${
+                                                        item?.tokens?.length > 2
+                                                            ? ", "
+                                                            : "and "
+                                                    }
+                                        ${item?.tokens[1]?.details?.symbol}`}
+                                                {item?.tokens?.length > 2 &&
+                                                    ` and ${
+                                                        item?.tokens?.length - 2
+                                                    } more`}
+                                            </div>
+                                            {item?.payout_status !== "PAID" &&
+                                                item?.payout_status !==
+                                                    "REJECTED" && (
+                                                    <div>
+                                                        Payment waiting for
+                                                        execution
+                                                    </div>
+                                                )}
+                                        </div>
+                                        <div className="payout-token-details">
+                                            {/* {item?.tokens?.map((token, index) => (
                                         <div
                                             className="payout-token-row"
                                             key={index}
@@ -190,77 +231,94 @@ export default function ContributionCardV2({
                                         </div>
                                     ))} */}
 
-                                    {item?.tokens
-                                        ?.slice(0, 2)
-                                        .map((token, index) => (
-                                            <div
-                                                className="payout-token-row"
-                                                key={index}
-                                            >
-                                                <div className="highlighted">
-                                                    {token?.amount}{" "}
-                                                    {token?.details?.symbol}
-                                                </div>
-                                                <div>
-                                                    {token?.usd_amount *
-                                                        token?.amount}
-                                                    $
-                                                </div>
-                                            </div>
-                                        ))}
-                                    {item?.tokens?.length > 2 && (
-                                        <div>
-                                            {showMore ? (
-                                                <>
-                                                    {item?.tokens
-                                                        ?.slice(2)
-                                                        .map((token, index) => (
-                                                            <div
-                                                                className="payout-token-row"
-                                                                key={index}
-                                                            >
-                                                                <div className="highlighted">
-                                                                    {
-                                                                        token?.amount
-                                                                    }{" "}
-                                                                    {
-                                                                        token
-                                                                            ?.details
-                                                                            ?.symbol
-                                                                    }
-                                                                </div>
-                                                                <div>
-                                                                    {token?.usd_amount *
-                                                                        token?.amount}
-                                                                    $
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                            {item?.tokens
+                                                ?.slice(0, 2)
+                                                .map((token, index) => (
                                                     <div
-                                                        onClick={() =>
-                                                            setShowMore(false)
-                                                        }
-                                                        className="show-more-or-less"
+                                                        className="payout-token-row"
+                                                        key={index}
                                                     >
-                                                        Show less
+                                                        <div className="highlighted">
+                                                            {token?.amount}{" "}
+                                                            {
+                                                                token?.details
+                                                                    ?.symbol
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            {token?.usd_amount *
+                                                                token?.amount}
+                                                            $
+                                                        </div>
                                                     </div>
-                                                </>
-                                            ) : (
-                                                <div
-                                                    onClick={() =>
-                                                        setShowMore(true)
-                                                    }
-                                                    className="show-more-or-less"
-                                                >
-                                                    Show More
+                                                ))}
+                                            {item?.tokens?.length > 2 && (
+                                                <div>
+                                                    {showMore ? (
+                                                        <>
+                                                            {item?.tokens
+                                                                ?.slice(2)
+                                                                .map(
+                                                                    (
+                                                                        token,
+                                                                        index
+                                                                    ) => (
+                                                                        <div
+                                                                            className="payout-token-row"
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                        >
+                                                                            <div className="highlighted">
+                                                                                {
+                                                                                    token?.amount
+                                                                                }{" "}
+                                                                                {
+                                                                                    token
+                                                                                        ?.details
+                                                                                        ?.symbol
+                                                                                }
+                                                                            </div>
+                                                                            <div>
+                                                                                {token?.usd_amount *
+                                                                                    token?.amount}
+
+                                                                                $
+                                                                            </div>
+                                                                        </div>
+                                                                    )
+                                                                )}
+                                                            <div
+                                                                onClick={() =>
+                                                                    setShowMore(
+                                                                        false
+                                                                    )
+                                                                }
+                                                                className="show-more-or-less"
+                                                            >
+                                                                Show less
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div
+                                                            onClick={() =>
+                                                                setShowMore(
+                                                                    true
+                                                                )
+                                                            }
+                                                            className="show-more-or-less"
+                                                        >
+                                                            Show More
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                </div>
+                                    </>
+                                ) : (
+                                    <></>
+                                )}
                             </>
-                        ) : (
-                            <></>
                         )}
                     </div>
                 </div>

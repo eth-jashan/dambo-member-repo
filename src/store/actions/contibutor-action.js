@@ -466,12 +466,21 @@ export const contributionBadgeClaim = (
                     )
                 }
 
+                console.log(
+                    "contract voucher info",
+                    proxyContract,
+                    res.data?.data?.signed_voucher,
+                    memberTokenId,
+                    approveIndexes,
+                    hashCallbackFn,
+                    callbackOnSuccess
+                )
+
                 await claimContributionBadge(
                     proxyContract,
                     res.data?.data?.signed_voucher,
                     memberTokenId,
-                    // approveIndexes,
-                    [0, 1],
+                    approveIndexes,
                     hashCallbackFn,
                     callbackOnSuccess
                 )
@@ -552,5 +561,11 @@ export const sendClaimTxHash = (
             console.error("err", err)
             return false
         }
+    }
+}
+
+export const setClaimLoading = (claimLoading) => {
+    return async (dispatch, getState) => {
+        dispatch(contributorAction.setClaimLoading({ claimLoading }))
     }
 }
