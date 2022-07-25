@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react"
+import React, { useState, useEffect } from "react"
 import "./style.scss"
-import { useSelector } from "react-redux"
+import cross from "../../../../assets/Icons/cross_white.svg"
+import { useSelector, useDispatch } from "react-redux"
+import { setContributionDetail } from "../../../../store/actions/contibutor-action"
 import { assets } from "../../../../constant/assets"
 import { Typography } from "antd"
-import ContributionBadgeBg from "../../../../assets/Icons/ContributionBadgeBg.png"
 import waiting_orange from "../../../../assets/Icons/waiting_orange.svg"
 import check_green from "../../../../assets/Icons/check_green.svg"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
@@ -14,21 +15,22 @@ import arrow_up_orange from "../../../../assets/Icons/arrow_up_orange.svg"
 import dayjs from "dayjs"
 import CheckSvg from "../../../../assets/Icons/check.svg"
 
-export default function ContributionContributorSideCard({
-    isMinimum,
-    index,
-    selected,
-}) {
-    const currentDao = useSelector((x) => x.dao.currentDao)
+export default function ContributorBadgeSideCard() {
+    const dispatch = useDispatch()
+    const onContributionCrossPress = () => {
+        dispatch(setContributionDetail(null))
+    }
     const { address } = useAccount()
 
-    const contributorSelectionContribution = useSelector(
-        (x) => x.contributor.contributorSelectionContribution
+    const currentDao = useSelector((x) => x.dao.currentDao)
+
+    const contribution_detail = useSelector(
+        (x) => x.contributor.contribution_detail
     )
     const [showMore, setShowMore] = useState(false)
 
     let totalAmountInUsd = 0
-    contributorSelectionContribution?.tokens.forEach((token) => {
+    contribution_detail?.entity?.tokens.forEach((token) => {
         totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
     })
     const { chain } = useNetwork()
@@ -39,9 +41,9 @@ export default function ContributionContributorSideCard({
     const safeInfo = useSelector((x) => x.dao.safeInfo)
 
     const getPayoutInfo = async () => {
-        if (contributorSelectionContribution?.gnosis_reference_id) {
+        if (contribution_detail?.entity?.gnosis_reference_id) {
             const tx = await serviceClient.getTransaction(
-                contributorSelectionContribution?.gnosis_reference_id
+                contribution_detail?.entity?.gnosis_reference_id
             )
             console.log("service client tx is", tx)
             setSignersInfo({
@@ -55,6 +57,7 @@ export default function ContributionContributorSideCard({
     const toggle = () => {
         setIsToggleOpen((isToggleOpen) => !isToggleOpen)
     }
+
     const currentUser = useSelector((x) => x.dao.username)
     const {
         data: ensName,
@@ -66,67 +69,30 @@ export default function ContributionContributorSideCard({
 
     useEffect(() => {
         getPayoutInfo()
-    }, [contributorSelectionContribution])
-
-    console.log("sadsadx", signersInfo, safeInfo)
+    }, [contribution_detail?.entity])
 
     return (
-        <div className="contributor-contribution-side-card-container">
+        <div className="contributor-badge-side-card-container">
+            <img
+                onClick={() => onContributionCrossPress()}
+                src={cross}
+                alt="cross"
+                className="cross-icon"
+            />
             <div className="contri-title">
                 {
-                    contributorSelectionContribution?.details?.find(
+                    contribution_detail?.entity?.details?.find(
                         (x) => x.fieldName === "Contribution Title"
                     )?.value
                 }
             </div>
-            <div className="contri-badge-wrapper">
-                <div className="contri-badge">
-                    <img
-                        src={ContributionBadgeBg}
-                        alt=""
-                        className="contri-badge-bg"
-                    />
-                    <div className="contri-badge-dao">
-                        <img src={currentDao?.logo_url} alt="" />
-                        {currentDao?.name}
-                    </div>
-                    <div className="contri-badge-contribution-info">
-                        <div className="contri-badge-title">
-                            {
-                                contributorSelectionContribution?.details?.find(
-                                    (x) => x.fieldName === "Contribution Title"
-                                )?.value
-                            }
-                        </div>
-                        <div className="contri-badge-bottom-row">
-                            <div>
-                                Design •{" "}
-                                {
-                                    contributorSelectionContribution?.details?.find(
-                                        (x) =>
-                                            x.fieldName ===
-                                            "Time Spent in Hours"
-                                    )?.value
-                                }
-                                hrs
-                            </div>
-                            <div>22 July' 22</div>
-                        </div>
-                    </div>
-                </div>
-                {contributorSelectionContribution?.feedback && (
-                    <div className="contri-feedback">
-                        {contributorSelectionContribution?.feedback}
-                    </div>
-                )}
-            </div>
-            {contributorSelectionContribution?.tokens?.length && (
+            {contribution_detail?.entity?.tokens?.length && (
                 <div className="contri-payout-info">
                     <div>
                         <span className="highlighted">{totalAmountInUsd}$</span>{" "}
                         Total Payout
                     </div>
-                    {contributorSelectionContribution?.tokens
+                    {contribution_detail?.entity?.tokens
                         ?.slice(0, 2)
                         .map((token, index) => (
                             <div className="token-payout-row" key={index}>
@@ -136,11 +102,11 @@ export default function ContributionContributorSideCard({
                                 <div>{token?.usd_amount * token?.amount}$</div>
                             </div>
                         ))}
-                    {contributorSelectionContribution?.tokens?.length > 2 && (
+                    {contribution_detail?.entity?.tokens?.length > 2 && (
                         <div>
                             {showMore ? (
                                 <>
-                                    {contributorSelectionContribution?.tokens
+                                    {contribution_detail?.entity?.tokens
                                         ?.slice(2)
                                         .map((token, index) => (
                                             <div
@@ -186,13 +152,13 @@ export default function ContributionContributorSideCard({
                 </div>
                 <div className="contri-type">
                     {
-                        contributorSelectionContribution?.details?.find(
+                        contribution_detail?.entity?.details?.find(
                             (x) => x.fieldName === "Contribution Category"
                         )?.value
                     }{" "}
                     •{" "}
                     {
-                        contributorSelectionContribution?.details?.find(
+                        contribution_detail?.entity?.details?.find(
                             (x) => x.fieldName === "Time Spent in Hours"
                         )?.value
                     }
@@ -212,7 +178,7 @@ export default function ContributionContributorSideCard({
                     }}
                 >
                     {
-                        contributorSelectionContribution?.details?.find(
+                        contribution_detail?.entity?.details?.find(
                             (x) => x.fieldName === "Additional Notes"
                         )?.value
                     }
@@ -234,9 +200,9 @@ export default function ContributionContributorSideCard({
                                 <div className="title">
                                     <img src={waiting_orange} alt="" />
                                     {/* Waiting for signing */}
-                                    {!contributorSelectionContribution?.tokens
+                                    {!contribution_detail?.entity?.tokens
                                         ?.length &&
-                                    !contributorSelectionContribution?.voucher_id
+                                    !contribution_detail?.entity?.voucher_id
                                         ? "waiting for approval"
                                         : signersInfo?.confirmations?.length ===
                                           safeInfo?.threshold

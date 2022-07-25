@@ -1316,30 +1316,33 @@ export const updateApprovedBadge = (tokenId, communityId, identifier) => {
 
 export const getAllClaimedBadges = () => {
     return async (dispatch, getState) => {
-        const communityInfo = getState().dao.communityInfo
-        const address = getState().auth.address
-        // const pocpGetter = new PocpGetters(currentNetwork === 4 ? 137 : 137)
-        const pocpGetter = new PocpGetters(
-            currentNetwork?.chainId === 4 ? 80001 : 137
-        )
+        const uuid = getState().dao.currentDao?.uuid
+
+        const jwt = getState().auth.jwt
         try {
-            const claimedTokens = await pocpGetter.getClaimedBadgesOfClaimers(
-                communityInfo[0]?.id?.toString(),
-
-                address
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${"/contrib/badge"}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
             )
-
-            dispatch(
-                daoAction.set_claimed_badges({
-                    claimedTokens: claimedTokens.data.pocpTokens,
-                })
-            )
-        } catch (error) {
-            dispatch(
-                daoAction.set_claimed_badges({
-                    claimedTokens: [],
-                })
-            )
+            console.log("badges are", res.data)
+            if (res.data.success) {
+                dispatch(
+                    daoAction.set_claimed_badges({
+                        claimedTokens: res.data.data.badges,
+                    })
+                )
+                return 1
+            } else {
+                return 0
+            }
+        } catch (err) {
+            return 0
         }
     }
 }

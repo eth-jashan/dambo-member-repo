@@ -9,6 +9,7 @@ import {
     gnosisDetailsofDao,
     setContractAddress,
     set_active_nonce,
+    getAllClaimedBadges,
 } from "../../store/actions/dao-action"
 import {
     getAllMembershipBadgesList,
@@ -274,6 +275,14 @@ export default function Dashboard() {
         }
     }
 
+    const fetchBadges = async () => {
+        if (role !== "ADMIN") {
+            dispatch(setLoadingState(true))
+            await dispatch(getAllClaimedBadges())
+            dispatch(setLoadingState(false))
+        }
+    }
+
     const renderTab = () => (
         <div className={styles.tabContainer}>
             <div className={styles.routeContainer}>
@@ -289,7 +298,10 @@ export default function Dashboard() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "row" }}>
                     <div
-                        onClick={async () => await onRouteChange("payments")}
+                        onClick={async () => {
+                            await onRouteChange("payments")
+                            fetchBadges()
+                        }}
                         style={{ marginLeft: "2rem" }}
                         className={
                             tab === "payments"

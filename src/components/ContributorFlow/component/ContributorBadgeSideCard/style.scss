@@ -1,11 +1,14 @@
-.contributor-contribution-side-card-container {
-    width: 100%;
-    height: 100%;
+.contributor-badge-side-card-container {
+    color: #fff;
     text-align: left;
-    // .cross-icon {
-    //     position: absolute;
-    //     top: ;
-    // }
+    padding: 2rem 1.5rem;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    height: 100%;
+    overflow-y: auto;
+    .cross-icon {
+        cursor: pointer;
+    }
     .contri-title {
         font-family: "TelegrafBolder";
         font-style: normal;
@@ -16,59 +19,7 @@
         width: 12.5rem;
         text-align: start;
         margin-bottom: 1.5rem;
-    }
-    .contri-badge-wrapper {
-        background: #1f1f1f;
-        border-radius: 12px;
-        .contri-badge {
-            position: relative;
-            .contri-badge-bg {
-                width: 100%;
-            }
-            .contri-badge-dao {
-                position: absolute;
-                top: 5%;
-                left: 1.25rem;
-                font-family: "TelegrafBolder";
-                font-weight: 800;
-                line-height: 1.5rem;
-                font-size: 1.25rem;
-                img {
-                    width: 2.25rem;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                }
-            }
-            .contri-badge-contribution-info {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                .contri-badge-title {
-                    font-family: "TelegrafBolder";
-                    font-weight: 800;
-                    font-size: 2.5rem;
-                    line-height: 3.25rem;
-                    padding: 0 1.25rem;
-                }
-                .contri-badge-bottom-row {
-                    display: flex;
-                    justify-content: space-between;
-                    border-top: 1px solid #d9d9d9;
-                    padding: 0.75rem 1.25rem;
-                    font-family: "TelegrafMedium";
-                    font-size: 1rem;
-                    line-height: 1.5rem;
-                }
-            }
-        }
-        .contri-feedback {
-            padding: 1rem;
-            font-family: "TelegrafMedium";
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-align: left;
-        }
+        margin-top: 3rem;
     }
     .contri-payout-info {
         background: #2e3022;
@@ -196,8 +147,11 @@
                 justify-content: space-between;
             }
             .signer-time {
-                color: rgba(255, 255, 255, 0.5);
+                color: rgba(0, 0, 0, 0.5);
             }
         }
     }
+}
+.contributor-badge-side-card-container::-webkit-scrollbar {
+    display: none;
 }
