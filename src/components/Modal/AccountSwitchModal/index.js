@@ -5,30 +5,25 @@ import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
 import { useDispatch, useSelector } from "react-redux"
-import {
-    getAllApprovedBadges,
-    getAllClaimedBadges,
-    getAllUnclaimedBadges,
-    getContributorOverview,
-    getContriRequest,
-    getPayoutRequest,
-    refreshContributionList,
-    set_payout_filter,
-    switchRole,
-    syncTxDataWithGnosis,
-} from "../../../store/actions/dao-action"
+import { switchRole } from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
 import {
     getAllMembershipBadgesForAddress,
     getMembershipVoucher,
 } from "../../../store/actions/membership-action"
-import { getContributionAsContributorApproved } from "../../../store/actions/contibutor-action"
+import {
+    getContributionAsAdmin,
+    getContributionAsContributorApproved,
+} from "../../../store/actions/contibutor-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
     const dispatch = useDispatch()
     const address = useSelector((x) => x.auth.address)
     const contributionFlowAsContributor = async () => {
         await dispatch(getContributionAsContributorApproved())
+    }
+    const contributionFlowAsAdmin = async () => {
+        await dispatch(getContributionAsAdmin())
     }
     const changeRole = async (role) => {
         dispatch(switchRole(role))
@@ -38,9 +33,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
         await dispatch(getAllMembershipBadgesForAddress(address))
 
         if (route === "contributions" && role === "ADMIN") {
-            // await dispatch(getPayoutRequest())
-            // await dispatch(set_payout_filter("PENDING"))
-            // await dispatch(syncTxDataWithGnosis())
+            await contributionFlowAsAdmin()
         } else if (role !== "ADMIN") {
             await dispatch(getMembershipVoucher())
             await contributionFlowAsContributor()

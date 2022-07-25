@@ -365,6 +365,7 @@ export const set_contri_filter = (filter_key, number) => {
     }
 }
 
+// required for gnosis
 export const gnosisDetailsofDao = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
@@ -373,7 +374,10 @@ export const gnosisDetailsofDao = () => {
                 const balance = await serviceClient.getBalances(
                     currentDao?.safe_public_address
                 )
-
+                const safeInfo = await serviceClient.getSafeInfo(
+                    currentDao?.safe_public_address
+                )
+                console.log("safe info...", safeInfo)
                 const tokenType = []
                 balance.forEach((item) => {
                     if (item.tokenAddress === null) {
@@ -393,6 +397,7 @@ export const gnosisDetailsofDao = () => {
                         balance: tokenType,
                     })
                 )
+                dispatch(daoAction.set_safe_info({ details: safeInfo }))
             } catch (error) {
                 dispatch(
                     daoAction.set_gnosis_details({
@@ -591,7 +596,6 @@ export const addActivePaymentBadge = (status) => {
 export const getPayoutRequest = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-
         const safe_address = getState().dao.currentDao?.safe_public_address
         const uuid = getState().dao.currentDao?.uuid
         if (safe_address !== "") {
@@ -605,11 +609,14 @@ export const getPayoutRequest = () => {
                     }
                 )
 
+                console.log("payout request from BE", res.data)
+
                 const pendingTxs = await serviceClient.getPendingTransactions(
                     safe_address
                 )
-
+                console.log("gnosis request from gnosis", pendingTxs)
                 const list_of_tx = []
+
                 if (res.data.success) {
                     // all payout from server
                     dispatch(
@@ -999,7 +1006,7 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
             dao_uuid: uuid,
             nonce,
         }
-
+        console.log("external", isExternal ? data_external : data)
         const res = await apiClient.post(
             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}`,
             isExternal ? data_external : data,
@@ -1447,31 +1454,48 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
     }
 }
 
+// contrib/update
+// uuid,status,tokens,feedback APPROVED
+
 export const approveBadge = (contribution, feedback = false, token = false) => {
     return async (dispatch) => {
-        const updatedContribution = {
-            id: contribution?.id,
-            title: contribution?.title,
-            requested_by: contribution?.requested_by,
-            stream: contribution.stream,
-            time_spent: contribution.time_spent,
-            status: contribution.status,
-            description: contribution.description,
-            feedback: feedback || contribution.feedback,
-            payout_status: contribution.payout_status,
-            tokens: token || contribution.tokens,
-            gnosis_reference_id: contribution.gnosis_reference_id,
-            ipfs_url: contribution.ipfs_url,
-            contribution_badge_id: contribution.contribution_badge_id,
-            badge_status: contribution.badge_status,
-            approved_tx: contribution.approved_tx,
-            approved_tx_status: contribution.approved_tx_status,
-            claimed_tx: contribution.claimed_tx,
-            claimed_tx_status: contribution.claimed_tx_status,
-            mint_badge: contribution.mint_badge,
-        }
+        console.log(
+            "contributions....",
+            JSON.stringify({
+                ...contribution,
+                feedback: feedback || false,
+                tokens: token || false,
+            })
+        )
+        // const updatedContribution = {
+        //     id: contribution?.id,
+        //     title: contribution?.title,
+        //     requested_by: contribution?.requested_by,
+        //     stream: contribution.stream,
+        //     time_spent: contribution.time_spent,
+        //     status: contribution.status,
+        //     description: contribution.description,
+        //     feedback: feedback || contribution.feedback,
+        //     payout_status: contribution.payout_status,
+        //     tokens: token || contribution.tokens,
+        //     gnosis_reference_id: contribution.gnosis_reference_id,
+        //     ipfs_url: contribution.ipfs_url,
+        //     contribution_badge_id: contribution.contribution_badge_id,
+        //     badge_status: contribution.badge_status,
+        //     approved_tx: contribution.approved_tx,
+        //     approved_tx_status: contribution.approved_tx_status,
+        //     claimed_tx: contribution.claimed_tx,
+        //     claimed_tx_status: contribution.claimed_tx_status,
+        //     mint_badge: contribution.mint_badge,
+        // }
         dispatch(
-            daoAction.add_approved_badges({ contribution: updatedContribution })
+            daoAction.add_approved_badges({
+                contribution: {
+                    ...contribution,
+                    feedback: feedback || false,
+                    tokens: token || false,
+                },
+            })
         )
     }
 }

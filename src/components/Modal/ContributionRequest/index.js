@@ -57,21 +57,21 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 schemaTemplate,
                 memberTokenId.data.membershipNFTs[0].tokenID
             )
-            dispatch(
-                raiseContributionRequest(
-                    parseInt(memberTokenId.data.membershipNFTs[0].tokenID),
-                    schemaTemplate
+            try {
+                await dispatch(
+                    raiseContributionRequest(
+                        parseInt(memberTokenId.data.membershipNFTs[0].tokenID),
+                        schemaTemplate
+                    )
                 )
-            )
-            setLoading(false)
+                setLoading(false)
+                setVisibility(false)
+            } catch (error) {
+                console.log("error", error)
+                setLoading(false)
+            }
         }
     }
-
-    const contributionTypeOptions = [
-        { value: "DESIGN", label: "DESIGN" },
-        { value: "CODEBASE", label: "CODEBASE" },
-        { value: "CONTENT", label: "CONTENT" },
-    ]
 
     const handleLinkBlur = () => {
         const urlExpression =
@@ -85,7 +85,6 @@ const ContributionRequestModal = ({ setVisibility }) => {
     }
 
     const onChangeText = (values, index) => {
-        console.log("index", index)
         const newCopy = schemaTemplate.map((item, i) => {
             if (i === index) {
                 return { ...item, value: values }
@@ -94,7 +93,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
             }
         })
         setSchemaTemplate(newCopy)
-        console.log("After", newCopy)
+        console.log("After", values, index, newCopy)
     }
     const onMultiTextChange = (values, index) => {
         console.log("index", values, index)
@@ -126,7 +125,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 <InputNumber
                     key={index}
                     placeholder={placeholder}
-                    onChange={(e) => onChangeText(e.target?.value, index)}
+                    onChange={(e) => onChangeText(e, index)}
                     value={schemaTemplate[index].value}
                     min={0}
                     onFocus={() => setFocusOnTime(true)}

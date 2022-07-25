@@ -12,12 +12,8 @@ import ERC20_ABI from "../../../smartContract/erc20.json"
 import {
     addActivePaymentBadge,
     createPayout,
-    getAllApprovedBadges,
-    getAllClaimedBadges,
-    getAllUnclaimedBadges,
     getNonceForCreation,
     resetApprovedBadges,
-    getCommunityId,
 } from "../../../store/actions/dao-action"
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
@@ -28,10 +24,16 @@ import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
 //     processBadgeApprovalToPocp,
 //     setChainInfoAction,
 // } from "../../../utils/POCPutils"
-import { getIpfsUrl } from "../../../utils/relayFunctions"
+// import { getIpfsUrl } from "../../../utils/relayFunctions"
 import ContributionBadgeItem from "./ContributionBadgeItem"
 import POCPStatusCard from "../../POCPStatusCard"
 import { useNetwork } from "wagmi"
+import {
+    createContributionVoucher,
+    getArrayOfMemberToken,
+    getArrayOfNounce,
+} from "../../../utils/POCPServiceSdk"
+import { updateContributionVoucher } from "../../../store/actions/contibutor-action"
 
 const PaymentCheckoutModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -51,160 +53,138 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
     const [minting, setMinting] = useState(false)
     const [showOkay, setShowOkay] = useState(false)
     const [approvingFailed, setApprovingFailed] = useState(false)
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const jwt = useSelector((x) => x.auth.jwt)
 
-    const setPocpAction = (chainId) => {
-        // setChainInfoAction(chainId)
-    }
-
-    // const changeCheckoutType = (route) => {
-    //     setCheckoutType(route)
-    // }
-
-    // const onApprovalSuccess = async () => {
-    //     // let chainId = getSelectedChainId()
-    //     let chainId = chain?.id
-    //     chainId = ethers.utils.hexValue(chainId.chainId)
-    //     setApproverStatus("switching-back-success")
-    //     // await chainSwitch(chainId)
-    //     setShowOkay(true)
-    //     setMinting(false)
-    //     await dispatch(getAllApprovedBadges())
-    //     await dispatch(getAllUnclaimedBadges())
-    //     await dispatch(getAllClaimedBadges())
-    // }
-
-    // const onErrorCallBack = async () => {
-    //     // let chainId = getSelectedChainId()
-    //     chainId = ethers.utils.hexValue(chainId.chainId)
-    //     setApproverStatus("switching-back-error")
-    //     await chainSwitch(chainId)
-    //     setMinting(false)
-    //     setApprovingFailed(true)
-    // }
-    const communityInfo = useSelector((x) => x.dao.communityInfo)
-    // let communityInfo
-
     const approvePOCPBadgeWithUrl = async () => {
-        const contributionId = []
-        const receiverAddress = []
-        approvedBadges.forEach((item) => {
-            contributionId.push(item?.id)
-            receiverAddress.push(item?.requested_by?.public_address)
-        })
-        setMinting(true)
-        const { cid, url, status } = await getIpfsUrl(
-            jwt,
-            currentDao?.uuid,
-            contributionId
+        const arrayOfToken = await getArrayOfMemberToken(
+            approvedBadges.map((x) => x.contributor.public_address),
+            proxyContract
         )
 
-        if (!status) {
-            const startTime = Date.now()
-            const interval = setInterval(async () => {
-                if (Date.now() - startTime > 10000) {
-                    clearInterval(interval)
-                    setMinting(false)
-                    setLoading(false)
-                    message.error("failed to get ipfs url")
-                }
-                const { cid, url, status } = await getIpfsUrl(
-                    jwt,
-                    currentDao?.uuid,
-                    contributionId
+        const arrayOfNounce = await getArrayOfNounce(
+            arrayOfToken,
+            currentDao?.uuid,
+            jwt
+        )
+        const hashArray = approvedBadges.map((x) => x.metadata_hash)
+
+        try {
+            const signedVoucher = await createContributionVoucher(
+                proxyContract,
+                arrayOfToken,
+                Array(approvedBadges.length).fill(1),
+                hashArray,
+                arrayOfNounce,
+                new Array(approvedBadges.length).fill(0)
+            )
+            console.log(
+                "signed voucher",
+                proxyContract,
+                arrayOfToken,
+                Array(approvedBadges.length).fill(1),
+                hashArray,
+                Array(approvedBadges.length).fill(0)
+            )
+            console.log(approvedBadges.map((x) => x.uuid))
+            await dispatch(
+                updateContributionVoucher(
+                    signedVoucher,
+                    approvedBadges.map((x) => x.uuid)
                 )
-                if (status) {
-                    clearTimeout(interval)
-                    if (cid?.length > 0) {
-                        if (communityInfo?.length === 1 && communityInfo) {
-                            // const provider = new ethers.providers.Web3Provider(
-                            //     window.ethereum
-                            // )
-                            // const { chainId } = await provider.getNetwork()
-                            const chainId = chain?.id
-                            setPocpAction(chainId)
-                            setApproverStatus("switching")
-                            // await processBadgeApprovalToPocp(
-                            //     communityInfo[0]?.id,
-                            //     receiverAddress,
-                            //     cid,
-                            //     url,
-                            //     jwt,
-                            //     onApprovalSuccess,
-                            //     onErrorCallBack,
-                            //     (x) => setApproverStatus(x)
-                            // )
-                        } else {
-                            setApproverStatus("switching-back-error")
-                            // await dispatch(getCommunityId())
-                        }
-                    }
-                }
-            }, 3000)
-        } else {
-            if (cid?.length > 0) {
-                if (communityInfo?.length === 1 && communityInfo) {
-                    // const provider = new ethers.providers.Web3Provider(
-                    //     window.ethereum
-                    // )
-                    // const { chainId } = await provider.getNetwork()
-                    const chainId = chain?.id
-                    setPocpAction(chainId)
-                    setApproverStatus("switching")
-                    // await processBadgeApprovalToPocp(
-                    //     communityInfo[0]?.id,
-                    //     receiverAddress,
-                    //     cid,
-                    //     url,
-                    //     jwt,
-                    //     onApprovalSuccess,
-                    //     onErrorCallBack,
-                    //     (x) => setApproverStatus(x)
-                    // )
-                } else {
-                    setApproverStatus("switching-back-error")
-                    // await dispatch(getCommunityId())
-                }
-            }
+            )
+            console.log("Signed voucher", signedVoucher)
+            onClose()
+        } catch (error) {
+            console.log("error", error)
         }
     }
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
         const transaction_obj = []
+        console.log("approved request", approved_request)
         if (approved_request.length > 0) {
             approved_request.map(async (item) => {
+                console.log("item", item)
                 item?.payout?.map(async (item) => {
+                    console.log(
+                        "item inside payout",
+                        approved_request,
+                        item?.details?.symbol,
+                        item?.details?.symbol === "ETH",
+                        item?.token_type === null ||
+                            !item?.token_type ||
+                            item?.token_type?.token?.symbol === "ETH" ||
+                            item?.details?.symbol === "ETH",
+                        item
+                    )
+                    // }
                     if (
                         item?.token_type === null ||
-                        !item?.token_type ||
-                        item?.token_type?.token?.symbol === "ETH"
+                        // !item?.token_type ||
+                        // item?.token_type?.token?.symbol === "ETH" ||
+                        item?.details?.symbol === "ETH"
                     ) {
                         transaction_obj.push({
-                            to: ethers.utils.getAddress(item?.address),
+                            to: ethers.utils.getAddress(
+                                item?.addr ||
+                                    approved_request.contri_detail.contributor
+                                        .public_address
+                            ),
                             data: "0x",
                             value: ethers.utils
                                 .parseEther(`${item.amount}`)
                                 .toString(),
                             operation: 0,
                         })
-                    } else if (item?.token_type?.token?.symbol !== "ETH") {
+                    } else if (
+                        item?.token_type?.token?.symbol !== "ETH" ||
+                        // item?.details?.symbol !== "ETH" ||
+                        item?.details?.symbol !== "ETH"
+                    ) {
                         const coin = new ethers.Contract(
                             item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address,
+                                item?.token_type?.token?.address ||
+                                item?.details?.address,
                             ERC20_ABI,
                             signer
                         )
-
                         const amount = parseFloat(item?.amount) * 1e18
+                        console.log(
+                            "ERC20 Transaction",
+                            item?.details?.address,
+                            {
+                                to:
+                                    item?.token_type?.tokenAddress ||
+                                    item?.token_type?.token?.address ||
+                                    item?.details?.address,
+                                data: coin.interface.encodeFunctionData(
+                                    "transfer",
+                                    [
+                                        ethers.utils.getAddress(
+                                            item?.addr ||
+                                                approved_request.contri_detail
+                                                    .contributor.public_address
+                                        ),
+                                        amount.toString(),
+                                    ]
+                                ),
+                                value: "0",
+                                operation: 0,
+                            },
+                            coin
+                        )
+
                         transaction_obj.push({
                             to:
                                 item?.token_type?.tokenAddress ||
-                                item?.token_type?.token?.address,
+                                item?.token_type?.token?.address ||
+                                item?.details?.address,
                             data: coin.interface.encodeFunctionData(
                                 "transfer",
                                 [
-                                    ethers.utils.getAddress(item?.address),
+                                    ethers.utils.getAddress(item?.addr),
                                     amount.toString(),
                                 ]
                             ),
@@ -215,6 +195,8 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 })
             })
         }
+
+        console.log("transfer obj", transaction_obj)
 
         if (!safeSdk || !serviceClient) {
             setLoading(false)
@@ -232,6 +214,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 nonce,
             })
         } catch (error) {
+            console.log("error", error)
             message.error("Error on creating Transaction")
             setLoading(false)
             return
@@ -260,13 +243,13 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     value: getTotalAmount(),
                 })
             )
-            // onClose()
             dispatch(addActivePaymentBadge(true))
             setLoading(false)
         } catch (error) {
             setLoading(false)
         }
         setLoading(false)
+        dispatch(resetApprovedBadges())
         onClose()
     }
 

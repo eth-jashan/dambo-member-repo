@@ -261,7 +261,11 @@ const BadgesScreenSearchTab = ({ route }) => {
                             }`}
                         />
                     </div>
-                    {/* <FilterModal isContribution={route==='contributions'} onClose={() => setFilterShow(false)} show={filterShow} /> */}
+                    {/* <FilterModal
+                        isContribution={route === "contributions"}
+                        onClose={() => setFilterShow(false)}
+                        show={filterShow}
+                    /> */}
                 </div>
             </div>
         </div>

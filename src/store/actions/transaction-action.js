@@ -5,6 +5,7 @@ import routes from "../../constant/routes"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
 import { getSafeServiceUrl } from "../../utils/multiGnosisUrl"
+import { contributorAction } from "../reducers/contributor-slice"
 
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
@@ -77,6 +78,13 @@ export const approveContriRequest = (
             )
         } else {
             if (payout.length > 0) {
+                console.log(
+                    JSON.stringify({
+                        contri_detail: currentTransaction,
+                        payout,
+                        feedback,
+                    })
+                )
                 dispatch(
                     tranactionAction.set_approved_request({
                         item: {
@@ -123,10 +131,12 @@ export const approveContriRequest = (
             const data = {
                 status: "APPROVED",
                 tokens: payout.length > 0 ? newPayout : [],
-                id: currentTransaction.id,
+                uuid: currentTransaction.uuid,
                 feedback,
                 mint_badge,
+                metadata_hash: "dshvjdsbvjs",
             }
+            // console.log(data)
 
             try {
                 const res = await apiClient.post(
@@ -140,14 +150,12 @@ export const approveContriRequest = (
                 )
                 if (res.data.success) {
                     const contri_request =
-                        getState().dao.contribution_request.filter(
-                            (x) => x.id !== currentTransaction.id
+                        getState().contributor.contributionForAdmin.filter(
+                            (x) => x.uuid !== currentTransaction.uuid
                         )
                     dispatch(
-                        daoAction.set_contri_list({
-                            list: contri_request,
-                            key: contri_filter,
-                            number: contri_filter_key,
+                        contributorAction.set_admin_contribution({
+                            contribution: contri_request,
                         })
                     )
 

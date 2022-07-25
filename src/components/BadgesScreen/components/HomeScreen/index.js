@@ -39,7 +39,7 @@ export default function HomeScreen({
 
     const displaySchemas = (schema) => {
         const contribFeild = []
-        schema.forEach((x, i) => {
+        schema?.forEach((x, i) => {
             console.log(i)
             if (i < 3) {
                 contribFeild.push(x.fieldName)
@@ -81,9 +81,9 @@ export default function HomeScreen({
                                             </div>
                                         </div>
                                     ))}
-                                {membershipBadges.length > 2 && (
+                                {membershipBadges?.length > 2 && (
                                     <div>
-                                        {membershipBadges.length - 2} more
+                                        {membershipBadges?.length - 2} more
                                     </div>
                                 )}
                                 <div className="membership-badge-buttons">
@@ -127,7 +127,7 @@ export default function HomeScreen({
                             <img src={contributionIconWhite} alt="" />
                             <div className="contribution-title-div">
                                 <span>Contribution Badge </span>
-                                {contributionSchema.length > 0 && (
+                                {contributionSchema?.length > 0 && (
                                     <div className="contribution-badge-stats">
                                         01 Approved | 00 Claimed
                                     </div>
@@ -138,7 +138,7 @@ export default function HomeScreen({
                             {membershipBadges?.length ? (
                                 <button
                                     onClick={() => {
-                                        if (contributionSchema.length === 0) {
+                                        if (contributionSchema?.length === 0) {
                                             dispatch(
                                                 actionOnGenerateSchemaModal(
                                                     true
@@ -154,13 +154,13 @@ export default function HomeScreen({
                                     }}
                                     style={{
                                         background:
-                                            contributionSchema.length > 0 &&
+                                            contributionSchema?.length > 0 &&
                                             "#6852FF",
                                     }}
                                     className="btn-steps"
                                 >
                                     <div>
-                                        {contributionSchema.length > 0
+                                        {contributionSchema?.length > 0
                                             ? "Mint Badges"
                                             : "Enable Badges"}
                                     </div>
@@ -174,14 +174,14 @@ export default function HomeScreen({
                             )}
                         </div>
                     </div>
-                    {contributionSchema.length > 0 && (
+                    {contributionSchema?.length > 0 && (
                         <div className="contribution-bottom-div">
                             <div className="psuedo-space" />
                             <div className="contribution-schema-div">
                                 <div className="schema-title">
                                     {displaySchemas(contributionSchema)}{" "}
-                                    {contributionSchema.length > 3 &&
-                                        `and ${contributionSchema.length - 3}
+                                    {contributionSchema?.length > 3 &&
+                                        `and ${contributionSchema?.length - 3}
                                     more`}
                                 </div>
                                 <div

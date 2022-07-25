@@ -235,7 +235,11 @@ export default function ContributorContributionScreen() {
                 </div>
             ) : (
                 <div
-                    className={contribution.length === 0 && "noMembershipBadge"}
+                    className={
+                        currentDao?.contrib_schema?.schema.length > 0
+                            ? ""
+                            : "noMembershipBadge"
+                    }
                 >
                     {currentDao?.contrib_schema?.schema.length > 0 ? (
                         contribution.length > 0 ? (

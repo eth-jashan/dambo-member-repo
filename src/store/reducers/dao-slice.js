@@ -56,6 +56,7 @@ const daoSlice = createSlice({
         approvedBadges: [],
         pastContributions: [],
         username: "",
+        safeInfo: false,
     },
     reducers: {
         set_chainId(state, action) {
@@ -113,6 +114,9 @@ const daoSlice = createSlice({
         },
         set_gnosis_details(state, action) {
             state.balance = action.payload.balance
+        },
+        set_safe_info(state, action) {
+            state.safeInfo = action.payload.details
         },
         set_contribution_filter(state, action) {
             state.contri_filter_key = action.payload.number

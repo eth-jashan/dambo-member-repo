@@ -1,6 +1,6 @@
 import Pocp, { PocpGetters } from "pocp-service-sdk"
 import { Biconomy } from "@biconomy/mexa"
-// import { ethers } from "ethers"
+import apiClient from "../utils/api_client"
 import { getSelectedChainId } from "./wagmiHelpers"
 import { web3 } from "../constant/web3"
 import Web3 from "web3"
@@ -187,12 +187,56 @@ export const createMembershipVoucher = async (
     }
 }
 
+export const getArrayOfMemberToken = async (
+    arrayOfAddress,
+    contractAddress
+) => {
+    // const tokenId = []
+    const result = Promise.all(
+        arrayOfAddress.map(async (x) => {
+            const memberships = await getAllMembershipBadges(
+                x,
+                contractAddress,
+                false
+            )
+            console.log(
+                "memberships",
+                memberships.data.membershipNFTs[0].tokenID
+            )
+            return parseInt(memberships.data.membershipNFTs[0].tokenID)
+        })
+    )
+    return result
+}
+
+export const getArrayOfNounce = async (arrayOfMemberToken, dao_uuid, jwt) => {
+    const result = Promise.all(
+        arrayOfMemberToken.map(async (x) => {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/membership/get_next_nonce`}?token_id=${x}&dao_uuid=${dao_uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                return res.data.data
+            }
+        })
+    )
+    return result
+}
+
 export const createContributionVoucher = async (
     contractAddress,
     arrayOfMemberTokenId,
     arrayofBadgeType,
     arrayOfTokenUri,
-    arrayOfNounce
+    arrayOfNounce,
+    arrayOfData
 ) => {
     try {
         return await pocpInstance.createBadgeVoucher(
@@ -200,7 +244,8 @@ export const createContributionVoucher = async (
             arrayOfMemberTokenId,
             arrayofBadgeType,
             arrayOfTokenUri,
-            arrayOfNounce
+            arrayOfNounce,
+            arrayOfData
         )
     } catch (error) {
         console.log("error", error)

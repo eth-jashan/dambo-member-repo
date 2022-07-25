@@ -30,13 +30,12 @@ export default function RequestCollapsable({ title, contributions }) {
                     {contributions.map((x, i) => (
                         <ContributionCardV2
                             key={i}
-                            // selected={i !== 0}
                             index={i}
                             isMinimum={i !== 0}
                             item={x}
                         />
                     ))}
-                    {/* <ContributionCardV2 isMinimum={true} /> */}
+                    {/* <ContributionCardV2 selected={true} isMinimum={true} /> */}
                 </div>
             )}
         </div>

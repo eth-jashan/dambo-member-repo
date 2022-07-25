@@ -79,6 +79,54 @@
                 }
             }
         }
+        .contribution-type-input-wrapper {
+            width: 100%;
+            margin-top: 1rem;
+            .select-input {
+                .select__control {
+                    width: 100%;
+                    border-radius: 0.5rem;
+                    padding: 0.5rem;
+                    background-color: transparent;
+                    border: 1px solid #eeeef0;
+                    &.select__control--is-focused,
+                    &.select__control--menu-is-open {
+                        border: 1px solid #6852ff;
+                    }
+                    .select__placeholder {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 16px;
+                        line-height: 24px;
+                        text-align: left;
+                    }
+                    .select__single-value {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 16px;
+                        line-height: 24px;
+                        width: 100%;
+                        color: black;
+                        text-align: left;
+                    }
+                }
+                .select__menu {
+                    width: 100%;
+                    .select__option {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 1rem;
+                        line-height: 1.1rem;
+                        width: 100%;
+                        color: black;
+                        text-align: left;
+                    }
+                }
+            }
+        }
 
         .modal-div {
             position: absolute;

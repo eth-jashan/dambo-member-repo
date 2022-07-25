@@ -27,19 +27,24 @@ const ContributionBadgeItem = ({
             usd_amount.push(item?.usd_amount * parseFloat(item?.amount))
         })
         let amount_total
-        usd_amount.length === 0
+        usd_amount?.length === 0
             ? (amount_total = 0)
             : (amount_total = usd_amount.reduce((a, b) => a + b))
 
         return amount_total.toFixed(2)
     }
-
+    console.log("contributions", checkoutType, payoutDetail, item)
     const contributionInfo = () => (
         <div>
             <div className={`${styles.flexInfo} ${styles.marginTopClock}`}>
                 <img src={assets.icons.clockIcon} />
                 <div className={`${styles.hourTitle} ${textStyles.m_16}`}>
-                    {item?.time_spent} hour
+                    {
+                        item?.details?.find(
+                            (x) => x.fieldName === "Time Spent in Hours"
+                        ).value
+                    }{" "}
+                    hour
                 </div>
             </div>
             <div className={`${styles.flexInfo} ${styles.clockInfoStyles}`}>
@@ -62,7 +67,11 @@ const ContributionBadgeItem = ({
                             ),
                         }}
                     >
-                        {item?.description}
+                        {
+                            item?.details?.find(
+                                (x) => x.fieldName === "Additional Notes"
+                            )?.value
+                        }
                     </Typography.Paragraph>
                 </div>
             </div>
@@ -87,8 +96,8 @@ const ContributionBadgeItem = ({
                     )
                 }
             })
-            if (totalToken.length > 1) {
-                return `${totalToken[0]} & ${totalToken.length - 1} more`
+            if (totalToken?.length > 1) {
+                return `${totalToken[0]} & ${totalToken?.length - 1} more`
             } else {
                 return `${totalToken[0]}`
             }
@@ -108,7 +117,7 @@ const ContributionBadgeItem = ({
                     )
                 }
             })
-            if (totalToken.length > 1) {
+            if (totalToken?.length > 1) {
                 return `${totalToken[0]} and ${totalToken[1]}`
             } else {
                 return `${totalToken[0]}`
@@ -234,30 +243,37 @@ const ContributionBadgeItem = ({
                                         : textStyles.m_16
                                 }`}
                             >
-                                {item?.title}
+                                {/* {item?.title} */}
+                                {
+                                    item?.details?.find(
+                                        (x) =>
+                                            x.fieldName === "Contribution Title"
+                                    )?.value
+                                }
                             </div>
                             <div className={styles.contriRequestInfo}>
                                 <div
                                     style={{ opacity: !openCard ? "0.6" : "1" }}
                                     className={`${textStyles.m_16}`}
                                 >
-                                    {item?.stream?.toLowerCase()}
+                                    design
+                                    {/* {item?.stream?.toLowerCase()} */}
                                 </div>
                                 <div
                                     style={{ opacity: !openCard ? "0.5" : "1" }}
                                     className={`${textStyles.m_16}`}
                                 >
-                                    • {item?.requested_by.metadata.name} •
-                                    {`${item?.requested_by.public_address.slice(
+                                    • {item?.contributor?.name} •
+                                    {`${item?.contributor?.public_address.slice(
                                         0,
                                         5
-                                    )}...${item?.requested_by.public_address.slice(
+                                    )}...${item?.contributor?.public_address.slice(
                                         -3
                                     )}`}
                                 </div>
                             </div>
                         </div>
-                        {item.tokens.length > 0 &&
+                        {item?.tokens?.length > 0 &&
                             checkoutType === "contribution" && (
                                 <div className={styles.cashIconContainer}>
                                     <img
@@ -292,7 +308,7 @@ const ContributionBadgeItem = ({
                     ) : null}
 
                     {checkoutType === "payment" ? getTotalTokenInfo() : null}
-                    {item.tokens.length > 0 &&
+                    {item?.tokens?.length > 0 &&
                         checkoutType === "contribution" &&
                         getPayoutInfo()}
                     {item.feedback &&

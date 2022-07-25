@@ -25,7 +25,7 @@ const TransactionCard = () => {
     )
     const [payToken, setPayToken] = useState(false)
     const [mint, setMint] = useState(false)
-    const address = currentTransaction?.requested_by?.public_address
+    const address = currentTransaction?.contributor?.public_address
     const dispatch = useDispatch()
 
     const [feedBackShow, setFeedBackSow] = useState(false)
@@ -104,9 +104,28 @@ const TransactionCard = () => {
     }
     const onApproveTransaction = async () => {
         if (mint && !payToken) {
-            const res = await uploadApproveMetatoIpfs()
-            if (res.status) {
-                dispatch(approveBadge(currentTransaction, feedback))
+            //
+            // const res = await uploadApproveMetatoIpfs()
+            // if (res.status) {
+            dispatch(approveBadge(currentTransaction, feedback))
+            dispatch(
+                approveContriRequest(
+                    payToken ? payDetail : [],
+                    false,
+                    feedback,
+                    mint ? 1 : 0
+                )
+            )
+            // }
+        } else if (mint && payToken) {
+            if (
+                payDetail[0]?.amount !== 0 &&
+                payDetail[0]?.amount !== "" &&
+                payDetail[0]?.amount !== "0"
+            ) {
+                // const res = await uploadApproveMetatoIpfs()
+                // if (res.status) {
+                dispatch(approveBadge(currentTransaction, feedback, payDetail))
                 dispatch(
                     approveContriRequest(
                         payToken ? payDetail : [],
@@ -115,27 +134,7 @@ const TransactionCard = () => {
                         mint ? 1 : 0
                     )
                 )
-            }
-        } else if (mint && payToken) {
-            if (
-                payDetail[0]?.amount !== 0 &&
-                payDetail[0]?.amount !== "" &&
-                payDetail[0]?.amount !== "0"
-            ) {
-                const res = await uploadApproveMetatoIpfs()
-                if (res.status) {
-                    dispatch(
-                        approveBadge(currentTransaction, feedback, payDetail)
-                    )
-                    dispatch(
-                        approveContriRequest(
-                            payToken ? payDetail : [],
-                            false,
-                            feedback,
-                            mint ? 1 : 0
-                        )
-                    )
-                }
+                // }
             }
         } else if (payToken && !mint) {
             if (
@@ -168,7 +167,7 @@ const TransactionCard = () => {
             return "Approve Badge"
         }
     }
-
+    console.log("cuurent", currentDao)
     return (
         <div className={styles.container}>
             <img
@@ -182,23 +181,38 @@ const TransactionCard = () => {
                 ellipsis={{ rows: 2 }}
                 className={`${textStyle.ub_23} ${styles.title}`}
             >
-                {`${currentTransaction?.title}`}
+                {
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Contribution Title"
+                    )?.value
+                }
+                {/* {`${currentTransaction?.title}`} */}
             </span>
 
             <div className={styles.contributorContainer}>
                 <img className={styles.faceIcon} src={assets.icons.faceIcon} />
-                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>{`${
-                    currentTransaction?.requested_by?.metadata?.name
-                } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}</div>
+                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
+                    {/* aviral • aviralsb.eth */}
+                    {`${
+                        currentTransaction?.contributor?.name
+                    } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}
+                </div>
             </div>
 
             <div className={styles.timelineContainer}>
                 <img className={styles.faceIcon} src={assets.icons.feedIcon} />
-                <div
-                    className={`${textStyle.m_16} ${styles.ownerInfo}`}
-                >{`${currentTransaction?.stream?.toLowerCase()} ${
+                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
+                    {/* {`${currentTransaction?.stream?.toLowerCase()} ${
                     currentTransaction?.time_spent
-                } hrs`}</div>
+                } hrs`} */}
+                    design •{" "}
+                    {
+                        currentTransaction?.details.find(
+                            (x) => x.fieldName === "Time Spent in Hours"
+                        )?.value
+                    }{" "}
+                    hrs
+                </div>
             </div>
 
             <Typography.Paragraph
@@ -229,22 +243,26 @@ const TransactionCard = () => {
                 setActive={() => setMint(!mint)}
             />
 
-            <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
-                <ApprovalSelectionToggle
-                    toggleTitle="Pay in tokens"
-                    type="token"
-                    feedbackShow={feedBackShow}
-                    setFeedBackSow={(x) => setFeedBackSow(x)}
-                    payDetail={payDetail}
-                    addToken={() => addToken()}
-                    updatedPayDetail={(e, index) => updatedPayDetail(e, index)}
-                    updateTokenType={(value, index) =>
-                        updateTokenType(value, index)
-                    }
-                    active={payToken}
-                    setActive={() => setPayToken(!payToken)}
-                />
-            </div>
+            {currentDao && (
+                <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
+                    <ApprovalSelectionToggle
+                        toggleTitle="Pay in tokens"
+                        type="token"
+                        feedbackShow={feedBackShow}
+                        setFeedBackSow={(x) => setFeedBackSow(x)}
+                        payDetail={payDetail}
+                        addToken={() => addToken()}
+                        updatedPayDetail={(e, index) =>
+                            updatedPayDetail(e, index)
+                        }
+                        updateTokenType={(value, index) =>
+                            updateTokenType(value, index)
+                        }
+                        active={payToken}
+                        setActive={() => setPayToken(!payToken)}
+                    />
+                </div>
+            )}
             <div className={styles.buttonContainer}>
                 <div
                     onClick={async () => {

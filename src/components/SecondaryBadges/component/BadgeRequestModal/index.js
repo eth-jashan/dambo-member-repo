@@ -1,5 +1,6 @@
 import React, { useState } from "react"
-import { Input, Select } from "antd"
+import { Input } from "antd"
+import Select from "react-select"
 import "./style.scss"
 import { assets } from "../../../../constant/assets"
 import plus_black from "../../../../assets/Icons/plus_black.svg"
@@ -18,7 +19,6 @@ import {
 import Lottie from "react-lottie"
 import white_loader from "../../../../assets/lottie/Loader_White_lottie.json"
 const { TextArea } = Input
-const { Option } = Select
 
 export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const [address, setAddress] = useState([""])
@@ -125,26 +125,48 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         { value: "CODEBASE", label: "CODEBASE" },
         { value: "CONTENT", label: "CONTENT" },
     ]
-    const multiSelect = () => (
+    const onMultiTextChange = (values, index) => {
+        console.log("index", values, index)
+        const newCopy = schemaTemplate.map((item, i) => {
+            if (i === index) {
+                return { ...item, value: values }
+            } else {
+                return item
+            }
+        })
+        setSchemaTemplate(newCopy)
+        console.log("After", newCopy)
+    }
+    const [focusOnSelect, setFocusOnSelect] = useState(false)
+    const buildMultiOptions = (options) => {
+        const newOptions = []
+        options.forEach((x) => {
+            newOptions.push({ value: x, label: x })
+        })
+        return newOptions
+    }
+    const [contributionType, setContributionType] = useState("")
+
+    const selectInput = (placeholder, index) => (
         <div className="contribution-type-input-wrapper">
-            {/* <div>
+            <div>
                 <Select
                     classNamePrefix="select"
                     closeMenuOnSelect
-                    //onChange={setContributionType}
+                    onChange={(x) => onMultiTextChange(x.value, index)}
                     isSearchable={false}
                     name="color"
-                    options={contributionTypeOptions}
-                    placeholder="Contribution Type"
-                    //onFocus={() => setFocusOnSelect(true)}
-                    //onBlur={() => setFocusOnSelect(false)}
-                    // className={`select-input ${
-                    //     !focusOnSelect && contributionType?.value
-                    //         ? "selectDark"
-                    //         : ""
-                    // }`}
+                    options={buildMultiOptions(schemaTemplate[index].options)}
+                    placeholder={placeholder}
+                    onFocus={() => setFocusOnSelect(true)}
+                    onBlur={() => setFocusOnSelect(false)}
+                    className={`select-input ${
+                        !focusOnSelect && contributionType?.value
+                            ? "selectDark"
+                            : ""
+                    }`}
                 />
-            </div> */}
+            </div>
         </div>
     )
 
@@ -156,6 +178,8 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 return textFieldInput(type, placeholder, index)
             case "Long text":
                 return multiTextInput(placeholder, index)
+            case "Multiselect":
+                return selectInput(placeholder, index)
         }
     }
 
@@ -188,7 +212,6 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                     {badgeSchema.map((badge, index) =>
                         getInputField(badge.fieldType, badge.fieldName, index)
                     )}
-                    {multiSelect()}
                     <div className="btn-wrapper-submit">
                         <button
                             onClick={async () => {

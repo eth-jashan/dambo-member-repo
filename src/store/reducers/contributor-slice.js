@@ -16,6 +16,7 @@ const contributorSlice = createSlice({
         unclaimed: [],
         claimed: [],
         contributionForContributorApproved: [],
+        contributionForAdmin: [],
         contributionForContributorPending: [],
         claim_loading: {
             status: false,
@@ -59,7 +60,9 @@ const contributorSlice = createSlice({
         },
         set_contributor_contribution_approved(state, action) {
             state.contributionForContributorApproved = action.payload.approved
-            //state.contributionForContributorPending = action.payload.pending
+        },
+        set_admin_contribution(state, action) {
+            state.contributionForAdmin = action.payload.contribution
         },
         set_contribution_selection(state, action) {
             state.contributorSelectionContribution = action.payload.contribution
