@@ -39,7 +39,7 @@ const transactionSlice = createSlice({
         },
         set_reject_request(state, action) {
             const newRequestList = state.approvedContriRequest.filter(
-                (x) => x.contri_detail?.id !== action.payload.id
+                (x) => x.contri_detail?.uuid !== action.payload.uuid
             )
             state.approvedContriRequest = newRequestList
         },

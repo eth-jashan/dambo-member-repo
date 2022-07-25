@@ -42,7 +42,8 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 chainId === 4 ||
                 chainId === 1 ||
                 chainId === 5 ||
-                chainId === 10
+                chainId === 10 ||
+                chainId === 137
             ) {
                 try {
                     const res = await dispatch(
@@ -125,6 +126,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 (chainId === 4 ||
                     chainId === 1 ||
                     chainId === 5 ||
+                    chainId === 137 ||
                     chainId === 10)
             ) {
                 // has token and chain is selected for rinkeby
@@ -177,6 +179,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 (chainId === 4 ||
                     chainId === 1 ||
                     chainId === 5 ||
+                    chainId === 137 ||
                     chainId === 10)
             ) {
                 // if (!isAdmin) {

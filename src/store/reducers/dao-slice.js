@@ -175,9 +175,14 @@ const daoSlice = createSlice({
             state.all_unclaimed_badges = action.payload.unclaimedToken
         },
         add_approved_badges(state, action) {
-            state.approvedBadges = state.approvedBadges.concat([
-                action.payload.contribution,
-            ])
+            const approve_list = state.approvedBadges
+            const copyCheck = approve_list.filter(
+                (x) => x.id === action.payload.contribution?.id
+            )
+            if (copyCheck.length === 0) {
+                approve_list.push(action.payload.contribution)
+                state.approvedBadges = approve_list
+            }
         },
         reset_approved_badges(state) {
             state.approvedBadges = []

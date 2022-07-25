@@ -57,6 +57,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
     const jwt = useSelector((x) => x.auth.jwt)
 
     const approvePOCPBadgeWithUrl = async () => {
+        setMinting(true)
         const arrayOfToken = await getArrayOfMemberToken(
             approvedBadges.map((x) => x.contributor.public_address),
             proxyContract
@@ -94,8 +95,10 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 )
             )
             console.log("Signed voucher", signedVoucher)
+            setMinting(false)
             onClose()
         } catch (error) {
+            setMinting(false)
             console.log("error", error)
         }
     }
@@ -195,8 +198,6 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 })
             })
         }
-
-        console.log("transfer obj", transaction_obj)
 
         if (!safeSdk || !serviceClient) {
             setLoading(false)
@@ -323,7 +324,9 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                         style={{ opacity: approverStatus && "0.5" }}
                         className={`${textStyles.ub_16}`}
                     >
-                        {approverStatus || minting ? "Minting" : "Mint badges"}
+                        {approverStatus || minting
+                            ? "Signing..."
+                            : "Sign badges"}
                     </div>
                 </div>
             )}

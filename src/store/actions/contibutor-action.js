@@ -81,7 +81,6 @@ export const getContributionAsAdmin = () => {
                         pendingContribution.push(x)
                     } else if (x.status === "APPROVED") {
                         if (!x.voucher_id && x?.mint_badge) {
-                            console.log("x", x)
                             dispatch(
                                 daoAction.add_approved_badges({
                                     contribution: x,
@@ -100,42 +99,6 @@ export const getContributionAsAdmin = () => {
                             )
                         }
                     }
-                    // if (!x.voucher_id) {
-                    //     // voucher not created
-                    //     if (x?.metadata_hash && x?.mint_badge) {
-                    //         console.log("Approved Request", x.tokens.length)
-                    // dispatch(
-                    //     daoAction.add_approved_badges({
-                    //         contribution: x,
-                    //     })
-                    // )
-                    //         if (x.tokens.length > 0) {
-                    // dispatch(
-                    //     tranactionAction.set_approved_request({
-                    //         item: {
-                    //             contri_detail: x,
-                    //             payout: x.tokens,
-                    //             feedback: x.feedback,
-                    //         },
-                    //     })
-                    // )
-                    //         }
-                    //     } else if (x?.metadata_hash && !x?.mint_badge) {
-                    //         if (x.tokens.length > 0) {
-                    //             dispatch(
-                    //                 tranactionAction.set_approved_request({
-                    //                     item: {
-                    //                         contri_detail: x,
-                    //                         payout: x.tokens,
-                    //                         feedback: x.feedback,
-                    //                     },
-                    //                 })
-                    //             )
-                    //         }
-                    //     } else {
-                    //         pendingContribution.push(x)
-                    //     }
-                    // }
                 })
                 dispatch(
                     contributorAction.set_admin_contribution({
@@ -411,7 +374,7 @@ export const createContributionVouchers = (
         const address = getState().auth.address
         const uuid = getState().dao.currentDao?.uuid
         const contrib_schema_id = getState().contributor.contributorSchemaId
-        console.log("contributor", contrib_schema_id, details)
+        console.log("contributor", contrib_schema_id, signed_voucher)
         const data = {
             created_for: address,
             request: false,
@@ -421,7 +384,6 @@ export const createContributionVouchers = (
             signed_voucher,
             details,
         }
-        console.log("data", data)
         try {
             const res = await apiClient.post(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,

@@ -412,7 +412,6 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                 // `http://localhost:3000/arweave_server/membership`,
                 formData
             )
-            console.log("response is ", response.data)
             if (response?.data?.success) {
                 const arweaveHashArray = response.data?.data
                 let arweaveArrayIndex = 0

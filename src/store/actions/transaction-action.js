@@ -61,7 +61,8 @@ export const approveContriRequest = (
     payout,
     isExternal = false,
     feedback,
-    mint_badge
+    mint_badge,
+    metadata_hash
 ) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
@@ -134,7 +135,7 @@ export const approveContriRequest = (
                 uuid: currentTransaction.uuid,
                 feedback,
                 mint_badge,
-                metadata_hash: "dshvjdsbvjs",
+                metadata_hash,
             }
             // console.log(data)
 
@@ -207,14 +208,14 @@ export const rejectContriRequest = (id) => {
     }
 }
 
-export const rejectApproval = (id) => {
+export const rejectApproval = (uuid) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
 
         const data = {
             status: "REQUESTED",
             tokens: [],
-            id,
+            uuid,
         }
 
         try {
@@ -229,7 +230,7 @@ export const rejectApproval = (id) => {
             )
 
             if (res.data.success) {
-                dispatch(tranactionAction.set_reject_request({ id }))
+                dispatch(tranactionAction.set_reject_request({ uuid }))
                 return 1
             } else {
                 return 0

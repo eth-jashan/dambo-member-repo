@@ -24,9 +24,9 @@ export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     pocpInstance = new Pocp(
         signer,
         provider,
-        // selectedProvider,
+
         signer.provider.provider,
-        // temp.givenProvider,
+
         chainId === 4 ? 80001 : 137,
         chainId === 4
             ? web3.rep3Mumbai
@@ -272,21 +272,33 @@ export const claimContributionBadge = async (
     } catch (error) {}
 }
 
-export const createContributionMetadataUri = async () => {
+export const createContributionMetadataUri = async (
+    title,
+    daoName,
+    approveDate,
+    logoUrl
+) => {
     try {
-        const res = await axios.post(
-            `http://localhost:3001/arweave_server/contribution-badge`,
+        console.log(
             JSON.stringify({
-                title: "FE Revamp",
-                daoName: "Rep3 Club",
-                approveDate: "25 Apr 2021",
-                logoUrl:
-                    "https://framerusercontent.com/images/bz0ApDhqh4t9MhFLWXXx8MWCctw.png",
+                title,
+                daoName,
+                approveDate,
+                logoUrl,
+            })
+        )
+        const res = await axios.post(
+            `http://localhost:3002/arweave_server/contribution-badge`,
+            JSON.stringify({
+                title,
+                daoName,
+                approveDate,
+                logoUrl,
             })
         )
         if (res.data.success) {
-            console.log(res.data)
-            return [res.data.data.metaData]
+            // console.log("Res data", res.data.data)
+            return res.data.data
         }
     } catch (error) {
         console.log("error ", error)

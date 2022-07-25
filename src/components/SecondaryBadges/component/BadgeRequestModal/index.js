@@ -9,6 +9,7 @@ import {
     createContributionMetadataUri,
     createContributionVoucher,
     getAllMembershipBadges,
+    getArrayOfNounce,
     getMembershipBadgeFromClaimer,
 } from "../../../../utils/POCPServiceSdk"
 import { useDispatch, useSelector } from "react-redux"
@@ -34,7 +35,9 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const addAddress = () => {
         setAddress((value) => [...value, ""])
     }
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
+    const jwt = useSelector((x) => x.auth.jwt)
     const [loading, setLoading] = useState(false)
 
     const defaultOptions = {
@@ -232,37 +235,67 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                 try {
                                     setLoading(true)
                                     console.log(address, proxyContract)
-                                    // const metadata =
-                                    //     await createContributionMetadataUri()
-                                    const memberTokenId =
-                                        await getAllMembershipBadges(
-                                            address[0],
-                                            proxyContract,
-                                            [1]
+                                    const res =
+                                        await createContributionMetadataUri(
+                                            schemaTemplate.find(
+                                                (x) =>
+                                                    x.fieldName ===
+                                                    "Contribution Title"
+                                            )?.value,
+                                            currentDao?.name,
+                                            `22 July' 22`,
+                                            currentDao?.logo_url
                                         )
-                                    const msg = await createContributionVoucher(
-                                        "0xB20F972552633A1E8e9562Ce5Ad5Ec415D47909d",
-                                        [0],
-                                        [1],
-                                        ["metadatasds;D;"],
-                                        [1]
-                                    )
-                                    await dispatch(
-                                        createContributionVouchers(
-                                            1,
-                                            msg,
-                                            uploadMetadata
-                                        )
-                                    )
-                                    console.log(
-                                        "signed message",
-                                        proxyContract,
-                                        [1]
-                                    )
-                                    setLoading(false)
-                                    dispatch(
-                                        actionOnContributionRequestModal(false)
-                                    )
+
+                                    if (res.metadata) {
+                                        const memberTokenId =
+                                            await getAllMembershipBadges(
+                                                address[0],
+                                                proxyContract,
+                                                false
+                                            )
+                                        const arrayOfNounce =
+                                            await getArrayOfNounce(
+                                                [
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                ],
+                                                currentDao?.uuid,
+                                                jwt
+                                            )
+                                        const msg =
+                                            await createContributionVoucher(
+                                                proxyContract,
+                                                [
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                ],
+                                                [1],
+                                                [res.metadata],
+                                                arrayOfNounce,
+                                                [0]
+                                            )
+                                        if (msg) {
+                                            await dispatch(
+                                                createContributionVouchers(
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                    msg,
+                                                    uploadMetadata
+                                                )
+                                            )
+
+                                            setLoading(false)
+                                            dispatch(
+                                                actionOnContributionRequestModal(
+                                                    false
+                                                )
+                                            )
+                                        }
+                                    }
                                 } catch (error) {
                                     console.log("error", error.toString())
                                     setLoading(false)

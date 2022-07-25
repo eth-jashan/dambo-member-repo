@@ -15,9 +15,10 @@ import {
 import ApprovalSelectionToggle from "../../ApprovalSelectionToggle"
 import { convertTokentoUsd } from "../../../utils/conversion"
 import { assets } from "../../../constant/assets"
-import { approveBadge } from "../../../store/actions/dao-action"
+import { approveBadge, setLoading } from "../../../store/actions/dao-action"
 import dayjs from "dayjs"
 import { uploadApproveMetaDataUpload } from "../../../utils/relayFunctions"
+import { createContributionMetadataUri } from "../../../utils/POCPServiceSdk"
 
 const TransactionCard = () => {
     const currentTransaction = useSelector(
@@ -30,6 +31,7 @@ const TransactionCard = () => {
 
     const [feedBackShow, setFeedBackSow] = useState(false)
     const [feedback, setFeedback] = useState("")
+    const [loading, setLoading] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const jwt = useSelector((x) => x.auth.jwt)
 
@@ -75,66 +77,64 @@ const TransactionCard = () => {
         dispatch(setTransaction(null))
     }
 
-    const uploadApproveMetatoIpfs = async () => {
-        const metaInfo = []
-        const cid = []
-        const to = []
-
-        metaInfo.push({
-            dao_name: currentDao?.name,
-            contri_title: currentTransaction?.title,
-            signer: address,
-            claimer: currentTransaction?.requested_by?.public_address,
-            date_of_approve: dayjs().format("D MMM YYYY"),
-            id: currentTransaction?.id,
-            dao_logo_url:
-                currentDao?.logo_url ||
-                "https://idreamleaguesoccerkits.com/wp-content/uploads/2017/12/barcelona-logo-300x300.png",
-            work_type: currentTransaction?.stream.toString(),
-        })
-        cid.push(currentTransaction?.id)
-        to.push(currentTransaction?.requested_by?.public_address)
-
-        const response = await uploadApproveMetaDataUpload(metaInfo, jwt)
-        if (response) {
-            return { status: true, cid, to }
-        } else {
-            return { status: false, cid: [], to: [] }
-        }
-    }
     const onApproveTransaction = async () => {
+        setLoading(true)
         if (mint && !payToken) {
             //
-            // const res = await uploadApproveMetatoIpfs()
-            // if (res.status) {
-            dispatch(approveBadge(currentTransaction, feedback))
-            dispatch(
-                approveContriRequest(
-                    payToken ? payDetail : [],
-                    false,
-                    feedback,
-                    mint ? 1 : 0
-                )
+            const res = await createContributionMetadataUri(
+                currentTransaction?.details.find(
+                    (x) => x.fieldName === "Contribution Title"
+                )?.value,
+                currentDao?.name,
+                `25 July'22`,
+                currentDao?.logo_url
             )
-            // }
+            if (res) {
+                dispatch(
+                    approveBadge(
+                        { ...currentTransaction, metadata_hash: res.metadata },
+                        feedback
+                    )
+                )
+                await dispatch(
+                    approveContriRequest(
+                        payToken ? payDetail : [],
+                        false,
+                        feedback,
+                        mint ? 1 : 0,
+                        res.metadata
+                    )
+                )
+            }
         } else if (mint && payToken) {
             if (
                 payDetail[0]?.amount !== 0 &&
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
-                // const res = await uploadApproveMetatoIpfs()
-                // if (res.status) {
-                dispatch(approveBadge(currentTransaction, feedback, payDetail))
-                dispatch(
-                    approveContriRequest(
-                        payToken ? payDetail : [],
-                        false,
-                        feedback,
-                        mint ? 1 : 0
-                    )
+                const res = await createContributionMetadataUri(
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Contribution Title"
+                    )?.value,
+                    currentDao?.name,
+                    `25 July'22`,
+                    currentDao?.logo_url
                 )
-                // }
+                if (res) {
+                    console.log(res.metadata)
+                    dispatch(
+                        approveBadge(currentTransaction, feedback, payDetail)
+                    )
+                    await dispatch(
+                        approveContriRequest(
+                            payToken ? payDetail : [],
+                            false,
+                            feedback,
+                            mint ? 1 : 0,
+                            res.metadata
+                        )
+                    )
+                }
             }
         } else if (payToken && !mint) {
             if (
@@ -142,17 +142,18 @@ const TransactionCard = () => {
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
-                dispatch(
+                await dispatch(
                     approveContriRequest(
                         payToken ? payDetail : [],
                         false,
                         feedback,
-                        mint ? 1 : 0
+                        mint ? 1 : 0,
+                        false
                     )
                 )
             }
         }
-
+        setLoading(false)
         dispatch(setTransaction(null))
     }
 
@@ -281,11 +282,13 @@ const TransactionCard = () => {
                 </div>
 
                 <div
-                    onClick={() => onApproveTransaction()}
+                    onClick={async () =>
+                        loading && (await onApproveTransaction())
+                    }
                     className={styles.payNow}
                 >
                     <div className={`${textStyle.ub_16}`}>
-                        {getButtonTitle()}
+                        {loading ? "Approving...." : getButtonTitle()}
                     </div>
                 </div>
             </div>

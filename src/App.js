@@ -43,22 +43,22 @@ function App() {
     const { data: signer } = useSigner()
     const listenersSet = useRef(null)
 
-    if (signer?.provider?.provider && !listenersSet.current) {
-        console.log("setting listeners")
-        signer.provider?.provider?.on("accountsChanged", () => {
-            dispatch(signout())
-            window.location.replace(window.location.origin)
-        })
-        signer.provider?.provider?.on("chainChanged", () => {
-            dispatch(signout())
-            window.location.replace(window.location.origin)
-        })
-        signer.provider?.provider?.on("disconnect", () => {
-            dispatch(signout())
-            window.location.replace(window.location.origin)
-        })
-        listenersSet.current = true
-    }
+    // if (signer?.provider?.provider && !listenersSet.current) {
+    //     console.log("setting listeners")
+    //     signer.provider?.provider?.on("accountsChanged", () => {
+    //         dispatch(signout())
+    //         window.location.replace(window.location.origin)
+    //     })
+    //     signer.provider?.provider?.on("chainChanged", () => {
+    //         dispatch(signout())
+    //         window.location.replace(window.location.origin)
+    //     })
+    //     signer.provider?.provider?.on("disconnect", () => {
+    //         dispatch(signout())
+    //         window.location.replace(window.location.origin)
+    //     })
+    //     listenersSet.current = true
+    // }
 
     // console.log("wallet provider is", walletProvider)
     // const selectedProvider = walletProvider.providerMap

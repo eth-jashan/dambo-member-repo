@@ -6,6 +6,7 @@ import textStyles from "../../../commonStyles/textType/styles.module.css"
 import { Typography } from "antd"
 import { getContriRequest } from "../../../store/actions/dao-action"
 import { assets } from "../../../constant/assets"
+import { getContributionAsAdmin } from "../../../store/actions/contibutor-action"
 
 const ContributionBadgeItem = ({
     item,
@@ -202,12 +203,12 @@ const ContributionBadgeItem = ({
 
     const cancelContribution = async () => {
         if (checkoutType === "contribution") {
-            await dispatch(rejectApproval(item?.id))
-            // await dispatch(getContriRequest())
+            await dispatch(rejectApproval(item?.uuid))
+            await dispatch(getContributionAsAdmin())
             onClose()
         } else if (checkoutType === "payment") {
-            await dispatch(rejectApproval(item?.id))
-            // await dispatch(getContriRequest())
+            await dispatch(rejectApproval(item?.uuid))
+            await dispatch(getContributionAsAdmin())
             onClose()
         }
     }
