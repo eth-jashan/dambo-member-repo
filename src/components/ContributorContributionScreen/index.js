@@ -17,6 +17,13 @@ import cross from "../../assets/Icons/cross.svg"
 import { useNetwork } from "wagmi"
 import ContributionRequestModal from "../Modal/ContributionRequest"
 import RequestCollapsable from "../ContributorFlow/component/RequestCollapsable"
+import ContributionCardV2 from "../ContributorFlow/component/ContributionCard"
+import {
+    getPendingContributions,
+    getPastContributions,
+    getContributionAsContributorApproved,
+} from "../../store/actions/contibutor-action"
+import ApprovedVoucherClub from "../ContributorFlow/component/ApprovedVoucherClub"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -55,6 +62,39 @@ export default function ContributorContributionScreen() {
     const txHashFetched = useSelector((x) => x.membership.txHashFetched)
 
     const dispatch = useDispatch()
+
+    const contributionCounts = useSelector(
+        (x) => x.contributor.contribution_counts
+    )
+    const contributionForContributorPending = useSelector(
+        (x) => x.contributor.contributionForContributorPending
+    )
+
+    const contributionForContributorPast = useSelector(
+        (x) => x.contributor.contributionForContributorPast
+    )
+
+    const fetchPendingContributions = () => {
+        dispatch(getPendingContributions())
+    }
+
+    const fetchPastContributions = () => {
+        dispatch(getPastContributions())
+    }
+
+    const fetchApprovedContributions = () => {
+        dispatch(getContributionAsContributorApproved())
+    }
+
+    let totalApprovedRequests = 0
+    contributionForContributorApproved.forEach((voucher) => {
+        for (const key in voucher) {
+            if (voucher?.[key]?.contributions?.length) {
+                totalApprovedRequests =
+                    totalApprovedRequests + voucher[key]?.contributions?.length
+            }
+        }
+    })
 
     const claimBadge = async (membershipVoucherInfo) => {
         if (!disableClaimBtn) {
@@ -155,10 +195,76 @@ export default function ContributorContributionScreen() {
 
     const renderNonEmptyScreen = () => (
         <div className="non-empty-contrib-screen">
-            <RequestCollapsable
-                contributions={contributionForContributorApproved}
-                title={`Approved Requests  •  ${contributionForContributorApproved.length}`}
-            />
+            <div className="approved-contributions">
+                <RequestCollapsable
+                    contributions={contributionForContributorApproved}
+                    title={`Approved Requests  •  ${totalApprovedRequests}`}
+                    onOpenCallback={fetchApprovedContributions}
+                >
+                    <ApprovedVoucherClub
+                        voucher={contributionForContributorApproved[0]}
+                        isFirst={true}
+                    />
+
+                    {contributionForContributorApproved?.length > 1 && (
+                        <div className="approve-request-more-text">
+                            Claim or reject above requests before to claim the
+                            following
+                        </div>
+                    )}
+
+                    {contributionForContributorApproved.slice(1).map((x, i) => (
+                        <div key={i} className="approve-voucher-wrapper">
+                            <ApprovedVoucherClub voucher={x} isFirst={false} />
+                        </div>
+                    ))}
+                </RequestCollapsable>
+            </div>
+            <div className="pending-contributions">
+                <RequestCollapsable
+                    contributions={contributionForContributorPending}
+                    title={`Pending Requests  •  ${
+                        contributionCounts?.pending_vouchers || 0
+                    }`}
+                    onOpenCallback={fetchPendingContributions}
+                >
+                    {contributionForContributorPending.map((x, i) => (
+                        <ContributionCardV2
+                            key={i}
+                            index={i}
+                            isMinimum={true}
+                            item={x}
+                            isLast={
+                                i ===
+                                contributionForContributorPending?.length - 1
+                            }
+                            contributionType="pending"
+                        />
+                    ))}
+                </RequestCollapsable>
+            </div>
+            <div className="past-contributions">
+                <RequestCollapsable
+                    contributions={contributionForContributorPast}
+                    title={`Past Requests  •  ${
+                        contributionForContributorPast?.length || 0
+                    }`}
+                    onOpenCallback={fetchPastContributions}
+                >
+                    {contributionForContributorPast.map((x, i) => (
+                        <ContributionCardV2
+                            key={i}
+                            index={i}
+                            isMinimum={true}
+                            item={x}
+                            isLast={
+                                i === contributionForContributorPast?.length - 1
+                            }
+                            contributionType="past"
+                        />
+                    ))}
+                </RequestCollapsable>
+            </div>
         </div>
     )
 
@@ -235,7 +341,11 @@ export default function ContributorContributionScreen() {
                 </div>
             ) : (
                 <div
-                    className={contribution.length === 0 && "noMembershipBadge"}
+                    className={
+                        currentDao?.contrib_schema?.schema.length
+                            ? "contribution-screen-wrapper"
+                            : "noMembershipBadge"
+                    }
                 >
                     {currentDao?.contrib_schema?.schema.length > 0 ? (
                         contribution.length > 0 ? (

@@ -22,13 +22,17 @@ import {
     getAllMembershipBadgesForAddress,
     getMembershipVoucher,
 } from "../../../store/actions/membership-action"
-import { getContributionAsContributorApproved } from "../../../store/actions/contibutor-action"
+import {
+    getContributionAsContributorApproved,
+    getPastContributions,
+} from "../../../store/actions/contibutor-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
     const dispatch = useDispatch()
     const address = useSelector((x) => x.auth.address)
     const contributionFlowAsContributor = async () => {
         await dispatch(getContributionAsContributorApproved())
+        dispatch(getPastContributions())
     }
     const changeRole = async (role) => {
         dispatch(switchRole(role))

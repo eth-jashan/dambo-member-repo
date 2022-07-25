@@ -2,20 +2,26 @@ import React, { useState } from "react"
 import "./style.scss"
 import { useSelector } from "react-redux"
 // import axios from "axios"
-import { useNetwork } from "wagmi"
 import { assets } from "../../../../constant/assets"
-import ContributionCardV2 from "../ContributionCard"
 
-export default function RequestCollapsable({ title, contributions }) {
+export default function RequestCollapsable({
+    title,
+    children,
+    onOpenCallback = () => {},
+}) {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const [collapsable, setCollapsable] = useState(false)
-    console.log("item", contributions)
+    // console.log("item", contributions)
+
+    const toggleCollapse = () => {
+        if (!collapsable) {
+            onOpenCallback()
+        }
+        setCollapsable(!collapsable)
+    }
     return (
         <div className="contributor-request-collapsable-container">
-            <div
-                onClick={() => setCollapsable(!collapsable)}
-                className="collapsable-div"
-            >
+            <div onClick={toggleCollapse} className="collapsable-div">
                 <img
                     src={
                         collapsable
@@ -25,20 +31,7 @@ export default function RequestCollapsable({ title, contributions }) {
                 />
                 <div className="approver-title">{title}</div>
             </div>
-            {collapsable && (
-                <div className="open-collapsable">
-                    {contributions.map((x, i) => (
-                        <ContributionCardV2
-                            key={i}
-                            // selected={i !== 0}
-                            index={i}
-                            isMinimum={i !== 0}
-                            item={x}
-                        />
-                    ))}
-                    {/* <ContributionCardV2 isMinimum={true} /> */}
-                </div>
-            )}
+            {collapsable && <div className="open-collapsable">{children}</div>}
         </div>
     )
 }

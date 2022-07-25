@@ -5,7 +5,7 @@ import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 
 import apiClient from "../../utils/api_client"
-
+import { claimContributionBadge } from "../../utils/POCPServiceSdk"
 export const set_invite_id = (id) => {
     return (dispatch) => {
         dispatch(contributorAction.set_invite_code({ id }))
@@ -29,16 +29,14 @@ export const getContributionAsContributorApproved = () => {
                 }
             )
             if (res.data.success) {
-                const approvedContribution = []
-                res.data.data.contributions.forEach((x) => {
-                    if (x.voucher_id) {
-                        approvedContribution.push(x)
-                    }
-                })
                 dispatch(
                     contributorAction.set_contributor_contribution_approved({
-                        approved: approvedContribution,
-                        // pending: pendingContribution,
+                        approved: res.data.data.contributions,
+                    })
+                )
+                dispatch(
+                    contributorAction.set_contribution_counts({
+                        contribution_counts: res.data.data.counts,
                     })
                 )
             } else {
@@ -343,5 +341,171 @@ export const getContributionSchema = () => {
 export const setContributionSelection = (contribution) => {
     return (dispatch) => {
         dispatch(contributorAction.set_contribution_selection({ contribution }))
+    }
+}
+
+export const getPendingContributions = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib`}?dao_uuid=${uuid}&contributor=1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                dispatch(
+                    contributorAction.set_contributor_contribution_pending({
+                        pending: res.data.data.contributions,
+                    })
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            dispatch(
+                contributorAction.set_contributor_schema({
+                    schema: [],
+                    id: 0,
+                })
+            )
+        }
+    }
+}
+
+export const getPastContributions = () => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/past_contribs`}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                dispatch(
+                    contributorAction.set_contributor_contribution_past({
+                        past: res.data.data.contributions,
+                    })
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            dispatch(
+                contributorAction.set_contributor_schema({
+                    schema: [],
+                    id: 0,
+                })
+            )
+        }
+    }
+}
+
+export const contributionBadgeClaim = (
+    contributionUuid,
+    memberTokenId,
+    approveIndex,
+    hashCallbackFn,
+    callbackOnSuccess,
+    contributions
+) => {
+    return async (dispatch, getState) => {
+        console.log("in contributionBadgeClaim")
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        const proxyContract = getState().dao.daoProxyAddress
+        // /contrib/voucher
+        try {
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/voucher`}?contribution_uuid=${contributionUuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                // return res.data
+                console.log(
+                    "Voucher",
+                    res.data.data,
+                    memberTokenId,
+                    approveIndex
+                )
+                const tokens =
+                    res.data?.data?.signed_voucher?.tokenUri?.split(",")
+                console.log("tokens are", tokens)
+                const approveIndexes = []
+                contributions.forEach((contribution) => {
+                    if (contribution.isChecked) {
+                        approveIndexes.push(
+                            tokens.indexOf(contribution?.metadata_hash)
+                        )
+                    }
+                })
+                console.log("approve Indexes", approveIndexes)
+                await claimContributionBadge(
+                    proxyContract,
+                    res.data?.data?.signed_voucher,
+                    memberTokenId,
+                    // approveIndexes,
+                    [0, 1],
+                    hashCallbackFn,
+                    callbackOnSuccess
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            return false
+        }
+    }
+}
+
+export const rejectContributionVoucher = (token_id) => {
+    return async (dispatch, getState) => {
+        console.log("in contributionBadgeClaim")
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+        try {
+            const res = await apiClient.post(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/reject_voucher`}`,
+                {
+                    dao_uuid: uuid,
+                    token_id,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                console.log("res", res.data)
+                dispatch(getContributionAsContributorApproved())
+            }
+        } catch (err) {
+            console.error("err", err)
+            return false
+        }
     }
 }
