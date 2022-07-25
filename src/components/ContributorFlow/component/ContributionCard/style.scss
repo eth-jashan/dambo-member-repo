@@ -212,7 +212,12 @@
                     }
                 }
                 &.past {
-                    opacity: 1;
+                    div {
+                        opacity: 1;
+                    }
+                    .rejected {
+                        color: #ff6666;
+                    }
                 }
             }
             .contri-feedback {

@@ -169,13 +169,34 @@
                     opacity: 1;
                 }
             }
-            &.pending {
+            &.orange-color {
                 img {
                     opacity: 1;
                 }
                 .title {
                     color: #ffc664;
                 }
+            }
+        }
+        .signers-info {
+            max-height: 0;
+            transition: all 0.2s ease-in-out;
+        }
+        .signers-info-shown {
+            max-height: 10rem;
+            color: #fff;
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            padding-top: 0.5rem;
+            .signer-row {
+                display: flex;
+                justify-content: space-between;
+            }
+            .signer-time {
+                color: rgba(0, 0, 0, 0.5);
             }
         }
     }

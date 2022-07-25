@@ -1,12 +1,18 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./style.scss"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { assets } from "../../../../constant/assets"
-import { setContributionSelection } from "../../../../store/actions/contibutor-action"
 import { Typography } from "antd"
 import ContributionBadgeBg from "../../../../assets/Icons/ContributionBadgeBg.png"
 import waiting_orange from "../../../../assets/Icons/waiting_orange.svg"
 import check_green from "../../../../assets/Icons/check_green.svg"
+import SafeServiceClient from "@gnosis.pm/safe-service-client"
+import { getSafeServiceUrl } from "../../../../utils/multiGnosisUrl"
+import { useNetwork } from "wagmi"
+import arrow_drop_down_orange from "../../../../assets/Icons/arrow_drop_down_orange.svg"
+import arrow_up_orange from "../../../../assets/Icons/arrow_up_orange.svg"
+import dayjs from "dayjs"
+import CheckSvg from "../../../../assets/Icons/check.svg"
 
 export default function ContributionContributorSideCard({
     isMinimum,
@@ -14,9 +20,6 @@ export default function ContributionContributorSideCard({
     selected,
 }) {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const dispatch = useDispatch()
-
-    console.log("current dao is", currentDao)
 
     const contributorSelectionContribution = useSelector(
         (x) => x.contributor.contributorSelectionContribution
@@ -27,6 +30,34 @@ export default function ContributionContributorSideCard({
     contributorSelectionContribution?.tokens.forEach((token) => {
         totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
     })
+    const { chain } = useNetwork()
+
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
+
+    const [signersInfo, setSignersInfo] = useState(null)
+    const safeInfo = useSelector((x) => x.dao.safeInfo)
+
+    const getPayoutInfo = async () => {
+        if (contributorSelectionContribution?.gnosis_reference_id) {
+            const tx = await serviceClient.getTransaction(
+                contributorSelectionContribution?.gnosis_reference_id
+            )
+            console.log("service client tx is", tx)
+            setSignersInfo({
+                ...tx,
+            })
+        }
+    }
+
+    const [isToggleOpen, setIsToggleOpen] = useState(false)
+
+    const toggle = () => {
+        setIsToggleOpen((isToggleOpen) => !isToggleOpen)
+    }
+
+    useEffect(() => {
+        getPayoutInfo()
+    }, [contributorSelectionContribution])
 
     return (
         <div className="contributor-contribution-side-card-container">
@@ -173,12 +204,17 @@ export default function ContributionContributorSideCard({
                 </Typography.Paragraph>
             </div>
             <div className="badge-sign-collapsable">
-                <div
-                    className={`closed-div ${contributorSelectionContribution?.contributionType}`}
-                >
-                    {contributorSelectionContribution?.contributionType ===
-                    "pending" ? (
-                        <>
+                {signersInfo && signersInfo?.isExecuted ? (
+                    <div className={`closed-div green-color`}>
+                        <div className="title">
+                            <img src={check_green} alt="" />
+                            Signed
+                        </div>
+                        <img src={assets.icons.downWhite} />
+                    </div>
+                ) : (
+                    <>
+                        <div className={`closed-div orange-color`}>
                             <div className="title">
                                 <img src={waiting_orange} alt="" />
                                 {/* Waiting for signing */}
@@ -186,38 +222,59 @@ export default function ContributionContributorSideCard({
                                     ?.length &&
                                 !contributorSelectionContribution?.voucher_id
                                     ? "waiting for approval"
-                                    : "waiting for signing"}
+                                    : signersInfo?.confirmations?.length ===
+                                      signersInfo?.confirmationsRequired
+                                    ? "waiting for execution"
+                                    : `waiting for signing • ${signersInfo?.confirmations?.length}/${safeInfo?.threshold}`}
                             </div>
-                            <img src={assets.icons.downWhite} />
-                        </>
-                    ) : (
-                        <>
-                            <div className="title">
-                                <img src={check_green} alt="" />
-                                Signed
-                            </div>
-                            <img src={assets.icons.downWhite} />
-                        </>
-                    )}
-                </div>
-            </div>
-            {contributorSelectionContribution?.contributionType ===
-            "approved" ? (
-                contributorSelectionContribution?.isFirst ? (
-                    <div className="claim-bottom-btn">
-                        <div className="claim-btn">
-                            <div className="btn-title">Claim badge</div>
+                            <img
+                                src={
+                                    isToggleOpen
+                                        ? arrow_up_orange
+                                        : arrow_drop_down_orange
+                                }
+                                onClick={toggle}
+                            />
                         </div>
-                        <div className="reject-btn">Reject</div>
-                    </div>
-                ) : (
-                    <div className="claim-bottom-btn">
-                        Please sign previous transaction to sign this one
-                    </div>
-                )
-            ) : (
-                <></>
-            )}
+                        <div
+                            className={
+                                isToggleOpen
+                                    ? "signers-info-shown"
+                                    : "signers-info"
+                            }
+                        >
+                            {signersInfo?.confirmations?.length ===
+                            signersInfo?.confirmationsRequired ? (
+                                <>
+                                    <div>Signing Done</div>
+                                    <div className="signer-time">
+                                        {dayjs(signersInfo?.modified).fromNow()}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {signersInfo?.confirmations?.map(
+                                        (signer, index) => (
+                                            <div
+                                                className="signer-row"
+                                                key={index}
+                                            >
+                                                <div>somesh • somcha.eth</div>
+                                                <img src={CheckSvg} alt="" />
+                                            </div>
+                                        )
+                                    )}
+                                </>
+                            )}
+                            <div>|</div>
+                            <div>Request Approved</div>
+                            <div className="signer-time">
+                                {dayjs(signersInfo?.submissionDate).fromNow()}
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     )
 }

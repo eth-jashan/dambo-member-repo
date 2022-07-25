@@ -5,6 +5,7 @@ import {
     contributionBadgeClaim,
     getContributionAsContributorApproved,
     rejectContributionVoucher,
+    setClaimLoading,
 } from "../../../../store/actions/contibutor-action"
 import { getAllMembershipBadges } from "../../../../utils/POCPServiceSdk"
 import { useAccount } from "wagmi"
@@ -26,8 +27,8 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
     )
     const { address } = useAccount()
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
+    const claimLoading = useSelector((x) => x.contributor.claimLoading)
     const dispatch = useDispatch()
-    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         let contributions = []
@@ -69,7 +70,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
 
     const claimBadge = async () => {
         console.log("claim badge")
-        setIsLoading(true)
+        dispatch(setClaimLoading(true))
         try {
             const memberTokenId = await getAllMembershipBadges(
                 address,
@@ -89,14 +90,15 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                     (x) => {
                         console.log("success callback", x)
                         dispatch(getContributionAsContributorApproved())
-                        setIsLoading(false)
+                        dispatch(setClaimLoading(false))
+
                         message.success("Claimed Badge Successfully")
                     },
                     contributionsWithCheckbox
                 )
             )
         } catch (err) {
-            setIsLoading(false)
+            dispatch(setClaimLoading(false))
         }
     }
 
@@ -133,7 +135,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                         </button>
                         <button onClick={claimBadge}>
                             Claim Badge • {totalSelected}
-                            {isLoading && <Spin indicator={antIcon} />}
+                            {claimLoading && <Spin indicator={antIcon} />}
                         </button>
                     </div>
                 </div>
