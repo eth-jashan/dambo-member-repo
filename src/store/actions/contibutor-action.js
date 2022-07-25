@@ -194,7 +194,7 @@ export const raiseContributionRequest = (membership_id, details) => {
             request: 1,
             dao_uuid: uuid,
             membership_id,
-            contrib_schema_id: 2,
+            contrib_schema_id: 1,
             details,
         }
         console.log("data", data)

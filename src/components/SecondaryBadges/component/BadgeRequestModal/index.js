@@ -94,7 +94,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 placeholder="Enter Address"
                 onChange={(e) => updateAddress(e.target.value, index)}
             />
-            <div className="cross-div"></div>
+            {/* <div className="cross-div"></div> */}
         </div>
     )
 
