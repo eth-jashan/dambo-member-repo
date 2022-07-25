@@ -95,6 +95,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 )
             )
             console.log("Signed voucher", signedVoucher)
+            dispatch(resetApprovedBadges())
             setMinting(false)
             onClose()
         } catch (error) {
@@ -248,7 +249,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
             setLoading(false)
         }
         setLoading(false)
-        dispatch(resetApprovedBadges())
+        // dispatch(resetApprovedBadges())
         onClose()
     }
 

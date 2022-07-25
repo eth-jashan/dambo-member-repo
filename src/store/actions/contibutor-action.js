@@ -399,7 +399,6 @@ export const createContributionVouchers = (
             created_for: address,
             request: false,
             dao_uuid: uuid,
-            // membership_id,
             contrib_schema_id,
             signed_voucher,
             details,

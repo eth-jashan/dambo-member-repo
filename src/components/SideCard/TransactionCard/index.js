@@ -119,7 +119,8 @@ const TransactionCard = () => {
                         newPayout.push({
                             amount: item.amount,
                             usd_amount: item?.usd_amount,
-                            address: item?.address,
+                            address:
+                                currentTransaction?.contributor?.public_address,
                             details: {
                                 name: "Ethereum",
                                 symbol: "ETH",
@@ -133,7 +134,8 @@ const TransactionCard = () => {
                         newPayout.push({
                             amount: item.amount,
                             usd_amount: item?.usd_amount,
-                            address: item?.address,
+                            address:
+                                currentTransaction?.contributor?.public_address,
                             details: {
                                 name: item?.token_type?.token?.name,
                                 symbol: item?.token_type?.token?.symbol,
@@ -145,28 +147,28 @@ const TransactionCard = () => {
                     }
                 })
                 console.log("neww payout", newPayout)
-                // const res = await createContributionMetadataUri(
-                //     currentTransaction?.details.find(
-                //         (x) => x.fieldName === "Contribution Title"
-                //     )?.value,
-                //     currentDao?.name,
-                //     `25 July'22`,
-                //     currentDao?.logo_url
-                // )
-                // if (res) {
-                //     dispatch(
-                //         approveBadge(currentTransaction, feedback, newPayout)
-                //     )
-                //     await dispatch(
-                //         approveContriRequest(
-                //             payToken ? newPayout : [],
-                //             false,
-                //             feedback,
-                //             mint ? 1 : 0,
-                //             res.metadata
-                //         )
-                //     )
-                // }
+                const res = await createContributionMetadataUri(
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Contribution Title"
+                    )?.value,
+                    currentDao?.name,
+                    `25 July'22`,
+                    currentDao?.logo_url
+                )
+                if (res) {
+                    dispatch(
+                        approveBadge(currentTransaction, feedback, newPayout)
+                    )
+                    await dispatch(
+                        approveContriRequest(
+                            payToken ? newPayout : [],
+                            false,
+                            feedback,
+                            mint ? 1 : 0,
+                            false
+                        )
+                    )
+                }
             }
         } else if (payToken && !mint) {
             if (
