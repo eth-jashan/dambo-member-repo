@@ -53,7 +53,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const onEdit = () => {}
 
     const updateAddress = async (x, i) => {
-        await getClaimedMembershipNft()
+        // await getClaimedMembershipNft()
         const copyOfAddresses = [...address]
         copyOfAddresses[i] = x
         setAddress(copyOfAddresses)
@@ -235,93 +235,90 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                     )}
                     <div className="btn-wrapper-submit">
                         <button
-                            onClick={
-                                addressStatus &&
-                                (async () => {
-                                    const uploadMetadata = []
-                                    schemaTemplate.forEach((x) => {
-                                        if (x.value) {
-                                            uploadMetadata.push({
-                                                ...x,
-                                            })
-                                        }
-                                    })
-                                    console.log(
-                                        "approved addresses for badges",
-                                        schemaTemplate,
-                                        uploadMetadata
-                                    )
-
-                                    try {
-                                        setLoading(true)
-                                        console.log(address, proxyContract)
-                                        const res =
-                                            await createContributionMetadataUri(
-                                                schemaTemplate.find(
-                                                    (x) =>
-                                                        x.fieldName ===
-                                                        "Contribution Title"
-                                                )?.value,
-                                                currentDao?.name,
-                                                `22 July' 22`,
-                                                currentDao?.logo_url
-                                            )
-
-                                        if (res.metadata) {
-                                            const memberTokenId =
-                                                await getAllMembershipBadges(
-                                                    address[0],
-                                                    proxyContract,
-                                                    false
-                                                )
-                                            const arrayOfNounce =
-                                                await getArrayOfNounce(
-                                                    [
-                                                        memberTokenId.data
-                                                            .membershipNFTs[0]
-                                                            .tokenID,
-                                                    ],
-                                                    currentDao?.uuid,
-                                                    jwt
-                                                )
-                                            const msg =
-                                                await createContributionVoucher(
-                                                    proxyContract,
-                                                    [
-                                                        memberTokenId.data
-                                                            .membershipNFTs[0]
-                                                            .tokenID,
-                                                    ],
-                                                    [1],
-                                                    [res.metadata],
-                                                    arrayOfNounce,
-                                                    [0]
-                                                )
-                                            if (msg) {
-                                                await dispatch(
-                                                    createContributionVouchers(
-                                                        memberTokenId.data
-                                                            .membershipNFTs[0]
-                                                            .tokenID,
-                                                        msg,
-                                                        uploadMetadata
-                                                    )
-                                                )
-
-                                                setLoading(false)
-                                                dispatch(
-                                                    actionOnContributionRequestModal(
-                                                        false
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    } catch (error) {
-                                        console.log("error", error.toString())
-                                        setLoading(false)
+                            onClick={async () => {
+                                const uploadMetadata = []
+                                schemaTemplate.forEach((x) => {
+                                    if (x.value) {
+                                        uploadMetadata.push({
+                                            ...x,
+                                        })
                                     }
                                 })
-                            }
+                                console.log(
+                                    "approved addresses for badges",
+                                    schemaTemplate,
+                                    uploadMetadata
+                                )
+
+                                try {
+                                    setLoading(true)
+                                    console.log(address, proxyContract)
+                                    const res =
+                                        await createContributionMetadataUri(
+                                            schemaTemplate.find(
+                                                (x) =>
+                                                    x.fieldName ===
+                                                    "Contribution Title"
+                                            )?.value,
+                                            currentDao?.name,
+                                            `22 July' 22`,
+                                            currentDao?.logo_url
+                                        )
+
+                                    if (res.metadata) {
+                                        const memberTokenId =
+                                            await getAllMembershipBadges(
+                                                address[0],
+                                                proxyContract,
+                                                false
+                                            )
+                                        const arrayOfNounce =
+                                            await getArrayOfNounce(
+                                                [
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                ],
+                                                currentDao?.uuid,
+                                                jwt
+                                            )
+                                        const msg =
+                                            await createContributionVoucher(
+                                                proxyContract,
+                                                [
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                ],
+                                                [1],
+                                                [res.metadata],
+                                                arrayOfNounce,
+                                                [0]
+                                            )
+                                        if (msg) {
+                                            await dispatch(
+                                                createContributionVouchers(
+                                                    memberTokenId.data
+                                                        .membershipNFTs[0]
+                                                        .tokenID,
+                                                    msg,
+                                                    uploadMetadata
+                                                )
+                                            )
+
+                                            setLoading(false)
+                                            dispatch(
+                                                actionOnContributionRequestModal(
+                                                    false
+                                                )
+                                            )
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.log("error", error.toString())
+                                    setLoading(false)
+                                }
+                            }}
                             className="badge-request-btn"
                         >
                             <div>Approve Badges • {address.length}</div>

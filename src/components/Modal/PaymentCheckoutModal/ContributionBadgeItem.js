@@ -104,18 +104,8 @@ const ContributionBadgeItem = ({
             }
         } else if (checkoutType === "payment") {
             payoutDetail.forEach((x) => {
-                if (
-                    !totalToken.includes(
-                        x?.token_type?.token
-                            ? x?.token_type?.token?.symbol
-                            : "ETH"
-                    )
-                ) {
-                    totalToken.push(
-                        x?.token_type?.token
-                            ? x?.token_type?.token?.symbol
-                            : "ETH"
-                    )
+                if (!totalToken.includes(x?.details?.symbol || "ETH")) {
+                    totalToken.push(x?.details?.symbol || "ETH")
                 }
             })
             if (totalToken?.length > 1) {
@@ -168,7 +158,7 @@ const ContributionBadgeItem = ({
                         <div key={i} className={styles.tokenItem}>
                             <div className={`${textStyles.m_16}`}>{`${
                                 x.amount
-                            } ${x?.token_type?.token?.symbol || "ETH"}`}</div>
+                            } ${x?.details?.symbol || "ETH"}`}</div>
                             <div className={`${textStyles.m_16}`}>
                                 {getPayoutTotal(payoutDetail)}0$
                             </div>
