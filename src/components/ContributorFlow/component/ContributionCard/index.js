@@ -41,8 +41,6 @@ export default function ContributionCardV2({
         totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
     })
 
-    console.log("item is", item)
-
     return (
         <div
             className={`contributor-contribution-card-container ${
@@ -151,7 +149,7 @@ export default function ContributionCardV2({
                                                     {item?.is_badge ? (
                                                         item?.badge_status ===
                                                         "CLAIMED" ? (
-                                                            "Claimer"
+                                                            "Claimed"
                                                         ) : (
                                                             <div className="rejected">
                                                                 Rejected
@@ -160,7 +158,9 @@ export default function ContributionCardV2({
                                                     ) : (
                                                         ""
                                                     )}
-                                                    {item?.tokens?.length ? (
+                                                    {item?.tokens?.length &&
+                                                    item?.badge_status !==
+                                                        "REJECTED" ? (
                                                         <img
                                                             src={payments_green}
                                                             alt=""

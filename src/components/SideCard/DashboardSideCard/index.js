@@ -12,6 +12,7 @@ import { FaDiscord } from "react-icons/fa"
 import { links } from "../../../constant/links"
 import "./style.scss"
 import BadgesSideCard from "../BadgesSideCard"
+import ContributorBadgeSideCard from "../../ContributorFlow/component/ContributorBadgeSideCard"
 
 export default function DashboardSideCard({
     onRouteChange,
@@ -105,11 +106,12 @@ export default function DashboardSideCard({
     } else {
         if (contribution_detail) {
             return (
-                <ContributionSideCard
-                    route={route}
-                    isAdmin={false}
-                    signer={signer}
-                />
+                // <ContributionSideCard
+                //     route={route}
+                //     isAdmin={false}
+                //     signer={signer}
+                // />
+                <ContributorBadgeSideCard />
             )
         } else {
             return <ContributionOverview />

@@ -1,41 +1,39 @@
 import React, { useCallback, useEffect, useState } from "react"
-import styles from "./style.module.css"
 import pocp_bg from "../../assets/POCP_background.svg"
-import { getMetaInfo } from "../../utils/relayFunctions"
+// import { getMetaInfo } from "../../utils/relayFunctions"
 import { useDispatch, useSelector } from "react-redux"
 import { setContributionDetail } from "../../store/actions/contibutor-action"
+import "./style.scss"
+import ContributionBadgeBg from "../../assets/Icons/ContributionBadgeBg.png"
+import dayjs from "dayjs"
 
 const BadgeItem = ({ item }) => {
-    const [meta, setMeta] = useState()
+    // const [meta, setMeta] = useState()
     const allContribution = useSelector((x) => x.dao.contribution_id)
     const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const role = useSelector((x) => x.dao.role)
-    const currentTransaction = useSelector(
-        role === "ADMIN"
-            ? (x) => x.transaction.currentTransaction
-            : (x) => x.contributor.contribution_detail
-    )
-    const fetchMetaFromIpfs = useCallback(async () => {
-        const res = await getMetaInfo(item?.ipfsMetaUri)
-        setMeta(res)
-    }, [item?.ipfsMetaUri])
-    const activeSelection =
-        `https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}` ===
-        item?.ipfsMetaUri
+    // const role = useSelector((x) => x.dao.role)
+    // const currentTransaction = useSelector(
+    //     role === "ADMIN"
+    //         ? (x) => x.transaction.currentTransaction
+    //         : (x) => x.contributor.contribution_detail
+    // )
+    // const fetchMetaFromIpfs = useCallback(async () => {
+    //     const res = await getMetaInfo(item?.ipfsMetaUri)
+    //     setMeta(res)
+    // }, [item?.ipfsMetaUri])
+    // const activeSelection =
+    //     `https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}` ===
+    //     item?.ipfsMetaUri
 
-    useEffect(() => {
-        fetchMetaFromIpfs()
-    }, [fetchMetaFromIpfs])
+    // useEffect(() => {
+    //     fetchMetaFromIpfs()
+    // }, [fetchMetaFromIpfs])
 
     const [onHover, setHover] = useState(false)
     const dispatch = useDispatch()
     const onBadgeClick = () => {
-        const identifier = all_approved_badge.filter((x) => x.id === item?.id)
-        const contribution = allContribution.filter(
-            (x) => x.id.toString() === identifier[0]?.identifier
-        )
-        dispatch(setContributionDetail({ ...contribution[0], isClaimed: true }))
+        dispatch(setContributionDetail({ ...item }))
     }
 
     return (
@@ -50,214 +48,43 @@ const BadgeItem = ({ item }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 borderTop: 0,
-                background: (onHover || activeSelection) && "#292929",
+                background: onHover && "#292929",
             }}
+            className="badge-item-container"
         >
-            <div
-                style={{
-                    background:
-                        onHover || activeSelection ? "#292929" : "black",
-                }}
-                className={styles.container}
-            >
-                <div
-                    style={{
-                        width: "3.75rem",
-                        height: "3.8rem",
-                        position: "absolute",
-                        right: "0.4rem",
-                        top: "1.05rem",
-                        background: "black",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                        backgroundSize: "cover",
-                        backgroundImage: `url(${
-                            currentDao?.logo_url
-                                ? currentDao?.logo_url
-                                : "https://s3uploader-s3uploadbucket-q66lac569ais.s3.amazonaws.com/1694805252.jpg"
-                        })`,
-                    }}
-                >
-                    <div
-                        style={{
-                            height: 0,
-                            width: 0,
-                            borderBottom:
-                                onHover || activeSelection
-                                    ? "16px solid #292929"
-                                    : "16px solid black",
-                            borderRight: "16px solid transparent",
-                            bottom: 0,
-                            position: "absolute",
-                        }}
-                    />
-                    <div
-                        style={{
-                            height: 0,
-                            width: 0,
-                            borderBottom: "20px solid transparent",
-                            borderRight:
-                                onHover || activeSelection
-                                    ? "20px solid #292929"
-                                    : "20px solid black",
-                            top: 0,
-                            position: "absolute",
-                            right: 0,
-                        }}
-                    />
-                </div>
+            <div className="contri-badge">
                 <img
-                    alt="pocp_bg"
-                    src={pocp_bg}
-                    style={{
-                        position: "absolute",
-                        width: "100%",
-                        height: "17.5rem",
-                        top: 0,
-                        right: 0,
-                    }}
+                    src={ContributionBadgeBg}
+                    alt=""
+                    className="contri-badge-bg"
                 />
-                <div
-                    style={{
-                        fontSize: "0.625rem",
-                        color: "white",
-                        fontFamily: "SFMono",
-                        left: 0,
-                        position: "absolute",
-                        top: "1rem",
-                    }}
-                >
-                    {meta?.attributes[0]?.value}
+                <div className="contri-badge-dao">
+                    <img src={currentDao?.logo_url} alt="" />
+                    {currentDao?.name}
                 </div>
-
-                <div
-                    style={{
-                        width: "70%",
-                        position: "absolute",
-                        background: "red",
-                    }}
-                >
-                    <div
-                        style={{
-                            fontSize: "1.513rem",
-                            fontFamily: "TelegrafMedium",
-                            left: 18,
-                            position: "absolute",
-                            top: "2.5rem",
-                            fontWeight: "400",
-                            lineHeight: "1.688rem",
-                            color: "#F5A60B",
-                            textAlign: "start",
-                        }}
-                    >
-                        {meta?.name}
+                <div className="contri-badge-contribution-info">
+                    <div className="contri-badge-title">
+                        {
+                            item?.entity?.details?.find(
+                                (x) => x.fieldName === "Contribution Title"
+                            )?.value
+                        }
                     </div>
-                    <div
-                        style={{
-                            fontSize: "1.513rem",
-                            fontFamily: "TelegrafMedium",
-                            left: 18,
-                            position: "absolute",
-                            top: "4.125rem",
-                            fontWeight: "400",
-                            lineHeight: "1.688rem",
-                            color: "black",
-                            textAlign: "start",
-                        }}
-                    >
-                        {meta?.description}
-                    </div>
-                </div>
-
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        position: "absolute",
-                        top: "8.125rem",
-                        left: 18,
-                    }}
-                >
-                    <div>
-                        <div
-                            style={{
-                                fontWeight: "500",
-                                fontSize: "0.75rem",
-                                color: "black",
-                                fontFamily: "SFMono",
-                                textAlign: "start",
-                            }}
-                        >
-                            To
+                    <div className="contri-badge-bottom-row">
+                        <div>
+                            Design •{" "}
+                            {
+                                item?.entity?.details?.find(
+                                    (x) => x.fieldName === "Time Spent in Hours"
+                                )?.value
+                            }
+                            hrs
                         </div>
-                        <div
-                            style={{
-                                fontWeight: "500",
-                                fontSize: "0.75rem",
-                                color: "black",
-                                fontFamily: "SFMono",
-                            }}
-                        >
-                            From
+                        <div>
+                            {dayjs(item?.entity?.created_at).format(
+                                "DD MMM' YY"
+                            )}
                         </div>
-                    </div>
-
-                    <div style={{ marginLeft: "0.5rem" }}>
-                        <div
-                            style={{
-                                fontWeight: "500",
-                                fontSize: "0.75rem",
-                                color: "black",
-                                fontFamily: "SFMono",
-                            }}
-                        >{`${item?.claimer?.slice(
-                            0,
-                            5
-                        )}...${item?.claimer?.slice(-3)}`}</div>
-                        <div
-                            style={{
-                                fontWeight: "500",
-                                fontSize: "0.75rem",
-                                color: "black",
-                                fontFamily: "SFMono",
-                            }}
-                        >{`${item?.approver?.slice(
-                            0,
-                            5
-                        )}...${item?.approver?.slice(-3)}`}</div>
-                    </div>
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        position: "absolute",
-                        bottom: 18,
-                        left: 60,
-                        justifyContent: "space-between",
-                        right: 30,
-                        alignItems: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            fontWeight: "500",
-                            fontSize: "0.75rem",
-                            color: "#767676",
-                            fontFamily: "SFMono",
-                        }}
-                    >
-                        DREP-1
-                    </div>
-                    <div
-                        style={{
-                            fontWeight: "500",
-                            fontSize: "0.563rem",
-                            color: "black",
-                            fontFamily: "SFMono",
-                        }}
-                    >
-                        PROOF OF CONTRIBUTION
                     </div>
                 </div>
             </div>
