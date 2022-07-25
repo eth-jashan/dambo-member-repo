@@ -237,7 +237,7 @@ export default function Dashboard() {
                     await contributionFlowAsAdmin()
                 } else {
                     contributionFlowAsContributor()
-                    setCurrentPage("contributions")
+                    // setCurrentPage("contributions")
                 }
             } else {
                 dispatch(signout())
