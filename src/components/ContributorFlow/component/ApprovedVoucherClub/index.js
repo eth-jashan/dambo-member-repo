@@ -6,6 +6,7 @@ import {
     getContributionAsContributorApproved,
     rejectContributionVoucher,
     setClaimLoading,
+    removeClaimedContributionVoucher,
 } from "../../../../store/actions/contibutor-action"
 import { getAllMembershipBadges } from "../../../../utils/POCPServiceSdk"
 import { useAccount } from "wagmi"
@@ -89,7 +90,12 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                     membership_token_id,
                     (x) => {
                         console.log("success callback", x)
-                        dispatch(getContributionAsContributorApproved())
+                        // dispatch(getContributionAsContributorApproved())
+                        dispatch(
+                            removeClaimedContributionVoucher(
+                                contributionsWithCheckbox
+                            )
+                        )
                         dispatch(setClaimLoading(false))
 
                         message.success("Claimed Badge Successfully")
@@ -113,14 +119,15 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
         dispatch(
             rejectContributionVoucher(
                 membership_token_id,
-                contributionsWithCheckbox[0]?.voucher_uuid
+                contributionsWithCheckbox[0]?.voucher_uuid,
+                contributionsWithCheckbox
             )
         )
     }
 
     return (
         <div className="approved-voucher-club-container">
-            {isFirst && (
+            {isFirst && contributionsWithCheckbox?.length ? (
                 <div className="approved-voucher-first-header">
                     <div>
                         {contributionsWithCheckbox.length} badges available for
@@ -139,6 +146,8 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                         </button>
                     </div>
                 </div>
+            ) : (
+                ""
             )}
             {contributionsWithCheckbox.map((contribution, index) => (
                 <ContributionCardV2

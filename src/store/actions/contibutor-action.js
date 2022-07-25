@@ -615,7 +615,11 @@ export const contributionBadgeClaim = (
     }
 }
 
-export const rejectContributionVoucher = (token_id, voucher_uuid) => {
+export const rejectContributionVoucher = (
+    token_id,
+    voucher_uuid,
+    contributions
+) => {
     return async (dispatch, getState) => {
         console.log("in contributionBadgeClaim")
         const jwt = getState().auth.jwt
@@ -638,7 +642,8 @@ export const rejectContributionVoucher = (token_id, voucher_uuid) => {
             )
             if (res.data.success) {
                 console.log("res", res.data)
-                dispatch(getContributionAsContributorApproved())
+                // dispatch(getContributionAsContributorApproved())
+                dispatch(removeClaimedContributionVoucher(contributions, true))
             }
         } catch (err) {
             console.error("err", err)
@@ -689,5 +694,41 @@ export const sendClaimTxHash = (
 export const setClaimLoading = (claimLoading) => {
     return async (dispatch, getState) => {
         dispatch(contributorAction.setClaimLoading({ claimLoading }))
+    }
+}
+
+export const removeClaimedContributionVoucher = (
+    claimedContributions,
+    isReject
+) => {
+    return async (dispatch, getState) => {
+        const approvedContributions =
+            getState().contributor.contributionForContributorApproved
+
+        const remainingContributionsInVoucher = claimedContributions.filter(
+            (ele) => !ele.isChecked
+        )
+
+        const voucher = approvedContributions?.[0]
+
+        if (remainingContributionsInVoucher.length && !isReject) {
+            for (const key in voucher) {
+                if (voucher?.[key]?.contributions?.length) {
+                    approvedContributions[0][key].contributions =
+                        remainingContributionsInVoucher
+                }
+            }
+            dispatch(
+                contributorAction.set_contributor_contribution_approved({
+                    approved: approvedContributions,
+                })
+            )
+        } else {
+            dispatch(
+                contributorAction.set_contributor_contribution_approved({
+                    approved: approvedContributions?.slice(1) || [],
+                })
+            )
+        }
     }
 }

@@ -132,9 +132,6 @@
         .signers-info {
             max-height: 0;
             transition: all 0.2s ease-in-out;
-        }
-        .signers-info-shown {
-            max-height: 10rem;
             color: #fff;
             font-family: "TelegrafMedium";
             font-style: normal;
@@ -142,12 +139,16 @@
             font-size: 1rem;
             line-height: 1.5rem;
             padding-top: 0.5rem;
+            overflow: hidden;
+        }
+        .signers-info-shown {
+            max-height: 10rem;
             .signer-row {
                 display: flex;
                 justify-content: space-between;
             }
             .signer-time {
-                color: rgba(0, 0, 0, 0.5);
+                color: rgba(255, 255, 255, 0.5);
             }
         }
     }

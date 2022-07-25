@@ -219,9 +219,12 @@ export default function ContributionContributorSideCard({
                 </Typography.Paragraph>
             </div>
             {signersInfo && (
-                <div className="badge-sign-collapsable" onClick={toggle}>
+                <div className="badge-sign-collapsable">
                     {signersInfo && signersInfo?.isExecuted ? (
-                        <div className={`closed-div green-color`}>
+                        <div
+                            className={`closed-div green-color`}
+                            onClick={toggle}
+                        >
                             <div className="title">
                                 <img src={check_green} alt="" />
                                 Signed
@@ -230,7 +233,10 @@ export default function ContributionContributorSideCard({
                         </div>
                     ) : (
                         <>
-                            <div className={`closed-div orange-color`}>
+                            <div
+                                className={`closed-div orange-color`}
+                                onClick={toggle}
+                            >
                                 <div className="title">
                                     <img src={waiting_orange} alt="" />
                                     {/* Waiting for signing */}
@@ -238,7 +244,7 @@ export default function ContributionContributorSideCard({
                                         ?.length &&
                                     !contributorSelectionContribution?.voucher_id
                                         ? "waiting for approval"
-                                        : signersInfo?.confirmations?.length ===
+                                        : signersInfo?.confirmations?.length >=
                                           safeInfo?.threshold
                                         ? "waiting for execution"
                                         : `waiting for signing • ${signersInfo?.confirmations?.length}/${safeInfo?.threshold}`}
@@ -252,13 +258,11 @@ export default function ContributionContributorSideCard({
                                 />
                             </div>
                             <div
-                                className={
-                                    isToggleOpen
-                                        ? "signers-info-shown"
-                                        : "signers-info"
-                                }
+                                className={`${
+                                    isToggleOpen ? "signers-info-shown " : ""
+                                } signers-info`}
                             >
-                                {signersInfo?.confirmations?.length ===
+                                {signersInfo?.confirmations?.length >=
                                 safeInfo?.threshold ? (
                                     <>
                                         <div>Signing Done</div>
