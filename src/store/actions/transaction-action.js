@@ -79,13 +79,6 @@ export const approveContriRequest = (
             )
         } else {
             if (payout.length > 0) {
-                console.log(
-                    JSON.stringify({
-                        contri_detail: currentTransaction,
-                        payout,
-                        feedback,
-                    })
-                )
                 dispatch(
                     tranactionAction.set_approved_request({
                         item: {
@@ -96,42 +89,42 @@ export const approveContriRequest = (
                     })
                 )
             }
-            if (payout.length > 0) {
-                payout.forEach((item) => {
-                    if (!item?.token_type) {
-                        newPayout.push({
-                            amount: item.amount,
-                            usd_amount: item?.usd_amount,
-                            address: item?.address,
-                            details: {
-                                name: "Ethereum",
-                                symbol: "ETH",
-                                decimals: "18",
-                                logo_url:
-                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
-                                address: "",
-                            },
-                        })
-                    } else {
-                        newPayout.push({
-                            amount: item.amount,
-                            usd_amount: item?.usd_amount,
-                            address: item?.address,
-                            details: {
-                                name: item?.token_type?.token?.name,
-                                symbol: item?.token_type?.token?.symbol,
-                                decimals: item?.token_type?.token?.decimals,
-                                logo_url: item?.token_type?.token?.logoUri,
-                                address: item?.token_type?.tokenAddress,
-                            },
-                        })
-                    }
-                })
-            }
+            // if (payout.length > 0) {
+            //     payout.forEach((item) => {
+            //         if (!item?.token_type) {
+            //             newPayout.push({
+            //                 amount: item.amount,
+            //                 usd_amount: item?.usd_amount,
+            //                 address: item?.address,
+            //                 details: {
+            //                     name: "Ethereum",
+            //                     symbol: "ETH",
+            //                     decimals: "18",
+            //                     logo_url:
+            //                         "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+            //                     address: "",
+            //                 },
+            //             })
+            //         } else {
+            //             newPayout.push({
+            //                 amount: item.amount,
+            //                 usd_amount: item?.usd_amount,
+            //                 address: item?.address,
+            //                 details: {
+            //                     name: item?.token_type?.token?.name,
+            //                     symbol: item?.token_type?.token?.symbol,
+            //                     decimals: item?.token_type?.token?.decimals,
+            //                     logo_url: item?.token_type?.token?.logoUri,
+            //                     address: item?.token_type?.tokenAddress,
+            //                 },
+            //             })
+            //         }
+            //     })
+            // }
 
             const data = {
                 status: "APPROVED",
-                tokens: payout.length > 0 ? newPayout : [],
+                tokens: payout.length > 0 ? payout : [],
                 uuid: currentTransaction.uuid,
                 feedback,
                 mint_badge,

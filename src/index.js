@@ -60,7 +60,7 @@ ReactDOM.render(
         <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider
                 chains={chains}
-                initialChain={savedChainId.chainId || 4}
+                initialChain={savedChainId?.chainId || 4}
             >
                 <BrowserRouter>
                     <Provider store={store}>

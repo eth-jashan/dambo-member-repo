@@ -11,15 +11,8 @@ let pocpInstance = null
 // const pocpGetter = new PocpGetters(currentNetwork?.chainId === 4 ? 80001 : 137)
 
 export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // const signer = provider.getSigner()
     const walletWeb3 = new Web3(provider)
     const walletProvider = walletWeb3.givenProvider
-    // const selectedProvider = walletProvider.providerMap
-    //     ? walletProvider?.overrideIsMetaMask
-    //         ? walletProvider?.providerMap.get("MetaMask")
-    //         : walletProvider.selectedProvider
-    //     : walletProvider
 
     pocpInstance = new Pocp(
         signer,

@@ -48,10 +48,8 @@ export default function HomeScreen({
         contribFeild.toString()
         return contribFeild.toString().replaceAll(",", " / ")
     }
-    console.log(
-        "Contributors",
-        contributionSchema,
-        displaySchemas(contributionSchema)
+    const contributionPending = useSelector(
+        (x) => x.contributor.contributionForAdmin
     )
     return (
         <div className="badges-home-screen-container">
@@ -129,7 +127,7 @@ export default function HomeScreen({
                                 <span>Contribution Badge </span>
                                 {contributionSchema?.length > 0 && (
                                     <div className="contribution-badge-stats">
-                                        01 Approved | 00 Claimed
+                                        {"01"} Approved | 00 Claimed
                                     </div>
                                 )}
                             </div>
@@ -138,7 +136,14 @@ export default function HomeScreen({
                             {membershipBadges?.length ? (
                                 <button
                                     onClick={() => {
-                                        if (contributionSchema?.length === 0) {
+                                        console.log(
+                                            "here",
+                                            contributionSchema?.length
+                                        )
+                                        if (
+                                            contributionSchema?.length === 0 ||
+                                            !contributionSchema
+                                        ) {
                                             dispatch(
                                                 actionOnGenerateSchemaModal(
                                                     true

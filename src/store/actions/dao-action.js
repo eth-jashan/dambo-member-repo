@@ -1579,6 +1579,7 @@ export const getAllPastTransactions = () => {
                         }
                     })
                 })
+                console.log("past contribution", pastContributions)
                 dispatch(
                     daoAction.setPastContributions({
                         pastContributions,

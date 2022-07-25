@@ -107,34 +107,66 @@ const TransactionCard = () => {
                 )
             }
         } else if (mint && payToken) {
+            console.log("here")
             if (
                 payDetail[0]?.amount !== 0 &&
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
-                const res = await createContributionMetadataUri(
-                    currentTransaction?.details.find(
-                        (x) => x.fieldName === "Contribution Title"
-                    )?.value,
-                    currentDao?.name,
-                    `25 July'22`,
-                    currentDao?.logo_url
-                )
-                if (res) {
-                    console.log(res.metadata)
-                    dispatch(
-                        approveBadge(currentTransaction, feedback, payDetail)
-                    )
-                    await dispatch(
-                        approveContriRequest(
-                            payToken ? payDetail : [],
-                            false,
-                            feedback,
-                            mint ? 1 : 0,
-                            res.metadata
-                        )
-                    )
-                }
+                const newPayout = []
+                payDetail.forEach((item) => {
+                    if (!item?.token_type) {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: "Ethereum",
+                                symbol: "ETH",
+                                decimals: "18",
+                                logo_url:
+                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                                address: "",
+                            },
+                        })
+                    } else {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address: item?.address,
+                            details: {
+                                name: item?.token_type?.token?.name,
+                                symbol: item?.token_type?.token?.symbol,
+                                decimals: item?.token_type?.token?.decimals,
+                                logo_url: item?.token_type?.token?.logoUri,
+                                address: item?.token_type?.tokenAddress,
+                            },
+                        })
+                    }
+                })
+                console.log("neww payout", newPayout)
+                // const res = await createContributionMetadataUri(
+                //     currentTransaction?.details.find(
+                //         (x) => x.fieldName === "Contribution Title"
+                //     )?.value,
+                //     currentDao?.name,
+                //     `25 July'22`,
+                //     currentDao?.logo_url
+                // )
+                // if (res) {
+                //     dispatch(
+                //         approveBadge(currentTransaction, feedback, newPayout)
+                //     )
+                //     await dispatch(
+                //         approveContriRequest(
+                //             payToken ? newPayout : [],
+                //             false,
+                //             feedback,
+                //             mint ? 1 : 0,
+                //             res.metadata
+                //         )
+                //     )
+                // }
             }
         } else if (payToken && !mint) {
             if (
@@ -142,9 +174,43 @@ const TransactionCard = () => {
                 payDetail[0]?.amount !== "" &&
                 payDetail[0]?.amount !== "0"
             ) {
+                const newPayout = []
+                payDetail.forEach((item) => {
+                    if (!item?.token_type) {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address:
+                                currentTransaction?.contributor?.public_address,
+                            details: {
+                                name: "Ethereum",
+                                symbol: "ETH",
+                                decimals: "18",
+                                logo_url:
+                                    "https://safe-transaction-assets.gnosis-safe.io/chains/4/currency_logo.png",
+                                address: "",
+                            },
+                        })
+                    } else {
+                        newPayout.push({
+                            amount: item.amount,
+                            usd_amount: item?.usd_amount,
+                            address:
+                                currentTransaction?.contributor?.public_address,
+                            details: {
+                                name: item?.token_type?.token?.name,
+                                symbol: item?.token_type?.token?.symbol,
+                                decimals: item?.token_type?.token?.decimals,
+                                logo_url: item?.token_type?.token?.logoUri,
+                                address: item?.token_type?.tokenAddress,
+                            },
+                        })
+                    }
+                })
+                console.log("new payout", newPayout)
                 await dispatch(
                     approveContriRequest(
-                        payToken ? payDetail : [],
+                        payToken ? newPayout : [],
                         false,
                         feedback,
                         mint ? 1 : 0,
@@ -283,7 +349,7 @@ const TransactionCard = () => {
 
                 <div
                     onClick={async () =>
-                        loading && (await onApproveTransaction())
+                        !loading && (await onApproveTransaction())
                     }
                     className={styles.payNow}
                 >

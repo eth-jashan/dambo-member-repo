@@ -3,7 +3,10 @@ import { assets } from "../../../../constant/assets"
 import cross from "../../../../assets/Icons/cross.svg"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
-import { getMembershipBadgeFromClaimer } from "../../../../utils/POCPServiceSdk"
+import {
+    getAllMembershipBadges,
+    getMembershipBadgeFromClaimer,
+} from "../../../../utils/POCPServiceSdk"
 import { ethers } from "@biconomy/mexa/node_modules/ethers"
 import Lottie from "react-lottie"
 import black_loader from "../../../../assets/lottie/Loader_Black_Lottie.json"
@@ -32,14 +35,8 @@ const AddressInput = ({
         if (isAddress) {
             setLoading(true)
             try {
-                // const res = await getMembershipBadgeFromClaimer(
-                //     address,
-                //     proxyContract,
-                //     currentDao?.uuid
-                // )
                 const res = await dispatch(getAllMembershipVouchers(address))
                 setLoading(false)
-                // if (res.data.membershipNFTs.length > 0) {
                 if (res.length > 0) {
                     setAddressStatus("fail")
                     updateStatus(false, index)

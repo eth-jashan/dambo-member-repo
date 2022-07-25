@@ -131,9 +131,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                     ) {
                         transaction_obj.push({
                             to: ethers.utils.getAddress(
-                                item?.addr ||
-                                    approved_request.contri_detail.contributor
-                                        .public_address
+                                item?.addr || item?.address
                             ),
                             data: "0x",
                             value: ethers.utils
@@ -166,9 +164,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                                     "transfer",
                                     [
                                         ethers.utils.getAddress(
-                                            item?.addr ||
-                                                approved_request.contri_detail
-                                                    .contributor.public_address
+                                            item?.addr || item?.address
                                         ),
                                         amount.toString(),
                                     ]
@@ -187,7 +183,9 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                             data: coin.interface.encodeFunctionData(
                                 "transfer",
                                 [
-                                    ethers.utils.getAddress(item?.addr),
+                                    ethers.utils.getAddress(
+                                        item?.addr || item?.address
+                                    ),
                                     amount.toString(),
                                 ]
                             ),

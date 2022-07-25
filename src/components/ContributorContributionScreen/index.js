@@ -87,7 +87,7 @@ export default function ContributorContributionScreen() {
     }
 
     let totalApprovedRequests = 0
-    contributionForContributorApproved.forEach((voucher) => {
+    contributionForContributorApproved?.forEach((voucher) => {
         for (const key in voucher) {
             if (voucher?.[key]?.contributions?.length) {
                 totalApprovedRequests =
@@ -202,7 +202,7 @@ export default function ContributorContributionScreen() {
                     onOpenCallback={fetchApprovedContributions}
                 >
                     <ApprovedVoucherClub
-                        voucher={contributionForContributorApproved[0]}
+                        voucher={contributionForContributorApproved?.[0]}
                         isFirst={true}
                     />
 
@@ -213,11 +213,16 @@ export default function ContributorContributionScreen() {
                         </div>
                     )}
 
-                    {contributionForContributorApproved.slice(1).map((x, i) => (
-                        <div key={i} className="approve-voucher-wrapper">
-                            <ApprovedVoucherClub voucher={x} isFirst={false} />
-                        </div>
-                    ))}
+                    {contributionForContributorApproved
+                        ?.slice(1)
+                        ?.map((x, i) => (
+                            <div key={i} className="approve-voucher-wrapper">
+                                <ApprovedVoucherClub
+                                    voucher={x}
+                                    isFirst={false}
+                                />
+                            </div>
+                        ))}
                 </RequestCollapsable>
             </div>
             <div className="pending-contributions">
@@ -228,7 +233,7 @@ export default function ContributorContributionScreen() {
                     }`}
                     onOpenCallback={fetchPendingContributions}
                 >
-                    {contributionForContributorPending.map((x, i) => (
+                    {contributionForContributorPending?.map((x, i) => (
                         <ContributionCardV2
                             key={i}
                             index={i}

@@ -176,12 +176,15 @@ export default function Dashboard() {
         await dispatch(getAllMembershipBadgesForAddress())
     }
 
-    const gnosisFunctionsAdmin = async () => {
-        dispatch(gnosisDetailsofDao())
-        dispatch(getPayoutRequest())
-        if (safeSdk) {
-            const nonce = await safeSdk.getNonce()
-            dispatch(set_active_nonce(nonce))
+    const gnosisFunctionsAdmin = async (dao) => {
+        console.log("current safe dao", dao)
+        if (dao?.safe_public_address) {
+            dispatch(gnosisDetailsofDao())
+            dispatch(getPayoutRequest())
+            if (safeSdk) {
+                const nonce = await safeSdk.getNonce()
+                dispatch(set_active_nonce(nonce))
+            }
         }
     }
     const gnosisFunctionsContributor = () => {}
@@ -205,7 +208,7 @@ export default function Dashboard() {
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
                     console.log("started here")
-                    await gnosisFunctionsAdmin()
+                    await gnosisFunctionsAdmin(currentDaos)
                     await dispatch(getAllDaoMembers())
                     await contributionFlowAsAdmin()
                 } else {
@@ -220,11 +223,41 @@ export default function Dashboard() {
         dispatch(setLoadingState(false))
     }, [address, dispatch, navigate, role, safeSdk, signer])
 
+    const onAccountSwitch = useCallback(async () => {
+        console.log("account switch......")
+        if (signer) {
+            if (address) {
+                dispatch(setLoadingState(true))
+                const chainId = await signer.getChainId()
+                await rep3ProtocolFunctionsCommon(currentDao)
+                await initPOCP(currentDao.uuid, provider, signer, chainId)
+                if (role === "ADMIN") {
+                    await gnosisFunctionsAdmin(currentDao)
+                    await dispatch(getAllDaoMembers())
+                    await contributionFlowAsAdmin()
+                } else {
+                    contributionFlowAsContributor()
+                    setCurrentPage("contributions")
+                }
+            } else {
+                dispatch(signout())
+                navigate("/")
+            }
+        }
+        dispatch(setLoadingState(false))
+    }, [address, dispatch, navigate, role, safeSdk, signer])
+
     useEffect(() => {
         if (!modalPayment && !prevSigner) {
             initialLoad()
         }
     }, [currentDao?.uuid, signer])
+
+    useEffect(() => {
+        if (!modalPayment) {
+            onAccountSwitch()
+        }
+    }, [currentDao?.uuid])
 
     useEffect(() => {
         preventGoingBack()

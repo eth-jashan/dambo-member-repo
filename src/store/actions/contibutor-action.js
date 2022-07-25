@@ -341,48 +341,48 @@ export const updateContributionVoucher = (
     }
 }
 
-export const contributionBadgeClaim = (
-    contributionId,
-    memberTokenId,
-    approveIndex,
-    hashCallbackFn,
-    callbackOnSuccess
-) => {
-    return async (dispatch, getState) => {
-        const jwt = getState().auth.jwt
-        const uuid = getState().dao.currentDao?.uuid
-        const proxyContract = getState().dao.daoProxyAddress
-        // /contrib/voucher
-        try {
-            const res = await apiClient.get(
-                `${
-                    process.env.REACT_APP_DAO_TOOL_URL
-                }${`/contrib/voucher`}?contribution_uuid=${contributionId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (res.data.success) {
-                // return res.data
-                console.log("Voucher", res.data.data)
-                // await claimContributionBadge(
-                //     proxyContract,
-                //     "voucher",
-                //     memberTokenId,
-                //     approveIndex,
-                //     hashCallbackFn,
-                //     callbackOnSuccess
-                // )
-            } else {
-                // return false
-            }
-        } catch (error) {
-            return false
-        }
-    }
-}
+// export const contributionBadgeClaim = (
+//     contributionId,
+//     memberTokenId,
+//     approveIndex,
+//     hashCallbackFn,
+//     callbackOnSuccess
+// ) => {
+//     return async (dispatch, getState) => {
+//         const jwt = getState().auth.jwt
+//         const uuid = getState().dao.currentDao?.uuid
+//         const proxyContract = getState().dao.daoProxyAddress
+//         // /contrib/voucher
+//         try {
+//             const res = await apiClient.get(
+//                 `${
+//                     process.env.REACT_APP_DAO_TOOL_URL
+//                 }${`/contrib/voucher`}?contribution_uuid=${contributionId}`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${jwt}`,
+//                     },
+//                 }
+//             )
+//             if (res.data.success) {
+//                 // return res.data
+//                 console.log("Voucher", res.data.data)
+//                 // await claimContributionBadge(
+//                 //     proxyContract,
+//                 //     "voucher",
+//                 //     memberTokenId,
+//                 //     approveIndex,
+//                 //     hashCallbackFn,
+//                 //     callbackOnSuccess
+//                 // )
+//             } else {
+//                 // return false
+//             }
+//         } catch (error) {
+//             return false
+//         }
+//     }
+// }
 
 export const createContributionVouchers = (
     membership_id,
