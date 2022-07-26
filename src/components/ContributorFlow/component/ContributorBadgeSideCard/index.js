@@ -67,6 +67,13 @@ export default function ContributorBadgeSideCard() {
         address,
     })
 
+    const getSignerName = (address) => {
+        const details = currentDao?.approvers?.filter(
+            (ele) => ele.addr === address
+        )
+        return details?.[0]?.name
+    }
+
     useEffect(() => {
         getPayoutInfo()
     }, [contribution_detail?.entity])
@@ -185,9 +192,12 @@ export default function ContributorBadgeSideCard() {
                 </Typography.Paragraph>
             </div>
             {signersInfo && (
-                <div className="badge-sign-collapsable" >
+                <div className="badge-sign-collapsable">
                     {signersInfo && signersInfo?.isExecuted ? (
-                        <div className={`closed-div green-color`} onClick={toggle}>
+                        <div
+                            className={`closed-div green-color`}
+                            onClick={toggle}
+                        >
                             <div className="title">
                                 <img src={check_green} alt="" />
                                 Signed
@@ -196,7 +206,10 @@ export default function ContributorBadgeSideCard() {
                         </div>
                     ) : (
                         <>
-                            <div className={`closed-div orange-color`} onClick={toggle}>
+                            <div
+                                className={`closed-div orange-color`}
+                                onClick={toggle}
+                            >
                                 <div className="title">
                                     <img src={waiting_orange} alt="" />
                                     {/* Waiting for signing */}
@@ -241,7 +254,14 @@ export default function ContributorBadgeSideCard() {
                                                     key={index}
                                                 >
                                                     <div>
-                                                        somesh • somcha.eth
+                                                        {getSignerName(address)}{" "}
+                                                        •{" "}
+                                                        {`${address?.slice(
+                                                            0,
+                                                            5
+                                                        )}...${address?.slice(
+                                                            -3
+                                                        )}`}{" "}
                                                     </div>
                                                     <img
                                                         src={CheckSvg}

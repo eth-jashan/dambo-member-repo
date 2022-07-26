@@ -64,6 +64,13 @@ export default function ContributionContributorSideCard({
         address,
     })
 
+    const getSignerName = (address) => {
+        const details = currentDao?.approvers?.filter(
+            (ele) => ele.addr === address
+        )
+        return details?.[0]?.name
+    }
+
     useEffect(() => {
         getPayoutInfo()
     }, [contributorSelectionContribution])
@@ -281,7 +288,14 @@ export default function ContributionContributorSideCard({
                                                     key={index}
                                                 >
                                                     <div>
-                                                        somesh • somcha.eth
+                                                        {getSignerName(address)}{" "}
+                                                        •{" "}
+                                                        {`${address?.slice(
+                                                            0,
+                                                            5
+                                                        )}...${address?.slice(
+                                                            -3
+                                                        )}`}
                                                     </div>
                                                     <img
                                                         src={CheckSvg}

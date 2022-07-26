@@ -175,7 +175,7 @@ export default function ContributionCardV2({
                                 </div>
                             </div>
                         </div>
-                        {item?.contributionType === "approved" && (
+                        {contributionType === "approved" && (
                             <>
                                 {item?.feedback && (
                                     <div className="contri-feedback">
