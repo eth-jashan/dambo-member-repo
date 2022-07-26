@@ -178,7 +178,6 @@ export default function Dashboard() {
     }
 
     const gnosisFunctionsAdmin = async (dao) => {
-        console.log("current safe dao", dao)
         if (dao?.safe_public_address) {
             dispatch(gnosisDetailsofDao())
             dispatch(getPayoutRequest())
@@ -267,10 +266,10 @@ export default function Dashboard() {
     const onRouteChange = async (route) => {
         setTab(route)
         if (role === "ADMIN" && route === "payments") {
-            console.log("To Payments")
+            console.log("yo")
             await gnosisFunctionsAdmin()
         } else if (role === "ADMIN" && route === "contributions") {
-            console.log("To Contributions")
+            await gnosisFunctionsAdmin()
             await contributionFlowAsAdmin()
         }
     }

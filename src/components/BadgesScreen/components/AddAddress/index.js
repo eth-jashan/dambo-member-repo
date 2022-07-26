@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux"
 import { assets } from "../../../../constant/assets"
 import AddressInput from "./AddressInput"
+import { message } from "antd"
 
 export default function AddAddress({ selectedMembershipBadge, closeModal }) {
     const [isBulkMinting, setIsBulkMinting] = useState(false)
@@ -85,8 +86,9 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
             await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
             await dispatch(getAllDaoMembers())
             dispatch(setShowMembershipMintingModal(false))
+            message.error("successfully approved badge")
         } catch (error) {
-            console.log("error on signinig", error.toString())
+            message.error("error on signinig")
         }
     }
 

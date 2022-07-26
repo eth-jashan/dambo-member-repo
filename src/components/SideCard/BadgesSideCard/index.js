@@ -7,6 +7,8 @@ import {
     setShowMembershipChangeModal,
 } from "../../../store/actions/membership-action"
 import { assets } from "../../../constant/assets"
+import { LinkOutlined } from "@ant-design/icons"
+import { message } from "antd"
 
 const CommunitySideCard = ({ show }) => {
     const selectedMember = useSelector((x) => x.membership.selectedMember)
@@ -35,6 +37,15 @@ const CommunitySideCard = ({ show }) => {
             /> */}
         </div>
     )
+    const address = useSelector((x) => x.auth.address)
+    async function copyTextToClipboard(textToCopy) {
+        if ("clipboard" in navigator) {
+            message.success("Copied Successfully")
+            return await navigator.clipboard.writeText(textToCopy)
+        } else {
+            return document.execCommand("copy", true, address)
+        }
+    }
 
     return (
         <div
@@ -97,8 +108,29 @@ const CommunitySideCard = ({ show }) => {
                     </div>
                 )
             ) : (
-                <div className="no-member-selected">
-                    Select badge to see details
+                <div className="no-member-container">
+                    <div className="no-member-selected">
+                        Select badge to see details
+                    </div>
+                    <div
+                        onClick={() =>
+                            copyTextToClipboard(
+                                encodeURI(
+                                    `${
+                                        window.location.origin
+                                    }/contributor/invite/${currentDao?.name.toLowerCase()}/${
+                                        currentDao?.uuid
+                                    }`
+                                )
+                            )
+                        }
+                        className="socialContainer"
+                    >
+                        <LinkOutlined
+                            style={{ color: "white", fontSize: "14px" }}
+                        />
+                        <span className={"socialText"}>copy invite link</span>
+                    </div>
                 </div>
             )}
         </div>

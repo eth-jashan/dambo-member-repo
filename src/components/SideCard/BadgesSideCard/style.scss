@@ -89,4 +89,22 @@
         line-height: 20px;
         color: #ecffb8;
     }
+    .socialContainer {
+        padding: 10px;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        display: flex;
+        justify-content: flex-start;
+        border: 1px solid #21212b;
+        bottom: 0;
+        align-items: center;
+    }
+    .socialText {
+        color: white;
+        font-family: monospace;
+        font-size: 12px;
+        margin-left: 12px;
+        align-self: center;
+    }
 }
