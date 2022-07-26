@@ -200,6 +200,9 @@ export default function ContributorContributionScreen() {
                     contributions={contributionForContributorApproved}
                     title={`Approved Requests  •  ${totalApprovedRequests}`}
                     onOpenCallback={fetchApprovedContributions}
+                    defaultCollapseState={
+                        !!contributionForContributorApproved?.length
+                    }
                 >
                     <ApprovedVoucherClub
                         voucher={contributionForContributorApproved?.[0]}

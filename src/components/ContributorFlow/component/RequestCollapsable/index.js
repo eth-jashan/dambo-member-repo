@@ -8,9 +8,10 @@ export default function RequestCollapsable({
     title,
     children,
     onOpenCallback = () => {},
+    defaultCollapseState = false,
 }) {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const [collapsable, setCollapsable] = useState(false)
+    const [collapsable, setCollapsable] = useState(defaultCollapseState)
     // console.log("item", contributions)
 
     const toggleCollapse = () => {
