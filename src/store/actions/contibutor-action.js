@@ -712,17 +712,18 @@ export const removeClaimedContributionVoucher = (
         )
 
         const voucher = approvedContributions?.[0]
-
+        const tempApprovedContributions = [...approvedContributions]
+        //
         if (remainingContributionsInVoucher.length && !isReject) {
             for (const key in voucher) {
                 if (voucher?.[key]?.contributions?.length) {
-                    approvedContributions[0][key].contributions =
+                    tempApprovedContributions[0][key].contributions =
                         remainingContributionsInVoucher
                 }
             }
             dispatch(
                 contributorAction.set_contributor_contribution_approved({
-                    approved: approvedContributions,
+                    approved: tempApprovedContributions,
                 })
             )
         } else {
