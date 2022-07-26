@@ -300,7 +300,8 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                                 createContributionVouchers(
                                                     address[0],
                                                     msg,
-                                                    uploadMetadata
+                                                    uploadMetadata,
+                                                    res.metadata
                                                 )
                                             )
 

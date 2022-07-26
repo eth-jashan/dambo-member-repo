@@ -281,6 +281,7 @@ export default function Dashboard() {
             dispatch(setLoadingState(false))
         }
     }
+    const schemaOfDao = useSelector((x) => x.contributor.contributorSchema)
 
     const renderTab = () => (
         <div className={styles.tabContainer}>
@@ -323,7 +324,7 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* <div> */}
-            {
+            {role !== "ADMIN" && schemaOfDao && (
                 <div
                     onMouseEnter={() => setUniPayHover(true)}
                     onMouseLeave={() => setUniPayHover(false)}
@@ -345,7 +346,7 @@ export default function Dashboard() {
                         alt="plus"
                     />
                 </div>
-            }
+            )}
 
             {modalUniPayment && (
                 <UniversalPaymentModal

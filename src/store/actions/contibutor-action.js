@@ -387,7 +387,8 @@ export const updateContributionVoucher = (
 export const createContributionVouchers = (
     address,
     signed_voucher,
-    details
+    details,
+    metadata_hash
 ) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
@@ -402,6 +403,7 @@ export const createContributionVouchers = (
             contrib_schema_id,
             signed_voucher,
             details,
+            metadata_hash,
         }
         try {
             const res = await apiClient.post(
