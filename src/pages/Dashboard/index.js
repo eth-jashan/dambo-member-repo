@@ -204,6 +204,7 @@ export default function Dashboard() {
                 const { accountRole, currentDaos } = await dispatch(
                     getAllDaowithAddress(chainId)
                 )
+                console.log("current daos", currentDaos)
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
@@ -253,9 +254,10 @@ export default function Dashboard() {
         }
     }, [currentDao?.uuid, signer])
 
-    useEffect(() => {
-        if (!modalPayment) {
-            onAccountSwitch()
+    useEffect(async () => {
+        if (!modalPayment && currentDao) {
+            console.log("current dao", currentDao)
+            await onAccountSwitch()
         }
     }, [currentDao?.uuid])
 
