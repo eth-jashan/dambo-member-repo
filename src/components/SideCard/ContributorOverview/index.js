@@ -38,11 +38,11 @@ const ContributionOverview = () => {
             })
         })
 
-        console.log("this membership", membershipInfo)
-
         setCurrentMembershipBadge({
-            ...membershipBadgesForAddress[0],
-            ...membershipInfo[0],
+            ...membershipBadgesForAddress[
+                membershipBadgesForAddress.length - 1
+            ],
+            ...membershipInfo[membershipInfo.length - 1],
         })
     }
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
