@@ -10,22 +10,17 @@ import { PersistGate } from "redux-persist/integration/react"
 import "@rainbow-me/rainbowkit/dist/index.css"
 
 import {
-    getDefaultWallets,
     RainbowKitProvider,
     wallet,
     connectorsForWallets,
 } from "@rainbow-me/rainbowkit"
-import {
-    chain,
-    configureChains,
-    createClient,
-    WagmiConfig,
-    defaultChains,
-} from "wagmi"
+import { chain, configureChains, createClient, WagmiConfig } from "wagmi"
 import { infuraProvider } from "wagmi/providers/infura"
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [chain.rinkeby, chain.polygon, chain.mainnet, chain.polygon],
+    process.env.NODE_ENV === "production"
+        ? [chain.mainnet, chain.polygon, chain.rinkeby, chain.polygon]
+        : [chain.rinkeby, chain.polygon, chain.mainnet, chain.polygon],
     [infuraProvider({ infuraId: "25f28dcc7e6b4c85b74ddfb3eeda03e5" })]
 )
 
@@ -60,7 +55,7 @@ ReactDOM.render(
         <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider
                 chains={chains}
-                initialChain={savedChainId?.chainId || 4}
+                initialChain={savedChainId?.chainId || 1}
             >
                 <BrowserRouter>
                     <Provider store={store}>

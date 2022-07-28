@@ -45,7 +45,7 @@ const ContributionOverview = () => {
             ...membershipInfo[0],
         })
     }
-
+    const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const levels = [
         {
             name: "level1",
@@ -57,8 +57,6 @@ const ContributionOverview = () => {
         },
     ]
 
-    console.log(membershipBadges, membershipBadgesForAddress)
-
     useEffect(() => {
         if (
             currentDao &&
@@ -69,49 +67,6 @@ const ContributionOverview = () => {
         }
     }, [currentDao, proxyContract, membershipBadgesForAddress])
     const isImage = currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200"
-
-    // const contributionStats = () => (
-    //     <div className="contributionContainer">
-    //         <div
-    //             style={{
-    //                 color: "white",
-    //                 textAlign: "start",
-    //                 borderBottom: "1px solid #292929",
-    //                 paddingTop: "1rem",
-    //                 paddingLeft: "1rem",
-    //                 paddingBottom: "1rem",
-    //             }}
-    //             className={textStyle.m_14}
-    //         >
-    //             {contributionOverview?.total_payout.length} Payouts
-    //         </div>
-    //         <div
-    //             style={{
-    //                 color: "white",
-    //                 textAlign: "start",
-    //                 borderBottom: "1px solid #292929",
-    //                 paddingTop: "1rem",
-    //                 paddingLeft: "1rem",
-    //                 paddingBottom: "1rem",
-    //             }}
-    //             className={textStyle.m_14}
-    //         >
-    //             {all_claimed_badge.length} Claimed badges
-    //         </div>
-    //         <div
-    //             style={{
-    //                 color: "white",
-    //                 textAlign: "start",
-    //                 paddingTop: "1rem",
-    //                 paddingLeft: "1rem",
-    //                 paddingBottom: "1rem",
-    //             }}
-    //             className={textStyle.m_14}
-    //         >
-    //             {unclaimed.length} Unclaimed badges
-    //         </div>
-    //     </div>
-    // )
 
     const toggle = () => {
         setIsToggleOpen((isToggleOpen) => !isToggleOpen)
@@ -130,7 +85,6 @@ const ContributionOverview = () => {
             "_blank"
         )
     }
-    console.log(currentMembershipBadge)
 
     return (
         <div
@@ -249,21 +203,21 @@ const ContributionOverview = () => {
                                         23 Contributions
                                     </div>
                                     <div className="subrow-details">
-                                        <div>123 badges</div>
+                                        <div>{dataSource.length} badges</div>
                                         <div className="subrow-icons-wrapper">
                                             <div className="other-badge-wrapper">
                                                 <img
                                                     src={ContributionIconGrey}
                                                     alt=""
                                                 />
-                                                36
+                                                {dataSource.length}
                                             </div>
                                             <div className="other-badge-wrapper">
                                                 <img
                                                     src={appreciationIconGrey}
                                                     alt=""
                                                 />
-                                                87
+                                                0
                                             </div>
                                         </div>
                                     </div>
@@ -274,7 +228,7 @@ const ContributionOverview = () => {
                                         23 Contributions
                                     </div>
                                     <div className="subrow-details">
-                                        <div>123 badges</div>
+                                        <div>{dataSource.length} badges</div>
                                         <div className="subrow-payout">
                                             1250$
                                         </div>
@@ -291,11 +245,11 @@ const ContributionOverview = () => {
                                     <div>1250$</div>
                                 </div>
                             </div>
-                            <div className="last-payout-info">
+                            {/* <div className="last-payout-info">
                                 <img src={payoutInfo} alt="" />
                                 500 USDC and 0.25 ETH transferred on 3
                                 <div className="right-shim" />
-                            </div>
+                            </div> */}
                         </div>
                     </>
                 )}

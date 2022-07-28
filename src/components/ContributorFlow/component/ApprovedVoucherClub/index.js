@@ -30,6 +30,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const claimLoading = useSelector((x) => x.contributor.claimLoading)
     const dispatch = useDispatch()
+    const [rejectLoader, setRejectLoader] = useState(false)
 
     useEffect(() => {
         let contributions = []
@@ -71,58 +72,65 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
 
     const claimBadge = async () => {
         console.log("claim badge")
-        dispatch(setClaimLoading(true))
-        try {
+        if (totalSelected) {
+            dispatch(setClaimLoading(true))
+            try {
+                const memberTokenId = await getAllMembershipBadges(
+                    address,
+                    proxyContract,
+                    false
+                )
+                console.log(
+                    "claim badge member token id",
+                    memberTokenId.data.membershipNFTs[0].tokenID
+                )
+                const membership_token_id =
+                    memberTokenId.data.membershipNFTs[0].tokenID
+                await dispatch(
+                    contributionBadgeClaim(
+                        contributionsWithCheckbox[0]?.uuid,
+                        membership_token_id,
+                        (x) => {
+                            console.log("success callback", x)
+                            // dispatch(getContributionAsContributorApproved())
+                            dispatch(
+                                removeClaimedContributionVoucher(
+                                    contributionsWithCheckbox
+                                )
+                            )
+                            dispatch(setClaimLoading(false))
+
+                            message.success("Claimed Badge Successfully")
+                        },
+                        contributionsWithCheckbox
+                    )
+                )
+            } catch (err) {
+                dispatch(setClaimLoading(false))
+            }
+        }
+    }
+
+    const rejectVoucher = async () => {
+        if (totalSelected) {
+            setRejectLoader(true)
             const memberTokenId = await getAllMembershipBadges(
                 address,
                 proxyContract,
                 false
             )
-            console.log(
-                "claim badge member token id",
-                memberTokenId.data.membershipNFTs[0].tokenID
-            )
+
             const membership_token_id =
                 memberTokenId.data.membershipNFTs[0].tokenID
             await dispatch(
-                contributionBadgeClaim(
-                    contributionsWithCheckbox[0]?.uuid,
+                rejectContributionVoucher(
                     membership_token_id,
-                    (x) => {
-                        console.log("success callback", x)
-                        // dispatch(getContributionAsContributorApproved())
-                        dispatch(
-                            removeClaimedContributionVoucher(
-                                contributionsWithCheckbox
-                            )
-                        )
-                        dispatch(setClaimLoading(false))
-
-                        message.success("Claimed Badge Successfully")
-                    },
+                    contributionsWithCheckbox[0]?.voucher_uuid,
                     contributionsWithCheckbox
                 )
             )
-        } catch (err) {
-            dispatch(setClaimLoading(false))
+            setRejectLoader(false)
         }
-    }
-
-    const rejectVoucher = async () => {
-        const memberTokenId = await getAllMembershipBadges(
-            address,
-            proxyContract,
-            false
-        )
-
-        const membership_token_id = memberTokenId.data.membershipNFTs[0].tokenID
-        dispatch(
-            rejectContributionVoucher(
-                membership_token_id,
-                contributionsWithCheckbox[0]?.voucher_uuid,
-                contributionsWithCheckbox
-            )
-        )
     }
 
     return (
@@ -137,10 +145,12 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                         <button
                             className="reject-outline-btn"
                             onClick={rejectVoucher}
+                            disabled={!totalSelected}
                         >
                             Reject all
+                            {rejectLoader && <Spin indicator={antIcon} />}
                         </button>
-                        <button onClick={claimBadge}>
+                        <button onClick={claimBadge} disabled={!totalSelected}>
                             Claim Badge • {totalSelected}
                             {claimLoading && <Spin indicator={antIcon} />}
                         </button>

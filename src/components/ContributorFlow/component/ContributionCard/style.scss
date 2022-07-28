@@ -13,7 +13,13 @@
     }
     .contribution-approve-checkbox {
         margin-top: 0.25rem;
-        border: 1px solid #fff;
+        .ant-checkbox-inner {
+            background-color: transparent;
+            border-color: #fff;
+        }
+        .ant-checkbox-checked::after {
+            border-color: #fff;
+        }
     }
     .more-details-hover {
         position: absolute;

@@ -4,7 +4,7 @@ const toastSlice = createSlice({
     name: "toast",
     initialState: {
         payout: false,
-        loading_state: false,
+        loading_state: true,
         payout_data: {
             item: 0,
             value: 0,

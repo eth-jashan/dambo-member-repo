@@ -24,7 +24,7 @@ export default function ContributorBadgeScreen() {
     const [upgradedMembership, setUpgradedMembership] = useState(false)
 
     const getCurrentBadgeUpdated = () => {
-        if (membershipBadges.recentlyUpdate) {
+        if (membershipBadges?.recentlyUpdate) {
             setUpgradedMembership({
                 ...membershipBadges.membership,
             })

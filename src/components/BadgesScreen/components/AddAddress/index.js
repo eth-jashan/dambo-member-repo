@@ -86,7 +86,7 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
             await dispatch(mintBadges(selectedMembershipBadge, mintAddresses))
             await dispatch(getAllDaoMembers())
             dispatch(setShowMembershipMintingModal(false))
-            message.error("successfully approved badge")
+            message.success("successfully approved badge")
         } catch (error) {
             message.error("error on signinig")
         }

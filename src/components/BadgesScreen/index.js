@@ -103,24 +103,23 @@ export default function BadgesScreen() {
                                 selectedNav === "community" && "active-nav-link"
                             }`}
                             onClick={async () => {
-                                await dispatch(getAllDaoMembers())
+                                dispatch(getAllDaoMembers())
                                 dispatch(setSelectedNav("community"))
                             }}
                         >
                             Community
                         </div>
                     </div>
-                    <div
+                    {/* <div
                         onMouseEnter={() => setAddBtnHover(true)}
                         onMouseLeave={() => setAddBtnHover(false)}
-                        // onClick={setModalContri(true)}
                         className={`add-btn ${addBtnHover ? "" : ""}`}
                     >
                         <img
                             src={addBtnHover ? plus_black : plus_gray}
                             alt="plus"
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* <BadgesScreenSearchTab /> */}

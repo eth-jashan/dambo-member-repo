@@ -10,7 +10,6 @@ import {
     createContributionVoucher,
     getAllMembershipBadges,
     getArrayOfNounce,
-    getMembershipBadgeFromClaimer,
 } from "../../../../utils/POCPServiceSdk"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -20,6 +19,8 @@ import {
 import Lottie from "react-lottie"
 import white_loader from "../../../../assets/lottie/Loader_White_lottie.json"
 import { ethers } from "@biconomy/mexa/node_modules/ethers"
+import dayjs from "dayjs"
+import AddressInput from "../../../BadgesScreen/components/AddAddress/AddressInput"
 const { TextArea } = Input
 
 export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
@@ -94,7 +95,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 placeholder="Enter Address"
                 onChange={(e) => updateAddress(e.target.value, index)}
             />
-            <div className="cross-div"></div>
+            {/* <div className="cross-div"></div> */}
         </div>
     )
 
@@ -142,7 +143,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 rows={4}
                 value={schemaTemplate[index]?.value}
                 placeholder={placeholder}
-                maxLength={6}
+                maxLength={200}
             />
         </div>
     )
@@ -204,6 +205,74 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         }
     }
 
+    const approveBadge = async () => {
+        if (address[0]) {
+            const uploadMetadata = []
+            schemaTemplate.forEach((x) => {
+                if (x.value) {
+                    uploadMetadata.push({
+                        ...x,
+                    })
+                }
+            })
+            console.log(
+                "approved addresses for badges",
+                schemaTemplate,
+                uploadMetadata
+            )
+
+            try {
+                setLoading(true)
+                console.log(address, proxyContract)
+                const res = await createContributionMetadataUri(
+                    schemaTemplate.find(
+                        (x) => x.fieldName === "Contribution Title"
+                    )?.value,
+                    currentDao?.name,
+                    `22 July' 22`,
+                    currentDao?.logo_url
+                )
+
+                if (res.metadata) {
+                    const memberTokenId = await getAllMembershipBadges(
+                        address[0],
+                        proxyContract,
+                        false
+                    )
+                    const arrayOfNounce = await getArrayOfNounce(
+                        [memberTokenId.data.membershipNFTs[0].tokenID],
+                        currentDao?.uuid,
+                        jwt
+                    )
+                    const msg = await createContributionVoucher(
+                        proxyContract,
+                        [memberTokenId.data.membershipNFTs[0].tokenID],
+                        [1],
+                        [res.metadata],
+                        arrayOfNounce,
+                        [0]
+                    )
+                    if (msg) {
+                        await dispatch(
+                            createContributionVouchers(
+                                address[0],
+                                msg,
+                                uploadMetadata,
+                                res.metadata
+                            )
+                        )
+
+                        setLoading(false)
+                        dispatch(actionOnContributionRequestModal(false))
+                    }
+                }
+            } catch (error) {
+                console.log("error", error.toString())
+                setLoading(false)
+            }
+        }
+    }
+
     return (
         <div className="contribution-creation-modal-container">
             <div className="modal-backdrop">
@@ -221,7 +290,18 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                         </div>
                     </div>
                     <div className="modal-title">{`${type} Details`}</div>
-                    {address?.map((x, i) => addressInput(x, i))}
+                    {/* {address?.map((x, i) => addressInput(x, i))} */}
+                    {address.map((x, i) => (
+                        <AddressInput
+                            index={i}
+                            key={i}
+                            address={x}
+                            updateAddress={updateAddress}
+                            deleteAddress={(x) => console.log(x)}
+                            updateStatus={(x) => console.log(x)}
+                            type="membership-badge-claimed"
+                        />
+                    ))}
                     {/* <div
                         className="add-address-request-modal"
                         onClick={addAddress}
@@ -230,9 +310,15 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                         <div>Add another Address</div>
                     </div> */}
                     <div className="modal-title">{`${type} Details`}</div>
-                    {badgeSchema?.map((badge, index) =>
-                        getInputField(badge.fieldType, badge.fieldName, index)
-                    )}
+                    {badgeSchema?.map((badge, index) => (
+                        <div key={index}>
+                            {getInputField(
+                                badge.fieldType,
+                                badge.fieldName,
+                                index
+                            )}
+                        </div>
+                    ))}
                     <div className="btn-wrapper-submit">
                         <button
                             onClick={async () => {
@@ -240,29 +326,36 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                 schemaTemplate.forEach((x) => {
                                     if (x.value) {
                                         uploadMetadata.push({
-                                            ...x,
+                                            trait_type: x.fieldName,
+                                            value: x.value,
                                         })
                                     }
                                 })
-                                console.log(
-                                    "approved addresses for badges",
-                                    schemaTemplate,
-                                    uploadMetadata
-                                )
 
                                 try {
                                     setLoading(true)
-                                    console.log(address, proxyContract)
                                     const res =
                                         await createContributionMetadataUri(
+                                            currentDao?.logo_url,
+                                            currentDao?.name,
                                             schemaTemplate.find(
                                                 (x) =>
                                                     x.fieldName ===
                                                     "Contribution Title"
                                             )?.value,
-                                            currentDao?.name,
-                                            `22 July' 22`,
-                                            currentDao?.logo_url
+                                            schemaTemplate.find(
+                                                (x) =>
+                                                    x.fieldName ===
+                                                    "Time Spent in Hours"
+                                            )?.value,
+                                            dayjs().format("D MMM YYYY"),
+                                            schemaTemplate.find(
+                                                (x) =>
+                                                    x.fieldName ===
+                                                    "Contribution Category"
+                                            )?.value,
+                                            "",
+                                            uploadMetadata
                                         )
 
                                     if (res.metadata) {
@@ -300,7 +393,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                                 createContributionVouchers(
                                                     address[0],
                                                     msg,
-                                                    uploadMetadata,
+                                                    schemaTemplate,
                                                     res.metadata
                                                 )
                                             )

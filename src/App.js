@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react"
-import { Routes, Route, useNavigate } from "react-router-dom"
+import React, { useState, useRef } from "react"
+import { Routes, Route } from "react-router-dom"
 import Onboarding from "./pages/DaoOnboarding"
 import Dashboard from "./pages/Dashboard/index"
 import ContributorOnbording from "./pages/ContributorOnboarding"
@@ -9,24 +9,16 @@ import DiscordFallback from "./pages/DiscordFallback"
 import ContributorSignupFallback from "./pages/ContributorSignupFallback"
 import * as dayjs from "dayjs"
 import * as relativeTimePlugin from "dayjs/plugin/relativeTime"
-import { useDispatch, useSelector } from "react-redux"
-import {
-    setAdminStatus,
-    setLoggedIn,
-    signout,
-    setAddress,
-} from "./store/actions/auth-action"
+import { useDispatch } from "react-redux"
+import { signout } from "./store/actions/auth-action"
 import AppContext from "./appContext"
 import AddBotFallback from "./pages/AddBotFallback"
 import MetamaskError from "./pages/MetamaskError"
 import { useSigner } from "wagmi"
 import ErrorBoundary from "./components/ErrorBoundary"
-import Web3 from "web3"
 
 function App() {
     dayjs.extend(relativeTimePlugin)
-    const isAdmin = useSelector((x) => x.auth.isAdmin)
-    const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const [pocpAction, setPocpAction] = useState(false)
@@ -37,9 +29,7 @@ function App() {
         setPocpAction(status)
         setChainId(chainId)
     }
-    // const provider = useProvider()
-    // const walletWeb3 = new Web3(provider)
-    // const walletProvider = walletWeb3.currentProvider
+
     const { data: signer } = useSigner()
     const listenersSet = useRef(null)
 
@@ -60,13 +50,6 @@ function App() {
         listenersSet.current = true
     }
 
-    // console.log("wallet provider is", walletProvider)
-    // const selectedProvider = walletProvider.providerMap
-    //     ? walletProvider?.overrideIsMetaMask
-    //         ? walletProvider?.providerMap.get("MetaMask")
-    //         : walletProvider.selectedProvider
-    //     : walletProvider
-
     if (window.location.hostname === "pony.rep3.gg" && !redirected) {
         if (window.location.pathname) {
             window.open(
@@ -82,23 +65,6 @@ function App() {
         chainId,
         setPocpActionValue,
     }
-
-    // walletProvider.on("accountsChanged", () => {
-    //     console.log("accoiunt changed in app provider")
-    //     dispatch(signout())
-    //     window.location.replace(window.location.origin)
-    // })
-
-    // walletProvider.on("chainChanged", (x) => {
-    //     dispatch(signout())
-    //     window.location.replace(window.location.origin)
-    // })
-
-    // useEffect(() => {
-    //     if (!window.ethereum) {
-    //         navigate("/metamask-error")
-    //     }
-    // }, [])
 
     return (
         <ErrorBoundary>

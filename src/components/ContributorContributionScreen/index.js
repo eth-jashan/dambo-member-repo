@@ -200,9 +200,7 @@ export default function ContributorContributionScreen() {
                     contributions={contributionForContributorApproved}
                     title={`Approved Requests  •  ${totalApprovedRequests}`}
                     onOpenCallback={fetchApprovedContributions}
-                    defaultCollapseState={
-                        !!contributionForContributorApproved?.length
-                    }
+                    defaultCollapseState={true}
                 >
                     <ApprovedVoucherClub
                         voucher={contributionForContributorApproved?.[0]}
@@ -392,22 +390,27 @@ export default function ContributorContributionScreen() {
                             <img src={cross} alt="" />
                         </div>
 
-                        <video className="claimedBadgeImg" autoPlay loop muted>
+                        {/* {currentDao?.uuid===<video className="claimedBadgeImg" autoPlay loop muted>
                             <source
                                 src={membershipBadgeClaimed?.image_url}
                                 type="video/mp4"
                             />
-                        </video>
-                        {/* <img
-                            src={membershipBadgeClaimed?.animationUrl}
-                            alt=""
-                            className="claimedBadgeImg}
-                        /> */}
-
-                        {/* <img
-                        src="https://i.imgur.com/Fa9KFiM.png"
-                        alt=""
-                    /> */}
+                        </video>} */}
+                        {currentDao?.uuid ===
+                            "93ba937e02ea4fdb9633c2cb27345200" ||
+                        currentDao?.uuid ===
+                            "981349a995c140d8b7fb5c110b0d133b" ? (
+                            <video autoPlay loop muted>
+                                <source
+                                    src={membershipBadgeClaimed.image_url}
+                                />
+                            </video>
+                        ) : (
+                            <img
+                                className="claimedBadgeImg"
+                                src={membershipBadgeClaimed.image_url}
+                            />
+                        )}
 
                         <div className="claimedBadgeContent">
                             <div className="claimedBadgeText">

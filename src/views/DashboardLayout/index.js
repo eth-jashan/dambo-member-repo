@@ -35,29 +35,29 @@ export default function DashboardLayout({
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
 
     const contributorFetch = async () => {
-        dispatch(setLoadingState(true))
-        dispatch(setLoadingState(false))
+        // dispatch(setLoadingState(true))
+        // dispatch(setLoadingState(false))
     }
 
     const changeAccount = async (item) => {
         console.log("item selected", item)
         dispatch(set_dao(item))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
-        dispatch(setLoadingState(true))
-        if (route === "contributions" && role === "ADMIN") {
-            dispatch(setLoadingState(false))
-        } else if (role !== "ADMIN") {
-            await contributorFetch()
-            dispatch(setLoadingState(false))
-        } else if (route !== "contributions" && role === "ADMIN") {
-            dispatch(setLoadingState(false))
-        }
+        // dispatch(setLoadingState(true))
+        // if (route === "contributions" && role === "ADMIN") {
+        //     dispatch(setLoadingState(false))
+        // } else if (role !== "ADMIN") {
+        //     await contributorFetch()
+        //     dispatch(setLoadingState(false))
+        // } else if (route !== "contributions" && role === "ADMIN") {
+        //     dispatch(setLoadingState(false))
+        // }
 
         if (safeSdk) {
             const nonce = await safeSdk.getNonce()
             dispatch(set_active_nonce(nonce))
         }
-        dispatch(setLoadingState(false))
+        // dispatch(setLoadingState(false))
     }
 
     const text = (item) => <span>{item}</span>

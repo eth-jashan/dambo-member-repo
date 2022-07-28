@@ -80,14 +80,30 @@ const TransactionCard = () => {
     const onApproveTransaction = async () => {
         setLoading(true)
         if (mint && !payToken) {
-            //
+            const uploadMetadata = []
+            currentTransaction?.details.forEach((x) => {
+                if (x.value) {
+                    uploadMetadata.push({
+                        trait_type: x.fieldName,
+                        value: x.value,
+                    })
+                }
+            })
             const res = await createContributionMetadataUri(
+                currentDao?.logo_url,
+                currentDao?.name,
                 currentTransaction?.details.find(
                     (x) => x.fieldName === "Contribution Title"
                 )?.value,
-                currentDao?.name,
-                `25 July'22`,
-                currentDao?.logo_url
+                currentTransaction?.details.find(
+                    (x) => x.fieldName === "Time Spent in Hours"
+                )?.value,
+                dayjs().format("D MMM YYYY"),
+                currentTransaction?.details.find(
+                    (x) => x.fieldName === "Contribution Category"
+                )?.value,
+                feedback,
+                uploadMetadata
             )
             if (res) {
                 dispatch(
@@ -146,14 +162,30 @@ const TransactionCard = () => {
                         })
                     }
                 })
-                console.log("neww payout", newPayout)
+                const uploadMetadata = []
+                currentTransaction?.details.forEach((x) => {
+                    if (x.value) {
+                        uploadMetadata.push({
+                            trait_type: x.fieldName,
+                            value: x.value,
+                        })
+                    }
+                })
                 const res = await createContributionMetadataUri(
+                    currentDao?.logo_url,
+                    currentDao?.name,
                     currentTransaction?.details.find(
                         (x) => x.fieldName === "Contribution Title"
                     )?.value,
-                    currentDao?.name,
-                    `25 July'22`,
-                    currentDao?.logo_url
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Time Spent in Hours"
+                    )?.value,
+                    dayjs().format("D MMM YYYY"),
+                    currentTransaction?.details.find(
+                        (x) => x.fieldName === "Contribution Category"
+                    )?.value,
+                    feedback,
+                    uploadMetadata
                 )
                 if (res) {
                     dispatch(

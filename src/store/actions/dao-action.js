@@ -1357,57 +1357,6 @@ export const getAllClaimedBadges = () => {
     }
 }
 
-// export const getAllUnclaimedBadges = () => {
-//     return async (dispatch, getState) => {
-//         const communityInfo = getState().dao.communityInfo
-//         const pocpGetter = new PocpGetters(
-//             currentNetwork?.chainId === 4 ? 80001 : 137
-//         )
-//         const uuid = getState().dao.currentDao?.uuid
-//         const jwt = getState().auth.jwt
-//         try {
-//             const res = await apiClient.get(
-//                 `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.createContri}?dao_uuid=${uuid}&contributor=1`,
-//                 {
-//                     headers: {
-//                         Authorization: `Bearer ${jwt}`,
-//                     },
-//                 }
-//             )
-//             if (res.data.success) {
-//                 const unclaimedTokens = await pocpGetter.getUnclaimedBadges(
-//                     communityInfo[0]?.id?.toString()
-//                 )
-//                 const unclaimedBadges = []
-//                 res.data.data.contributions.forEach((contribution) => {
-//                     unclaimedTokens.forEach((badge) => {
-//                         if (contribution.id === parseInt(badge.identifier)) {
-//                             unclaimedBadges.push(badge)
-//                         }
-//                     })
-//                 })
-//                 dispatch(
-//                     daoAction.set_unclaimed_badges({
-//                         unclaimedToken: unclaimedBadges,
-//                     })
-//                 )
-//             } else {
-//                 dispatch(
-//                     daoAction.set_claimed_badges({
-//                         unclaimedToken: [],
-//                     })
-//                 )
-//             }
-//         } catch (error) {
-//             dispatch(
-//                 daoAction.set_claimed_badges({
-//                     unclaimedToken: [],
-//                 })
-//             )
-//         }
-//     }
-// }
-
 export const pocpRegistrationInfo = (dao_uuid, name, owner) => {
     return (dispatch) => {
         dispatch(daoAction.set_pocp_info({ info: { dao_uuid, name, owner } }))

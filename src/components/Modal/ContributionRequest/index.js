@@ -66,9 +66,11 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 )
                 setLoading(false)
                 setVisibility(false)
+                message.success("contribution created successfully")
             } catch (error) {
                 console.log("error", error)
                 setLoading(false)
+                message.error("something went wrong")
             }
         }
     }

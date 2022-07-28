@@ -13,6 +13,7 @@ export const setPayoutToast = (status, payout_data) => {
 
 export const setLoadingState = (loading) => {
     return (dispatch) => {
+        console.log(".............setting loading state as ", loading)
         dispatch(toastAction.set_loading_state({ loading }))
     }
 }

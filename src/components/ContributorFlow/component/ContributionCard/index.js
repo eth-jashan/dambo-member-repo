@@ -7,6 +7,7 @@ import payments_orange from "../../../../assets/Icons/payments_orange.svg"
 import payments_green from "../../../../assets/Icons/payments_green.svg"
 import received_white from "../../../../assets/Icons/received_white.svg"
 import dayjs from "dayjs"
+import { Checkbox } from "antd"
 
 export default function ContributionCardV2({
     item,
@@ -63,9 +64,14 @@ export default function ContributionCardV2({
                 </div>
             )}
             {contributionType === "approved" && isFirst && (
-                <input
-                    type="checkbox"
-                    value={item.isChecked}
+                // <input
+                //     type="checkbox"
+                //     value={item.isChecked}
+                //     checked={item.isChecked}
+                //     onChange={(e) => updateCheckbox(e, index)}
+                //     className="contribution-approve-checkbox"
+                // />
+                <Checkbox
                     checked={item.isChecked}
                     onChange={(e) => updateCheckbox(e, index)}
                     className="contribution-approve-checkbox"

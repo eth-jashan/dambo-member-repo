@@ -93,7 +93,7 @@ export default function ContributorBadgeSideCard() {
                     )?.value
                 }
             </div>
-            {contribution_detail?.entity?.tokens?.length && (
+            {contribution_detail?.entity?.tokens?.length ? (
                 <div className="contri-payout-info">
                     <div>
                         <span className="highlighted">{totalAmountInUsd}$</span>{" "}
@@ -149,6 +149,8 @@ export default function ContributorBadgeSideCard() {
                         </div>
                     )}
                 </div>
+            ) : (
+                ""
             )}
 
             <div className="contri-info">

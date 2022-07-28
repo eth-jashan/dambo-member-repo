@@ -430,7 +430,7 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                             arweaveArrayIndex = arweaveArrayIndex + 1
                         }
 
-                        return {
+                        const returnObj = {
                             description: membership.description,
                             image_url,
                             metadata_hash,
@@ -439,6 +439,12 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                             is_video: false,
                             name: membership.name,
                         }
+
+                        if (isEditing) {
+                            returnObj.uuid = membership.uuid
+                        }
+
+                        return returnObj
                     }
                 )
                 let res

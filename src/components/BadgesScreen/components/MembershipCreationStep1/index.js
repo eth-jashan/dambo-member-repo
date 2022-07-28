@@ -10,7 +10,10 @@ export default function MembershipCreationStep1({
 }) {
     const updateBadgeName = (badgeIndex, newValue) => {
         const copyOfBadges = [...membershipBadges]
-        copyOfBadges[badgeIndex].name = newValue
+        copyOfBadges[badgeIndex] = {
+            ...copyOfBadges[badgeIndex],
+            name: newValue,
+        }
         setMembershipBadges(copyOfBadges)
     }
 

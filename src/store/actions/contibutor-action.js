@@ -5,9 +5,13 @@ import { authActions } from "../reducers/auth-slice"
 import { contributorAction } from "../reducers/contributor-slice"
 
 import apiClient from "../../utils/api_client"
-import { claimContributionBadge } from "../../utils/POCPServiceSdk"
+import {
+    claimContributionBadge,
+    getAllMembershipBadges,
+} from "../../utils/POCPServiceSdk"
 import { daoAction } from "../reducers/dao-slice"
 import { tranactionAction } from "../reducers/transaction-slice"
+import { useSelector } from "react-redux"
 export const set_invite_id = (id) => {
     return (dispatch) => {
         dispatch(contributorAction.set_invite_code({ id }))
@@ -341,49 +345,6 @@ export const updateContributionVoucher = (
     }
 }
 
-// export const contributionBadgeClaim = (
-//     contributionId,
-//     memberTokenId,
-//     approveIndex,
-//     hashCallbackFn,
-//     callbackOnSuccess
-// ) => {
-//     return async (dispatch, getState) => {
-//         const jwt = getState().auth.jwt
-//         const uuid = getState().dao.currentDao?.uuid
-//         const proxyContract = getState().dao.daoProxyAddress
-//         // /contrib/voucher
-//         try {
-//             const res = await apiClient.get(
-//                 `${
-//                     process.env.REACT_APP_DAO_TOOL_URL
-//                 }${`/contrib/voucher`}?contribution_uuid=${contributionId}`,
-//                 {
-//                     headers: {
-//                         Authorization: `Bearer ${jwt}`,
-//                     },
-//                 }
-//             )
-//             if (res.data.success) {
-//                 // return res.data
-//                 console.log("Voucher", res.data.data)
-//                 // await claimContributionBadge(
-//                 //     proxyContract,
-//                 //     "voucher",
-//                 //     memberTokenId,
-//                 //     approveIndex,
-//                 //     hashCallbackFn,
-//                 //     callbackOnSuccess
-//                 // )
-//             } else {
-//                 // return false
-//             }
-//         } catch (error) {
-//             return false
-//         }
-//     }
-// }
-
 export const createContributionVouchers = (
     address,
     signed_voucher,
@@ -712,7 +673,9 @@ export const removeClaimedContributionVoucher = (
         )
 
         const voucher = approvedContributions?.[0]
-        const tempApprovedContributions = [...approvedContributions]
+        const tempApprovedContributions = approvedContributions?.map((ele) => ({
+            ...ele,
+        }))
         //
         if (remainingContributionsInVoucher.length && !isReject) {
             for (const key in voucher) {
@@ -733,5 +696,19 @@ export const removeClaimedContributionVoucher = (
                 })
             )
         }
+    }
+}
+
+const getPastContributionLevel = () => {
+    return async (dispatch, getState) => {
+        const proxyContract = getState().dao.daoProxyAddress
+        const address = getState().auth.address
+        const membershipBadgesForAddress = useSelector(
+            (x) => x.membership.membershipBadgesForAddress
+        )
+        try {
+            const res = await getAllMembershipBadges(address, proxyContract)
+            console.log("Membership NFTs", res.data.membershipNfts)
+        } catch (error) {}
     }
 }

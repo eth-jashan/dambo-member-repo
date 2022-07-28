@@ -18,6 +18,7 @@ const AddressInput = ({
     updateAddress,
     deleteAddress,
     updateStatus,
+    type = "membership-voucher-check",
 }) => {
     const [onFocus, setOnFocus] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -30,7 +31,7 @@ const AddressInput = ({
 
     const dispatch = useDispatch()
 
-    const getMembershipNftForAddress = async (address) => {
+    const getMembershipVoucher = async (address) => {
         const isAddress = ethers.utils.isAddress(address)
         if (isAddress) {
             setLoading(true)
@@ -43,6 +44,29 @@ const AddressInput = ({
                 } else {
                     setAddressStatus("success")
                     updateStatus(true, index)
+                }
+            } catch (error) {
+                setLoading(false)
+                setAddressStatus("fail")
+                updateStatus(false, index)
+            }
+        }
+    }
+
+    const getClaimedBadge = async (address) => {
+        const isAddress = ethers.utils.isAddress(address)
+        if (isAddress) {
+            setLoading(true)
+            try {
+                const res = await getAllMembershipBadges(address, proxyContract)
+                console.log("resss", res, res.data.membershipNFTs.length > 0)
+                setLoading(false)
+                if (res.data.membershipNFTs.length > 0) {
+                    setAddressStatus("success")
+                    updateStatus(true, index)
+                } else {
+                    setAddressStatus("fail")
+                    updateStatus(false, index)
                 }
             } catch (error) {
                 setLoading(false)
@@ -68,14 +92,34 @@ const AddressInput = ({
         />
     )
 
+    const getFunctionOnType = async (x) => {
+        switch (type) {
+            case "membership-voucher-check":
+                return await getMembershipVoucher(x)
+            case "membership-badge-claimed":
+                return await getClaimedBadge(x)
+            default:
+                return null
+        }
+    }
+
+    const getErrorTitle = () => {
+        switch (type) {
+            case "membership-voucher-check":
+                return "Badge minted already"
+            case "membership-badge-claimed":
+                return "Badge not minted yet"
+            default:
+                return null
+        }
+    }
+    console.log("error title", getErrorTitle())
     return (
         <div>
             <div className="address-row" key={index}>
                 <div className={!onFocus ? `input-div-address` : `input-div`}>
                     {addressStatus === "fail" && (
-                        <div className="overlay-error">
-                            Badge minted already
-                        </div>
+                        <div className="overlay-error">{getErrorTitle()}</div>
                     )}
                     <input
                         type="text"
@@ -97,7 +141,7 @@ const AddressInput = ({
                         value={address}
                         onChange={async (e) => {
                             updateAddress(e.target.value, index)
-                            await getMembershipNftForAddress(e.target.value)
+                            await getFunctionOnType(e.target.value)
                         }}
                         placeholder="Enter Address"
                     />

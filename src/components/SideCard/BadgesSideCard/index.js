@@ -22,7 +22,10 @@ const CommunitySideCard = ({ show }) => {
     }
 
     const openMembershipUpdateModal = () => {
-        dispatch(setShowMembershipChangeModal(true))
+        console.log(selectedMember)
+        if (selectedMember.membership_txns.length > 0) {
+            dispatch(setShowMembershipChangeModal(true))
+        }
     }
 
     const changeLevel = () => (

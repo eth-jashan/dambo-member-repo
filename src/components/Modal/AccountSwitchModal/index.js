@@ -5,7 +5,10 @@ import chevron_right from "../../../assets/Icons/chevron_right.svg"
 import approver from "../../../assets/Icons/approver_icon.svg"
 import contributor from "../../../assets/Icons/contributor_icon.svg"
 import { useDispatch, useSelector } from "react-redux"
-import { switchRole } from "../../../store/actions/dao-action"
+import {
+    getAllClaimedBadges,
+    switchRole,
+} from "../../../store/actions/dao-action"
 import { setLoadingState } from "../../../store/actions/toast-action"
 import {
     getAllMembershipBadgesForAddress,
@@ -23,7 +26,8 @@ const AccountSwitchModal = ({ onChange, route }) => {
     const address = useSelector((x) => x.auth.address)
     const contributionFlowAsContributor = async () => {
         await dispatch(getContributionAsContributorApproved())
-        dispatch(getPastContributions())
+        await dispatch(getPastContributions())
+        await dispatch(getAllClaimedBadges())
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())
@@ -32,7 +36,6 @@ const AccountSwitchModal = ({ onChange, route }) => {
         dispatch(switchRole(role))
         onChange(role)
         dispatch(setLoadingState(true))
-        console.log("here started")
         await dispatch(getAllMembershipBadgesForAddress(address))
 
         if (route === "contributions" && role === "ADMIN") {

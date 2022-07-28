@@ -54,6 +54,8 @@ export default function Modal({ closeModal, membershipBadges, isEditing }) {
         }
     }
 
+    console.log("local membership badges are", localMembershipBadges)
+
     const SelectBadgeType = () => {
         return (
             <>

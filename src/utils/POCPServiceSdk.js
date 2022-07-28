@@ -266,28 +266,40 @@ export const claimContributionBadge = async (
 }
 
 export const createContributionMetadataUri = async (
-    title,
-    daoName,
-    approveDate,
-    logoUrl
+    dao_logo_url,
+    dao_name,
+    contri_title,
+    contri_time_spent,
+    contri_date,
+    contri_type,
+    feedback,
+    contri_attribute
 ) => {
     try {
         console.log(
             JSON.stringify({
-                title,
-                daoName,
-                approveDate,
-                logoUrl,
+                dao_logo_url,
+                dao_name,
+                contri_title,
+                contri_time_spent,
+                contri_date,
+                contri_type,
+                feedback,
+                contri_attribute,
             })
         )
         const res = await axios.post(
             `https://test-staging.api.drepute.xyz/arweave_server/contribution-badge`,
-            JSON.stringify({
-                title,
-                daoName,
-                approveDate,
-                logoUrl,
-            })
+            {
+                dao_logo_url,
+                dao_name,
+                contri_title,
+                contri_time_spent,
+                contri_date,
+                contri_type,
+                feedback,
+                contri_attribute,
+            }
         )
         if (res.data.success) {
             return res.data.data
