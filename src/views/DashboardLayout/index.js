@@ -54,18 +54,22 @@ export default function DashboardLayout({
 
     function checkImage(url) {
         const image = new Image()
+        let status
         image.onload = function () {
             if (this.width > 0) {
                 console.log("image exists")
-                return true
+                status = true
             }
         }
         image.onerror = function () {
             console.log("image doesn't exist")
-            return false
+            status = false
         }
         image.src = url
+        return status
     }
+
+    console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
 
     const text = (item) => <span>{item}</span>
     return (
@@ -115,12 +119,12 @@ export default function DashboardLayout({
                                     {item?.dao_details?.logo_url ? (
                                         <img
                                             src={
-                                                checkImage(
-                                                    item?.dao_details?.logo_url
-                                                )
-                                                    ? item?.dao_details
-                                                          ?.logo_url
-                                                    : defaultPic
+                                                // checkImage(
+                                                //     item?.dao_details?.logo_url
+                                                // )
+                                                //     ?
+                                                item?.dao_details?.logo_url
+                                                // : defaultPic
                                             }
                                             alt="logo"
                                             height="100%"

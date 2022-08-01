@@ -34,24 +34,22 @@ const ContributionOverview = () => {
 
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
-        membershipBadgesForAddress.forEach((item) => {
+        membershipBadgesForAddress.forEach((item, i) => {
             membershipBadges.forEach((x) => {
-                if (item.level === x.level.toString()) {
+                if (item.level === x.level.toString() && i === 0) {
                     membershipInfo.push(x)
                 }
             })
         })
-
+        console.log(membershipBadgesForAddress, membershipInfo)
         setCurrentMembershipBadge({
-            ...membershipBadgesForAddress[
-                membershipBadgesForAddress.length - 1
-            ],
-            ...membershipInfo[membershipInfo.length - 1],
+            ...membershipBadgesForAddress[0],
+            ...membershipInfo[0],
         })
     }
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const levels = membershipBadgesForAddress?.map((x, i) => {
-        if (i < membershipBadgesForAddress.length - 1) {
+        if (i > 0) {
             return {
                 name: x.level,
                 time: "2 months ago",
