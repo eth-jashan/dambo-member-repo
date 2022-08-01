@@ -18,13 +18,7 @@ import {
 import { setPayoutToast } from "../../../store/actions/toast-action"
 import chevron_down from "../../../assets/Icons/expand_more_black.svg"
 import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
-// import {
-//     chainSwitch,
-//     getSelectedChainId,
-//     processBadgeApprovalToPocp,
-//     setChainInfoAction,
-// } from "../../../utils/POCPutils"
-// import { getIpfsUrl } from "../../../utils/relayFunctions"
+
 import ContributionBadgeItem from "./ContributionBadgeItem"
 import POCPStatusCard from "../../POCPStatusCard"
 import { useNetwork } from "wagmi"

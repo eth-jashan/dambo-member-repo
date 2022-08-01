@@ -7,6 +7,7 @@ import {
     rejectContributionVoucher,
     setClaimLoading,
     removeClaimedContributionVoucher,
+    getPastContributions,
 } from "../../../../store/actions/contibutor-action"
 import { getAllMembershipBadges } from "../../../../utils/POCPServiceSdk"
 import { useAccount } from "wagmi"
@@ -98,6 +99,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                                     contributionsWithCheckbox
                                 )
                             )
+                            dispatch(getPastContributions())
                             dispatch(setClaimLoading(false))
 
                             message.success("Claimed Badge Successfully")

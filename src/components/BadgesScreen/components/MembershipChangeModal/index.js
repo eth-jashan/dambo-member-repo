@@ -43,6 +43,16 @@ export default function MembershipChangeModal({
                     selectedMember.membership_txns[0].membership_txn_hash
                 )
 
+                console.log(
+                    "membership NFT",
+                    proxyContract,
+                    res.data?.membershipNFTs,
+                    selectUpgradeMembership.level,
+                    selectUpgradeMembership.category,
+                    selectUpgradeMembership.metadata_hash,
+                    selectedMember.membership_txns[0].membership_txn_hash
+                )
+
                 await upgradeMembershipNft(
                     proxyContract,
                     res.data?.membershipNFTs[0].tokenID,
@@ -82,7 +92,7 @@ export default function MembershipChangeModal({
                                 newObj.dao_members.push(x)
                             }
                         })
-                        allDaoMembers.non_claimers_addr.forEach((x, i) => {
+                        allDaoMembers.non_claimers_addr.forEach((x) => {
                             newObj.non_claimers_addr.push(x)
                         })
                         dispatch(setAllDaoMember(newObj))

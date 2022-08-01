@@ -163,6 +163,7 @@ export const createMembershipVoucher = async (
     metadataHash,
     dao_uuid
 ) => {
+    console.log(addresses)
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,

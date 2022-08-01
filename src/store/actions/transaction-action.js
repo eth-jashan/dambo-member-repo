@@ -223,6 +223,7 @@ export const rejectApproval = (uuid) => {
             )
 
             if (res.data.success) {
+                // dispatch(tranactionAction.)
                 dispatch(tranactionAction.set_reject_request({ uuid }))
                 return 1
             } else {

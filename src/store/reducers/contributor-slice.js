@@ -4,6 +4,8 @@ const contributorSlice = createSlice({
     name: "contributor",
     initialState: {
         contributorSchema: [],
+        contributionAllCount: 0,
+        contributorStats: {},
         contributorSchemaId: 0,
         contributorSelectionContribution: false,
         successModal: false,
@@ -66,6 +68,7 @@ const contributorSlice = createSlice({
         },
         set_admin_contribution(state, action) {
             state.contributionForAdmin = action.payload.contribution
+            state.contributionAllCount = action.payload.count
         },
         set_contribution_selection(state, action) {
             state.contributorSelectionContribution = action.payload.contribution
@@ -81,6 +84,9 @@ const contributorSlice = createSlice({
         },
         setClaimLoading(state, action) {
             state.claimLoading = action.payload.claimLoading
+        },
+        setContributorStats(state, action) {
+            state.contributorStats = action.payload.stats
         },
     },
 })

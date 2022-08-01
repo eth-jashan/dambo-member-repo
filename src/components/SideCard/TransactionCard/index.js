@@ -344,7 +344,7 @@ const TransactionCard = () => {
                 setActive={() => setMint(!mint)}
             />
 
-            {currentDao && (
+            {currentDao?.safe_public_address && (
                 <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
                     <ApprovalSelectionToggle
                         toggleTitle="Pay in tokens"

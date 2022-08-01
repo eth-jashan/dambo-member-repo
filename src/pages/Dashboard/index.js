@@ -34,6 +34,7 @@ import {
     getContributionAsAdmin,
     getContributionAsContributorApproved,
     getContributionSchema,
+    getContributorStats,
     getPastContributions,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
@@ -137,6 +138,7 @@ export default function Dashboard() {
         await dispatch(getContributionAsContributorApproved())
         await dispatch(getPastContributions())
         await fetchBadges()
+        await dispatch(getContributorStats())
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())
@@ -146,7 +148,7 @@ export default function Dashboard() {
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))
-                const chainId = await signer.getChainId()
+                const chainId = await signer?.getChainId()
                 const { accountRole, currentDaos } = await dispatch(
                     getAllDaowithAddress(chainId)
                 )
@@ -177,7 +179,7 @@ export default function Dashboard() {
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))
-                const chainId = await signer.getChainId()
+                const chainId = await signer?.getChainId()
                 await rep3ProtocolFunctionsCommon(currentDao)
                 await initPOCP(currentDao.uuid, provider, signer, chainId)
                 if (role === "ADMIN") {
@@ -201,7 +203,7 @@ export default function Dashboard() {
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))
-                const chainId = await signer.getChainId()
+                const chainId = await signer?.getChainId()
                 await rep3ProtocolFunctionsCommon(currentDao)
                 await initPOCP(currentDao.uuid, provider, signer, chainId)
                 if (role === "ADMIN") {
@@ -262,7 +264,7 @@ export default function Dashboard() {
     }
 
     const renderLoadingScreen = () => (
-        <div className="emptyDiv">
+        <div className={styles.emptyDiv}>
             <Lottie
                 options={defaultOptions}
                 style={{ height: "100%", width: "30%" }}

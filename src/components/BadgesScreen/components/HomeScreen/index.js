@@ -36,6 +36,9 @@ export default function HomeScreen({
     const contributionSchema = useSelector(
         (x) => x.contributor.contributorSchema
     )
+    const allContributionCount = useSelector(
+        (x) => x.contributor.contributionAllCount
+    )
 
     const displaySchemas = (schema) => {
         const contribFeild = []
@@ -127,7 +130,8 @@ export default function HomeScreen({
                                 <span>Contribution Badge </span>
                                 {contributionSchema?.length > 0 && (
                                     <div className="contribution-badge-stats">
-                                        {"01"} Approved | 00 Claimed
+                                        {allContributionCount} Approved | 00
+                                        Claimed
                                     </div>
                                 )}
                             </div>

@@ -20,7 +20,10 @@ const ContributionOverview = () => {
     const currentDao = useSelector((x) => x.dao.currentDao)
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const membershipBadges = useSelector((x) => x.membership.membershipBadges)
-    const contributionOverview = useSelector((x) => x.dao.contributionOverview)
+    const contributionOverview = useSelector(
+        (x) => x.contributor.contributorStats
+    )
+
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
     )
@@ -28,9 +31,10 @@ const ContributionOverview = () => {
         (x) => x.contributor.contributorSelectionContribution
     )
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
+
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
-        membershipBadgesForAddress.map((item, i) => {
+        membershipBadgesForAddress.forEach((item) => {
             membershipBadges.forEach((x) => {
                 if (item.level === x.level.toString()) {
                     membershipInfo.push(x)
@@ -46,16 +50,15 @@ const ContributionOverview = () => {
         })
     }
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
-    const levels = [
-        {
-            name: "level1",
-            time: "2 months ago",
-        },
-        {
-            name: "level2",
-            time: "2 months ago",
-        },
-    ]
+    const levels = membershipBadgesForAddress?.map((x, i) => {
+        if (i < membershipBadgesForAddress.length - 1) {
+            return {
+                name: x.level,
+                time: "2 months ago",
+            }
+        }
+    })
+    console.log("levels", contributionOverview)
 
     useEffect(() => {
         if (
@@ -74,7 +77,7 @@ const ContributionOverview = () => {
 
     const openEtherscan = () => {
         window.open(
-            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.[0]?.id}?a=${currentMembershipBadge?.tokenID}`,
+            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
@@ -156,20 +159,27 @@ const ContributionOverview = () => {
                                 } toggleContent`}
                             >
                                 <div>
-                                    {levels.map((level, index) => (
-                                        <div className="level-row" key={index}>
-                                            <div>
-                                                <img
-                                                    src={compare_arrows}
-                                                    alt=""
-                                                />
-                                                {level?.name}
-                                            </div>
-                                            <div className="level-time">
-                                                {level.time}
-                                            </div>
-                                        </div>
-                                    ))}
+                                    {levels.map((level, index) => {
+                                        if (level) {
+                                            return (
+                                                <div
+                                                    className="level-row"
+                                                    key={index}
+                                                >
+                                                    <div>
+                                                        <img
+                                                            src={compare_arrows}
+                                                            alt=""
+                                                        />
+                                                        {level?.name}
+                                                    </div>
+                                                    <div className="level-time">
+                                                        {level.time}
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    })}
                                 </div>
                                 <div className="lineBreak"></div>
                                 <div className="badge-footer">
@@ -189,7 +199,7 @@ const ContributionOverview = () => {
                                     </div>
                                     <div>
                                         <button>
-                                            Share Badge{" "}
+                                            Share{" "}
                                             <img src={twitterIcon} alt="" />
                                         </button>
                                     </div>
@@ -200,7 +210,8 @@ const ContributionOverview = () => {
                             <div className="other-badge-background">
                                 <div className="other-info-row">
                                     <div className="row-heading">
-                                        23 Contributions
+                                        {contributionOverview?.contrib_count}{" "}
+                                        Contributions
                                     </div>
                                     <div className="subrow-details">
                                         <div>{dataSource.length} badges</div>
@@ -225,26 +236,52 @@ const ContributionOverview = () => {
                                 <div className="horizontal-divider" />
                                 <div className="other-info-row">
                                     <div className="row-heading">
-                                        23 Contributions
+                                        {contributionOverview?.contrib_count}{" "}
+                                        Contributions
                                     </div>
                                     <div className="subrow-details">
                                         <div>{dataSource.length} badges</div>
                                         <div className="subrow-payout">
-                                            1250$
+                                            {contributionOverview?.total_payout_usd?.toFixed(
+                                                2
+                                            ) || 0}
+                                            $
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="payout-row-wrapper">
-                                <div className="payout-row">
-                                    <div>0.25 ETH</div>
-                                    <div>1250$</div>
-                                </div>
-                                <div className="payout-row">
-                                    <div>0.500 USDC</div>
-                                    <div>1250$</div>
-                                </div>
-                            </div>
+                            {contributionOverview?.total_payout_usd &&
+                                Object?.keys(
+                                    contributionOverview?.payout_tokens
+                                )?.map((x, i) => {
+                                    return (
+                                        <div
+                                            key={i}
+                                            className="payout-row-wrapper"
+                                        >
+                                            <div className="payout-row">
+                                                <div>
+                                                    {contributionOverview?.payout_tokens[
+                                                        x
+                                                    ]?.token_amount?.toFixed(
+                                                        4
+                                                    )}{" "}
+                                                    {x}
+                                                </div>
+                                                <div>
+                                                    {contributionOverview?.payout_tokens[
+                                                        x
+                                                    ]?.total_payout_usd?.toFixed(
+                                                        4
+                                                    )}
+                                                    {contributionOverview?.payout_tokens[
+                                                        x
+                                                    ]?.usd_amount?.toFixed(2)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                             {/* <div className="last-payout-info">
                                 <img src={payoutInfo} alt="" />
                                 500 USDC and 0.25 ETH transferred on 3

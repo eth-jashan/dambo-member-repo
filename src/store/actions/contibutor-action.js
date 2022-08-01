@@ -105,6 +105,7 @@ export const getContributionAsAdmin = () => {
                 dispatch(
                     contributorAction.set_admin_contribution({
                         contribution: pendingContribution,
+                        count: res.data.data.contributions.length,
                     })
                 )
             } else {
@@ -114,6 +115,7 @@ export const getContributionAsAdmin = () => {
             dispatch(
                 contributorAction.set_admin_contribution({
                     contribution: [],
+                    count: 0,
                 })
             )
         }
@@ -699,16 +701,39 @@ export const removeClaimedContributionVoucher = (
     }
 }
 
-const getPastContributionLevel = () => {
+export const getContributorStats = () => {
     return async (dispatch, getState) => {
-        const proxyContract = getState().dao.daoProxyAddress
-        const address = getState().auth.address
-        const membershipBadgesForAddress = useSelector(
-            (x) => x.membership.membershipBadgesForAddress
-        )
+        const jwt = getState().auth.jwt
+        const uuid = getState().dao.currentDao?.uuid
+
         try {
-            const res = await getAllMembershipBadges(address, proxyContract)
-            console.log("Membership NFTs", res.data.membershipNfts)
-        } catch (error) {}
+            const res = await apiClient.get(
+                `${
+                    process.env.REACT_APP_DAO_TOOL_URL
+                }${`/contrib/stats`}?dao_uuid=${uuid}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res.data.success) {
+                console.log("statsssss", res.data)
+                dispatch(
+                    contributorAction.setContributorStats({
+                        stats: res.data.data,
+                    })
+                )
+            } else {
+                return false
+            }
+        } catch (error) {
+            // dispatch(
+            //     contributorAction.set_contributor_schema({
+            //         schema: [],
+            //         id: 0,
+            //     })
+            // )
+        }
     }
 }

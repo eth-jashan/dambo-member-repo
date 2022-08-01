@@ -26,7 +26,7 @@ export default function ConfirmationBadgesModal({
 
     return (
         <div className="contribution-confirm-modal-container">
-            <div className="modal-backdrop">
+            <div onClick={dismissModal} className="modal-backdrop">
                 <div className="modal-div">
                     <div className="modal-header-div">
                         <div className="modal-header-green">

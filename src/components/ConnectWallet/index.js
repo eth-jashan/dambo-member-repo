@@ -123,7 +123,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const loadWeb3Modal = useCallback(async () => {
         setAuth(true)
         try {
-            const chainId = await signer.getChainId()
+            const chainId = await signer?.getChainId()
             const newAddress = await signer.getAddress()
             // dispatch(setAddress(newAddress))
 
@@ -215,7 +215,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     }, [authWithWallet, dispatch, isAdmin, navigate, uuid, signer])
 
     const authenticateWallet = async () => {
-        const chainId = await signer.getChainId()
+        const chainId = await signer?.getChainId()
         dispatch(setAddress(address))
         await authWithWallet(address, chainId, signer)
     }

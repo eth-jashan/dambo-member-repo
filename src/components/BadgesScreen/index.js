@@ -21,7 +21,10 @@ import {
 import ContributionSchemaModal from "../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
 import ConfirmationBadgesModal from "../SecondaryBadges/component/ConfirmationModal"
 import BadgeRequestModal from "../SecondaryBadges/component/BadgeRequestModal"
-import { actionOnGenerateSchemaModal } from "../../store/actions/contibutor-action"
+import {
+    actionOnGenerateSchemaModal,
+    successConfirmationModal,
+} from "../../store/actions/contibutor-action"
 
 export default function BadgesScreen() {
     const [addBtnHover, setAddBtnHover] = useState(false)
@@ -172,6 +175,7 @@ export default function BadgesScreen() {
                 <ConfirmationBadgesModal
                     badgeSchema={contributorSchema}
                     type={"Contribution"}
+                    closeModal={() => dispatch(successConfirmationModal(false))}
                 />
             )}
             {contributorRequestModal && (

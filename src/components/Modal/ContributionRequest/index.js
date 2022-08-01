@@ -222,7 +222,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 return selectInput(placeholder, index)
         }
     }
-    console.log("schema template", schemaTemplate)
+
     return (
         <div className="backdrop contribution-request-container">
             <div className="modal">

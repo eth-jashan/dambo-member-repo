@@ -17,6 +17,8 @@ import { setLoadingState } from "../../store/actions/toast-action"
 import DashboardHeader from "../../components/DashboardHeader"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import AntdToast from "../../components/Toast/AntdToast"
+import defaultPic from "../../assets/defaultPic.png"
+import axios from "axios"
 
 export default function DashboardLayout({
     children,
@@ -43,21 +45,26 @@ export default function DashboardLayout({
         console.log("item selected", item)
         dispatch(set_dao(item))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
-        // dispatch(setLoadingState(true))
-        // if (route === "contributions" && role === "ADMIN") {
-        //     dispatch(setLoadingState(false))
-        // } else if (role !== "ADMIN") {
-        //     await contributorFetch()
-        //     dispatch(setLoadingState(false))
-        // } else if (route !== "contributions" && role === "ADMIN") {
-        //     dispatch(setLoadingState(false))
-        // }
 
         if (safeSdk) {
             const nonce = await safeSdk.getNonce()
             dispatch(set_active_nonce(nonce))
         }
-        // dispatch(setLoadingState(false))
+    }
+
+    function checkImage(url) {
+        const image = new Image()
+        image.onload = function () {
+            if (this.width > 0) {
+                console.log("image exists")
+                return true
+            }
+        }
+        image.onerror = function () {
+            console.log("image doesn't exist")
+            return false
+        }
+        image.src = url
     }
 
     const text = (item) => <span>{item}</span>
@@ -107,7 +114,14 @@ export default function DashboardLayout({
 
                                     {item?.dao_details?.logo_url ? (
                                         <img
-                                            src={item?.dao_details?.logo_url}
+                                            src={
+                                                checkImage(
+                                                    item?.dao_details?.logo_url
+                                                )
+                                                    ? item?.dao_details
+                                                          ?.logo_url
+                                                    : defaultPic
+                                            }
                                             alt="logo"
                                             height="100%"
                                             style={{
