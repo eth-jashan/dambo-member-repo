@@ -99,12 +99,12 @@ export default function RequestScreen({
         <div className="emptyDiv">
             <div className="heading">No contribution requests</div>
             {role !== "ADMIN" ? (
-                <div className={`$"heading} $"greyedHeading}`}>
+                <div className="heading greyedHeading">
                     Initiate a contribution
                     <br /> request to get paid
                 </div>
             ) : (
-                <div className={`$"heading} $"greyedHeading}`}>
+                <div className="heading greyedHeading">
                     Share link to onboard
                     <br /> contributors
                 </div>
@@ -112,12 +112,15 @@ export default function RequestScreen({
             {role === "ADMIN" ? (
                 <button
                     onClick={() => copyTextToClipboard()}
-                    className="button"
+                    className="request-empty-screen-button"
                 >
                     <div>Copy Invite Link</div>
                 </button>
             ) : (
-                <button onClick={() => setModalContri(true)} className="button">
+                <button
+                    onClick={() => setModalContri(true)}
+                    className="request-empty-screen-button"
+                >
                     <div>Create Contribution Request</div>
                 </button>
             )}

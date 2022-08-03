@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import "./style.scss"
 import rightArrow from "../../../../assets/Icons/right_arrow_white.svg"
+import cross from "../../../../assets/Icons/cross.svg"
 import { useDispatch } from "react-redux"
 import {
     actionOnContributionRequestModal,
@@ -27,7 +28,13 @@ export default function ConfirmationBadgesModal({
     return (
         <div className="contribution-confirm-modal-container">
             <div onClick={dismissModal} className="modal-backdrop">
-                <div className="modal-div">
+                <div className="modal-div" onClick={(e) => e.stopPropagation()}>
+                    <img
+                        src={cross}
+                        alt=""
+                        onClick={dismissModal}
+                        className="modal-cross-btn"
+                    />
                     <div className="modal-header-div">
                         <div className="modal-header-green">
                             Congratulations
