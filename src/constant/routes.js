@@ -40,6 +40,7 @@ const routes = {
         createMembershipBadges: "/membership",
         getCommunityMembers: "/community",
         createMembershipVoucher: "/membership/voucher",
+        unclaimedVouchers: "/membership/non_member_unclaimed_vouchers",
     },
     arweave: {
         membership: "/membership",

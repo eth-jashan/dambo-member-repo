@@ -178,6 +178,30 @@ export default function ContributorContributionScreen() {
 
     console.log("Current dao schema", currentDao?.contrib_schema?.schema)
 
+    const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
+    const membershipBadges = useSelector((x) => x.membership.membershipBadges)
+
+    const getCurrentBadgeUpdated = () => {
+        const membershipInfo = []
+        membershipBadgesForAddress.forEach((item, i) => {
+            membershipBadges.forEach((x) => {
+                if (item.level === x.level.toString() && i === 0) {
+                    membershipInfo.push(x)
+                }
+            })
+        })
+        console.log(membershipBadgesForAddress, membershipInfo)
+        setCurrentMembershipBadge({
+            ...membershipBadgesForAddress[0],
+            ...membershipInfo[0],
+        })
+    }
+    useEffect(() => {
+        if (currentDao && membershipBadgesForAddress?.length > 0) {
+            getCurrentBadgeUpdated()
+        }
+    }, [currentDao, membershipBadgesForAddress])
+
     const renderEmptyContributorScreen = () => (
         <div className="empty-contrib-screen">
             <div className="white-header">No contribution request</div>
@@ -348,12 +372,14 @@ export default function ContributorContributionScreen() {
             ) : (
                 <div
                     className={
+                        currentMembershipBadge &&
                         currentDao?.contrib_schema?.schema.length
                             ? "contribution-screen-wrapper"
                             : "noMembershipBadge"
                     }
                 >
-                    {currentDao?.contrib_schema?.schema.length > 0 ? (
+                    {currentMembershipBadge &&
+                    currentDao?.contrib_schema?.schema.length > 0 ? (
                         contribution.length > 0 ? (
                             renderNonEmptyScreen()
                         ) : (
