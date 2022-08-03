@@ -22,6 +22,10 @@
             box-shadow: 0px 2px 4px 0px #00000029;
             border-radius: 1.5rem;
             box-shadow: 0px 0px 4px 0px #0000001f;
+            text-align: left;
+            .modal-cross-btn {
+                cursor: pointer;
+            }
         }
 
         .modal-header-div {

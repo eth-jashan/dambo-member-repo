@@ -1,4 +1,5 @@
 .request-screen-container {
+    height: 100%;
     .dashView {
         height: 100%;
         display: flex;
@@ -81,7 +82,7 @@
         text-align: start;
     }
 
-    .button {
+    .request-empty-screen-button {
         padding: 0.5rem 1.25rem;
         background-color: #6852ff;
         margin-top: 6%;
@@ -89,7 +90,7 @@
         align-items: center;
         justify-content: center;
     }
-    .button > div {
+    .request-empty-screen-button > div {
         font-family: "TelegrafBolder";
         font-style: normal;
         font-weight: 800;
