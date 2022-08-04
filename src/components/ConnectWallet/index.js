@@ -16,19 +16,14 @@ import { getRole } from "../../store/actions/contibutor-action"
 import textStyles from "../../commonStyles/textType/styles.module.css"
 import { setChainInfoAction } from "../../utils/wagmiHelpers"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import {
-    useAccount,
-    useSigner,
-    useDisconnect,
-    useNetwork,
-    useSwitchNetwork,
-} from "wagmi"
+import { useAccount, useSigner, useDisconnect, useNetwork } from "wagmi"
 import account_balance_wallet from "../../assets/Icons/account_balance_wallet.svg"
 import right_arrow_white from "../../assets/Icons/right_arrow_white.svg"
 import metamask_circular from "../../assets/Icons/metamask_circular.svg"
 import coinbase_circular from "../../assets/Icons/coinbase_circular.svg"
 import rainbow_circular from "../../assets/Icons/rainbow_circular.svg"
 import { links } from "../../constant/links"
+import { getAddressVouchers } from "../../store/actions/membership-action"
 
 const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const jwt = useSelector((x) => x.auth.jwt)
@@ -41,8 +36,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     const [showConnectBtn, setShowConnectBtn] = useState(true)
     const { disconnect } = useDisconnect()
     const { chain } = useNetwork()
-    const { chains, error, isLoading, pendingChainId, switchNetwork } =
-        useSwitchNetwork()
 
     const authWithWallet = useCallback(
         async (address, chainId, signer) => {
@@ -58,15 +51,19 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     const res = await dispatch(
                         authWithSign(address, signer, chainId)
                     )
+                    console.log("res of authWithSign", res, isAdmin, uuid)
                     if (res) {
-                        if (!isAdmin) {
+                        if (uuid) {
                             const res = await dispatch(getRole(uuid))
+                            console.log("res of getRole", res)
                             if (res) {
                                 message.success("Already a member")
                                 dispatch(setAdminStatus(true))
                                 const isMember = await dispatch(
                                     getAddressMembership(chainId)
                                 )
+                                console.log("res of isMember", isMember)
+
                                 if (isMember) {
                                     setAuth(false)
                                     navigate(`/dashboard`)
@@ -77,12 +74,61 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 navigate(`/onboard/contributor/${uuid}`, {
                                     state: {
                                         discordUserId: "userId",
+                                        onboardingStep: 1,
                                     },
                                 })
                             }
                         } else {
-                            await afterConnectWalletCallback(setAuth)
+                            const isMember = await dispatch(
+                                getAddressMembership(chainId)
+                            )
+                            console.log("is member", isMember)
+                            if (isMember) {
+                                setAuth(false)
+                                navigate(`/dashboard`)
+                            } else {
+                                const hasVouchers = await dispatch(
+                                    getAddressVouchers(address)
+                                )
+                                if (hasVouchers) {
+                                    navigate(`/onboard/contributor/${uuid}`, {
+                                        state: {
+                                            discordUserId: "userId",
+                                            onboardingStep: 0,
+                                        },
+                                    })
+                                } else {
+                                    navigate("/onboard/dao")
+                                }
+                            }
                         }
+                        // if (!isAdmin) {
+                        //     const res = await dispatch(getRole(uuid))
+                        //     console.log("res of getRole", res)
+                        //     if (res) {
+                        //         message.success("Already a member")
+                        //         dispatch(setAdminStatus(true))
+                        //         const isMember = await dispatch(
+                        //             getAddressMembership(chainId)
+                        //         )
+                        //         console.log("res of isMember", isMember)
+
+                        //         if (isMember) {
+                        //             setAuth(false)
+                        //             navigate(`/dashboard`)
+                        //         } else {
+                        //             setAuth(false)
+                        //         }
+                        //     } else {
+                        //         navigate(`/onboard/contributor/${uuid}`, {
+                        //             state: {
+                        //                 discordUserId: "userId",
+                        //             },
+                        //         })
+                        //     }
+                        // } else {
+                        //     await afterConnectWalletCallback(setAuth)
+                        // }
                     } else {
                         message.error("Check metamask popup!")
                     }

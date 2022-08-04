@@ -22,6 +22,7 @@ const membershipSlice = createSlice({
         showMembershipMintingModal: false,
         allDaoMembers: null,
         unclaimedMembershipBadges: [],
+        unclaimedMembershipVouchersForAddress: [],
     },
     reducers: {
         setMembershipBadges(state, action) {
@@ -86,6 +87,10 @@ const membershipSlice = createSlice({
         setShowMembershipMintingModal(state, action) {
             state.showMembershipMintingModal =
                 action.payload.showMembershipMintingModal
+        },
+        setUnclaimedMembershipVouchersForAddress(state, action) {
+            state.unclaimedMembershipVouchersForAddress =
+                action.payload.unclaimedMembershipVouchersForAddress
         },
     },
 })

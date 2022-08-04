@@ -6,11 +6,8 @@ import {
     getAllMembershipBadges,
     createMembershipVoucher,
 } from "../../utils/POCPServiceSdk"
-import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
-import { ethers } from "ethers"
-// import { getSelectedChainId } from "../../utils/POCPutils"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -692,6 +689,39 @@ export const updateTxHash = (txnHash, type, prevHash, chainId) => {
             )
             console.log("res", res)
             return 1
+        } catch (error) {
+            return 0
+        }
+    }
+}
+
+export const getAddressVouchers = (address) => {
+    return async (dispatch, getState) => {
+        const jwt = getState().auth.jwt
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.unclaimedVouchers}?addr=${address}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            console.log("res", res.data)
+            if (res.data?.success) {
+                if (res.data?.data?.length) {
+                    dispatch(
+                        membershipAction.setUnclaimedMembershipVouchersForAddress(
+                            {
+                                unclaimedMembershipVouchersForAddress:
+                                    res.data.data,
+                            }
+                        )
+                    )
+                    return 1
+                }
+            }
+            return 0
         } catch (error) {
             return 0
         }
