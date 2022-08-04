@@ -1,0 +1,32 @@
+# Specifies what build spec version this file is.
+# This helps AWS CodePipeline parse the file correctly.
+# Keep this at 0.2
+version: 0.2
+# We can listen for specific phases and execute commands per phase.
+phases:
+    # The build server won't have access to our node_modules folder
+    # This is because we have it inside of our .gitignore file
+    # To give our build server access, we can simply run "npm install"
+    install:
+        runtime-versions:
+            nodejs: 14
+    pre_build:
+        commands:
+            - yarn
+    # Now we want to actually build our React app
+    build:
+        commands:
+            - node -v
+            - node -e '//console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
+            - export NODE_OPTIONS="--max-old-space-size=4096"
+            - node -e '//console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
+            - mkdir build
+            - yarn build:dev
+# Artifacts will specify what files will be uploaded to s3
+# This will include all files within the "build" folder
+artifacts:
+    files:
+        - "**/*"
+    discard-paths: no
+    base-directory: build
+
