@@ -18,6 +18,7 @@ import {
 import { web3 } from "../../constant/web3"
 import { membershipAction } from "../reducers/membership-slice"
 import { contributorAction } from "../reducers/contributor-slice"
+import { chainType } from "../../utils/chainType"
 
 const currentNetwork = getSelectedChainId()
 const serviceClient = new SafeServiceClient(getSafeServiceUrl())
@@ -150,7 +151,9 @@ export const getAllDaowithAddress = (chainId) => {
                 const dao_details = []
 
                 res.data.data.forEach((x) => {
-                    if (x.dao_details.chain_id === chainId) {
+                    if (
+                        chainType(x.dao_details.chain_id) === chainType(chainId)
+                    ) {
                         dao_details.push(x)
                     }
                 })
