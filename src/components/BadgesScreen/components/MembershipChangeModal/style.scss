@@ -19,6 +19,9 @@
             text-align: left;
             height: fit-content;
             width: 570px;
+            .close-btn {
+                cursor: pointer;
+            }
             .membership-change-heading {
                 width: 90%;
                 font-family: "TelegrafBolder";

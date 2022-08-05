@@ -23,6 +23,7 @@ const membershipSlice = createSlice({
         allDaoMembers: null,
         unclaimedMembershipBadges: [],
         unclaimedMembershipVouchersForAddress: [],
+        selectedMemberPastContributions: [],
     },
     reducers: {
         setMembershipBadges(state, action) {
@@ -91,6 +92,10 @@ const membershipSlice = createSlice({
         setUnclaimedMembershipVouchersForAddress(state, action) {
             state.unclaimedMembershipVouchersForAddress =
                 action.payload.unclaimedMembershipVouchersForAddress
+        },
+        setSelectedMemberPastContributions(state, action) {
+            state.selectedMemberPastContributions =
+                action.payload.selectedMemberPastContributions
         },
     },
 })

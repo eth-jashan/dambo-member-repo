@@ -132,7 +132,13 @@ export default function ContributionCard({ item }) {
                     style={{ color: (onHover || selectionActive) && "white" }}
                     className={`${textStyles.m_16} ${styles.description}`}
                 >
-                    {item?.contributor?.name} • design •{" "}
+                    {item?.contributor?.name} •{" "}
+                    {
+                        item?.details?.find(
+                            (x) => x.fieldName === "Contribution Category"
+                        )?.value
+                    }{" "}
+                    •{" "}
                     {
                         item?.details?.find(
                             (x) => x.fieldName === "Time Spent in Hours"

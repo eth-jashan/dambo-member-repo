@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react"
-
-import { useSelector } from "react-redux"
-
 import chevronDown from "../../assets/Icons/chevron_down.svg"
 import styles from "./style.module.css"
 import textStyles from "./../../commonStyles/textType/styles.module.css"
 
 // import { ethers } from "ethers"
-import { useNetwork } from "wagmi"
+import { useNetwork, useAccount } from "wagmi"
 
-export default function WalletPicker({ signer }) {
-    const address = useSelector((x) => x.auth.address)
+export default function WalletPicker() {
+    // const address = useSelector((x) => x.auth.address)
 
     const [chainId, setChainId] = useState(false)
-    const { chain } = useNetwork
+    const { chain } = useNetwork()
+    const { address } = useAccount()
 
     const getNetwork = async () => {
         // const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -32,10 +30,18 @@ export default function WalletPicker({ signer }) {
                     Rinkeby testnet
                 </div>
             )}
-            <div className={styles.address}>
-                {address?.slice(0, 5) + "....." + address?.slice(-3)}
-            </div>
-            <img alt="chevron_down" src={chevronDown} className={styles.icon} />
+            {address && (
+                <>
+                    <div className={styles.address}>
+                        {address?.slice(0, 5) + "....." + address?.slice(-3)}
+                    </div>
+                    <img
+                        alt="chevron_down"
+                        src={chevronDown}
+                        className={styles.icon}
+                    />
+                </>
+            )}
         </div>
     )
 }

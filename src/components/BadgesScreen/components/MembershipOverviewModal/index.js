@@ -3,12 +3,16 @@ import "./style.scss"
 import cross from "../../../../assets/Icons/cross.svg"
 import edit from "../../../../assets/Icons/edit.svg"
 import plus_black from "../../../../assets/Icons/plus_black.svg"
+import pluralize from "pluralize"
 
 export default function MembershipOverviewModal({
     closeMembershipOverviewModal,
     membershipBadges,
     editMembership,
 }) {
+    const totalMembers = membershipBadges?.reduce((acc, membership) => {
+        return acc + membership?.members_count
+    }, 0)
     return (
         <div className="membership-overview-modal-container">
             <div
@@ -33,7 +37,10 @@ export default function MembershipOverviewModal({
                             <div className="total-memberships">
                                 {membershipBadges?.length} membership levels
                             </div>
-                            <div className="total-members">245 members</div>
+                            <div className="total-members">
+                                {totalMembers}{" "}
+                                {pluralize("Member", totalMembers)}
+                            </div>
                             <div className="membership-action-rows-wrapper">
                                 <div
                                     className="membership-action-row"
@@ -73,7 +80,13 @@ export default function MembershipOverviewModal({
                                             <div className="membership-badge-name">
                                                 {badge.name}
                                             </div>
-                                            <div>23 Members</div>
+                                            <div>
+                                                {badge?.members_count}{" "}
+                                                {pluralize(
+                                                    "Member",
+                                                    badge?.members_count
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

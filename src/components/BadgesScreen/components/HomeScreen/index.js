@@ -19,6 +19,7 @@ import {
 } from "../../../../store/actions/contibutor-action"
 
 import pocpBadgeBg from "../../../../assets/pocp_contri_bg.svg"
+import pluralize from "pluralize"
 
 export default function HomeScreen({
     membershipBadges,
@@ -54,6 +55,8 @@ export default function HomeScreen({
     const contributionPending = useSelector(
         (x) => x.contributor.contributionForAdmin
     )
+
+    console.log("member ship badges in homescreen are", membershipBadges)
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -78,7 +81,11 @@ export default function HomeScreen({
                                                 {badge.name}
                                             </div>
                                             <div className="badge-holders">
-                                                {badge.holders} holders
+                                                {badge.members_count}{" "}
+                                                {pluralize(
+                                                    "holder",
+                                                    badge.members_count
+                                                )}
                                             </div>
                                         </div>
                                     ))}

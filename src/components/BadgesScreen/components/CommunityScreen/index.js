@@ -1,6 +1,9 @@
 import React from "react"
 import "./style.scss"
-import { setSelectedMember } from "../../../../store/actions/membership-action"
+import {
+    setSelectedMember,
+    getSelectedMemberContributions,
+} from "../../../../store/actions/membership-action"
 import { useDispatch, useSelector } from "react-redux"
 
 export default function CommunityScreen() {
@@ -27,10 +30,16 @@ export default function CommunityScreen() {
 
     const dispatch = useDispatch()
 
+    const selectCommunityMember = (member) => {
+        console.log("member selected is", member)
+        dispatch(getSelectedMemberContributions(member?.public_address))
+        dispatch(setSelectedMember(member))
+    }
+
     return (
         <div className="community-screen-container">
             {daoMember?.length > 0 &&
-                daoMember.map((member) => (
+                daoMember.map((member, index) => (
                     <div
                         style={{
                             background:
@@ -43,8 +52,8 @@ export default function CommunityScreen() {
                                 "1rem",
                         }}
                         className="member-row"
-                        key={member?.name}
-                        onClick={() => dispatch(setSelectedMember(member))}
+                        key={index}
+                        onClick={() => selectCommunityMember(member)}
                     >
                         <div
                             style={{

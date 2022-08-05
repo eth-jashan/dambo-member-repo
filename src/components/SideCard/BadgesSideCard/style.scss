@@ -8,6 +8,12 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     text-align: left;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
     .member-addr {
         font-family: "TelegrafBolder";
         font-style: normal;
@@ -79,6 +85,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
     }
 
     .change-text {
@@ -110,5 +117,85 @@
         color: white;
         margin-left: 0.75rem;
         align-self: center;
+    }
+
+    .contribution-wrapper {
+        margin-top: 1.25rem;
+        max-height: 5rem;
+        background: #1f1f1f;
+        border-radius: 12px;
+        padding: 1.5rem 0;
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: #fff;
+        overflow-y: hidden;
+        &.contribution-shown {
+            max-height: unset;
+        }
+        .contribution-overview {
+            display: flex;
+            justify-content: space-between;
+            width: calc(100% - 2rem);
+            padding-bottom: 1.25rem;
+            margin: 0 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+            .overview-left {
+                .total-contri {
+                    font-family: "TelegrafBolder";
+                    font-style: normal;
+                    font-weight: 800;
+                }
+            }
+            .overview-right {
+                cursor: pointer;
+                img {
+                    width: 1.5rem;
+                }
+            }
+        }
+        .contributions-detailed {
+            .contribution-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 1.25rem 1rem;
+                border-bottom: 1px dashed rgba(255, 255, 255, 0.16);
+                border-left: 4px solid rgba(217, 217, 217, 0.12);
+
+                &:last-of-type {
+                    border-bottom: 0;
+                    padding-bottom: 0;
+                }
+                .contri-row-left {
+                    width: 59%;
+                    color: rgba(255, 255, 255, 0.5);
+                    .contri-title {
+                        color: rgba(255, 255, 255, 0.75);
+                    }
+                }
+                .contri-row-right {
+                    width: 39%;
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: flex-start;
+                    img {
+                        width: 1.5rem;
+                        margin-left: 0.75rem;
+                    }
+                }
+                &:hover {
+                    cursor: pointer;
+                    border-left: 4px solid #fff;
+                    .contri-row-left {
+                        color: #fff;
+                        .contri-title {
+                            color: #fff;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

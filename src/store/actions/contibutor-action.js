@@ -471,12 +471,11 @@ export const getPastContributions = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
+        const address = getState().auth.address
 
         try {
             const res = await apiClient.get(
-                `${
-                    process.env.REACT_APP_DAO_TOOL_URL
-                }${`/contrib/past_contribs`}?dao_uuid=${uuid}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.pastContributions}?dao_uuid=${uuid}&addr=${address}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
@@ -701,7 +700,7 @@ export const removeClaimedContributionVoucher = (
     }
 }
 
-export const getContributorStats = () => {
+export const getContributorStats = (address) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
@@ -710,7 +709,7 @@ export const getContributorStats = () => {
             const res = await apiClient.get(
                 `${
                     process.env.REACT_APP_DAO_TOOL_URL
-                }${`/contrib/stats`}?dao_uuid=${uuid}`,
+                }${`/contrib/stats`}?dao_uuid=${uuid}&addr=${address}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,

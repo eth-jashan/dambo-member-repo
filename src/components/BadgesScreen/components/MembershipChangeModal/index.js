@@ -43,16 +43,6 @@ export default function MembershipChangeModal({
                     selectedMember.membership_txns[0].membership_txn_hash
                 )
 
-                console.log(
-                    "membership NFT",
-                    proxyContract,
-                    res.data?.membershipNFTs,
-                    selectUpgradeMembership.level,
-                    selectUpgradeMembership.category,
-                    selectUpgradeMembership.metadata_hash,
-                    selectedMember.membership_txns[0].membership_txn_hash
-                )
-
                 await upgradeMembershipNft(
                     proxyContract,
                     res.data?.membershipNFTs[0].tokenID,

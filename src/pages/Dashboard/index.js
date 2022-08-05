@@ -138,7 +138,7 @@ export default function Dashboard() {
         await dispatch(getContributionAsContributorApproved())
         await dispatch(getPastContributions())
         await fetchBadges()
-        await dispatch(getContributorStats())
+        await dispatch(getContributorStats(address))
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())

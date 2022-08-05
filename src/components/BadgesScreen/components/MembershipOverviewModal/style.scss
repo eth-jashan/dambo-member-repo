@@ -23,6 +23,10 @@
             max-width: 1000px;
             height: 85vh;
             padding-bottom: 2vh;
+            .close-btn {
+                cursor: pointer;
+                width: fit-content;
+            }
             .membership-overview-modal-heading {
                 font-family: "TelegrafBolder";
                 font-style: normal;
