@@ -26,11 +26,6 @@ const ContributorSignup = ({ discordUserId, onboardingStep }) => {
 
     const [selectedDao, setSelectedDao] = useState(null)
 
-    console.log(
-        "unclaimed membership vouchers",
-        unclaimedMembershipVouchersForAddress
-    )
-
     const [role, setRole] = useState()
     const navigate = useNavigate()
     const fetchRoles = useCallback(async () => {
@@ -44,7 +39,6 @@ const ContributorSignup = ({ discordUserId, onboardingStep }) => {
     }, [fetchRoles])
 
     const onSubmit = async () => {
-        console.log("submit", name, inviteCode, id, selectedDao?.uuid)
         dispatch(setContriInfo(name, role))
         try {
             const res = await dispatch(
@@ -60,7 +54,6 @@ const ContributorSignup = ({ discordUserId, onboardingStep }) => {
             }
         } catch (error) {
             message.error("Error on Joining")
-            // //console.log('error on joining...', error)
         }
     }
 

@@ -38,12 +38,6 @@ export default function TreasurySideCard() {
                 }
             )
             contributions = contributionsAfterFilter
-            // console.log(
-            //     "contribution after filter",
-            //     contributions.details.find(
-            //         (x) => x.fieldName === "Contribution Category"
-            //     )?.value
-            // )
         }
         const contributionStreams = contributions.map(
             (contributions) =>
@@ -79,7 +73,6 @@ export default function TreasurySideCard() {
         }, [])
         setFilteredContributions(uniqueStreamsWithCounts)
     }, [pastContributions, selectedFilter])
-    console.log("contributions", filteredContributions)
     return (
         <div className="treasury-side-card-container">
             <div className="heading">Payout Split</div>

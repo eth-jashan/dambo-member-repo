@@ -31,7 +31,6 @@ const CommunitySideCard = ({ show }) => {
     }
 
     const openMembershipUpdateModal = () => {
-        console.log(selectedMember)
         if (selectedMember.membership_txns.length > 0) {
             dispatch(setShowMembershipChangeModal(true))
         }
@@ -58,8 +57,6 @@ const CommunitySideCard = ({ show }) => {
             return document.execCommand("copy", true, address)
         }
     }
-
-    console.log("asdasdwasda11111111", selectedMemberPastContributions)
 
     const totalHours = selectedMemberPastContributions?.reduce(
         (acc, contri) => {

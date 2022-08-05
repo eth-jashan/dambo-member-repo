@@ -59,7 +59,6 @@ const AddressInput = ({
             setLoading(true)
             try {
                 const res = await getAllMembershipBadges(address, proxyContract)
-                console.log("resss", res, res.data.membershipNFTs.length > 0)
                 setLoading(false)
                 if (res.data.membershipNFTs.length > 0) {
                     setAddressStatus("success")
@@ -113,7 +112,6 @@ const AddressInput = ({
                 return null
         }
     }
-    console.log("error title", getErrorTitle())
     return (
         <div>
             <div className="address-row" key={index}>

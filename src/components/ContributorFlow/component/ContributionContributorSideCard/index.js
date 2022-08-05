@@ -43,7 +43,6 @@ export default function ContributionContributorSideCard({
             const tx = await serviceClient.getTransaction(
                 contributorSelectionContribution?.gnosis_reference_id
             )
-            console.log("service client tx is", tx)
             setSignersInfo({
                 ...tx,
             })
@@ -74,8 +73,6 @@ export default function ContributionContributorSideCard({
     useEffect(() => {
         getPayoutInfo()
     }, [contributorSelectionContribution])
-
-    console.log("sadsadx", signersInfo, safeInfo)
 
     return (
         <div className="contributor-contribution-side-card-container">

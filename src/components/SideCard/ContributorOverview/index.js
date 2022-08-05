@@ -41,7 +41,6 @@ const ContributionOverview = () => {
                 }
             })
         })
-        console.log(membershipBadgesForAddress, membershipInfo)
         setCurrentMembershipBadge({
             ...membershipBadgesForAddress[0],
             ...membershipInfo[0],
@@ -56,7 +55,6 @@ const ContributionOverview = () => {
             }
         }
     })
-    console.log("levels", contributionOverview)
 
     useEffect(() => {
         if (

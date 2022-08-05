@@ -123,7 +123,6 @@ const TransactionCard = () => {
                 )
             }
         } else if (mint && payToken) {
-            console.log("here")
             if (
                 payDetail[0]?.amount !== 0 &&
                 payDetail[0]?.amount !== "" &&
@@ -241,7 +240,6 @@ const TransactionCard = () => {
                         })
                     }
                 })
-                console.log("new payout", newPayout)
                 await dispatch(
                     approveContriRequest(
                         payToken ? newPayout : [],
@@ -268,7 +266,6 @@ const TransactionCard = () => {
             return "Approve Badge"
         }
     }
-    console.log("cuurent", currentDao)
     return (
         <div className={styles.container}>
             <img

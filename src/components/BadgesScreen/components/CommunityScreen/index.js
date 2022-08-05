@@ -31,7 +31,6 @@ export default function CommunityScreen() {
     const dispatch = useDispatch()
 
     const selectCommunityMember = (member) => {
-        console.log("member selected is", member)
         dispatch(getSelectedMemberContributions(member?.public_address))
         dispatch(setSelectedMember(member))
     }

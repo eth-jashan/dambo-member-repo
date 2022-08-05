@@ -54,7 +54,6 @@ const GnosisSafeList = ({
             if (x.name !== "") {
                 navigate("/dashboard")
             } else {
-                console.log("here")
                 setHasMultiSignWallet(true)
                 setNewSafe(false)
                 setCurrentStep()

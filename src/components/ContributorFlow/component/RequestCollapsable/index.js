@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import "./style.scss"
-import { useSelector } from "react-redux"
 // import axios from "axios"
 import { assets } from "../../../../constant/assets"
 
@@ -10,9 +9,7 @@ export default function RequestCollapsable({
     onOpenCallback = () => {},
     defaultCollapseState = false,
 }) {
-    const currentDao = useSelector((x) => x.dao.currentDao)
     const [collapsable, setCollapsable] = useState(defaultCollapseState)
-    // console.log("item", contributions)
 
     const toggleCollapse = () => {
         if (!collapsable) {

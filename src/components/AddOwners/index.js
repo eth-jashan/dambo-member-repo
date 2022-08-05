@@ -35,7 +35,6 @@ export default function AddOwners({
 
     const [safeSigners, setSafeOwners] = useState([])
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
-    console.log(safeOwners)
     const getSafeOwners = useCallback(async () => {
         const ownerObj = []
         if (hasMultiSignWallet) {
@@ -55,7 +54,6 @@ export default function AddOwners({
             }
         } else if (safeOwners?.length > 0) {
             safeOwners.forEach((x) => {
-                console.log(x)
                 ownerObj.push({
                     id: uuidv4(),
                     name: x.name,

@@ -109,7 +109,6 @@ export default function Onboarding() {
                 const newSafeAddress = ethers.utils.getAddress(
                     safe.getAddress()
                 )
-                console.log("new safe address", newSafeAddress)
                 setSafeAddress(newSafeAddress)
                 dispatch(addSafeAddress(newSafeAddress))
             } catch (error) {
@@ -212,7 +211,6 @@ export default function Onboarding() {
     }
 
     const increaseFromDaoInfo = async (name, logoUrl) => {
-        console.log(logoUrl)
         dispatch(addDaoInfo(name, logoUrl))
         if (isPayout) {
             const res = await fetchAllSafe()

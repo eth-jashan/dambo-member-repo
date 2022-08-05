@@ -44,7 +44,6 @@ export default function HomeScreen({
     const displaySchemas = (schema) => {
         const contribFeild = []
         schema?.forEach((x, i) => {
-            console.log(i)
             if (i < 3) {
                 contribFeild.push(x.fieldName)
             }
@@ -56,7 +55,6 @@ export default function HomeScreen({
         (x) => x.contributor.contributionForAdmin
     )
 
-    console.log("member ship badges in homescreen are", membershipBadges)
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -147,10 +145,6 @@ export default function HomeScreen({
                             {membershipBadges?.length ? (
                                 <button
                                     onClick={() => {
-                                        console.log(
-                                            "here",
-                                            contributionSchema?.length
-                                        )
                                         if (
                                             contributionSchema?.length === 0 ||
                                             !contributionSchema

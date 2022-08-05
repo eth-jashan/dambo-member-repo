@@ -30,7 +30,6 @@ const RejectPayment = ({ onClose, signer }) => {
     const rejectTransaction = async (hash) => {
         setLoading(true)
         const transaction = await serviceClient.getTransaction(hash)
-        console.log(safeSdk)
         if (!safeSdk) {
             setLoading(false)
         }
@@ -65,7 +64,6 @@ const RejectPayment = ({ onClose, signer }) => {
         const amount = []
         currentPayment?.metaInfo?.contributions.forEach((x) => {
             x?.tokens.forEach((item) => {
-                // //console.log('item', item)
                 if (!tokens.includes(item?.details?.symbol)) {
                     tokens?.push(item?.details?.symbol)
                 }
@@ -76,7 +74,6 @@ const RejectPayment = ({ onClose, signer }) => {
         const total = amount?.reduce((a, b) => a + b)
         const totalToken = `${tokens?.toString()?.replace(/,/g, "+")}`
 
-        // //console.log('ttt', total, totalToken, currentPayment?.metaInfo?.contributions)
         return { total, totalToken }
     }
 

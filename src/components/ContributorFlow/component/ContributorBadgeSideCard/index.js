@@ -45,7 +45,6 @@ export default function ContributorBadgeSideCard() {
             const tx = await serviceClient.getTransaction(
                 contribution_detail?.entity?.gnosis_reference_id
             )
-            console.log("service client tx is", tx)
             setSignersInfo({
                 ...tx,
             })

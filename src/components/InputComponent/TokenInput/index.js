@@ -182,8 +182,6 @@ export const TokenInput = ({
         setToken_symbol(amount)
     }
 
-    // //console.log('AMOUNT', amount, token_symbol)
-
     return (
         <div className={styles.container}>
             <div className={styles.selectContainer}>

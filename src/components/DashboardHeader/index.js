@@ -47,8 +47,6 @@ const DashboardHeader = ({
         }
     }
 
-    console.log("current dao is ", currentDao)
-
     const onProfileModal = () => {
         dispatch(setPayment(null))
         dispatch(setTransaction(null))

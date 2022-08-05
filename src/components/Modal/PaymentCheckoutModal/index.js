@@ -73,50 +73,28 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 arrayOfNounce,
                 new Array(approvedBadges.length).fill(0)
             )
-            console.log(
-                "signed voucher",
-                proxyContract,
-                arrayOfToken,
-                Array(approvedBadges.length).fill(1),
-                hashArray,
-                Array(approvedBadges.length).fill(0)
-            )
-            console.log(approvedBadges.map((x) => x.uuid))
+
             await dispatch(
                 updateContributionVoucher(
                     signedVoucher,
                     approvedBadges.map((x) => x.uuid)
                 )
             )
-            console.log("Signed voucher", signedVoucher)
             dispatch(resetApprovedBadges())
             setMinting(false)
             onClose()
         } catch (error) {
             setMinting(false)
-            console.log("error", error)
+            console.error("error", error)
         }
     }
 
     const proposeSafeTransaction = async () => {
         setLoading(true)
         const transaction_obj = []
-        console.log("approved request", approved_request)
         if (approved_request.length > 0) {
             approved_request.map(async (item) => {
-                console.log("item", item)
                 item?.payout?.map(async (item) => {
-                    console.log(
-                        "item inside payout",
-                        approved_request,
-                        item?.details?.symbol,
-                        item?.details?.symbol === "ETH",
-                        item?.token_type === null ||
-                            !item?.token_type ||
-                            item?.token_type?.token?.symbol === "ETH" ||
-                            item?.details?.symbol === "ETH",
-                        item
-                    )
                     // }
                     if (
                         item?.token_type === null ||
@@ -147,28 +125,6 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                             signer
                         )
                         const amount = parseFloat(item?.amount) * 1e18
-                        console.log(
-                            "ERC20 Transaction",
-                            item?.details?.address,
-                            {
-                                to:
-                                    item?.token_type?.tokenAddress ||
-                                    item?.token_type?.token?.address ||
-                                    item?.details?.address,
-                                data: coin.interface.encodeFunctionData(
-                                    "transfer",
-                                    [
-                                        ethers.utils.getAddress(
-                                            item?.addr || item?.address
-                                        ),
-                                        amount.toString(),
-                                    ]
-                                ),
-                                value: "0",
-                                operation: 0,
-                            },
-                            coin
-                        )
 
                         transaction_obj.push({
                             to:
@@ -208,7 +164,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 nonce,
             })
         } catch (error) {
-            console.log("error", error)
+            console.error("error", error)
             message.error("Error on creating Transaction")
             setLoading(false)
             return

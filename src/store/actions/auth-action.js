@@ -115,7 +115,6 @@ export const retrieveAddress = () => {
 
 export const setAddress = (address) => {
     return (dispatch) => {
-        console.log("address in set Address", address)
         dispatch(authActions.set_address({ address }))
     }
 }

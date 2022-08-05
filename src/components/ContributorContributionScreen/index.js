@@ -176,8 +176,6 @@ export default function ContributorContributionScreen() {
         )
     }
 
-    console.log("Current dao schema", currentDao?.contrib_schema?.schema)
-
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
     const membershipBadges = useSelector((x) => x.membership.membershipBadges)
 
@@ -190,7 +188,6 @@ export default function ContributorContributionScreen() {
                 }
             })
         })
-        console.log(membershipBadgesForAddress, membershipInfo)
         setCurrentMembershipBadge({
             ...membershipBadgesForAddress[0],
             ...membershipInfo[0],

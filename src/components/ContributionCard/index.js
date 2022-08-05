@@ -37,7 +37,6 @@ export default function ContributionCard({ item }) {
     const onContributionPress = async () => {
         if (role === "ADMIN") {
             const ethPrice = await convertTokentoUsd("ETH")
-            console.log("eth price", ethPrice, item)
             // if (ethPrice && contri_filter_key !== 0) {
             //     dispatch(setTransaction(item, ethPrice))
             // } else if (contri_filter_key === 0) {

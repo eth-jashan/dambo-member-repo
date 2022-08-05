@@ -60,12 +60,10 @@ export default function ContributionSchemaModal({
                 dispatch(successConfirmationModal(true))
                 dispatch(actionOnGenerateSchemaModal(false))
                 setContributionStep(1)
-                console.log("error on creating schema", schemaId + 1)
             } catch (error) {
-                console.log("error on creating schema", error)
+                console.error("error on creating schema", error)
             }
         }
-        console.log("current step", contributionStep, schema)
     }
 
     const SelectBadgeType = () => {

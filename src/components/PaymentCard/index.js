@@ -34,7 +34,6 @@ export default function PaymentCard({ item, signer }) {
     const [onHover, setOnHover] = useState(false)
     const nonce = useSelector((x) => x.dao.active_nonce)
     const safeInfo = useSelector((x) => x.dao.safeInfo)
-    console.log("Payment", item, safeInfo)
     const serviceClient = new SafeServiceClient(getSafeServiceUrl())
 
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -91,7 +90,6 @@ export default function PaymentCard({ item, signer }) {
         })
 
         tokens = tokens?.slice(0, 2)?.toString()
-        console.log(x)
 
         return (
             <div key={index} className={styles.singleItem}>
@@ -357,7 +355,7 @@ export default function PaymentCard({ item, signer }) {
                 currentDao?.uuid
             )
         } catch (error) {
-            console.log(error)
+            console.error(error)
             if (error.toString() === "Error: Not enough Ether funds") {
                 message.error("Not enough funds in safe")
             } else if (error.code === "TRANSACTION_REPLACED") {
