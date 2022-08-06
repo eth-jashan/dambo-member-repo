@@ -1,6 +1,17 @@
 import React from "react"
-import styles from "./style.module.css"
+import "./style.scss"
 import rightArrow from "../../assets/Icons/right_arrow_white.svg"
+import { LoadingOutlined } from "@ant-design/icons"
+import { Spin } from "antd"
+
+const antIcon = (
+    <LoadingOutlined
+        style={{
+            fontSize: 24,
+        }}
+        spin
+    />
+)
 
 export default function NextButton({
     text,
@@ -9,12 +20,15 @@ export default function NextButton({
     nextButtonCallback,
     isNext,
     isRep3Setup,
+    isLoading = false,
 }) {
     return (
         <div
             style={{ cursor: "pointer" }}
             onClick={!isDisabled ? nextButtonCallback : () => {}}
-            className={!isDisabled ? styles.btnCtn : styles.btnCtnGreyed}
+            className={`next-btn-container ${
+                !isDisabled ? "btnCtn" : "btnCtnGreyed"
+            }`}
         >
             <div
                 style={{
@@ -24,18 +38,19 @@ export default function NextButton({
                     width: "100%",
                 }}
             >
-                <div className={styles.titleContainer}>
-                    <span className={styles.whiteIcon}>
+                <div className="titleContainer">
+                    <span className="whiteIcon">
                         {!isContributor && !isRep3Setup ? "Next" : text}
                     </span>
                     {!isRep3Setup && !isContributor && (
-                        <span className={styles.greyedText}>
-                            {" "}
-                            &bull; {text}
-                        </span>
+                        <span className="greyedText"> &bull; {text}</span>
                     )}
                 </div>
-                <img src={rightArrow} alt="right" className={styles.icon} />
+                {isLoading ? (
+                    <Spin indicator={antIcon} />
+                ) : (
+                    <img src={rightArrow} alt="right" className="icon" />
+                )}
             </div>
         </div>
     )

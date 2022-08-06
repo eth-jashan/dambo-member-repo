@@ -111,7 +111,7 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
 
     return (
         <div className="add-address-screen-container">
-            <div className="close-minting-modal">
+            <div className="close-minting-modal" onClick={closeModal}>
                 <img src={cross} alt="" />
             </div>
             <div className="mint-membership-badge-header">

@@ -24,15 +24,14 @@ export default function Modal({ closeModal, membershipBadges, isEditing }) {
                   },
               ]
     )
+    const [membershipLoading, setMembershipLoading] = useState(false)
 
     const dispatch = useDispatch()
 
-    const increaseStep = () => {
+    const increaseStep = async () => {
         if (membershipStep >= 2) {
             // setMembershipBadges(localMembershipBadges)
-            closeModal()
-            setMembershipStep(1)
-
+            setMembershipLoading(true)
             const formData = new FormData()
             localMembershipBadges.forEach((badge, index) => {
                 formData.append("file", badge.file)
@@ -42,13 +41,16 @@ export default function Modal({ closeModal, membershipBadges, isEditing }) {
                 formData.append("description", badge.description)
             })
 
-            dispatch(
+            await dispatch(
                 createMembershipBadges(
                     formData,
                     localMembershipBadges,
                     isEditing
                 )
             )
+            setMembershipLoading(false)
+            closeModal()
+            setMembershipStep(1)
         } else {
             setMembershipStep((membershipStep) => membershipStep + 1)
         }
@@ -162,6 +164,7 @@ export default function Modal({ closeModal, membershipBadges, isEditing }) {
                         increaseStep={increaseStep}
                         membershipBadges={localMembershipBadges}
                         setMembershipBadges={setLocalMembershipBadges}
+                        membershipLoading={membershipLoading}
                     />
                 )
             default:

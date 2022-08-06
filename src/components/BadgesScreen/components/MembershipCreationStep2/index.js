@@ -8,6 +8,7 @@ export default function MembershipCreationStep2({
     increaseStep,
     membershipBadges,
     setMembershipBadges,
+    membershipLoading,
 }) {
     const checkIsDisabled = () => {
         let isDisabled = false
@@ -107,6 +108,7 @@ export default function MembershipCreationStep2({
                             text="Upload Designs"
                             isDisabled={checkIsDisabled()}
                             nextButtonCallback={increaseStep}
+                            isLoading={membershipLoading}
                         />
                     </div>
                 </div>

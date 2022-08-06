@@ -8,7 +8,7 @@ import TreasurySideCard from "../TreasurySideCard"
 import textStyles from "../../../commonStyles/textType/styles.module.css"
 import { MdLink } from "react-icons/md"
 import { message } from "antd"
-import { FaDiscord } from "react-icons/fa"
+// import { FaDiscord } from "react-icons/fa"
 import { links } from "../../../constant/links"
 import "./style.scss"
 import BadgesSideCard from "../BadgesSideCard"
@@ -69,7 +69,7 @@ export default function DashboardSideCard({
                     <MdLink color="white" />
                     <span className="copyLinkdiv">copy invite link</span>
                 </div>
-                {!currentDao.guild_id && (
+                {/* {!currentDao.guild_id && (
                     <div
                         onClick={() => openDiscordBot()}
                         className="enableDiscord"
@@ -77,7 +77,7 @@ export default function DashboardSideCard({
                         <FaDiscord color="white" />
                         <div>enable discord bot</div>
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     )
