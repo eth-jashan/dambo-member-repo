@@ -72,7 +72,13 @@ const BadgeItem = ({ item }) => {
                     </div>
                     <div className="contri-badge-bottom-row">
                         <div>
-                            Design •{" "}
+                            {
+                                item?.entity?.details?.find(
+                                    (x) =>
+                                        x.fieldName === "Contribution Category"
+                                )?.value
+                            }{" "}
+                            •{" "}
                             {
                                 item?.entity?.details?.find(
                                     (x) => x.fieldName === "Time Spent in Hours"

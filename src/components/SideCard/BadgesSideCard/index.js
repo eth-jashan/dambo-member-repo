@@ -36,6 +36,11 @@ const CommunitySideCard = ({ show }) => {
         }
     }
 
+    console.log(
+        "selected member past contributions",
+        selectedMemberPastContributions
+    )
+
     const changeLevel = () => (
         <div
             onClick={() => openMembershipUpdateModal()}
