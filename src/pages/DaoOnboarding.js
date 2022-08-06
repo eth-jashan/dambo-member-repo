@@ -114,6 +114,7 @@ export default function Onboarding() {
             } catch (error) {
                 message.error(error.message)
                 setDeploying(false)
+                throw error
             }
         },
         [address, dispatch, navigate, safeFactory, threshold, signer]
