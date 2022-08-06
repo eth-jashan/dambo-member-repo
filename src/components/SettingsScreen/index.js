@@ -177,14 +177,14 @@ export default function SettingsScreen() {
                             >
                                 Basic Details
                             </div>
-                            <div
+                            {/* <div
                                 className={`nav-item ${
                                     activeSetting === "discord" &&
                                     "active-nav-item"
                                 }`}
                             >
                                 Discord Bot
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="settings-item">
@@ -324,7 +324,7 @@ export default function SettingsScreen() {
                             </div>
                         </div>
                     </div>
-                    <div className="settings-item">
+                    {/* <div className="settings-item">
                         {currentDao?.guild_id ? (
                             <>
                                 <div className="discord-switch-row">
@@ -400,7 +400,7 @@ export default function SettingsScreen() {
                                 Enable Discord bot
                             </div>
                         )}
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
