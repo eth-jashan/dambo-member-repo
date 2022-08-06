@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import "./styles.scss"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import chevron_down from "../../../assets/Icons/chevron_down.svg"
 import chevron_up from "../../../assets/Icons/chevron_up.svg"
 import etherscanIcon from "../../../assets/Icons/etherscanIcon.svg"
@@ -13,6 +13,9 @@ import appreciationIconGrey from "../../../assets/Icons/appreciationIconGrey.svg
 import payoutInfo from "../../../assets/Icons/payoutInfo.svg"
 import ContributionContributorSideCard from "../../ContributorFlow/component/ContributionContributorSideCard"
 import { assets } from "../../../constant/assets"
+import { chainType } from "../../../utils/chainType"
+import { useNetwork } from "wagmi"
+import { setContributionSelection } from "../../../store/actions/contibutor-action"
 
 // import { getSelectedChainId } from "../../../utils/POCPutils"
 const ContributionOverview = () => {
@@ -31,6 +34,8 @@ const ContributionOverview = () => {
         (x) => x.contributor.contributorSelectionContribution
     )
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
+    const { chain } = useNetwork()
+    const dispatch = useDispatch()
 
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
@@ -73,16 +78,30 @@ const ContributionOverview = () => {
 
     const openEtherscan = () => {
         window.open(
-            `https://polygonscan.com/token/${currentMembershipBadge?.contractAddress?.id}?a=${currentMembershipBadge?.tokenID}`,
+            `https://${
+                chainType(chain?.id) === "Testnet" ? "mumbai." : ""
+            }polygonscan.com/token/${
+                currentMembershipBadge?.contractAddress?.id
+            }?a=${currentMembershipBadge?.tokenID}`,
             "_blank"
         )
     }
 
     const openOpensea = () => {
         window.open(
-            `https://opensea.io/assets/matic/${currentMembershipBadge?.contractAddress?.id}/${currentMembershipBadge?.tokenID}`,
+            `https://${
+                chainType(chain?.id) === "Testnet" ? "testnets." : ""
+            }opensea.io/assets/${
+                chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
+            }/${currentMembershipBadge?.contractAddress?.id}/${
+                currentMembershipBadge?.tokenID
+            }`,
             "_blank"
         )
+    }
+
+    const closeSideCard = () => {
+        dispatch(setContributionSelection(false))
     }
 
     return (
@@ -92,7 +111,11 @@ const ContributionOverview = () => {
         >
             <div>
                 {contributorSelectionContribution && (
-                    <img className="cross-icon" src={assets.icons.crossWhite} />
+                    <img
+                        className="cross-icon"
+                        src={assets.icons.crossWhite}
+                        onClick={closeSideCard}
+                    />
                 )}
                 {!contributorSelectionContribution && (
                     <div
@@ -246,7 +269,7 @@ const ContributionOverview = () => {
                                     </div>
                                 </div>
                             </div>
-                            {contributionOverview?.total_payout_usd &&
+                            {contributionOverview?.total_payout_usd ? (
                                 Object?.keys(
                                     contributionOverview?.payout_tokens
                                 )?.map((x, i) => {
@@ -277,7 +300,10 @@ const ContributionOverview = () => {
                                             </div>
                                         </div>
                                     )
-                                })}
+                                })
+                            ) : (
+                                <></>
+                            )}
                             {/* <div className="last-payout-info">
                                 <img src={payoutInfo} alt="" />
                                 500 USDC and 0.25 ETH transferred on 3
