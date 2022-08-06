@@ -138,7 +138,7 @@ export default function Dashboard() {
         await dispatch(getContributionAsContributorApproved())
         await dispatch(getPastContributions())
         await fetchBadges()
-        await dispatch(getContributorStats())
+        await dispatch(getContributorStats(address))
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())
@@ -156,7 +156,6 @@ export default function Dashboard() {
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
-                    console.log("started here")
                     await gnosisFunctionsAdmin(currentDaos)
                     await dispatch(getAllDaoMembers())
                     await contributionFlowAsAdmin()
@@ -230,14 +229,12 @@ export default function Dashboard() {
 
     useEffect(async () => {
         if (!modalPayment && currentDao) {
-            console.log("Account Switch Running.....")
             await onAccountSwitch()
         }
     }, [currentDao?.uuid])
 
     useEffect(async () => {
         if (!modalPayment && currentDao && role === "ADMIN") {
-            console.log("Current Page Switch.....")
             await onScreenChange()
         }
     }, [currentPage])
@@ -249,7 +246,6 @@ export default function Dashboard() {
     const onRouteChange = async (route) => {
         setTab(route)
         if (role === "ADMIN" && route === "payments") {
-            console.log("yyyyyyyyyyy")
             await gnosisFunctionsAdmin()
         } else if (role === "ADMIN" && route === "contributions") {
             await gnosisFunctionsAdmin()

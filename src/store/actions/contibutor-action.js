@@ -193,8 +193,7 @@ export const raiseContributionRequest = (membership_id, details) => {
         const jwt = getState().auth.jwt
         const address = getState().auth.address
         const uuid = getState().dao.currentDao?.uuid
-        const contrib_schema_id = getState().contributor.contributorSchemaId
-        console.log("contributor", contrib_schema_id, details)
+        // const contrib_schema_id = getState().contributor.contributorSchemaId
         const data = {
             created_for: address,
             request: 1,
@@ -203,7 +202,6 @@ export const raiseContributionRequest = (membership_id, details) => {
             contrib_schema_id: 1,
             details,
         }
-        console.log("data", data)
         try {
             const res = await apiClient.post(
                 `${process.env.REACT_APP_DAO_TOOL_URL}${`/contrib`}`,
@@ -264,7 +262,7 @@ export const createContributionBadgeSchema = (schemaArray, id) => {
                 return 0
             }
         } catch (error) {
-            console.log("error, on schema creation", error)
+            console.error("error, on schema creation", error)
         }
     }
 }
@@ -358,7 +356,6 @@ export const createContributionVouchers = (
         // const address = getState().auth.address
         const uuid = getState().dao.currentDao?.uuid
         const contrib_schema_id = getState().contributor.contributorSchemaId
-        console.log("contributor", contrib_schema_id, signed_voucher)
         const data = {
             created_for: address,
             request: false,
@@ -471,12 +468,11 @@ export const getPastContributions = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
+        const address = getState().auth.address
 
         try {
             const res = await apiClient.get(
-                `${
-                    process.env.REACT_APP_DAO_TOOL_URL
-                }${`/contrib/past_contribs`}?dao_uuid=${uuid}`,
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.pastContributions}?dao_uuid=${uuid}&addr=${address}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
@@ -510,7 +506,6 @@ export const contributionBadgeClaim = (
     contributions
 ) => {
     return async (dispatch, getState) => {
-        console.log("in contributionBadgeClaim")
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
         const proxyContract = getState().dao.daoProxyAddress
@@ -528,10 +523,8 @@ export const contributionBadgeClaim = (
             )
             if (res.data.success) {
                 // return res.data
-                console.log("Voucher", res.data.data, memberTokenId)
                 const tokens =
                     res.data?.data?.signed_voucher?.tokenUri?.split(",")
-                console.log("tokens are", tokens)
                 const approveIndexes = []
                 contributions.forEach((contribution) => {
                     if (contribution.isChecked) {
@@ -540,9 +533,7 @@ export const contributionBadgeClaim = (
                         )
                     }
                 })
-                console.log("approve Indexes", approveIndexes)
                 const hashCallbackFn = (x) => {
-                    console.log("hash callback", x)
                     dispatch(
                         sendClaimTxHash(
                             x,
@@ -552,16 +543,6 @@ export const contributionBadgeClaim = (
                         )
                     )
                 }
-
-                console.log(
-                    "contract voucher info",
-                    proxyContract,
-                    res.data?.data?.signed_voucher,
-                    memberTokenId,
-                    approveIndexes,
-                    hashCallbackFn,
-                    callbackOnSuccess
-                )
 
                 await claimContributionBadge(
                     proxyContract,
@@ -586,7 +567,6 @@ export const rejectContributionVoucher = (
     contributions
 ) => {
     return async (dispatch, getState) => {
-        console.log("in contributionBadgeClaim")
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
         try {
@@ -606,7 +586,6 @@ export const rejectContributionVoucher = (
                 }
             )
             if (res.data.success) {
-                console.log("res", res.data)
                 // dispatch(getContributionAsContributorApproved())
                 dispatch(removeClaimedContributionVoucher(contributions, true))
             }
@@ -624,7 +603,6 @@ export const sendClaimTxHash = (
     voucher_uuid
 ) => {
     return async (dispatch, getState) => {
-        console.log("in sendClaimTxHash")
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
         try {
@@ -646,7 +624,6 @@ export const sendClaimTxHash = (
                 }
             )
             if (res.data.success) {
-                console.log("res", res.data)
                 dispatch(getContributionAsContributorApproved())
             }
         } catch (err) {
@@ -701,7 +678,7 @@ export const removeClaimedContributionVoucher = (
     }
 }
 
-export const getContributorStats = () => {
+export const getContributorStats = (address) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
@@ -710,7 +687,7 @@ export const getContributorStats = () => {
             const res = await apiClient.get(
                 `${
                     process.env.REACT_APP_DAO_TOOL_URL
-                }${`/contrib/stats`}?dao_uuid=${uuid}`,
+                }${`/contrib/stats`}?dao_uuid=${uuid}&addr=${address}`,
                 {
                     headers: {
                         Authorization: `Bearer ${jwt}`,
@@ -718,7 +695,6 @@ export const getContributorStats = () => {
                 }
             )
             if (res.data.success) {
-                console.log("statsssss", res.data)
                 dispatch(
                     contributorAction.setContributorStats({
                         stats: res.data.data,

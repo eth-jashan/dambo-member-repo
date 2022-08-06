@@ -521,6 +521,38 @@ export const setSelectedMember = (member) => {
     }
 }
 
+export const getSelectedMemberContributions = (memberAddress) => {
+    return async (dispatch, getState) => {
+        const uuid = getState().dao.currentDao?.uuid
+        const jwt = getState().auth.jwt
+
+        try {
+            const res = await apiClient.get(
+                `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.pastContributions}?dao_uuid=${uuid}&addr=${memberAddress}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (res?.data?.success) {
+                const contributions = res.data.data.contributions
+                console.log("contributions", contributions)
+                const approvedContributions = contributions?.filter(
+                    (ele) => ele.status === "APPROVED"
+                )
+                dispatch(
+                    membershipAction.setSelectedMemberPastContributions({
+                        selectedMemberPastContributions: approvedContributions,
+                    })
+                )
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}
+
 export const getCommunityMembers = () => {
     return async (dispatch, getState) => {
         const res = await apiClient.get(

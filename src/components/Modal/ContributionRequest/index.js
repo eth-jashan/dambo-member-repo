@@ -53,10 +53,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 proxyContract,
                 false
             )
-            console.log(
-                schemaTemplate,
-                memberTokenId.data.membershipNFTs[0].tokenID
-            )
+
             try {
                 await dispatch(
                     raiseContributionRequest(
@@ -68,7 +65,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 setVisibility(false)
                 message.success("contribution created successfully")
             } catch (error) {
-                console.log("error", error)
+                console.error("error", error)
                 setLoading(false)
                 message.error("something went wrong")
             }
@@ -95,10 +92,8 @@ const ContributionRequestModal = ({ setVisibility }) => {
             }
         })
         setSchemaTemplate(newCopy)
-        console.log("After", values, index, newCopy)
     }
     const onMultiTextChange = (values, index) => {
-        console.log("index", values, index)
         const newCopy = schemaTemplate.map((item, i) => {
             if (i === index) {
                 return { ...item, value: values }
@@ -107,7 +102,6 @@ const ContributionRequestModal = ({ setVisibility }) => {
             }
         })
         setSchemaTemplate(newCopy)
-        console.log("After", newCopy)
     }
 
     const textInput = (placeholder, index) => (

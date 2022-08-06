@@ -19,6 +19,7 @@ import {
 } from "../../../../store/actions/contibutor-action"
 
 import pocpBadgeBg from "../../../../assets/pocp_contri_bg.svg"
+import pluralize from "pluralize"
 
 export default function HomeScreen({
     membershipBadges,
@@ -43,7 +44,6 @@ export default function HomeScreen({
     const displaySchemas = (schema) => {
         const contribFeild = []
         schema?.forEach((x, i) => {
-            console.log(i)
             if (i < 3) {
                 contribFeild.push(x.fieldName)
             }
@@ -54,6 +54,7 @@ export default function HomeScreen({
     const contributionPending = useSelector(
         (x) => x.contributor.contributionForAdmin
     )
+
     return (
         <div className="badges-home-screen-container">
             <div className="membership-badge-wrapper">
@@ -78,7 +79,11 @@ export default function HomeScreen({
                                                 {badge.name}
                                             </div>
                                             <div className="badge-holders">
-                                                {badge.holders} holders
+                                                {badge.members_count}{" "}
+                                                {pluralize(
+                                                    "holder",
+                                                    badge.members_count
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -140,10 +145,6 @@ export default function HomeScreen({
                             {membershipBadges?.length ? (
                                 <button
                                     onClick={() => {
-                                        console.log(
-                                            "here",
-                                            contributionSchema?.length
-                                        )
                                         if (
                                             contributionSchema?.length === 0 ||
                                             !contributionSchema

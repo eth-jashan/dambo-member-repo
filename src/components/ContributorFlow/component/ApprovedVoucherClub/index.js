@@ -40,7 +40,6 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
             if (voucher?.[key]?.contributions?.length) {
                 contributions = voucher[key]?.contributions
                 voucher_uuid = key
-                console.log("voucher uuid is", key)
             }
         }
         const mappedContributions = contributions.map((ele) => ({
@@ -72,7 +71,6 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
     })
 
     const claimBadge = async () => {
-        console.log("claim badge")
         if (totalSelected) {
             dispatch(setClaimLoading(true))
             try {
@@ -81,10 +79,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                     proxyContract,
                     false
                 )
-                console.log(
-                    "claim badge member token id",
-                    memberTokenId.data.membershipNFTs[0].tokenID
-                )
+
                 const membership_token_id =
                     memberTokenId.data.membershipNFTs[0].tokenID
                 await dispatch(
@@ -92,7 +87,6 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                         contributionsWithCheckbox[0]?.uuid,
                         membership_token_id,
                         (x) => {
-                            console.log("success callback", x)
                             // dispatch(getContributionAsContributorApproved())
                             dispatch(
                                 removeClaimedContributionVoucher(

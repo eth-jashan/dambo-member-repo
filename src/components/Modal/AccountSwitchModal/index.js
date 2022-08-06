@@ -29,7 +29,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
         await dispatch(getContributionAsContributorApproved())
         await dispatch(getPastContributions())
         await dispatch(getAllClaimedBadges())
-        await dispatch(getContributorStats())
+        await dispatch(getContributorStats(address))
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())

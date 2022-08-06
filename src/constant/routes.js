@@ -23,6 +23,7 @@ const routes = {
         signPayout: "/contrib/payout/sign",
         execute: "/contrib/payout/execute",
         reject: "/contrib/payout/reject",
+        pastContributions: "/contrib/past_contribs",
     },
     pocp: {
         relay: "/eth/relay",

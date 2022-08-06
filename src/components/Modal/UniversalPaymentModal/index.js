@@ -81,7 +81,6 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
 
     const proposeSafeTransaction = async () => {
         const transaction_obj = []
-        // //console.log('pay detail', payDetail)
 
         setLoading(true)
 
@@ -157,7 +156,7 @@ const UniversalPaymentModal = ({ onClose, signer }) => {
 
             setLoading(false)
         } catch (error) {
-            // //console.log('error.........', error)
+            console.error("error.........", error)
             setLoading(false)
         }
     }

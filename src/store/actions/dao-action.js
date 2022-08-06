@@ -79,16 +79,6 @@ export const registerDao = (callbackFn, chainId) => {
                 name,
                 approvers,
                 async (x) => {
-                    console.log("Hash is", x, {
-                        dao_name: name,
-                        by: address,
-                        safe_addr: safeAddress || "",
-                        proxy_txn_hash: x,
-                        approvers: ownerMeta,
-                        logo_url: logo,
-                        chain_id: chainId,
-                        txn_chain_id: chainId === 4 ? "80001" : "137",
-                    })
                     try {
                         const res = await apiClient.post(
                             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.dao.registerDao}`,
@@ -267,7 +257,6 @@ export const getAllDaowithAddress = (chainId) => {
 export const setContractAddress = () => {
     return async (dispatch, getState) => {
         const currentDao = getState().dao.currentDao
-        console.log("proxy here", currentDao)
         if (currentDao?.proxy_txn_hash) {
             try {
                 const res = await getInfoHash(
@@ -281,7 +270,7 @@ export const setContractAddress = () => {
                     })
                 )
             } catch (error) {
-                console.log("error", error)
+                console.error("error", error)
             }
         }
     }
@@ -390,7 +379,6 @@ export const gnosisDetailsofDao = () => {
                 const safeInfo = await serviceClient.getSafeInfo(
                     currentDao?.safe_public_address
                 )
-                console.log("safe info...", safeInfo)
                 const tokenType = []
                 balance.forEach((item) => {
                     if (item.tokenAddress === null) {
@@ -622,12 +610,9 @@ export const getPayoutRequest = () => {
                     }
                 )
 
-                console.log("payout request from BE", res.data)
-
                 const pendingTxs = await serviceClient.getPendingTransactions(
                     safe_address
                 )
-                console.log("gnosis request from gnosis", pendingTxs)
                 const list_of_tx = []
 
                 if (res.data.success) {
@@ -1019,7 +1004,6 @@ export const createPayout = (tranxid, nonce, isExternal = false) => {
             dao_uuid: uuid,
             nonce,
         }
-        console.log("external", isExternal ? data_external : data)
         const res = await apiClient.post(
             `${process.env.REACT_APP_DAO_TOOL_URL}${routes.contribution.payout}`,
             isExternal ? data_external : data,
@@ -1343,7 +1327,6 @@ export const getAllClaimedBadges = () => {
                     },
                 }
             )
-            console.log("badges are", res.data)
             if (res.data.success) {
                 dispatch(
                     daoAction.set_claimed_badges({
@@ -1424,14 +1407,6 @@ export const connectDaoToDiscord = (daoUuid, guildId, discordId) => {
 
 export const approveBadge = (contribution, feedback = false, token = false) => {
     return async (dispatch) => {
-        console.log(
-            "contributions....",
-            JSON.stringify({
-                ...contribution,
-                feedback: feedback || false,
-                tokens: token || false,
-            })
-        )
         // const updatedContribution = {
         //     id: contribution?.id,
         //     title: contribution?.title,
@@ -1544,7 +1519,6 @@ export const getAllPastTransactions = () => {
                         }
                     })
                 })
-                console.log("past contribution", pastContributions)
                 dispatch(
                     daoAction.setPastContributions({
                         pastContributions,

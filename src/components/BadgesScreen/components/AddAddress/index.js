@@ -63,7 +63,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         fileReader.readAsText(files[0])
 
         fileReader.onload = (event) => {
-            console.log("event in file reader load ", event)
             const arr = event.target?.result?.split("\r\n")
             setBulkAddresses(arr)
             setIsCsvUploaded(true)

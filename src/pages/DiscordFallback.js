@@ -21,7 +21,6 @@ const DiscordFallback = () => {
                     `${window.location.origin}/discord/fallback`
                 )
             )
-            console.log()
             const res = await dispatch(getDiscordOAuth(code))
 
             const data = JSON.parse(localStorage.getItem("discord"))

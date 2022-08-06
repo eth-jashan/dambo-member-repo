@@ -110,7 +110,6 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
             }
         })
         setSchemaTemplate(newCopy)
-        console.log("After", newCopy)
     }
 
     const textFieldInput = (type, placeholder, index) => (
@@ -157,7 +156,6 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
             }
         })
         setSchemaTemplate(newCopy)
-        console.log("After", newCopy)
     }
     const [focusOnSelect, setFocusOnSelect] = useState(false)
     const buildMultiOptions = (options) => {
@@ -215,15 +213,8 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                     })
                 }
             })
-            console.log(
-                "approved addresses for badges",
-                schemaTemplate,
-                uploadMetadata
-            )
-
             try {
                 setLoading(true)
-                console.log(address, proxyContract)
                 const res = await createContributionMetadataUri(
                     schemaTemplate.find(
                         (x) => x.fieldName === "Contribution Title"
@@ -267,7 +258,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                     }
                 }
             } catch (error) {
-                console.log("error", error.toString())
+                console.error("error", error.toString())
                 setLoading(false)
             }
         }
@@ -407,7 +398,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                                         }
                                     }
                                 } catch (error) {
-                                    console.log("error", error.toString())
+                                    console.error("error", error.toString())
                                     setLoading(false)
                                 }
                             }}

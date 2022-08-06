@@ -34,7 +34,6 @@ const ContributionBadgeItem = ({
 
         return amount_total.toFixed(2)
     }
-    console.log("contributions", checkoutType, payoutDetail, item)
     const contributionInfo = () => (
         <div>
             <div className={`${styles.flexInfo} ${styles.marginTopClock}`}>

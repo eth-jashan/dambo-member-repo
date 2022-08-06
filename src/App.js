@@ -34,7 +34,6 @@ function App() {
     const listenersSet = useRef(null)
 
     if (signer?.provider?.provider && !listenersSet.current) {
-        console.log("setting listeners")
         signer.provider?.provider?.on("accountsChanged", () => {
             dispatch(signout())
             window.location.replace(window.location.origin)

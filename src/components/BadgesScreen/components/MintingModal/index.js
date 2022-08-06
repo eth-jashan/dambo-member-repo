@@ -49,7 +49,7 @@ export default function MintingModal({ closeMintingModal, membershipBadges }) {
                                         {badge.name}
                                     </div>
                                     <div className="badge-holders">
-                                        {badge.holders} Members
+                                        {badge.members_count} Members
                                     </div>
                                 </div>
                             </div>
