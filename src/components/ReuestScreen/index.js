@@ -59,7 +59,9 @@ export default function RequestScreen({
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const payoutToast = useSelector((x) => x.toast.payout)
     const dispatch = useDispatch()
-
+    const membershipBadgesForAddress = useSelector(
+        (x) => x.membership.membershipBadgesForAddress
+    )
     async function copyTextToClipboard() {
         if ("clipboard" in navigator) {
             message.success("invite link copied successfully!")
@@ -295,7 +297,9 @@ export default function RequestScreen({
                 </div>
             </div>
             {/* <div> */}
-            {role !== "ADMIN" && schemaOfDao && (
+            {role !== "ADMIN" &&
+            schemaOfDao &&
+            membershipBadgesForAddress?.length ? (
                 <div
                     onMouseEnter={() => setUniPayHover(true)}
                     onMouseLeave={() => setUniPayHover(false)}
@@ -317,6 +321,8 @@ export default function RequestScreen({
                         alt="plus"
                     />
                 </div>
+            ) : (
+                <></>
             )}
 
             {modalUniPayment && (

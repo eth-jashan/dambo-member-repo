@@ -54,6 +54,8 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 false
             )
 
+            console.log("membership token Id", memberTokenId)
+
             try {
                 await dispatch(
                     raiseContributionRequest(

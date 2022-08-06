@@ -24,6 +24,7 @@ import {
     getContributionAsContributorApproved,
 } from "../../store/actions/contibutor-action"
 import ApprovedVoucherClub from "../ContributorFlow/component/ApprovedVoucherClub"
+import { chainType } from "../../utils/chainType"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -164,14 +165,24 @@ export default function ContributorContributionScreen() {
 
     const openEtherscan = () => {
         window.open(
-            `https://polygonscan.com/token/${membershipBadgeClaimed?.contractAddress?.id}?a=${membershipBadgeClaimed?.tokenID}`,
+            `https://${
+                chainType(chain?.id) === "Testnet" ? "mumbai." : ""
+            }polygonscan.com/token/${
+                membershipBadgeClaimed?.contractAddress?.id
+            }?a=${membershipBadgeClaimed?.tokenID}`,
             "_blank"
         )
     }
 
     const openOpensea = () => {
         window.open(
-            `https://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`,
+            `https://${
+                chainType(chain?.id) === "Testnet" ? "testnets." : ""
+            }opensea.io/assets/${
+                chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
+            }/${membershipBadgeClaimed?.contractAddress?.id}/${
+                membershipBadgeClaimed?.tokenID
+            }`,
             "_blank"
         )
     }
@@ -443,7 +454,18 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0Ahttps://opensea.io/assets/matic/${membershipBadgeClaimed?.contractAddress?.id}/${membershipBadgeClaimed?.tokenID}`}
+                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0Ahttps://${
+                                            chainType(chain?.id) === "Testnet"
+                                                ? "testnets."
+                                                : ""
+                                        } opensea.io/assets/${
+                                            chainType(chain?.id) === "Testnet"
+                                                ? "mumbai"
+                                                : "matic"
+                                        }/${
+                                            membershipBadgeClaimed
+                                                ?.contractAddress?.id
+                                        }/${membershipBadgeClaimed?.tokenID}`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >
