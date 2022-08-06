@@ -104,7 +104,14 @@ export default function ContributionContributorSideCard({
                         </div>
                         <div className="contri-badge-bottom-row">
                             <div>
-                                Design •{" "}
+                                {
+                                    contributorSelectionContribution?.details?.find(
+                                        (x) =>
+                                            x.fieldName ===
+                                            "Contribution Category"
+                                    )?.value
+                                }{" "}
+                                •{" "}
                                 {
                                     contributorSelectionContribution?.details?.find(
                                         (x) =>

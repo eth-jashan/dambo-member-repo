@@ -404,6 +404,7 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
         const uuid = getState().dao.currentDao?.uuid
 
         try {
+            console.log("formdata", [...formData])
             const response = await apiClient.post(
                 // `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
                 `https://test-staging.api.drepute.xyz/arweave_server/membership`,
@@ -416,11 +417,11 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                 const membershipsUpdated = memberships.map(
                     (membership, index) => {
                         const image_url = membership?.file
-                            ? arweaveHashArray[index].media
+                            ? arweaveHashArray[arweaveArrayIndex].media
                             : membership?.image_url
 
                         const metadata_hash = membership?.file
-                            ? arweaveHashArray[index].metadata
+                            ? arweaveHashArray[arweaveArrayIndex].metadata
                             : membership?.metadata_hash
 
                         if (membership?.file) {
@@ -437,20 +438,28 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                             name: membership.name,
                         }
 
-                        if (isEditing) {
+                        if (isEditing && membership.uuid) {
                             returnObj.uuid = membership.uuid
                         }
 
                         return returnObj
                     }
                 )
+
+                console.log("updated memberships", membershipsUpdated)
                 let res
                 if (isEditing) {
+                    const oldMemberships = membershipsUpdated.filter(
+                        (ele) => ele.uuid
+                    )
+                    const newMemberships = membershipsUpdated.filter(
+                        (ele) => !ele.uuid
+                    )
                     res = await apiClient.put(
                         `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
                         {
                             dao_uuid: uuid,
-                            memberships: membershipsUpdated,
+                            memberships: oldMemberships,
                         },
                         {
                             headers: {
@@ -458,6 +467,20 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                             },
                         }
                     )
+                    if (newMemberships?.length) {
+                        res = await apiClient.post(
+                            `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
+                            {
+                                dao_uuid: uuid,
+                                memberships: newMemberships,
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${jwt}`,
+                                },
+                            }
+                        )
+                    }
                 } else {
                     res = await apiClient.post(
                         `${process.env.REACT_APP_DAO_TOOL_URL}${routes.membership.createMembershipBadges}`,
