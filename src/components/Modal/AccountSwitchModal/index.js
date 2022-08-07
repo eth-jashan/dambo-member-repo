@@ -38,12 +38,12 @@ const AccountSwitchModal = ({ onChange, route }) => {
         dispatch(switchRole(role))
         onChange(role)
         dispatch(setLoadingState(true))
+        await dispatch(getMembershipVoucher())
         await dispatch(getAllMembershipBadgesForAddress(address))
 
         if (route === "contributions" && role === "ADMIN") {
             await contributionFlowAsAdmin()
         } else if (role !== "ADMIN") {
-            await dispatch(getMembershipVoucher())
             await contributionFlowAsContributor()
         } else if (route !== "contributions" && role === "ADMIN") {
             // await dispatch(getPayoutRequest())

@@ -266,7 +266,9 @@ export const claimContributionBadge = async (
             hashCallbackFn,
             callbackFn
         )
-    } catch (error) {}
+    } catch (error) {
+        console.error("error", error)
+    }
 }
 
 export const createContributionMetadataUri = async (

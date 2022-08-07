@@ -8,6 +8,8 @@ import {
     setClaimLoading,
     removeClaimedContributionVoucher,
     getPastContributions,
+    getPastContributionsPolled,
+    setPastContributionsSyncing,
 } from "../../../../store/actions/contibutor-action"
 import { getAllMembershipBadges } from "../../../../utils/POCPServiceSdk"
 import { useAccount } from "wagmi"
@@ -93,10 +95,12 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                                     contributionsWithCheckbox
                                 )
                             )
-                            dispatch(getPastContributions())
+                            // dispatch(getPastContributions())
                             dispatch(setClaimLoading(false))
 
                             message.success("Claimed Badge Successfully")
+                            dispatch(setPastContributionsSyncing(true))
+                            dispatch(getPastContributionsPolled())
                         },
                         contributionsWithCheckbox
                     )

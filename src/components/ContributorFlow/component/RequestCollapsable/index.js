@@ -2,12 +2,24 @@ import React, { useState } from "react"
 import "./style.scss"
 // import axios from "axios"
 import { assets } from "../../../../constant/assets"
+import { Spin } from "antd"
+import { LoadingOutlined } from "@ant-design/icons"
+
+const antIcon = (
+    <LoadingOutlined
+        style={{
+            fontSize: 24,
+        }}
+        spin
+    />
+)
 
 export default function RequestCollapsable({
     title,
     children,
     onOpenCallback = () => {},
     defaultCollapseState = false,
+    showSyncing = false,
 }) {
     const [collapsable, setCollapsable] = useState(defaultCollapseState)
 
@@ -28,6 +40,11 @@ export default function RequestCollapsable({
                     }
                 />
                 <div className="approver-title">{title}</div>
+                {showSyncing && (
+                    <span>
+                        Syncing <Spin indicator={antIcon} />
+                    </span>
+                )}
             </div>
             {collapsable && <div className="open-collapsable">{children}</div>}
         </div>

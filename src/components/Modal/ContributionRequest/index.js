@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {
     createContributionrequest,
     raiseContributionRequest,
+    getPendingContributions,
 } from "../../../store/actions/contibutor-action"
 import Select from "react-select"
 import { getContriRequest } from "../../../store/actions/dao-action"
@@ -66,6 +67,7 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 setLoading(false)
                 setVisibility(false)
                 message.success("contribution created successfully")
+                dispatch(getPendingContributions())
             } catch (error) {
                 console.error("error", error)
                 setLoading(false)
