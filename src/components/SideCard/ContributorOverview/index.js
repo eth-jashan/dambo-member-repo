@@ -26,6 +26,9 @@ const ContributionOverview = () => {
     const contributionOverview = useSelector(
         (x) => x.contributor.contributorStats
     )
+    const contributorClaimedDataBackend = useSelector(
+        (x) => x.membership.contributorClaimedDataBackend
+    )
 
     const membershipBadgesForAddress = useSelector(
         (x) => x.membership.membershipBadgesForAddress
@@ -40,11 +43,14 @@ const ContributionOverview = () => {
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
         membershipBadgesForAddress.forEach((item, i) => {
-            membershipBadges.forEach((x) => {
-                if (item.level === x.level.toString() && i === 0) {
-                    membershipInfo.push(x)
-                }
-            })
+            // contributorClaimedDataBackend?.membership.forEach((x) => {
+            if (
+                item.level ===
+                contributorClaimedDataBackend?.membership.level.toString()
+            ) {
+                membershipInfo.push(contributorClaimedDataBackend?.membership)
+            }
+            // })
         })
         setCurrentMembershipBadge({
             ...membershipBadgesForAddress[0],
@@ -61,10 +67,13 @@ const ContributionOverview = () => {
         }
     })
 
+    console.log(currentMembershipBadge)
+
     useEffect(() => {
         if (
             currentDao &&
             proxyContract &&
+            contributorClaimedDataBackend?.membership &&
             membershipBadgesForAddress?.length > 0
         ) {
             getCurrentBadgeUpdated()
