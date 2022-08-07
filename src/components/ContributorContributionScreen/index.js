@@ -74,6 +74,10 @@ export default function ContributorContributionScreen() {
     const contributionForContributorPast = useSelector(
         (x) => x.contributor.contributionForContributorPast
     )
+    const schemaOfDao = useSelector((x) => x.contributor.contributorSchema)
+    const pastContributionsSyncing = useSelector(
+        (x) => x.contributor.pastContributionsSyncing
+    )
 
     const fetchPendingContributions = () => {
         dispatch(getPendingContributions())
@@ -102,7 +106,7 @@ export default function ContributorContributionScreen() {
             dispatch(setDisableClaimBtn(true))
             setTimeout(() => {
                 dispatch(setShowMetamaskSignText(true))
-            }, 10000)
+            }, 15000)
 
             await dispatch(
                 claimMembershipVoucher(membershipVoucherInfo, chain?.id)
@@ -288,6 +292,7 @@ export default function ContributorContributionScreen() {
                         contributionForContributorPast?.length || 0
                     }`}
                     onOpenCallback={fetchPastContributions}
+                    showSyncing={pastContributionsSyncing}
                 >
                     {contributionForContributorPast.map((x, i) => (
                         <ContributionCardV2
@@ -380,14 +385,12 @@ export default function ContributorContributionScreen() {
             ) : (
                 <div
                     className={
-                        currentMembershipBadge &&
-                        currentDao?.contrib_schema?.schema.length
+                        currentMembershipBadge && schemaOfDao
                             ? "contribution-screen-wrapper"
                             : "noMembershipBadge"
                     }
                 >
-                    {currentMembershipBadge &&
-                    currentDao?.contrib_schema?.schema.length > 0 ? (
+                    {currentMembershipBadge && schemaOfDao ? (
                         contribution.length > 0 ? (
                             renderNonEmptyScreen()
                         ) : (

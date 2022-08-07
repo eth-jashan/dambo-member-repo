@@ -67,8 +67,6 @@ const ContributionOverview = () => {
         }
     })
 
-    console.log(currentMembershipBadge)
-
     useEffect(() => {
         if (
             currentDao &&

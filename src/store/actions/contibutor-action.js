@@ -450,6 +450,11 @@ export const getPendingContributions = () => {
                         pending: res.data.data.contributions,
                     })
                 )
+                dispatch(
+                    contributorAction.set_contribution_counts({
+                        contribution_counts: res.data.data.counts,
+                    })
+                )
             } else {
                 return false
             }
@@ -485,6 +490,7 @@ export const getPastContributions = () => {
                         past: res.data.data.contributions,
                     })
                 )
+                return res.data.data.contributions
             } else {
                 return false
             }
@@ -543,6 +549,19 @@ export const contributionBadgeClaim = (
                         )
                     )
                 }
+
+                console.log("approve indexes", approveIndexes)
+                console.log("member token Id", memberTokenId)
+
+                console.log(
+                    "claiming badge",
+                    proxyContract,
+                    res.data?.data?.signed_voucher,
+                    memberTokenId,
+                    approveIndexes,
+                    hashCallbackFn,
+                    callbackOnSuccess
+                )
 
                 await claimContributionBadge(
                     proxyContract,
@@ -711,5 +730,40 @@ export const getContributorStats = (address) => {
             //     })
             // )
         }
+    }
+}
+
+const wait = function (ms = 1000) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
+}
+export const getPastContributionsPolled = () => {
+    return async (dispatch, getState) => {
+        const pastContributionsCount =
+            getState().contributor.contributionForContributorPast.length
+
+        let pastContributions = await dispatch(getPastContributions())
+        console.log(
+            "result befoire while",
+            pastContributions.length,
+            pastContributionsCount
+        )
+        while (pastContributions.length <= pastContributionsCount) {
+            await wait(2000)
+            pastContributions = await dispatch(getPastContributions())
+            console.log("result in while", pastContributions)
+        }
+        dispatch(setPastContributionsSyncing(false))
+    }
+}
+
+export const setPastContributionsSyncing = (status) => {
+    return async (dispatch, getState) => {
+        dispatch(
+            contributorAction.setPastContributionsSyncing({
+                pastContributionsSyncing: status,
+            })
+        )
     }
 }

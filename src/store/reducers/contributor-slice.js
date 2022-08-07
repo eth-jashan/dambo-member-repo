@@ -28,6 +28,7 @@ const contributorSlice = createSlice({
         daoName: null,
         contribution_counts: null,
         claimLoading: false,
+        pastContributionsSyncing: false,
     },
     reducers: {
         set_invite_code(state, action) {
@@ -87,6 +88,10 @@ const contributorSlice = createSlice({
         },
         setContributorStats(state, action) {
             state.contributorStats = action.payload.stats
+        },
+        setPastContributionsSyncing(state, action) {
+            state.pastContributionsSyncing =
+                action.payload.pastContributionsSyncing
         },
     },
 })

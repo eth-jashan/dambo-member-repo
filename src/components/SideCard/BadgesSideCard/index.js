@@ -38,7 +38,8 @@ const CommunitySideCard = ({ show }) => {
 
     console.log(
         "selected member past contributions",
-        selectedMemberPastContributions
+        selectedMemberPastContributions,
+        selectedMember
     )
 
     const changeLevel = () => (
