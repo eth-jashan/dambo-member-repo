@@ -13,6 +13,7 @@ let pocpInstance = null
 export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     const walletWeb3 = new Web3(provider)
     const walletProvider = walletWeb3.givenProvider
+    console.log(Biconomy)
 
     pocpInstance = new Pocp(
         signer,
@@ -260,6 +261,8 @@ export const claimContributionBadge = async (
             voucher,
             memberTokenId,
             approveIndex,
+            1e7,
+            1e7,
             hashCallbackFn,
             callbackFn
         )
