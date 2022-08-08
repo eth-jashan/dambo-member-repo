@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Typography } from "antd"
 
@@ -36,6 +36,22 @@ const TransactionCard = () => {
     const jwt = useSelector((x) => x.auth.jwt)
 
     const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
+
+    useEffect(() => {
+        console.log("transaction changed")
+        setFeedBackSow(false)
+        setFeedback("")
+        setMint(false)
+        setPayDetail([
+            {
+                amount: "",
+                token_type: null,
+                address: currentTransaction?.requested_by?.public_address,
+                usd_amount: ETHprice,
+            },
+        ])
+        setPayToken(false)
+    }, [currentTransaction?.id])
     const [payDetail, setPayDetail] = useState([
         {
             amount: "",

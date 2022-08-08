@@ -23,24 +23,6 @@ const ApprovalSelectionToggle = ({
 }) => {
     const availableToken = useSelector((x) => x.dao.balance)
 
-    const renderToggle = () => (
-        <div className={active ? "toggle-div-active" : "toggle-div"}>
-            <div className="switch-container">
-                <Switch
-                    onChange={() => setActive(!active)}
-                    style={{ width: "36px" }}
-                />
-            </div>
-
-            <div
-                style={{ color: active ? "#ECFFB8" : "white" }}
-                className={active ? textStyles.ub_16 : textStyles.m_16}
-            >
-                {toggleTitle}
-            </div>
-        </div>
-    )
-
     const renderPayTokenActive = () => {
         return (
             <div className="pay-token-div">
@@ -153,7 +135,23 @@ const ApprovalSelectionToggle = ({
     return (
         <div className="approval-selection-body">
             <div className={active ? "container-active" : "container"}>
-                {renderToggle()}
+                {/* {renderToggle()} */}
+                <div className={active ? "toggle-div-active" : "toggle-div"}>
+                    <div className="switch-container">
+                        <Switch
+                            onChange={() => setActive(!active)}
+                            style={{ width: "36px" }}
+                            checked={active}
+                        />
+                    </div>
+
+                    <div
+                        style={{ color: active ? "#ECFFB8" : "white" }}
+                        className={active ? textStyles.ub_16 : textStyles.m_16}
+                    >
+                        {toggleTitle}
+                    </div>
+                </div>
             </div>
 
             {active && renderActiveOption()}
