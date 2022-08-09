@@ -107,10 +107,26 @@ export default function HomeScreen({
                             </div>
                         </div>
                         <div className="membership-badge-right">
+                            {currentDao?.uuid ===
+                                "93ba937e02ea4fdb9633c2cb27345200" ||
+                            currentDao?.uuid ===
+                                "981349a995c140d8b7fb5c110b0d133b" ? (
+                                <video autoPlay loop muted>
+                                    <source
+                                        src={membershipBadges?.[0]?.image_url}
+                                    />
+                                </video>
+                            ) : (
+                                <img
+                                    className="claimedBadgeImg"
+                                    src={membershipBadges?.[0]?.image_url}
+                                />
+                            )}
+                            {/* {dao_uuid === "981349a995c140d8b7fb5c110b0d133b"?
                             <img
                                 src={membershipBadges?.[0]?.image_url}
                                 alt=""
-                            />
+                            />} */}
                         </div>
                     </div>
                 ) : (

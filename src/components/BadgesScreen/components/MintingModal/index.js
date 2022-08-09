@@ -8,7 +8,7 @@ import { useSelector } from "react-redux"
 export default function MintingModal({ closeMintingModal, membershipBadges }) {
     const [selectedMembershipBadge, setSelectedMembershipBadge] = useState(null)
     const currentDao = useSelector((x) => x.dao.currentDao)
-
+    console.log("Yo", membershipBadges)
     const selectMembershipBadge = () => {
         return (
             <div className="select-membership-badge-container">
@@ -36,13 +36,18 @@ export default function MintingModal({ closeMintingModal, membershipBadges }) {
                             }}
                         >
                             <div className="select-badge-row-left">
-                                {currentDao?.uuid !==
-                                "93ba937e02ea4fdb9633c2cb27345200" ? (
-                                    <img src={badge.image_url} alt="" />
-                                ) : (
+                                {currentDao?.uuid ===
+                                    "93ba937e02ea4fdb9633c2cb27345200" ||
+                                currentDao?.uuid ===
+                                    "981349a995c140d8b7fb5c110b0d133b" ? (
                                     <video autoPlay loop muted>
-                                        <source src={badge?.image_url} />
+                                        <source src={badge.image_url} />
                                     </video>
+                                ) : (
+                                    <img
+                                        className="claimedBadgeImg"
+                                        src={badge.image_url}
+                                    />
                                 )}
                                 <div>
                                     <div className="badge-name">

@@ -113,16 +113,10 @@ const CommunitySideCard = ({ show }) => {
                                 {selectedMember?.public_address?.slice(-3)}
                             </div>
                             <div className="membership-info">
-                                {currentDao?.uuid !==
-                                "93ba937e02ea4fdb9633c2cb27345200" ? (
-                                    <img
-                                        src={
-                                            selectedMember?.memberships[0]
-                                                ?.image_url
-                                        }
-                                        className="member-image"
-                                    />
-                                ) : (
+                                {currentDao?.uuid ===
+                                    "93ba937e02ea4fdb9633c2cb27345200" ||
+                                currentDao?.uuid ===
+                                    "981349a995c140d8b7fb5c110b0d133b" ? (
                                     <video
                                         className="member-image"
                                         autoPlay
@@ -136,6 +130,14 @@ const CommunitySideCard = ({ show }) => {
                                             }
                                         />
                                     </video>
+                                ) : (
+                                    <img
+                                        src={
+                                            selectedMember?.memberships[0]
+                                                ?.image_url
+                                        }
+                                        className="member-image"
+                                    />
                                 )}
                                 <div className="badge-info">
                                     <div>

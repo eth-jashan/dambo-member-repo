@@ -109,6 +109,8 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         return isDisabled
     }
 
+    console.log("Yo", selectedMembershipBadge?.image_url)
+
     return (
         <div className="add-address-screen-container">
             <div className="close-minting-modal" onClick={closeModal}>
@@ -123,7 +125,19 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                     </div>
                 </div>
                 <div className="mint-membership-badge-right">
-                    {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ? (
+                    {currentDao?.uuid === "93ba937e02ea4fdb9633c2cb27345200" ||
+                    currentDao?.uuid === "981349a995c140d8b7fb5c110b0d133b" ? (
+                        <video autoPlay loop muted>
+                            <source src={selectedMembershipBadge?.image_url} />
+                        </video>
+                    ) : (
+                        <img
+                            className="claimedBadgeImg"
+                            src={selectedMembershipBadge?.image_url}
+                        />
+                    )}
+                    {/* {currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200" ||
+                    currentDao?.uuid !== "981349a995c140d8b7fb5c110b0d133b" ? (
                         <img src={selectedMembershipBadge.image_url} alt="" />
                     ) : (
                         <video
@@ -134,7 +148,7 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
                         >
                             <source src={selectedMembershipBadge?.image_url} />
                         </video>
-                    )}
+                    )} */}
                 </div>
             </div>
             {isBulkMinting ? (

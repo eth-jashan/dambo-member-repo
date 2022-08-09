@@ -644,7 +644,7 @@ export const setShowMembershipMintingModal = (showMembershipMintingModal) => {
 export const mintBadges = (selectedMembershipBadge, addresses) => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
-        // const uuid = getState().dao.currentDao?.uuid
+        const uuid = getState().dao.currentDao?.uuid
         const proxyContract = getState().dao.daoProxyAddress
         const mapArr = addresses.reduce(
             (acc, curr) => {
@@ -671,9 +671,12 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                             [],
                             ele,
                             `${selectedMembershipBadge?.metadata_hash},`,
-                            "signTypedDatav1.0"
+                            uuid
                         )
-                        console.log("member", JSON.stringify(signedObject))
+                        console.log(
+                            "membership voucher",
+                            JSON.stringify(signedObject)
+                        )
                         return {
                             addresses: [...ele],
                             signed_voucher: signedObject,

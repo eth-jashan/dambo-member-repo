@@ -53,6 +53,11 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
+    console.log(
+        dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
+            ? "signTypedDatav1.0"
+            : "signTypedDatav2.0"
+    )
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
@@ -164,7 +169,7 @@ export const createMembershipVoucher = async (
     metadataHash,
     dao_uuid
 ) => {
-    console.log(addresses)
+    console.log(contractAddress)
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,
