@@ -427,12 +427,6 @@ export default function ContributorContributionScreen() {
                             <img src={cross} alt="" />
                         </div>
 
-                        {/* {currentDao?.uuid===<video className="claimedBadgeImg" autoPlay loop muted>
-                            <source
-                                src={membershipBadgeClaimed?.image_url}
-                                type="video/mp4"
-                            />
-                        </video>} */}
                         {currentDao?.uuid ===
                             "93ba937e02ea4fdb9633c2cb27345200" ||
                         currentDao?.uuid ===
