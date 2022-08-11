@@ -43,11 +43,15 @@
             outline: none;
         }
         .remove-icon {
-            width: 12px;
-            height: 2px;
-            background-color: black;
             margin-right: 0.5rem;
-            cursor: pointer;
+            padding: 12px;
+            // background-color: red;
+            div {
+                width: 12px;
+                height: 2px;
+                background-color: black;
+                cursor: pointer;
+            }
         }
     }
 }

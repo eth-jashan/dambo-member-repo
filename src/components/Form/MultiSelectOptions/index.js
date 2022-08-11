@@ -14,14 +14,27 @@ export default function MultiSelectOptions({
     return (
         <div className="multi-select-option-container">
             <div className="edit-wrapper">
-                <div
-                    onClick={() => {
-                        if (isEdit && item.options.length > 1) {
-                            removeOptions(badgeIndex, index)
-                        }
-                    }}
-                    className={isEdit ? "remove-icon" : "bullets-circle"}
-                />
+                {!isEdit ? (
+                    <div
+                        onClick={() => {
+                            if (isEdit && item.options.length > 1) {
+                                removeOptions(badgeIndex, index)
+                            }
+                        }}
+                        className={"bullets-circle"}
+                    />
+                ) : (
+                    <div
+                        onClick={() => {
+                            if (isEdit && item.options.length > 1) {
+                                removeOptions(badgeIndex, index)
+                            }
+                        }}
+                        className={"remove-icon"}
+                    >
+                        <div />
+                    </div>
+                )}
                 <input
                     className={
                         isEdit
