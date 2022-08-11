@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Input } from "antd"
 import Select from "react-select"
 import "./style.scss"
@@ -24,6 +24,9 @@ import AddressInput from "../../../BadgesScreen/components/AddAddress/AddressInp
 const { TextArea } = Input
 
 export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
+    const badgeSelectionMember = useSelector(
+        (x) => x.contributor.badgeSelectionMember
+    )
     const [address, setAddress] = useState([""])
     const [addressStatus, setAddressStatus] = useState(false)
     const getClaimedMembershipNft = async (address) => {
@@ -34,7 +37,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 const memberTokenId = await dispatch(
                     getAllMembershipBadges(address)
                 )
-
+                console.log(memberTokenId)
                 setLoading(false)
                 if (memberTokenId.data.membershipNFTs.length > 0) {
                     setAddressStatus(true)
@@ -50,11 +53,17 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
             }
         }
     }
-
+    useEffect(async () => {
+        if (badgeSelectionMember) {
+            console.log("fireeddd")
+            await getClaimedMembershipNft(badgeSelectionMember)
+            setAddress([badgeSelectionMember])
+        }
+    }, [badgeSelectionMember])
     const onEdit = () => {}
 
     const updateAddress = async (x, i) => {
-        await getClaimedMembershipNft()
+        await getClaimedMembershipNft(x)
         const copyOfAddresses = [...address]
         copyOfAddresses[i] = x
         setAddress(copyOfAddresses)
@@ -161,7 +170,9 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const buildMultiOptions = (options) => {
         const newOptions = []
         options.forEach((x) => {
-            newOptions.push({ value: x, label: x })
+            if (x !== null && x !== "" && x !== " ") {
+                newOptions.push({ value: x, label: x })
+            }
         })
         return newOptions
     }
@@ -171,6 +182,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         <div className="contribution-type-input-wrapper">
             <div>
                 <Select
+                    // isMulti
                     classNamePrefix="select"
                     closeMenuOnSelect
                     onChange={(x) => onMultiTextChange(x.value, index)}

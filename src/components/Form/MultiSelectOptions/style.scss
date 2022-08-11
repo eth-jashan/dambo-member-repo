@@ -1,0 +1,53 @@
+.multi-select-option-container {
+    .edit-wrapper {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 12px;
+        align-items: center;
+        .bullets-circle {
+            flex-direction: row;
+            height: 12px;
+            width: 12px;
+            opacity: 0.76;
+            border: 1px solid black;
+            border-radius: 1.25rem;
+        }
+        .multi-option-input {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            background: white;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            width: 70%;
+            border-bottom: 1px solid #6852ff;
+            margin-left: 0.5rem;
+            outline: none;
+        }
+        .multi-option-input-inactive {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            background: white;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            width: 70%;
+            //border-bottom: 1px solid #6852ff;
+            margin-left: 0.5rem;
+            outline: none;
+        }
+        .remove-icon {
+            width: 12px;
+            height: 2px;
+            background-color: black;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+    }
+}

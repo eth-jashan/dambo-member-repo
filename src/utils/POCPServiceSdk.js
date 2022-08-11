@@ -18,9 +18,7 @@ export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     pocpInstance = new Pocp(
         signer,
         provider,
-
         signer.provider.provider,
-
         chainId === 4 ? 80001 : 137,
         chainId === 4
             ? web3.rep3Mumbai
@@ -118,7 +116,7 @@ export const deployDaoContract = async (
     )
 }
 
-export const getAllMembershipBadges = (
+export const getAllMembershipBadges = async (
     accountAddress,
     contractAddress,
     uuid
@@ -130,7 +128,7 @@ export const getAllMembershipBadges = (
             ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
             : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
     )
-    return pocpGetter.membershipNftWithClaimerOfDao(
+    return await pocpGetter.membershipNftWithClaimerOfDao(
         accountAddress,
         contractAddress
     )

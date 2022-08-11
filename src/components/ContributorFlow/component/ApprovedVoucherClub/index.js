@@ -97,7 +97,6 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                             )
                             // dispatch(getPastContributions())
                             dispatch(setClaimLoading(false))
-
                             message.success("Claimed Badge Successfully")
                             dispatch(setPastContributionsSyncing(true))
                             dispatch(getPastContributionsPolled())

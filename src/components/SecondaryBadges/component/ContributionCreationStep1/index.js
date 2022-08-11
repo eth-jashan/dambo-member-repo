@@ -2,6 +2,10 @@ import React from "react"
 import plus_black from "../../../../assets/Icons/plus_black.svg"
 import "./style.scss"
 import NextButton from "../../../NextButton"
+import FormElementSelection from "../../../Form/FormElementSelection"
+import { Select, Menu, Dropdown } from "antd"
+
+const { Option } = Select
 
 export default function ContributionCreationStep1({
     increaseStep,
@@ -10,19 +14,64 @@ export default function ContributionCreationStep1({
 }) {
     const updateSchema = (badgeIndex, newValue) => {
         const copyOfBadges = [...schemaTemplate]
-        copyOfBadges[badgeIndex].name = newValue
+        copyOfBadges[badgeIndex].fieldName = newValue
         setSchemaTemplate(copyOfBadges)
     }
 
-    const addSchema = () => {
-        setSchemaTemplate((membershipBadges) => [
-            ...membershipBadges,
-            {
+    const updateSchemaType = (badgeIndex, newValue) => {
+        const copyOfBadges = [...schemaTemplate]
+        copyOfBadges[badgeIndex].fieldType = newValue
+        setSchemaTemplate(copyOfBadges)
+    }
+    const onChangeOption = (
+        badgeIndex,
+        optionIndex,
+        newValue,
+        reset = false
+    ) => {
+        if (reset) {
+            const copyOfBadges = [...schemaTemplate]
+            copyOfBadges[badgeIndex].options = [""]
+            setSchemaTemplate(copyOfBadges)
+            console.log("input", badgeIndex, newValue, copyOfBadges, newValue)
+        } else {
+            const copyOfBadges = [...schemaTemplate]
+            copyOfBadges[badgeIndex].options[optionIndex] = newValue
+            setSchemaTemplate(copyOfBadges)
+            console.log("input", badgeIndex, newValue, copyOfBadges, newValue)
+        }
+    }
+    const onRemoveOptions = (badgeIndex, optionIndex) => {
+        console.log("fired remove option", badgeIndex, optionIndex)
+        const copyOfBadges = [...schemaTemplate]
+        let copyOfOption = copyOfBadges[badgeIndex].options
+        copyOfOption = copyOfOption.filter(
+            (x, i) => i !== optionIndex && x !== null
+        )
+        copyOfBadges[badgeIndex].options = copyOfOption
+        setSchemaTemplate(copyOfBadges)
+        console.log("input", badgeIndex, copyOfBadges)
+    }
+
+    const addSchema = (type) => {
+        let element
+        if (type === "Multiselect") {
+            element = {
                 fieldName: "",
-                fieldType: "",
+                fieldType: type,
+                options: ["Option1"],
+                maxSelection: 1,
+            }
+        } else {
+            element = {
+                fieldName: "",
+                fieldType: type,
                 options: [],
-            },
-        ])
+                maxSelection: 1,
+            }
+        }
+        console.log("added element", element)
+        setSchemaTemplate((membershipBadges) => [...membershipBadges, element])
     }
 
     const checkIsDisabled = () => {
@@ -42,6 +91,50 @@ export default function ContributionCreationStep1({
         </div>
     )
 
+    const addLevelMenu = (
+        <Menu
+            items={[
+                {
+                    key: "1",
+                    label: (
+                        <a onClick={() => addSchema("Text Field")}>
+                            Text Field
+                        </a>
+                    ),
+                },
+                {
+                    key: "2",
+                    label: <a onClick={() => addSchema("Numbers")}>Numbers</a>,
+                },
+                {
+                    key: "3",
+                    label: (
+                        <a
+                            onClick={() => {
+                                addSchema("Multiselect")
+                            }}
+                        >
+                            Multiselect
+                        </a>
+                    ),
+                },
+                {
+                    key: "4",
+                    label: (
+                        <a onClick={() => addSchema("Long text")}>Long text</a>
+                    ),
+                },
+                {
+                    key: "5",
+                    label: (
+                        <a onClick={() => addSchema("Media Upload")}>
+                            Media Upload
+                        </a>
+                    ),
+                },
+            ]}
+        />
+    )
     return (
         <div className="contribution-step1">
             <div className="contribution-heading">Contribution badge setup</div>
@@ -54,36 +147,22 @@ export default function ContributionCreationStep1({
                     <div>
                         {renderSchemaHeader()}
                         {schemaTemplate.map((x, i) => (
-                            <div key={i} className="element-row">
-                                <div>
-                                    <div className="row-field-name">
-                                        {x.fieldName}
-                                    </div>
-                                    {x.options.length > 0 && (
-                                        <div className="options-div">
-                                            {x.options.map((option, index) => (
-                                                <div
-                                                    className="option-text"
-                                                    key={index}
-                                                >
-                                                    {option}
-                                                    {index <
-                                                        x.options.length - 1 &&
-                                                        ` / `}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="row-field-type">
-                                    {x.fieldType}
-                                </div>
-                            </div>
+                            <FormElementSelection
+                                onChangeFeildValue={updateSchema}
+                                onChangeFeildType={updateSchemaType}
+                                item={x}
+                                key={i}
+                                index={i}
+                                onChangeOption={onChangeOption}
+                                removeOptions={onRemoveOptions}
+                            />
                         ))}
-                        <div className="add-btn">
-                            <div>Add another Level</div>
-                            <img src={plus_black} alt="" />
-                        </div>
+                        <Dropdown trigger="click" overlay={addLevelMenu}>
+                            <div className="add-btn">
+                                <img src={plus_black} alt="" />
+                                <div>Add another Level</div>
+                            </div>
+                        </Dropdown>
                     </div>
                     <div className="next-btn-wrapper-contri1">
                         <NextButton

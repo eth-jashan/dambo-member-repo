@@ -12,13 +12,11 @@ import {
 } from "../../../../store/actions/membership-action"
 import { useDispatch, useSelector } from "react-redux"
 import { setContractAddress } from "../../../../store/actions/dao-action"
-import ContributionSchemaModal from "../../../SecondaryBadges/ContributionBadge/ContributionSchemeModal"
 import {
     actionOnContributionRequestModal,
     actionOnGenerateSchemaModal,
 } from "../../../../store/actions/contibutor-action"
 
-import pocpBadgeBg from "../../../../assets/pocp_contri_bg.svg"
 import pluralize from "pluralize"
 
 export default function HomeScreen({

@@ -4,9 +4,8 @@ import "./style.scss"
 import NextButton from "../../../NextButton"
 import { assets } from "../../../../constant/assets"
 import pocp_bg from "../../../../assets/POCP_background.svg"
-import ContributionBadgeBg from "../../../../assets/Icons/ContributionBadgeBg.png"
-import defaultBadge from "../../../../assets/Icons/defaultBadge.png"
-import defaultPic from "../../../../assets/defaultPic.png"
+import FormElementSelection from "../../../Form/FieldTypeDisplay"
+import BadgeItem from "../../../BadgeItem"
 
 export default function ContributionCreationStep2({
     increaseStep,
@@ -40,46 +39,7 @@ export default function ContributionCreationStep2({
         return isDisabled
     }
 
-    const renderContributionBadge = () => (
-        // <div className="contribution-badge-div">
-        //     <div className="date-div">
-        //         <div className="date-info">4 April 2021</div>
-        //         <div className="rectangle" />
-        //         <div className="triangle" />
-        //     </div>
-        //     <div className="meta-info-div">
-        //         <div className="name">Rep4 DAO</div>
-        //         <div className="title">Contribution Title</div>
-        //     </div>
-        //     <div className="right-angle-triangle-cut" />
-        //     <div className="protocol-info">
-        //         <div>PROOF OF CONTRIBUTION</div>
-        //         <img src={assets.icons.rep3BadgeLogo} />
-        //     </div>
-        //     <div className="contribution-right-corner">
-        //         <div className="triangle-cut" />
-        //         <div className="dao-logo-container">
-        //             <div className="upper-triangle" />
-        //             <div className="bottom-triangle" />
-        //         </div>
-        //     </div>
-        // </div>
-        // <div className="contri-badge">
-        //     <img src={ContributionBadgeBg} alt="" className="contri-badge-bg" />
-        //     <div className="contri-badge-dao">
-        //         <img src={defaultPic} alt="" />
-        //         Community name
-        //     </div>
-        //     <div className="contri-badge-contribution-info">
-        //         <div className="contri-badge-title">Title of Contribution</div>
-        //         <div className="contri-badge-bottom-row">
-        //             <div>Field 1 • Field 2</div>
-        //             <div>Date</div>
-        //         </div>
-        //     </div>
-        // </div>
-        <img src={defaultBadge} alt="" className="default-contri-badge" />
-    )
+    const renderContributionBadge = () => <BadgeItem setupDisplay={true} />
 
     const renderDesignChangeRequest = () => (
         <div className="design-change-div">
@@ -95,42 +55,12 @@ export default function ContributionCreationStep2({
                 <div className="contribution-left">
                     <div className="left-bold">Review Badge</div>
                     <div className="left-greyed">Step 2 of 2</div>
+                    {renderContributionBadge()}
                 </div>
                 <div className="contribution-right">
-                    <div>
-                        <div className="contribution-card">
-                            {renderContributionBadge()}
-                            {/* {renderDesignChangeRequest()} */}
-                        </div>
-                    </div>
                     <div className="schema-overview-div">
-                        {/* {renderSchemaHeader()} */}
                         {schemaTemplate.map((x, i) => (
-                            <div key={i} className="element-row-step2">
-                                <div>
-                                    <div className="row-field-name">
-                                        {x.fieldName}
-                                    </div>
-                                    {x.options.length > 0 && (
-                                        <div className="options-div">
-                                            {x.options.map((option, index) => (
-                                                <div
-                                                    className="option-text"
-                                                    key={index}
-                                                >
-                                                    {option}
-                                                    {index <
-                                                        x.options.length - 1 &&
-                                                        ` / `}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="row-field-type-step2">
-                                    {x.fieldType}
-                                </div>
-                            </div>
+                            <FormElementSelection item={x} key={i} />
                         ))}
                     </div>
                     <div className="next-btn-wrapper-contri2">

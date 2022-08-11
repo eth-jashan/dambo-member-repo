@@ -1,0 +1,118 @@
+.form-element-type-display-container {
+    .field-div {
+        width: 100%;
+        padding: 1rem 0.75rem;
+        border: 1px solid #eeeef0;
+        margin: 12px 0px;
+        border-radius: 12px;
+        div {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            color: #000000;
+        }
+    }
+    .option-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        // justify-content: center;
+    }
+    .option-circle {
+        border: 1px solid black;
+        height: 12px;
+        width: 12px;
+        margin: 12px 12px 12px 0px;
+        border-radius: 12px;
+    }
+    .option-text {
+        font-family: "TelegrafMedium";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+    }
+    .multiselect-div {
+        width: 100%;
+        padding: 1rem 0.75rem;
+        border: 1px solid #eeeef0;
+        margin: 12px 0px;
+        border-radius: 12px;
+        div {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            color: #000000;
+        }
+    }
+    .long-field-div {
+        width: 100%;
+        padding: 1rem 0.75rem;
+        border: 1px solid #eeeef0;
+        height: 7.5rem;
+        margin: 12px 0px;
+        border-radius: 12px;
+
+        div {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            color: #000000;
+        }
+    }
+    .uploader-div {
+        border: 1px solid #1f1e1e12;
+        border-radius: 12px;
+        padding: 1rem;
+        .image-title {
+            font-family: "TelegrafMedium";
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            /* identical to box height, or 150% */
+            color: #000000;
+        }
+        .image-uploader {
+            width: 100%;
+            height: 7.5rem;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            img {
+                height: 3rem;
+                width: 3rem;
+                opacity: 0.3;
+                margin-right: 12px;
+            }
+            .write-ups {
+                max-width: 250px;
+                .write-ups-heading {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                }
+                .write-ups-sub-heading {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 14px;
+                    line-height: 20px;
+                    opacity: 0.5;
+                }
+            }
+        }
+    }
+}

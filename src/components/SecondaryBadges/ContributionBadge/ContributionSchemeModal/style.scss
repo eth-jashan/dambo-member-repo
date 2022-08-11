@@ -39,6 +39,25 @@
                 line-height: 2.5rem;
                 padding: 1.5rem 2rem;
             }
+            .setup-btn {
+                padding: 12px 1rem;
+                background-color: black;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                border-radius: 12px;
+                margin-top: 1rem;
+                align-items: center;
+                div {
+                    font-family: "TelegrafMedium";
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                    text-decoration: underline;
+                    color: white;
+                }
+            }
             .badge-type-row {
                 width: 35rem;
                 padding: 0 2rem;
@@ -67,6 +86,13 @@
                         background: #6852ff;
                         border-radius: 20px;
                         padding: 0.5rem 0.75rem;
+                    }
+                    .badge-type-btn-disable {
+                        margin-left: 2rem;
+                        background: #705eeb;
+                        border-radius: 20px;
+                        padding: 0.5rem 0.75rem;
+                        opacity: 0.5;
                     }
                 }
                 &:hover {

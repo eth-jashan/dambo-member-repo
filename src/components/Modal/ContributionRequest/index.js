@@ -141,7 +141,9 @@ const ContributionRequestModal = ({ setVisibility }) => {
     const buildMultiOptions = (options) => {
         const newOptions = []
         options.forEach((x) => {
-            newOptions.push({ value: x, label: x })
+            if (x !== null && x !== "" && x !== " ") {
+                newOptions.push({ value: x, label: x })
+            }
         })
         return newOptions
     }

@@ -31,6 +31,12 @@
         color: rgba(255, 255, 255, 0.4);
     }
     .selected-member-wrapper {
+        // background-color: red;
+        // position: absolute;
+        // bottom: 1.5rem;
+        // top: 1.5rem;
+        // left: 1.5rem;
+        // right: 1.5rem;
         .member-name {
             margin-top: 3rem;
             font-family: "TelegrafBolder";
@@ -75,6 +81,29 @@
             /* identical to box height, or 150% */
 
             color: #ffffff;
+        }
+    }
+    .mint-btn-wrapper {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        .mint-btn {
+            padding: 10px 2rem;
+            background-color: white;
+            width: 150px;
+            border-radius: 2rem;
+            cursor: pointer;
+            div {
+                font-family: "TelegrafBold";
+                font-style: normal;
+                font-weight: 800;
+                font-size: 14px;
+                line-height: 20px;
+                color: #000000;
+            }
         }
     }
 

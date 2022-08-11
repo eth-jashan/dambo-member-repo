@@ -1,11 +1,9 @@
 import React from "react"
-import { Tooltip } from "antd"
 import "antd/dist/antd.css"
 import styles from "./style.module.css"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    gnosisDetailsofDao,
     lastSelectedId,
     set_active_nonce,
     set_dao,
@@ -13,12 +11,10 @@ import {
 import logo from "../../assets/dreputeLogo.svg"
 import add_white from "../../assets/Icons/add_white.svg"
 import { useSafeSdk } from "../../hooks"
-import { setLoadingState } from "../../store/actions/toast-action"
 import DashboardHeader from "../../components/DashboardHeader"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import AntdToast from "../../components/Toast/AntdToast"
-import defaultPic from "../../assets/defaultPic.png"
-import axios from "axios"
+import AccountPic from "./AccountPic"
 
 export default function DashboardLayout({
     children,
@@ -31,7 +27,6 @@ export default function DashboardLayout({
 }) {
     const accounts = useSelector((x) => x.dao.dao_list)
     const currentDao = useSelector((x) => x.dao.currentDao)
-    const role = useSelector((x) => x.dao.role)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { safeSdk } = useSafeSdk(signer, currentDao?.safe_public_address)
@@ -42,7 +37,6 @@ export default function DashboardLayout({
     }
 
     const changeAccount = async (item) => {
-        console.log("item selected", item)
         dispatch(set_dao(item))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
 
@@ -52,26 +46,8 @@ export default function DashboardLayout({
         }
     }
 
-    function checkImage(url) {
-        const image = new Image()
-        let status
-        image.onload = function () {
-            if (this.width > 0) {
-                console.log("image exists")
-                status = true
-            }
-        }
-        image.onerror = function () {
-            console.log("image doesn't exist")
-            status = false
-        }
-        image.src = url
-        return status
-    }
+    // console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
 
-    console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
-
-    const text = (item) => <span>{item}</span>
     return (
         <>
             <AntdToast />
@@ -86,72 +62,13 @@ export default function DashboardLayout({
                     </div>
 
                     {accounts.map((item, index) => (
-                        <div
-                            className={styles.accountContainer}
-                            key={item.dao_details?.uuid}
-                        >
-                            <Tooltip
-                                placement="right"
-                                title={() => text(item?.dao_details?.name)}
-                            >
-                                <div
-                                    onClick={async () =>
-                                        await changeAccount(item, index)
-                                    }
-                                    style={{
-                                        height: "2.25rem",
-                                        width: "100%",
-                                        background: "transparent",
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        position: "relative",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    {currentDao?.uuid ===
-                                        item.dao_details?.uuid && (
-                                        <div
-                                            className={styles.selectedDao}
-                                        ></div>
-                                    )}
-
-                                    {item?.dao_details?.logo_url ? (
-                                        <img
-                                            src={
-                                                // checkImage(
-                                                //     item?.dao_details?.logo_url
-                                                // )
-                                                //     ?
-                                                item?.dao_details?.logo_url
-                                                // : defaultPic
-                                            }
-                                            alt="logo"
-                                            height="100%"
-                                            style={{
-                                                borderRadius: "2.25rem",
-                                                background: "black",
-                                                width: "2.25rem",
-                                                margin: "0 auto",
-                                            }}
-                                        />
-                                    ) : (
-                                        <div
-                                            style={{
-                                                height: "2.25rem",
-                                                borderRadius: "2.25rem",
-                                                width: "2.25rem",
-                                                background: "#FF0186",
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                margin: "0 auto",
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            </Tooltip>
-                        </div>
+                        <AccountPic
+                            currentDao={currentDao}
+                            changeAccount={changeAccount}
+                            key={index}
+                            index={index}
+                            item={item}
+                        />
                     ))}
                     <div className={styles.addContainer}>
                         <div

@@ -14,6 +14,7 @@ import add_white from "../../../assets/Icons/add_white.svg"
 import minus_white from "../../../assets/Icons/minus_white.svg"
 import payment_grey from "../../../assets/Icons/payment_grey.svg"
 import feedback_grey from "../../../assets/Icons/feedback_grey.svg"
+import { actionOnBadgesModal } from "../../../store/actions/contibutor-action"
 
 const CommunitySideCard = ({ show }) => {
     const selectedMember = useSelector((x) => x.membership.selectedMember)
@@ -156,6 +157,18 @@ const CommunitySideCard = ({ show }) => {
                                     {changeLevel()}
                                 </div>
                             </div>
+                            {selectedMember.membership_txns?.length > 0 && (
+                                <div className="mint-btn-wrapper">
+                                    <div
+                                        onClick={() => {
+                                            dispatch(actionOnBadgesModal(true))
+                                        }}
+                                        className="mint-btn"
+                                    >
+                                        <div>Mint Badge</div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         {selectedMemberPastContributions?.length ? (
                             <div

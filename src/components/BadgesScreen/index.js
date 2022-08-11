@@ -22,6 +22,7 @@ import ContributionSchemaModal from "../SecondaryBadges/ContributionBadge/Contri
 import ConfirmationBadgesModal from "../SecondaryBadges/component/ConfirmationModal"
 import BadgeRequestModal from "../SecondaryBadges/component/BadgeRequestModal"
 import {
+    actionOnBadgesModal,
     actionOnGenerateSchemaModal,
     successConfirmationModal,
 } from "../../store/actions/contibutor-action"
@@ -76,6 +77,7 @@ export default function BadgesScreen() {
         setShowMembershipOverviewModal(false)
     }
 
+    const allMintModal = useSelector((x) => x.contributor.allMintModal)
     const editMembership = () => {
         setShowMembershipOverviewModal(false)
         setIsEditing(true)
@@ -182,6 +184,12 @@ export default function BadgesScreen() {
                 <BadgeRequestModal
                     badgeSchema={schemaTemplate}
                     type="Contribution"
+                />
+            )}
+            {allMintModal && (
+                <ContributionSchemaModal
+                    overviewModal={true}
+                    closeModal={() => dispatch(actionOnBadgesModal(false))}
                 />
             )}
         </div>

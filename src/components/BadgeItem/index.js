@@ -6,29 +6,10 @@ import { setContributionDetail } from "../../store/actions/contibutor-action"
 import "./style.scss"
 import ContributionBadgeBg from "../../assets/Icons/ContributionBadgeBg.png"
 import dayjs from "dayjs"
+import defaultPic from "../../assets/defaultPic.png"
 
-const BadgeItem = ({ item }) => {
-    // const [meta, setMeta] = useState()
-    const allContribution = useSelector((x) => x.dao.contribution_id)
-    const all_approved_badge = useSelector((x) => x.dao.all_approved_badge)
+const BadgeItem = ({ item, setupDisplay = false }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
-    // const role = useSelector((x) => x.dao.role)
-    // const currentTransaction = useSelector(
-    //     role === "ADMIN"
-    //         ? (x) => x.transaction.currentTransaction
-    //         : (x) => x.contributor.contribution_detail
-    // )
-    // const fetchMetaFromIpfs = useCallback(async () => {
-    //     const res = await getMetaInfo(item?.ipfsMetaUri)
-    //     setMeta(res)
-    // }, [item?.ipfsMetaUri])
-    // const activeSelection =
-    //     `https://ipfs.infura.io/ipfs/${currentTransaction?.ipfs_url}` ===
-    //     item?.ipfsMetaUri
-
-    // useEffect(() => {
-    //     fetchMetaFromIpfs()
-    // }, [fetchMetaFromIpfs])
 
     const [onHover, setHover] = useState(false)
     const dispatch = useDispatch()
@@ -43,12 +24,12 @@ const BadgeItem = ({ item }) => {
             onMouseEnter={() => setHover(true)}
             style={{
                 padding: "20px",
-                border: "0.5px solid #C4C4C440",
+                border: !setupDisplay && "0.5px solid #C4C4C440",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 borderTop: 0,
-                background: onHover && "#292929",
+                background: onHover && !setupDisplay && "#292929",
             }}
             className="badge-item-container"
         >
@@ -64,20 +45,21 @@ const BadgeItem = ({ item }) => {
                 </div>
                 <div className="contri-badge-contribution-info">
                     <div className="contri-badge-title">
-                        {
-                            item?.entity?.details?.find(
-                                (x) => x.fieldName === "Contribution Title"
-                            )?.value
-                        }
+                        {setupDisplay
+                            ? "Contribution Title"
+                            : item?.entity?.details?.find(
+                                  (x) => x.fieldName === "Contribution Title"
+                              )?.value}
                     </div>
                     <div className="contri-badge-bottom-row">
                         <div>
-                            {
-                                item?.entity?.details?.find(
-                                    (x) =>
-                                        x.fieldName === "Contribution Category"
-                                )?.value
-                            }{" "}
+                            {setupDisplay
+                                ? "Category"
+                                : item?.entity?.details?.find(
+                                      (x) =>
+                                          x.fieldName ===
+                                          "Contribution Category"
+                                  )?.value}{" "}
                             •{" "}
                             {
                                 item?.entity?.details?.find(
@@ -87,9 +69,11 @@ const BadgeItem = ({ item }) => {
                             hrs
                         </div>
                         <div>
-                            {dayjs(item?.entity?.created_at).format(
-                                "DD MMM' YY"
-                            )}
+                            {setupDisplay
+                                ? `Date Of Creation`
+                                : dayjs(item?.entity?.created_at).format(
+                                      "DD MMM' YY"
+                                  )}
                         </div>
                     </div>
                 </div>

@@ -28,7 +28,9 @@ const contributorSlice = createSlice({
         daoName: null,
         contribution_counts: null,
         claimLoading: false,
+        allMintModal: false,
         pastContributionsSyncing: false,
+        badgeSelectionMember: null,
     },
     reducers: {
         set_invite_code(state, action) {
@@ -42,6 +44,13 @@ const contributorSlice = createSlice({
         },
         set_schema_modal(state, action) {
             state.schemaModal = action.payload.status
+        },
+        set_badges_mint_modal(state, action) {
+            state.allMintModal = action.payload.status
+        },
+        set_badges_mint_address(state, action) {
+            console.log("selected members", action.payload.address)
+            state.badgeSelectionMember = action.payload.address
         },
         set_contributor_schema(state, action) {
             state.contributorSchema = action.payload.schema

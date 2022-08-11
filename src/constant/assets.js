@@ -26,6 +26,9 @@ import sentWhite from "../assets/Icons/sent_arrow.svg"
 import crossBlack from "../assets/Icons/cross.svg"
 import crossWhite from "../assets/Icons/cross_white.svg"
 import rep3BadgeLogo from "../assets/rep3BadgeLogo.svg"
+import editBlack from "../assets/Icons/edit.svg"
+import uploadFile from "../assets/Icons/upload_file.svg"
+import tickPurple from "../assets/Icons/tick.svg"
 // import downWhite from "../assets/Icons/down_white.svg"
 
 export const assets = {
@@ -58,5 +61,8 @@ export const assets = {
         chevronUpWhite,
         sentWhite,
         crossWhite,
+        editBlack,
+        uploadFile,
+        tickPurple,
     },
 }

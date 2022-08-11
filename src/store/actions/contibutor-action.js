@@ -231,7 +231,7 @@ export const createContributionBadgeSchema = (schemaArray, id) => {
         const data = {
             dao_uuid: uuid,
             schema: schemaArray,
-            version: 1,
+            version: id,
         }
         try {
             const res = await apiClient.post(
@@ -285,6 +285,12 @@ export const actionOnGenerateSchemaModal = (status) => {
     }
 }
 
+export const actionOnBadgesModal = (status) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_badges_mint_modal({ status }))
+    }
+}
+
 export const successConfirmationModal = (status) => {
     return (dispatch) => {
         dispatch(contributorAction.set_success_modal({ status }))
@@ -294,6 +300,12 @@ export const successConfirmationModal = (status) => {
 export const actionOnContributionRequestModal = (status) => {
     return (dispatch) => {
         dispatch(contributorAction.set_contribution_badge_modal({ status }))
+    }
+}
+
+export const badgeSelectionMember = (address) => {
+    return (dispatch) => {
+        dispatch(contributorAction.set_badges_mint_address({ address }))
     }
 }
 
@@ -539,6 +551,9 @@ export const contributionBadgeClaim = (
                         )
                     }
                 })
+                console.log("approve indexes", approveIndexes)
+                console.log("member token Id", memberTokenId)
+
                 const hashCallbackFn = (x) => {
                     dispatch(
                         sendClaimTxHash(
@@ -549,9 +564,6 @@ export const contributionBadgeClaim = (
                         )
                     )
                 }
-
-                console.log("approve indexes", approveIndexes)
-                console.log("member token Id", memberTokenId)
 
                 console.log(
                     "claiming badge",
@@ -697,11 +709,11 @@ export const removeClaimedContributionVoucher = (
     }
 }
 
-export const getContributorStats = (address) => {
+export const getContributorStats = () => {
     return async (dispatch, getState) => {
         const jwt = getState().auth.jwt
         const uuid = getState().dao.currentDao?.uuid
-
+        const address = getState().auth.address
         try {
             const res = await apiClient.get(
                 `${
