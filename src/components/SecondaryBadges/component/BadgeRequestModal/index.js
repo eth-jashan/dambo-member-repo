@@ -3,7 +3,6 @@ import { Input } from "antd"
 import Select from "react-select"
 import "./style.scss"
 import { assets } from "../../../../constant/assets"
-import plus_black from "../../../../assets/Icons/plus_black.svg"
 import rightArrow from "../../../../assets/Icons/right_arrow_white.svg"
 import {
     createContributionMetadataUri,
@@ -156,14 +155,25 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         </div>
     )
 
-    const onMultiTextChange = (values, index) => {
+    const onMultiTextChange = (value, index) => {
+        let newValue
+        if (schemaTemplate[index].maxSelection > 1) {
+            newValue = []
+            value.forEach((x) => {
+                newValue.push(x.value)
+            })
+        } else {
+            newValue = value.value
+        }
+        console.log(value)
         const newCopy = schemaTemplate?.map((item, i) => {
             if (i === index) {
-                return { ...item, value: values }
+                return { ...item, value: newValue }
             } else {
                 return item
             }
         })
+        console.log(newValue, newCopy)
         setSchemaTemplate(newCopy)
     }
     const [focusOnSelect, setFocusOnSelect] = useState(false)
@@ -178,14 +188,20 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     }
     const [contributionType, setContributionType] = useState("")
 
-    const selectInput = (placeholder, index) => (
+    const selectInput = (placeholder, index, value) => (
         <div className="contribution-type-input-wrapper">
             <div>
                 <Select
-                    // isMulti
+                    isMulti={schemaTemplate[index].maxSelection > 1}
                     classNamePrefix="select"
                     closeMenuOnSelect
-                    onChange={(x) => onMultiTextChange(x.value, index)}
+                    onChange={(x) => {
+                        onMultiTextChange(x, index)
+                    }}
+                    isOptionDisabled={(option) =>
+                        schemaTemplate[index].value?.length >=
+                        schemaTemplate[index].maxSelection
+                    }
                     isSearchable={false}
                     name="color"
                     options={buildMultiOptions(schemaTemplate[index].options)}
@@ -202,7 +218,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         </div>
     )
 
-    const getInputField = (type, placeholder, index) => {
+    const getInputField = (type, placeholder, index, value) => {
         switch (type) {
             case "Text Field":
                 return textFieldInput(type, placeholder, index)
@@ -211,7 +227,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
             case "Long text":
                 return multiTextInput(placeholder, index)
             case "Multiselect":
-                return selectInput(placeholder, index)
+                return selectInput(placeholder, index, value)
         }
     }
 
@@ -318,7 +334,8 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                             {getInputField(
                                 badge.fieldType,
                                 badge.fieldName,
-                                index
+                                index,
+                                badge.value
                             )}
                         </div>
                     ))}

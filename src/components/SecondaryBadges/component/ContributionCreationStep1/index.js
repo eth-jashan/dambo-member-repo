@@ -23,6 +23,11 @@ export default function ContributionCreationStep1({
         copyOfBadges[badgeIndex].fieldType = newValue
         setSchemaTemplate(copyOfBadges)
     }
+    const onMaxSelection = (badgeIndex, newValue) => {
+        const copyOfBadges = [...schemaTemplate]
+        copyOfBadges[badgeIndex].maxSelection = newValue
+        setSchemaTemplate(copyOfBadges)
+    }
     const onChangeOption = (
         badgeIndex,
         optionIndex,
@@ -51,6 +56,17 @@ export default function ContributionCreationStep1({
         copyOfBadges[badgeIndex].options = copyOfOption
         setSchemaTemplate(copyOfBadges)
         console.log("input", badgeIndex, copyOfBadges)
+    }
+
+    const deleteFeild = (index) => {
+        const copyOfBadges = [...schemaTemplate]
+        const newBadgeSchema = []
+        copyOfBadges.forEach((x, i) => {
+            if (index !== i) {
+                newBadgeSchema.push(x)
+            }
+        })
+        setSchemaTemplate(newBadgeSchema)
     }
 
     const addSchema = (type) => {
@@ -86,8 +102,10 @@ export default function ContributionCreationStep1({
 
     const renderSchemaHeader = () => (
         <div className="element-row">
-            <div className="row-heading">Field Name</div>
-            <div className="row-heading">Field Type</div>
+            <div className="header">
+                <div className="row-heading">Field Name</div>
+                <div className="row-heading">Field Type</div>
+            </div>
         </div>
     )
 
@@ -139,7 +157,7 @@ export default function ContributionCreationStep1({
         <div className="contribution-step1">
             <div className="contribution-heading">Contribution badge setup</div>
             <div className="contribution-content">
-                <div className="contribution-left">
+                <div className="contribution-left1">
                     <div className="left-bold">Select Fields</div>
                     <div className="left-greyed">Step 1 of 2</div>
                 </div>
@@ -154,7 +172,10 @@ export default function ContributionCreationStep1({
                                 key={i}
                                 index={i}
                                 onChangeOption={onChangeOption}
+                                onMaxSelection={onMaxSelection}
                                 removeOptions={onRemoveOptions}
+                                deleteFeild={(i) => deleteFeild(i)}
+                                schema={schemaTemplate}
                             />
                         ))}
                         <Dropdown trigger="click" overlay={addLevelMenu}>

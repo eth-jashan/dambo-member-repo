@@ -9,7 +9,16 @@
         justify-content: space-between;
         padding: 1rem 0rem;
         border-bottom: 1px solid #1f1e1e12;
-        width: 84%;
+        margin-left: 56px;
+        margin-right: 56px;
+        .header {
+            // width: 64%;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            // background-color: red;
+        }
     }
 
     .row-heading {
@@ -66,19 +75,24 @@
     .contribution-content {
         display: flex;
         flex: 1 1 auto;
-        .contribution-left,
+        .contribution-left1,
         .contribution-right {
             flex: 1;
             padding-top: 1.5rem;
         }
-        .contribution-left {
-            font-family: "TelegrafMedium";
-            font-style: normal;
-            font-weight: 500;
-            font-size: 1.75rem;
-            line-height: 2.25rem;
-            padding-left: 2rem;
-
+        width: 100%;
+        // background-color: #6852ff;
+        .contribution-left1 {
+            max-width: 36%;
+            .left-greyed,
+            .left-bold {
+                font-family: "TelegrafMedium";
+                font-style: normal;
+                font-weight: 500;
+                font-size: 1.75rem;
+                line-height: 2.25rem;
+                padding-left: 2rem;
+            }
             .left-greyed {
                 opacity: 0.5;
             }
@@ -90,6 +104,8 @@
             overflow-y: auto;
             max-height: 64vh;
             padding-right: 2rem;
+            width: 100%;
+            // background-color: red;
             .contribution-right-input {
                 width: 100%;
                 border-radius: 8px;
@@ -133,8 +149,12 @@
         position: absolute;
         bottom: 20px;
     }
+    .next-btn-wrapper-contri1 {
+        margin-left: 48px;
+    }
     .add-btn {
         // justify-content: space-between;
+        margin-left: 48px;
         cursor: pointer;
         display: flex;
         padding: 1rem 0rem;

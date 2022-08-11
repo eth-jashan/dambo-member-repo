@@ -3,6 +3,7 @@
     flex-direction: row;
     width: 100%;
     justify-content: space-between;
+    align-items: flex-start;
     .option-div {
         width: 100%;
         margin: 12px 0px;
@@ -198,8 +199,31 @@
         font-size: 0.75rem;
         line-height: 1.25rem;
     }
+    .delete-div {
+        width: 3rem;
+        height: 3rem;
+        border: solid 1px #6852ff;
+        border-radius: 0.5rem;
+        margin-right: 0.5rem;
+        margin-top: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+    .delete-inactive {
+        width: 3rem;
+        height: 3rem;
+        // border: solid 1px #6852ff;
+        border-radius: 0.5rem;
+        margin-right: 0.5rem;
+        margin-top: 12px;
+    }
 
-    .element-row {
+    .element-row-input {
         display: flex;
         flex-direction: row;
         justify-content: space-between;

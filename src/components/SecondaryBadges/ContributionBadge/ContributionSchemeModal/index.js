@@ -237,8 +237,19 @@ export default function ContributionSchemaModal({
                     }`}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="close-btn" onClick={closeModal}>
-                        <img src={assets.icons.crossBlack} alt="" />
+                    <div
+                        className="close-btn"
+                        onClick={
+                            contributionStep < 2
+                                ? closeModal
+                                : () => setContributionStep(1)
+                        }
+                    >
+                        {contributionStep < 2 ? (
+                            <img src={assets.icons.crossBlack} alt="" />
+                        ) : (
+                            <img src={assets.icons.backArrowBlack} alt="" />
+                        )}
                     </div>
                     {renderOnStep()}
                 </div>

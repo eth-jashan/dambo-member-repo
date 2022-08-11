@@ -97,15 +97,36 @@ const ContributionRequestModal = ({ setVisibility }) => {
         })
         setSchemaTemplate(newCopy)
     }
-    const onMultiTextChange = (values, index) => {
-        const newCopy = schemaTemplate.map((item, i) => {
-            if (i === index) {
-                return { ...item, value: values }
-            } else {
-                return item
+    const onMultiTextChange = (value, index) => {
+        let newValue
+        if (schemaTemplate[index].maxSelection > 1) {
+            newValue = []
+            value.forEach((x) => {
+                newValue.push(x.value)
+            })
+            if (schemaTemplate[index].maxSelection + 1 > value.length) {
+                const newCopy = schemaTemplate?.map((item, i) => {
+                    if (i === index) {
+                        return { ...item, value: newValue }
+                    } else {
+                        return item
+                    }
+                })
+                setSchemaTemplate(newCopy)
             }
-        })
-        setSchemaTemplate(newCopy)
+        } else {
+            newValue = value.value
+            const newCopy = schemaTemplate?.map((item, i) => {
+                if (i === index) {
+                    return { ...item, value: newValue }
+                } else {
+                    return item
+                }
+            })
+            setSchemaTemplate(newCopy)
+        }
+
+        // console.log(newValue, newCopy)
     }
 
     const textInput = (placeholder, index) => (
@@ -152,9 +173,25 @@ const ContributionRequestModal = ({ setVisibility }) => {
         <div className="contribution-type-input-wrapper">
             <div>
                 <Select
+                    isMulti={schemaTemplate[index].maxSelection > 1}
                     classNamePrefix="select"
                     closeMenuOnSelect
-                    onChange={(x) => onMultiTextChange(x.value, index)}
+                    onChange={(x) => {
+                        if (schemaTemplate[index].maxSelection > 1) {
+                            if (
+                                x.length <
+                                schemaTemplate[index].maxSelection + 1
+                            ) {
+                                onMultiTextChange(x, index)
+                            }
+                        } else {
+                            onMultiTextChange(x, index)
+                        }
+                    }}
+                    isOptionDisabled={(option) =>
+                        schemaTemplate[index].value?.length >=
+                        schemaTemplate[index].maxSelection
+                    }
                     isSearchable={false}
                     name="color"
                     options={buildMultiOptions(schemaTemplate[index].options)}

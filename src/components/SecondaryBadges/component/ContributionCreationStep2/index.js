@@ -49,7 +49,7 @@ export default function ContributionCreationStep2({
     )
 
     return (
-        <div className="contribution-step1">
+        <div className="contribution-step2">
             <div className="contribution-heading">Contribution badge setup</div>
             <div className="contribution-content">
                 <div className="contribution-left">

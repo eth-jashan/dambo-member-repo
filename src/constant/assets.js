@@ -29,6 +29,8 @@ import rep3BadgeLogo from "../assets/rep3BadgeLogo.svg"
 import editBlack from "../assets/Icons/edit.svg"
 import uploadFile from "../assets/Icons/upload_file.svg"
 import tickPurple from "../assets/Icons/tick.svg"
+import deletePurple from "../assets/Icons/delete.svg"
+// import arrowBackBlack from "../assets/Icons/arrow_back_black_24dp.svg"
 // import downWhite from "../assets/Icons/down_white.svg"
 
 export const assets = {
@@ -64,5 +66,6 @@ export const assets = {
         editBlack,
         uploadFile,
         tickPurple,
+        deletePurple,
     },
 }

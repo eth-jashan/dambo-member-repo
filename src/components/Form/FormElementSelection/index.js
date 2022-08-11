@@ -12,6 +12,9 @@ export default function FormElementSelection({
     onChangeFeildType,
     onChangeOption,
     removeOptions,
+    onMaxSelection,
+    deleteFeild,
+    schema,
 }) {
     const [isEdited, setEdited] = useState(false)
     const [maxSelection, setMaxSelection] = useState(1)
@@ -81,13 +84,14 @@ export default function FormElementSelection({
             ]}
         />
     )
-
+    console.log("dsd", item)
     const renderSelectionCount = () => (
         <div className="selection-counter-div">
             <div
                 onClick={() => {
                     if (maxSelection > 1) {
                         setMaxSelection(maxSelection - 1)
+                        onMaxSelection(index, maxSelection - 1)
                     }
                 }}
                 style={{ opacity: maxSelection === 1 && 0.5 }}
@@ -95,7 +99,10 @@ export default function FormElementSelection({
             />
             <div className="counter-number">{maxSelection}</div>
             <img
-                onClick={() => setMaxSelection(maxSelection + 1)}
+                onClick={() => {
+                    setMaxSelection(maxSelection + 1)
+                    onMaxSelection(index, maxSelection + 1)
+                }}
                 src={plus_black}
                 alt=""
             />
@@ -170,7 +177,7 @@ export default function FormElementSelection({
     const renderSingleItem = () => (
         <div
             style={{ height: item.fieldType === "Long text" && "9.85rem" }}
-            className={isEdited ? "element-row-edit" : "element-row"}
+            className={isEdited ? "element-row-edit" : "element-row-input"}
         >
             {isEdited ? (
                 item.fieldType !== "Long text" ? (
@@ -235,6 +242,22 @@ export default function FormElementSelection({
 
     return (
         <div className="form-element-selection-container">
+            {isEdited ? (
+                <div
+                    onClick={() => {
+                        deleteFeild(index)
+                        setEdited(false)
+                        if (schema.length - 1 > index) {
+                            setLabel(schema[index + 1].fieldName)
+                        }
+                    }}
+                    className="delete-div"
+                >
+                    <img src={assets.icons.deletePurple} />
+                </div>
+            ) : (
+                <div className="delete-inactive" />
+            )}
             <div className="option-div">
                 {item.fieldType !== "Multiselect" && renderSingleItem()}
                 {item.fieldType === "Media Upload" && renderImageUpload()}

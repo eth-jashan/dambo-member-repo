@@ -71,6 +71,7 @@
         .contribution-type-input-wrapper {
             width: 100%;
             margin-top: 1rem;
+            margin-bottom: 1rem;
             .select-input {
                 .select__control {
                     width: 100%;
@@ -99,6 +100,18 @@
                         width: 100%;
                         color: black;
                         text-align: left;
+                    }
+                    .select__multi-value {
+                        font-family: "TelegrafMedium";
+                        font-style: normal;
+                        font-weight: normal;
+                        font-size: 16px;
+                        line-height: 24px;
+                        // width: 100%;
+                        color: black;
+                        text-align: left;
+                        border-radius: 0.5rem;
+                        background-color: #bdb3ff;
                     }
                 }
                 .select__menu {
