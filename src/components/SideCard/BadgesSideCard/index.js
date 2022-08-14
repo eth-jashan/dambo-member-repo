@@ -67,14 +67,13 @@ const CommunitySideCard = ({ show }) => {
 
     const totalHours = selectedMemberPastContributions?.reduce(
         (acc, contri) => {
-            return (
-                acc +
-                Number(
-                    contri?.details?.find(
-                        (x) => x.fieldName === "Time Spent in Hours"
-                    )?.value
-                )
+            const timeSpent = Number(
+                contri?.details?.find(
+                    (x) => x.fieldName === "Time Spent in Hours"
+                )?.value
             )
+            if (Number.isNaN(timeSpent)) return acc
+            return acc + timeSpent
         },
         0
     )
@@ -154,7 +153,13 @@ const CommunitySideCard = ({ show }) => {
                                             ).fromNow()}
                                         </div>
                                     </div>
-                                    {changeLevel()}
+                                    {selectedMember?.non_claimers_addr ? (
+                                        <div className="unclaimed-badge">
+                                            Unclaimed
+                                        </div>
+                                    ) : (
+                                        changeLevel()
+                                    )}
                                 </div>
                             </div>
                             {selectedMember.membership_txns?.length > 0 && (

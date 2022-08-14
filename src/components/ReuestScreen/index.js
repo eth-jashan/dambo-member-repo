@@ -19,7 +19,10 @@ import BadgeItem from "../BadgeItem"
 import { setRejectModal } from "../../store/actions/transaction-action"
 import { getAllClaimedBadges } from "../../store/actions/dao-action"
 import { setLoadingState } from "../../store/actions/toast-action"
+import { getContributionAsAdmin } from "../../store/actions/contibutor-action"
 import { message } from "antd"
+import RequestCollapsable from "../ContributorFlow/component/RequestCollapsable"
+import ContributionCardV2 from "../ContributorFlow/component/ContributionCard"
 
 export default function RequestScreen({
     onRouteChange,
@@ -55,6 +58,12 @@ export default function RequestScreen({
     const contributionPending = useSelector(
         (x) => x.contributor.contributionForAdmin
     )
+    const contributionPast = useSelector(
+        (x) => x.contributor.contributionForAdminPast
+    )
+
+    const reversedPastContributions = [...contributionPast].reverse()
+
     const role = useSelector((x) => x.dao.role)
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
     const payoutToast = useSelector((x) => x.toast.payout)
@@ -179,13 +188,65 @@ export default function RequestScreen({
         </div>
     )
 
+    const fetchAdminContributions = () => {
+        dispatch(getContributionAsAdmin())
+    }
+
     const renderContribution = () =>
-        contributionPending?.length > 0 ? (
-            <div style={{ width: "100%", height: "100%", overflowY: "auto" }}>
+        contributionPending?.length > 0 || contributionPast?.length > 0 ? (
+            <div className="admin-request-screen-contribution-container">
                 <div style={{ width: "100%", marginBottom: "100px" }}>
-                    {contributionPending.map((item, index) => (
-                        <ContributionCard item={item} key={index} />
-                    ))}
+                    <div className="non-empty-contrib-screen">
+                        <div className="pending-contributions">
+                            <RequestCollapsable
+                                contributions={contributionPending}
+                                title={`Pending Requests  •  ${
+                                    contributionPending?.length || 0
+                                }`}
+                                onOpenCallback={fetchAdminContributions}
+                            >
+                                {contributionPending?.map((x, i) => (
+                                    <ContributionCardV2
+                                        key={i}
+                                        index={i}
+                                        isMinimum={true}
+                                        item={x}
+                                        isLast={
+                                            i ===
+                                            contributionPending?.length - 1
+                                        }
+                                        contributionType="pending"
+                                    />
+                                ))}
+                            </RequestCollapsable>
+                        </div>
+                        <div className="past-contributions">
+                            <RequestCollapsable
+                                contributions={reversedPastContributions}
+                                title={`Past Requests  •  ${
+                                    reversedPastContributions?.length || 0
+                                }`}
+                                onOpenCallback={fetchAdminContributions}
+                                // showSyncing={pastContributionsSyncing}
+                                isPast={true}
+                            >
+                                {reversedPastContributions.map((x, i) => (
+                                    <ContributionCardV2
+                                        key={i}
+                                        index={i}
+                                        isMinimum={true}
+                                        item={x}
+                                        isLast={
+                                            i ===
+                                            reversedPastContributions?.length -
+                                                1
+                                        }
+                                        contributionType="past"
+                                    />
+                                ))}
+                            </RequestCollapsable>
+                        </div>
+                    </div>
                 </div>
             </div>
         ) : (

@@ -5,6 +5,7 @@ import { Typography } from "antd"
 import cross from "../../../assets/Icons/cross_white.svg"
 import deleteIcon from "../../../assets/Icons/delete_icon.svg"
 import styles from "./style.module.css"
+import "./style.scss"
 import textStyle from "../../../commonStyles/textType/styles.module.css"
 import {
     approveContriRequest,
@@ -17,8 +18,9 @@ import { convertTokentoUsd } from "../../../utils/conversion"
 import { assets } from "../../../constant/assets"
 import { approveBadge, setLoading } from "../../../store/actions/dao-action"
 import dayjs from "dayjs"
-import { uploadApproveMetaDataUpload } from "../../../utils/relayFunctions"
 import { createContributionMetadataUri } from "../../../utils/POCPServiceSdk"
+// import { uploadApproveMetaDataUpload } from "../../../utils/relayFunctions"
+import AdminPastSideCard from "./AdminPastSideCard"
 
 const TransactionCard = () => {
     const currentTransaction = useSelector(
@@ -282,130 +284,151 @@ const TransactionCard = () => {
             return "Approve Badge"
         }
     }
+
     return (
-        <div className={styles.container}>
-            <img
-                onClick={() => onContributionPress()}
-                src={cross}
-                alt="cross"
-                className={styles.cross}
-            />
+        <>
+            {currentTransaction?.status === "REQUESTED" ? (
+                <div className={styles.container}>
+                    <img
+                        onClick={() => onContributionPress()}
+                        src={cross}
+                        alt="cross"
+                        className={styles.cross}
+                    />
 
-            <span
-                ellipsis={{ rows: 2 }}
-                className={`${textStyle.ub_23} ${styles.title}`}
-            >
-                {
-                    currentTransaction?.details.find(
-                        (x) => x.fieldName === "Contribution Title"
-                    )?.value
-                }
-                {/* {`${currentTransaction?.title}`} */}
-            </span>
+                    <span
+                        ellipsis={{ rows: 2 }}
+                        className={`${textStyle.ub_23} ${styles.title}`}
+                    >
+                        {
+                            currentTransaction?.details.find(
+                                (x) => x.fieldName === "Contribution Title"
+                            )?.value
+                        }
+                        {/* {`${currentTransaction?.title}`} */}
+                    </span>
 
-            <div className={styles.contributorContainer}>
-                <img className={styles.faceIcon} src={assets.icons.faceIcon} />
-                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
-                    {/* aviral • aviralsb.eth */}
-                    {`${
-                        currentTransaction?.contributor?.name
-                    } . (${address?.slice(0, 5)}...${address?.slice(-3)})`}
-                </div>
-            </div>
+                    <div className={styles.contributorContainer}>
+                        <img
+                            className={styles.faceIcon}
+                            src={assets.icons.faceIcon}
+                        />
+                        <div
+                            className={`${textStyle.m_16} ${styles.ownerInfo}`}
+                        >
+                            {/* aviral • aviralsb.eth */}
+                            {`${
+                                currentTransaction?.contributor?.name
+                            } . (${address?.slice(0, 5)}...${address?.slice(
+                                -3
+                            )})`}
+                        </div>
+                    </div>
 
-            <div className={styles.timelineContainer}>
-                <img className={styles.faceIcon} src={assets.icons.feedIcon} />
-                <div className={`${textStyle.m_16} ${styles.ownerInfo}`}>
-                    {/* {`${currentTransaction?.stream?.toLowerCase()} ${
+                    <div className={styles.timelineContainer}>
+                        <img
+                            className={styles.faceIcon}
+                            src={assets.icons.feedIcon}
+                        />
+                        <div
+                            className={`${textStyle.m_16} ${styles.ownerInfo}`}
+                        >
+                            {/* {`${currentTransaction?.stream?.toLowerCase()} ${
                     currentTransaction?.time_spent
                 } hrs`} */}
-                    design •{" "}
-                    {
-                        currentTransaction?.details.find(
-                            (x) => x.fieldName === "Time Spent in Hours"
-                        )?.value
-                    }{" "}
-                    hrs
-                </div>
-            </div>
+                            design •{" "}
+                            {
+                                currentTransaction?.details.find(
+                                    (x) => x.fieldName === "Time Spent in Hours"
+                                )?.value
+                            }{" "}
+                            hrs
+                        </div>
+                    </div>
 
-            <Typography.Paragraph
-                className={`${styles.description} ${textStyle.m_16}`}
-                ellipsis={{
-                    rows: 2,
-                    expandable: true,
-                    symbol: (
-                        <Typography.Text
-                            className={`${styles.description} ${textStyle.m_16}`}
-                        >
-                            read more
-                        </Typography.Text>
-                    ),
-                }}
-            >
-                {currentTransaction?.description}
-            </Typography.Paragraph>
+                    <Typography.Paragraph
+                        className={`${styles.description} ${textStyle.m_16}`}
+                        ellipsis={{
+                            rows: 2,
+                            expandable: true,
+                            symbol: (
+                                <Typography.Text
+                                    className={`${styles.description} ${textStyle.m_16}`}
+                                >
+                                    read more
+                                </Typography.Text>
+                            ),
+                        }}
+                    >
+                        {currentTransaction?.description}
+                    </Typography.Paragraph>
 
-            <ApprovalSelectionToggle
-                feedback={feedback}
-                setFeedback={(e) => setFeedback(e)}
-                toggleTitle="Mint contribution badge"
-                type="mint"
-                feedbackShow={feedBackShow}
-                setFeedBackSow={(x) => setFeedBackSow(x)}
-                active={mint}
-                setActive={() => setMint(!mint)}
-            />
-
-            {currentDao?.safe_public_address && (
-                <div style={{ marginTop: "1rem", marginBottom: "5rem" }}>
                     <ApprovalSelectionToggle
-                        toggleTitle="Pay in tokens"
-                        type="token"
+                        feedback={feedback}
+                        setFeedback={(e) => setFeedback(e)}
+                        toggleTitle="Mint contribution badge"
+                        type="mint"
                         feedbackShow={feedBackShow}
                         setFeedBackSow={(x) => setFeedBackSow(x)}
-                        payDetail={payDetail}
-                        addToken={() => addToken()}
-                        updatedPayDetail={(e, index) =>
-                            updatedPayDetail(e, index)
-                        }
-                        updateTokenType={(value, index) =>
-                            updateTokenType(value, index)
-                        }
-                        active={payToken}
-                        setActive={() => setPayToken(!payToken)}
+                        active={mint}
+                        setActive={() => setMint(!mint)}
                     />
-                </div>
-            )}
-            <div className={styles.buttonContainer}>
-                <div
-                    onClick={async () => {
-                        await dispatch(
-                            rejectContriRequest(currentTransaction?.id)
-                        )
-                        onContributionPress()
-                    }}
-                    className={styles.deleteContainer}
-                >
-                    <img
-                        src={deleteIcon}
-                        alt="cross"
-                        className={styles.delete}
-                    />
-                </div>
 
-                <div
-                    onClick={async () =>
-                        !loading && (await onApproveTransaction())
-                    }
-                    className={styles.payNow}
-                >
-                    <div className={`${textStyle.ub_16}`}>
-                        {loading ? "Approving...." : getButtonTitle()}
+                    {currentDao?.safe_public_address && (
+                        <div
+                            style={{ marginTop: "1rem", marginBottom: "5rem" }}
+                        >
+                            <ApprovalSelectionToggle
+                                toggleTitle="Pay in tokens"
+                                type="token"
+                                feedbackShow={feedBackShow}
+                                setFeedBackSow={(x) => setFeedBackSow(x)}
+                                payDetail={payDetail}
+                                addToken={() => addToken()}
+                                updatedPayDetail={(e, index) =>
+                                    updatedPayDetail(e, index)
+                                }
+                                updateTokenType={(value, index) =>
+                                    updateTokenType(value, index)
+                                }
+                                active={payToken}
+                                setActive={() => setPayToken(!payToken)}
+                            />
+                        </div>
+                    )}
+                    <div className={styles.buttonContainer}>
+                        <div
+                            onClick={async () => {
+                                await dispatch(
+                                    rejectContriRequest(currentTransaction?.id)
+                                )
+                                onContributionPress()
+                            }}
+                            className={styles.deleteContainer}
+                        >
+                            <img
+                                src={deleteIcon}
+                                alt="cross"
+                                className={styles.delete}
+                            />
+                        </div>
+
+                        <div
+                            onClick={async () =>
+                                !loading && (await onApproveTransaction())
+                            }
+                            className={styles.payNow}
+                        >
+                            <div className={`${textStyle.ub_16}`}>
+                                {loading ? "Approving...." : getButtonTitle()}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            ) : (
+                <AdminPastSideCard onCrossPress={onContributionPress} />
+            )}
+        </>
     )
 }
 

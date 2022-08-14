@@ -15,6 +15,8 @@ import {
     getMembershipVoucher,
     getAllMembershipBadgesForAddress,
     getAllDaoMembers,
+    getAddressVouchers,
+    setMembershipBadgesForAddress,
 } from "../../store/actions/membership-action"
 import DashboardLayout from "../../views/DashboardLayout"
 import styles from "./style.module.css"
@@ -36,6 +38,7 @@ import {
     getContributionSchema,
     getContributorStats,
     getPastContributions,
+    getPendingContributions,
     setContributionDetail,
 } from "../../store/actions/contibutor-action"
 import TreasuryDetails from "../../components/TreasuryDetails"
@@ -138,6 +141,7 @@ export default function Dashboard() {
         await dispatch(getContributionAsContributorApproved())
         await dispatch(getPastContributions())
         await fetchBadges()
+        await dispatch(getPendingContributions())
         await dispatch(getContributorStats(address))
     }
     const contributionFlowAsAdmin = async () => {
@@ -152,7 +156,7 @@ export default function Dashboard() {
                 const { accountRole, currentDaos } = await dispatch(
                     getAllDaowithAddress(chainId)
                 )
-
+                await dispatch(getAddressVouchers(address))
                 await rep3ProtocolFunctionsCommon(currentDaos)
                 await initPOCP(currentDaos.uuid, provider, signer, chainId)
                 if (accountRole === "ADMIN") {
@@ -175,6 +179,7 @@ export default function Dashboard() {
 
     //account changes
     const onAccountSwitch = useCallback(async () => {
+        dispatch(setMembershipBadgesForAddress([]))
         if (signer) {
             if (address) {
                 dispatch(setLoadingState(true))

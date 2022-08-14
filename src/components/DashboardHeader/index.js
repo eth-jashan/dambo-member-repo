@@ -46,7 +46,7 @@ const DashboardHeader = ({
             return document.execCommand("copy", true, address)
         }
     }
-
+    const loadingState = useSelector((x) => x.toast.loading_state)
     const onProfileModal = () => {
         dispatch(setPayment(null))
         dispatch(setTransaction(null))
@@ -56,9 +56,11 @@ const DashboardHeader = ({
     }
 
     const onSwitchRoleModal = () => {
-        setProfileModal(false)
-        modalBackdrop(!switchRoleModal)
-        setSwitchRoleModal(!switchRoleModal)
+        if (!loadingState) {
+            setProfileModal(false)
+            modalBackdrop(!switchRoleModal)
+            setSwitchRoleModal(!switchRoleModal)
+        }
     }
 
     const accountSwitchPress = (role) => {

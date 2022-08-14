@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./style.scss"
 // import axios from "axios"
 import { assets } from "../../../../constant/assets"
@@ -20,8 +20,12 @@ export default function RequestCollapsable({
     onOpenCallback = () => {},
     defaultCollapseState = false,
     showSyncing = false,
+    isPast = false,
+    contributions,
 }) {
-    const [collapsable, setCollapsable] = useState(defaultCollapseState)
+    const [collapsable, setCollapsable] = useState(
+        !!(contributions?.length && !isPast)
+    )
 
     const toggleCollapse = () => {
         if (!collapsable) {
@@ -29,6 +33,11 @@ export default function RequestCollapsable({
         }
         setCollapsable(!collapsable)
     }
+    useEffect(() => {
+        if (contributions?.length && !isPast) {
+            setCollapsable(true)
+        }
+    }, [contributions])
     return (
         <div className="contributor-request-collapsable-container">
             <div onClick={toggleCollapse} className="collapsable-div">

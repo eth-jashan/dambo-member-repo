@@ -147,9 +147,12 @@ export const approveContriRequest = (
                         getState().contributor.contributionForAdmin.filter(
                             (x) => x.uuid !== currentTransaction.uuid
                         )
+                    const pastContributions =
+                        getState().contributor.contributionForAdminPast
                     dispatch(
                         contributorAction.set_admin_contribution({
                             contribution: contri_request,
+                            contributionForAdminPast: pastContributions,
                         })
                     )
 

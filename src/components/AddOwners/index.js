@@ -117,8 +117,10 @@ export default function AddOwners({
     }
 
     const onNext = () => {
-        dispatch(addOwners(owners))
-        increaseStep()
+        if (!registerLoader) {
+            dispatch(addOwners(owners))
+            increaseStep()
+        }
     }
 
     const renderHeader = () =>
@@ -258,7 +260,7 @@ export default function AddOwners({
                             rep3Setup ? "Sign Transaction" : "Add Permissions"
                         }
                         nextButtonCallback={onNext}
-                        isDisabled={!areValidOwners()}
+                        isDisabled={!areValidOwners() || registerLoader}
                         isNext={false}
                     />
                 </div>

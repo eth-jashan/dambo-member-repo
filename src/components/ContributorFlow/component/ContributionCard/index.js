@@ -2,12 +2,18 @@ import React, { useState } from "react"
 import "./style.scss"
 import { useDispatch, useSelector } from "react-redux"
 import { assets } from "../../../../constant/assets"
-import { setContributionSelection } from "../../../../store/actions/contibutor-action"
+import {
+    setContributionDetail,
+    setContributionSelection,
+} from "../../../../store/actions/contibutor-action"
 import payments_orange from "../../../../assets/Icons/payments_orange.svg"
 import payments_green from "../../../../assets/Icons/payments_green.svg"
 import received_white from "../../../../assets/Icons/received_white.svg"
 import dayjs from "dayjs"
 import { Checkbox } from "antd"
+import { convertTokentoUsd } from "../../../../utils/conversion"
+import { setTransaction } from "../../../../store/actions/transaction-action"
+import { getBadgeOnMetadata } from "../../../../utils/POCPServiceSdk"
 
 export default function ContributionCardV2({
     item,
@@ -22,16 +28,33 @@ export default function ContributionCardV2({
     const contributionSelected = useSelector(
         (x) => x.contributor.contributorSelectionContribution
     )
+    const currentTransaction = useSelector(
+        (x) => x.transaction.currentTransaction
+    )
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const dispatch = useDispatch()
 
-    const onContributionSelection = () => {
-        dispatch(
-            setContributionSelection({
-                ...item,
-                contributionType,
-                isFirst,
-            })
-        )
+    const role = useSelector((x) => x.dao.role)
+
+    const onContributionSelection = async () => {
+        if (role === "ADMIN") {
+            const ethPrice = await convertTokentoUsd("ETH")
+            console.log("here fetch badge", item)
+            // await getBadgeOnMetadata(
+            //     `http://arweave.net/${`nzHA7WHTsYQIBkAtyg3gHnVR3jQYRlWyO6y40Bf5fZs`}`,
+            //     currentDao?.uuid
+            // )
+            dispatch(setTransaction(item, ethPrice))
+        } else {
+            dispatch(setContributionDetail(null))
+            dispatch(
+                setContributionSelection({
+                    ...item,
+                    contributionType,
+                    isFirst,
+                })
+            )
+        }
     }
 
     const [isHovered, setIsHovered] = useState(false)
@@ -45,7 +68,10 @@ export default function ContributionCardV2({
     return (
         <div
             className={`contributor-contribution-card-container ${
-                contributionSelected?.uuid === item?.uuid
+                item?.uuid ===
+                (role === "ADMIN"
+                    ? currentTransaction?.uuid
+                    : contributionSelected?.uuid)
                     ? "selected-contribution"
                     : ""
             } ${index === 0 && !isFirst ? "first-contribution" : ""}
@@ -117,7 +143,7 @@ export default function ContributionCardV2({
                                     )?.value
                                 }hrs`}{" "}
                                 {contributionType !== "approved" &&
-                                    `• ${dayjs(item?.createdAt).format(
+                                    `• ${dayjs(item?.created_at).format(
                                         "DD MMM"
                                     )}`}
                             </div>
@@ -126,7 +152,7 @@ export default function ContributionCardV2({
                             >
                                 <div>
                                     {contributionType === "approved" ? (
-                                        `${dayjs(item?.createdAt).format(
+                                        `${dayjs(item?.created_at).format(
                                             "DD MMM"
                                         )}`
                                     ) : contributionType === "pending" ? (
@@ -151,11 +177,19 @@ export default function ContributionCardV2({
                                                     Rejected
                                                 </div>
                                             ) : (
-                                                <>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                    }}
+                                                >
                                                     {item?.is_badge ? (
                                                         item?.badge_status ===
                                                         "CLAIMED" ? (
                                                             "Claimed"
+                                                        ) : !item?.badge_status &&
+                                                          item.is_badge ? (
+                                                            "Claim Pending"
                                                         ) : (
                                                             <div className="rejected">
                                                                 Rejected
@@ -164,9 +198,7 @@ export default function ContributionCardV2({
                                                     ) : (
                                                         ""
                                                     )}
-                                                    {item?.tokens?.length &&
-                                                    item?.badge_status !==
-                                                        "REJECTED" ? (
+                                                    {item?.tokens?.length ? (
                                                         <img
                                                             src={payments_green}
                                                             alt=""
@@ -174,7 +206,7 @@ export default function ContributionCardV2({
                                                     ) : (
                                                         ""
                                                     )}
-                                                </>
+                                                </div>
                                             )}
                                         </>
                                     )}

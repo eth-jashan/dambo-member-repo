@@ -572,6 +572,11 @@ export const getSelectedMemberContributions = (memberAddress) => {
             }
         } catch (err) {
             console.error(err)
+            dispatch(
+                membershipAction.setSelectedMemberPastContributions({
+                    selectedMemberPastContributions: [],
+                })
+            )
         }
     }
 }
@@ -783,5 +788,15 @@ export const getAddressVouchers = (address) => {
         } catch (error) {
             return 0
         }
+    }
+}
+
+export const setMembershipBadgesForAddress = (membershipBadgesForAddress) => {
+    return async (dispatch, getState) => {
+        dispatch(
+            membershipAction.setMembershipBadgesForAddress({
+                membershipBadgesForAddress,
+            })
+        )
     }
 }

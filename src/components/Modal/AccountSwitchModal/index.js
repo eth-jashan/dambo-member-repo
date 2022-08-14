@@ -20,6 +20,7 @@ import {
     getContributorStats,
     // getContributionAsContributorApproved,
     getPastContributions,
+    getPendingContributions,
 } from "../../../store/actions/contibutor-action"
 
 const AccountSwitchModal = ({ onChange, route }) => {
@@ -30,6 +31,7 @@ const AccountSwitchModal = ({ onChange, route }) => {
         await dispatch(getPastContributions())
         await dispatch(getAllClaimedBadges())
         await dispatch(getContributorStats(address))
+        await dispatch(getPendingContributions())
     }
     const contributionFlowAsAdmin = async () => {
         await dispatch(getContributionAsAdmin())

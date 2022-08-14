@@ -15,6 +15,7 @@ import DashboardHeader from "../../components/DashboardHeader"
 import OnboardingHeader from "../../components/OnboardingHeader"
 import AntdToast from "../../components/Toast/AntdToast"
 import AccountPic from "./AccountPic"
+import { Tooltip } from "antd"
 
 export default function DashboardLayout({
     children,
@@ -71,16 +72,26 @@ export default function DashboardLayout({
                         />
                     ))}
                     <div className={styles.addContainer}>
-                        <div
-                            className={styles.addButton}
-                            onClick={() => navigate("/onboard/dao")}
+                        <Tooltip
+                            placement="right"
+                            title={
+                                <span className="dao-add-btn-tooltip">
+                                    12 Invites pending
+                                </span>
+                            }
+                            overlayClassName="dao-add-btn-tooltip-card"
                         >
-                            <img
-                                alt="add"
-                                className={styles.addIcon}
-                                src={add_white}
-                            />
-                        </div>
+                            <div
+                                className={styles.addButton}
+                                onClick={() => navigate("/onboard/dao")}
+                            >
+                                <img
+                                    alt="add"
+                                    className={styles.addIcon}
+                                    src={add_white}
+                                />
+                            </div>
+                        </Tooltip>
                     </div>
                 </div>
 

@@ -27,7 +27,10 @@ import {
     getArrayOfMemberToken,
     getArrayOfNounce,
 } from "../../../utils/POCPServiceSdk"
-import { updateContributionVoucher } from "../../../store/actions/contibutor-action"
+import {
+    getContributionAsAdmin,
+    updateContributionVoucher,
+} from "../../../store/actions/contibutor-action"
 
 const PaymentCheckoutModal = ({ onClose, signer }) => {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -81,6 +84,7 @@ const PaymentCheckoutModal = ({ onClose, signer }) => {
                 )
             )
             dispatch(resetApprovedBadges())
+            await dispatch(getContributionAsAdmin())
             setMinting(false)
             onClose()
         } catch (error) {

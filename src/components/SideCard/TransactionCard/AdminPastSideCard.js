@@ -1,94 +1,49 @@
-import React, { useEffect, useState } from "react"
-import "./style.scss"
-import { useSelector } from "react-redux"
-import { assets } from "../../../../constant/assets"
-import { Typography } from "antd"
-import ContributionBadgeBg from "../../../../assets/Icons/ContributionBadgeBg.png"
-import waiting_orange from "../../../../assets/Icons/waiting_orange.svg"
-import check_green from "../../../../assets/Icons/check_green.svg"
 import SafeServiceClient from "@gnosis.pm/safe-service-client"
-import { getSafeServiceUrl } from "../../../../utils/multiGnosisUrl"
-import { useNetwork, useAccount, useEnsName } from "wagmi"
-import arrow_drop_down_orange from "../../../../assets/Icons/arrow_drop_down_orange.svg"
-import arrow_up_orange from "../../../../assets/Icons/arrow_up_orange.svg"
+import React, { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
+import { useEnsName, useNetwork } from "wagmi"
+import { getSafeServiceUrl } from "../../../utils/multiGnosisUrl"
+import ContributionBadgeBg from "../../../assets/Icons/ContributionBadgeBg.png"
+import waiting_orange from "../../../assets/Icons/waiting_orange.svg"
+import check_green from "../../../assets/Icons/check_green.svg"
+import arrow_drop_down_orange from "../../../assets/Icons/arrow_drop_down_orange.svg"
+import arrow_up_orange from "../../../assets/Icons/arrow_up_orange.svg"
+import CheckSvg from "../../../assets/Icons/check.svg"
+import "./style.scss"
 import dayjs from "dayjs"
-import CheckSvg from "../../../../assets/Icons/check.svg"
-import etherscanIcon from "../../../../assets/Icons/etherscanIcon.svg"
-import openseaIcon from "../../../../assets/Icons/openseaIcon.svg"
-import twitterIcon from "../../../../assets/Icons/twitter-icon.svg"
-import { getBadgeOnMetadata } from "../../../../utils/POCPServiceSdk"
-import { chainType } from "../../../../utils/chainType"
+import { Typography } from "antd"
+import cross from "../../../assets/Icons/cross_white.svg"
+import { assets } from "../../../constant/assets"
+import etherscanIcon from "../../../assets/Icons/etherscanIcon.svg"
+import openseaIcon from "../../../assets/Icons/openseaIcon.svg"
+import twitterIcon from "../../../assets/Icons/twitter-icon.svg"
+import { getBadgeOnMetadata } from "../../../utils/POCPServiceSdk"
+import { chainType } from "../../../utils/chainType"
 
-export default function ContributionContributorSideCard({
-    isMinimum,
-    index,
-    selected,
-}) {
-    const currentDao = useSelector((x) => x.dao.currentDao)
-    const { address } = useAccount()
-
-    const contributorSelectionContribution = useSelector(
-        (x) => x.contributor.contributorSelectionContribution
+const AdminPastSideCard = ({ onCrossPress }) => {
+    const currentTransaction = useSelector(
+        (x) => x.transaction.currentTransaction
     )
-    const [showMore, setShowMore] = useState(false)
-
+    const address = currentTransaction?.contributor?.public_address
     let totalAmountInUsd = 0
-    contributorSelectionContribution?.tokens.forEach((token) => {
+    currentTransaction?.tokens.forEach((token) => {
         totalAmountInUsd = totalAmountInUsd + token?.usd_amount * token?.amount
     })
-    const { chain } = useNetwork()
-
-    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
-
-    const [signersInfo, setSignersInfo] = useState(null)
-    const [badgeInfo, setBadgeInfo] = useState(null)
-    const safeInfo = useSelector((x) => x.dao.safeInfo)
-
-    const getPayoutInfo = async () => {
-        if (contributorSelectionContribution?.gnosis_reference_id) {
-            const tx = await serviceClient.getTransaction(
-                contributorSelectionContribution?.gnosis_reference_id
-            )
-            setSignersInfo({
-                ...tx,
-            })
-        }
-    }
-
-    const getBadgeInfo = async () => {
-        if (contributorSelectionContribution?.badge_status === "CLAIMED") {
-            const res = await getBadgeOnMetadata(
-                `http://arweave.net/${contributorSelectionContribution?.metadata_hash}`,
-                currentDao?.uuid
-            )
-
-            setBadgeInfo(res.data.associationBadges[0])
-        }
-    }
-
-    const [isToggleOpen, setIsToggleOpen] = useState(false)
-
-    const toggle = () => {
-        setIsToggleOpen((isToggleOpen) => !isToggleOpen)
-    }
-    const currentUser = useSelector((x) => x.dao.username)
+    const currentDao = useSelector((x) => x.dao.currentDao)
     const {
         data: ensName,
         isError,
         isLoading,
     } = useEnsName({
-        address,
+        address: currentTransaction?.contibutor?.public_address,
     })
-
+    const [showMore, setShowMore] = useState(false)
     const getSignerName = (address) => {
         const details = currentDao?.approvers?.filter(
             (ele) => ele.addr === address
         )
         return details?.[0]?.name
     }
-    const contractAddress = useSelector((x) => x.dao.daoProxyAddress)
-    console.log("contract address", contractAddress)
-
     const openEtherscan = () => {
         window.open(
             `https://${
@@ -110,32 +65,63 @@ export default function ContributionContributorSideCard({
             "_blank"
         )
     }
+    const [signersInfo, setSignersInfo] = useState(null)
+    const safeInfo = useSelector((x) => x.dao.safeInfo)
+    const { chain } = useNetwork()
+
+    const serviceClient = new SafeServiceClient(getSafeServiceUrl(chain?.id))
+
+    const [isToggleOpen, setIsToggleOpen] = useState(false)
+
+    const toggle = () => {
+        setIsToggleOpen((isToggleOpen) => !isToggleOpen)
+    }
+    const getPayoutInfo = async () => {
+        if (currentTransaction?.gnosis_reference_id) {
+            const tx = await serviceClient.getTransaction(
+                currentTransaction?.gnosis_reference_id
+            )
+            setSignersInfo({
+                ...tx,
+            })
+        }
+    }
+    const [badgeInfo, setBadgeInfo] = useState(null)
+
+    const getBadgeInfo = async () => {
+        if (currentTransaction?.badge_status === "CLAIMED") {
+            const res = await getBadgeOnMetadata(
+                `http://arweave.net/${currentTransaction?.metadata_hash}`,
+                currentDao?.uuid
+            )
+
+            setBadgeInfo(res.data.associationBadges[0])
+        }
+    }
+
+    console.log("signer", signersInfo)
 
     useEffect(() => {
-        getPayoutInfo()
-    }, [contributorSelectionContribution])
-    useEffect(() => {
-        if (contributorSelectionContribution?.gnosis_reference_id) {
+        if (currentTransaction?.gnosis_reference_id) {
             getPayoutInfo()
         } else {
             setSignersInfo(null)
         }
-        if (contributorSelectionContribution?.badge_status === "CLAIMED") {
+        if (currentTransaction?.badge_status === "CLAIMED") {
             getBadgeInfo()
         } else {
             setBadgeInfo(null)
         }
-    }, [contributorSelectionContribution])
+    }, [currentTransaction])
 
     return (
-        <div className="contributor-contribution-side-card-container">
-            <div className="contri-title">
-                {
-                    contributorSelectionContribution?.details?.find(
-                        (x) => x.fieldName === "Contribution Title"
-                    )?.value
-                }
-            </div>
+        <div className="admin-past-side-card-container">
+            <img
+                onClick={() => onCrossPress()}
+                src={cross}
+                alt="cross"
+                className={"cross"}
+            />
             <div className="contri-badge-wrapper">
                 <div className="contri-badge">
                     <img
@@ -150,7 +136,7 @@ export default function ContributionContributorSideCard({
                     <div className="contri-badge-contribution-info">
                         <div className="contri-badge-title">
                             {
-                                contributorSelectionContribution?.details?.find(
+                                currentTransaction?.details?.find(
                                     (x) => x.fieldName === "Contribution Title"
                                 )?.value
                             }
@@ -158,7 +144,7 @@ export default function ContributionContributorSideCard({
                         <div className="contri-badge-bottom-row">
                             <div>
                                 {
-                                    contributorSelectionContribution?.details?.find(
+                                    currentTransaction?.details?.find(
                                         (x) =>
                                             x.fieldName ===
                                             "Contribution Category"
@@ -166,7 +152,7 @@ export default function ContributionContributorSideCard({
                                 }{" "}
                                 •{" "}
                                 {
-                                    contributorSelectionContribution?.details?.find(
+                                    currentTransaction?.details?.find(
                                         (x) =>
                                             x.fieldName ===
                                             "Time Spent in Hours"
@@ -175,20 +161,19 @@ export default function ContributionContributorSideCard({
                                 hrs
                             </div>
                             <div>
-                                {dayjs(
-                                    contributorSelectionContribution?.created_at
-                                ).format("DD MMM' YY")}
+                                {dayjs(currentTransaction?.created_at).format(
+                                    "DD MMM' YY"
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-                {contributorSelectionContribution?.feedback && (
+                {currentTransaction?.feedback && (
                     <div className="contri-feedback">
-                        {contributorSelectionContribution?.feedback}
+                        {currentTransaction?.feedback}
                     </div>
                 )}
-                {contributorSelectionContribution?.badge_status ===
-                    "CLAIMED" && (
+                {badgeInfo && (
                     <>
                         <div className="lineBreak"></div>
                         <div className="badge-footer">
@@ -215,7 +200,7 @@ export default function ContributionContributorSideCard({
                     </>
                 )}
             </div>
-            {contributorSelectionContribution?.tokens?.length && (
+            {currentTransaction?.tokens?.length && (
                 <div className="contri-payout-info">
                     <div>
                         <span className="highlighted">
@@ -223,12 +208,13 @@ export default function ContributionContributorSideCard({
                         </span>{" "}
                         Total Payout
                     </div>
-                    {contributorSelectionContribution?.tokens
+                    {currentTransaction?.tokens
                         ?.slice(0, 2)
                         .map((token, index) => (
                             <div className="token-payout-row" key={index}>
                                 <div className="highlighted">
-                                    {token?.amount} {token?.details?.symbol}
+                                    {token?.amount.toFixed(2)}{" "}
+                                    {token?.details?.symbol}
                                 </div>
                                 <div>
                                     {(
@@ -238,11 +224,11 @@ export default function ContributionContributorSideCard({
                                 </div>
                             </div>
                         ))}
-                    {contributorSelectionContribution?.tokens?.length > 2 && (
+                    {currentTransaction?.tokens?.length > 2 && (
                         <div>
                             {showMore ? (
                                 <>
-                                    {contributorSelectionContribution?.tokens
+                                    {currentTransaction?.tokens
                                         ?.slice(2)
                                         .map((token, index) => (
                                             <div
@@ -254,10 +240,8 @@ export default function ContributionContributorSideCard({
                                                     {token?.details?.symbol}
                                                 </div>
                                                 <div>
-                                                    {(
-                                                        token?.usd_amount *
-                                                        token?.amount
-                                                    ).toFixed(2)}
+                                                    {token?.usd_amount *
+                                                        token?.amount}
                                                     $
                                                 </div>
                                             </div>
@@ -281,22 +265,22 @@ export default function ContributionContributorSideCard({
                     )}
                 </div>
             )}
-
+            console.l
             <div className="contri-info">
                 <div className="contributor-info">
-                    {currentUser} •{" "}
+                    {currentTransaction?.contributor?.name} •{" "}
                     {ensName ||
                         `${address?.slice(0, 5)}...${address?.slice(-3)}`}
                 </div>
                 <div className="contri-type">
                     {
-                        contributorSelectionContribution?.details?.find(
+                        currentTransaction?.details?.find(
                             (x) => x.fieldName === "Contribution Category"
                         )?.value
                     }{" "}
                     •{" "}
                     {
-                        contributorSelectionContribution?.details?.find(
+                        currentTransaction?.details?.find(
                             (x) => x.fieldName === "Time Spent in Hours"
                         )?.value
                     }
@@ -316,7 +300,7 @@ export default function ContributionContributorSideCard({
                     }}
                 >
                     {
-                        contributorSelectionContribution?.details?.find(
+                        currentTransaction?.details?.find(
                             (x) => x.fieldName === "Additional Notes"
                         )?.value
                     }
@@ -344,9 +328,8 @@ export default function ContributionContributorSideCard({
                                 <div className="title">
                                     <img src={waiting_orange} alt="" />
                                     {/* Waiting for signing */}
-                                    {!contributorSelectionContribution?.tokens
-                                        ?.length &&
-                                    !contributorSelectionContribution?.voucher_id
+                                    {!currentTransaction?.tokens?.length &&
+                                    !currentTransaction?.voucher_id
                                         ? "waiting for approval"
                                         : signersInfo?.confirmations?.length >=
                                           safeInfo?.threshold
@@ -418,3 +401,5 @@ export default function ContributionContributorSideCard({
         </div>
     )
 }
+
+export default AdminPastSideCard

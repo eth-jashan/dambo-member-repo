@@ -82,6 +82,9 @@ export default function ContributorContributionScreen() {
     const fetchPendingContributions = () => {
         dispatch(getPendingContributions())
     }
+    const reversedPastContributions = [
+        ...contributionForContributorPast,
+    ].reverse()
 
     const fetchPastContributions = () => {
         dispatch(getPastContributions())
@@ -287,14 +290,14 @@ export default function ContributorContributionScreen() {
             </div>
             <div className="past-contributions">
                 <RequestCollapsable
-                    contributions={contributionForContributorPast}
+                    contributions={reversedPastContributions}
                     title={`Past Requests  •  ${
-                        contributionForContributorPast?.length || 0
+                        reversedPastContributions?.length || 0
                     }`}
                     onOpenCallback={fetchPastContributions}
                     showSyncing={pastContributionsSyncing}
                 >
-                    {contributionForContributorPast.map((x, i) => (
+                    {reversedPastContributions.map((x, i) => (
                         <ContributionCardV2
                             key={i}
                             index={i}

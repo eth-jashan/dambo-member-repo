@@ -1,25 +1,29 @@
-.contributor-contribution-side-card-container {
+// .contri-detail-wrapper {
+// padding: 2rem 1.5rem 0rem 1.5rem;
+.admin-past-side-card-container {
     width: 100%;
     height: 100%;
+    padding: 2rem 1.5rem 0rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     text-align: left;
-    // .cross-icon {
-    //     position: absolute;
-    //     top: ;
-    // }
-    .contri-title {
-        font-family: "TelegrafBolder";
-        font-style: normal;
-        font-weight: 800;
-        font-size: 23px;
-        line-height: 2rem;
-        color: white;
-        width: 12.5rem;
-        text-align: start;
-        margin-bottom: 1.5rem;
+    /* position: relative; */
+    &.container::-webkit-scrollbar {
+        display: none;
+    }
+    .cross {
+        height: 1rem;
+        width: 1rem;
+        margin-bottom: 3.13rem;
     }
     .contri-badge-wrapper {
         background: #1f1f1f;
         border-radius: 12px;
+        margin-top: 1.5rem;
         .contri-badge {
             position: relative;
             .contri-badge-bg {
@@ -122,6 +126,7 @@
         font-size: 1rem;
         line-height: 1.5rem;
         .highlighted {
+            text-align: left;
             color: rgb(236, 255, 184);
         }
         .token-payout-row {

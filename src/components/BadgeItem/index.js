@@ -16,7 +16,9 @@ const BadgeItem = ({ item, setupDisplay = false }) => {
     const onBadgeClick = () => {
         dispatch(setContributionDetail({ ...item }))
     }
-
+    const contribution_detail = useSelector(
+        (x) => x.contributor.contribution_detail
+    )
     return (
         <div
             onClick={() => onBadgeClick()}
@@ -29,7 +31,10 @@ const BadgeItem = ({ item, setupDisplay = false }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 borderTop: 0,
-                background: onHover && !setupDisplay && "#292929",
+                background:
+                    (onHover || contribution_detail?.uuid === item?.uuid) &&
+                    !setupDisplay &&
+                    "#292929",
             }}
             className="badge-item-container"
         >

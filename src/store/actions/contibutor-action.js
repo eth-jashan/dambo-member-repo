@@ -77,6 +77,7 @@ export const getContributionAsAdmin = () => {
             )
             if (res.data.success) {
                 const pendingContribution = []
+                const pastContribution = []
 
                 res.data.data.contributions.forEach((x) => {
                     if (x.status === "REQUESTED" && !x.payout_status) {
@@ -88,6 +89,13 @@ export const getContributionAsAdmin = () => {
                                     contribution: x,
                                 })
                             )
+                        }
+                        if (
+                            (x.voucher_id && x.mint_badge) ||
+                            x.badge_status ||
+                            x.is_badge
+                        ) {
+                            pastContribution.push(x)
                         }
                         if (x.tokens.length > 0 && !x.payout_status) {
                             dispatch(
@@ -105,6 +113,7 @@ export const getContributionAsAdmin = () => {
                 dispatch(
                     contributorAction.set_admin_contribution({
                         contribution: pendingContribution,
+                        contributionForAdminPast: pastContribution,
                         count: res.data.data.contributions.length,
                     })
                 )
@@ -115,6 +124,7 @@ export const getContributionAsAdmin = () => {
             dispatch(
                 contributorAction.set_admin_contribution({
                     contribution: [],
+                    contributionForAdminPast: [],
                     count: 0,
                 })
             )

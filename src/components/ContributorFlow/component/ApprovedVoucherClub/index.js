@@ -128,6 +128,7 @@ export default function ApprovedVoucherClub({ voucher, isFirst }) {
                     contributionsWithCheckbox
                 )
             )
+            dispatch(getPastContributions())
             setRejectLoader(false)
         }
     }

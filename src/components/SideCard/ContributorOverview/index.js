@@ -75,6 +75,8 @@ const ContributionOverview = () => {
             membershipBadgesForAddress?.length > 0
         ) {
             getCurrentBadgeUpdated()
+        } else {
+            setCurrentMembershipBadge(false)
         }
     }, [currentDao, proxyContract, membershipBadgesForAddress])
     const isImage = currentDao?.uuid !== "93ba937e02ea4fdb9633c2cb27345200"
