@@ -36,7 +36,9 @@ export default function DashboardLayout({
         // dispatch(setLoadingState(true))
         // dispatch(setLoadingState(false))
     }
-
+    const unclaimedMembershipVouchersForAddress = useSelector(
+        (x) => x.membership.unclaimedMembershipVouchersForAddress
+    )
     const changeAccount = async (item) => {
         dispatch(set_dao(item))
         dispatch(lastSelectedId(item?.dao_details?.uuid))
@@ -46,7 +48,7 @@ export default function DashboardLayout({
             dispatch(set_active_nonce(nonce))
         }
     }
-
+    console.log("Here", unclaimedMembershipVouchersForAddress)
     // console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
 
     return (
@@ -76,7 +78,10 @@ export default function DashboardLayout({
                             placement="right"
                             title={
                                 <span className="dao-add-btn-tooltip">
-                                    12 Invites pending
+                                    {
+                                        unclaimedMembershipVouchersForAddress.length
+                                    }{" "}
+                                    Invites pending
                                 </span>
                             }
                             overlayClassName="dao-add-btn-tooltip-card"

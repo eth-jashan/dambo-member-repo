@@ -184,6 +184,7 @@ export default function Dashboard() {
             if (address) {
                 dispatch(setLoadingState(true))
                 const chainId = await signer?.getChainId()
+                await dispatch(getAddressVouchers(address))
                 await rep3ProtocolFunctionsCommon(currentDao)
                 await initPOCP(currentDao.uuid, provider, signer, chainId)
                 if (role === "ADMIN") {
