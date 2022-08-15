@@ -25,6 +25,7 @@ import {
 } from "../../store/actions/contibutor-action"
 import ApprovedVoucherClub from "../ContributorFlow/component/ApprovedVoucherClub"
 import { chainType } from "../../utils/chainType"
+import BadgeRequestModal from "../SecondaryBadges/component/BadgeRequestModal"
 
 export default function ContributorContributionScreen() {
     const currentDao = useSelector((x) => x.dao.currentDao)
@@ -492,7 +493,12 @@ export default function ContributorContributionScreen() {
                 </div>
             )}
             {contriModal && (
-                <ContributionRequestModal setVisibility={setContriModal} />
+                <BadgeRequestModal
+                    badgeSchema={schemaOfDao}
+                    type="Contribution"
+                    isContributor={true}
+                    closeContributorModal={() => setContriModal(false)}
+                />
             )}
         </div>
     )

@@ -23,6 +23,7 @@ import { getContributionAsAdmin } from "../../store/actions/contibutor-action"
 import { message } from "antd"
 import RequestCollapsable from "../ContributorFlow/component/RequestCollapsable"
 import ContributionCardV2 from "../ContributorFlow/component/ContributionCard"
+import BadgeRequestModal from "../SecondaryBadges/component/BadgeRequestModal"
 
 export default function RequestScreen({
     onRouteChange,
@@ -450,7 +451,12 @@ export default function RequestScreen({
                     )}
                 {payoutToast && transactionToast()}
                 {modalContri && (
-                    <ContributionRequestModal setVisibility={setModalContri} />
+                    <BadgeRequestModal
+                        badgeSchema={schemaOfDao}
+                        type="Contribution"
+                        isContributor={true}
+                        closeContributorModal={() => setModalContri(false)}
+                    />
                 )}
                 {modalPayment &&
                     (approve_contri?.length > 0 ||

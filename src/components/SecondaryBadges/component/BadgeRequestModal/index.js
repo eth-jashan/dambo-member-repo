@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Input } from "antd"
+import { Input, message } from "antd"
 import Select from "react-select"
 import "./style.scss"
 import { assets } from "../../../../constant/assets"
@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux"
 import {
     actionOnContributionRequestModal,
     createContributionVouchers,
+    getPendingContributions,
+    raiseContributionRequest,
 } from "../../../../store/actions/contibutor-action"
 import Lottie from "react-lottie"
 import white_loader from "../../../../assets/lottie/Loader_White_lottie.json"
@@ -22,7 +24,12 @@ import dayjs from "dayjs"
 import AddressInput from "../../../BadgesScreen/components/AddAddress/AddressInput"
 const { TextArea } = Input
 
-export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
+export default function BadgeRequestModal({
+    type,
+    badgeSchema,
+    isContributor = false,
+    closeContributorModal = () => {},
+}) {
     const badgeSelectionMember = useSelector(
         (x) => x.contributor.badgeSelectionMember
     )
@@ -75,6 +82,7 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const jwt = useSelector((x) => x.auth.jwt)
     const [loading, setLoading] = useState(false)
+    const contributorAddress = useSelector((x) => x.auth.address)
 
     const defaultOptions = {
         loop: true,
@@ -231,64 +239,100 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
         }
     }
 
-    const approveBadge = async () => {
-        if (address[0]) {
-            const uploadMetadata = []
-            schemaTemplate.forEach((x) => {
-                if (x.value) {
-                    uploadMetadata.push({
-                        ...x,
-                    })
-                }
-            })
+    const onContributorSubmit = async () => {
+        if (!loading) {
+            setLoading(true)
+            const memberTokenId = await getAllMembershipBadges(
+                contributorAddress,
+                proxyContract,
+                false
+            )
+
+            console.log("membership token Id", memberTokenId)
+
             try {
-                setLoading(true)
-                const res = await createContributionMetadataUri(
-                    schemaTemplate.find(
-                        (x) => x.fieldName === "Contribution Title"
-                    )?.value,
-                    currentDao?.name,
-                    `22 July' 22`,
-                    currentDao?.logo_url
+                await dispatch(
+                    raiseContributionRequest(
+                        parseInt(memberTokenId.data.membershipNFTs[0].tokenID),
+                        schemaTemplate
+                    )
                 )
-
-                if (res.metadata) {
-                    const memberTokenId = await getAllMembershipBadges(
-                        address[0],
-                        proxyContract,
-                        false
-                    )
-                    const arrayOfNounce = await getArrayOfNounce(
-                        [memberTokenId.data.membershipNFTs[0].tokenID],
-                        currentDao?.uuid,
-                        jwt
-                    )
-                    const msg = await createContributionVoucher(
-                        proxyContract,
-                        [memberTokenId.data.membershipNFTs[0].tokenID],
-                        [1],
-                        [res.metadata],
-                        arrayOfNounce,
-                        [0]
-                    )
-                    if (msg) {
-                        await dispatch(
-                            createContributionVouchers(
-                                address[0],
-                                msg,
-                                uploadMetadata,
-                                res.metadata
-                            )
-                        )
-
-                        setLoading(false)
-                        dispatch(actionOnContributionRequestModal(false))
-                    }
-                }
-            } catch (error) {
-                console.error("error", error.toString())
                 setLoading(false)
+                closeContributorModal()
+                message.success("contribution created successfully")
+                dispatch(getPendingContributions())
+            } catch (error) {
+                console.error("error", error)
+                setLoading(false)
+                message.error("something went wrong")
             }
+        }
+    }
+    const onAdminSubmit = async () => {
+        const uploadMetadata = []
+        schemaTemplate.forEach((x) => {
+            if (x.value) {
+                uploadMetadata.push({
+                    trait_type: x.fieldName,
+                    value: x.value,
+                })
+            }
+        })
+
+        try {
+            setLoading(true)
+            const res = await createContributionMetadataUri(
+                currentDao?.logo_url,
+                currentDao?.name,
+                schemaTemplate.find((x) => x.fieldName === "Contribution Title")
+                    ?.value,
+                schemaTemplate.find(
+                    (x) => x.fieldName === "Time Spent in Hours"
+                )?.value,
+                dayjs().format("D MMM YYYY"),
+                schemaTemplate.find(
+                    (x) => x.fieldName === "Contribution Category"
+                )?.value,
+                "",
+                uploadMetadata
+            )
+
+            if (res.metadata) {
+                const memberTokenId = await getAllMembershipBadges(
+                    address[0],
+                    proxyContract,
+                    false
+                )
+                const arrayOfNounce = await getArrayOfNounce(
+                    [memberTokenId.data.membershipNFTs[0].tokenID],
+                    currentDao?.uuid,
+                    jwt
+                )
+                const msg = await createContributionVoucher(
+                    proxyContract,
+                    [memberTokenId.data.membershipNFTs[0].tokenID],
+                    [1],
+                    [res.metadata],
+                    arrayOfNounce,
+                    [0]
+                )
+                if (msg) {
+                    await dispatch(
+                        createContributionVouchers(
+                            address[0],
+                            msg,
+                            schemaTemplate,
+                            res.metadata
+                        )
+                    )
+
+                    setLoading(false)
+                    dispatch(actionOnContributionRequestModal(false))
+                }
+            }
+        } catch (error) {
+            console.error("error", error.toString())
+            setLoading(false)
         }
     }
 
@@ -298,7 +342,11 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                 <div className="modal-div">
                     <img
                         onClick={() =>
-                            dispatch(actionOnContributionRequestModal(false))
+                            isContributor
+                                ? closeContributorModal()
+                                : dispatch(
+                                      actionOnContributionRequestModal(false)
+                                  )
                         }
                         src={assets.icons.crossBlack}
                     />
@@ -308,19 +356,22 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                             <br /> request
                         </div>
                     </div>
-                    <div className="modal-title">{`${type} Details`}</div>
-                    {/* {address?.map((x, i) => addressInput(x, i))} */}
-                    {address.map((x, i) => (
-                        <AddressInput
-                            index={i}
-                            key={i}
-                            address={x}
-                            updateAddress={updateAddress}
-                            deleteAddress={(x) => console.log(x)}
-                            updateStatus={(x) => console.log(x)}
-                            type="membership-badge-claimed"
-                        />
-                    ))}
+                    {!isContributor && (
+                        <div className="modal-title">{`${type} Details`}</div>
+                    )}
+
+                    {!isContributor &&
+                        address.map((x, i) => (
+                            <AddressInput
+                                index={i}
+                                key={i}
+                                address={x}
+                                updateAddress={updateAddress}
+                                deleteAddress={(x) => console.log(x)}
+                                updateStatus={(x) => console.log(x)}
+                                type="membership-badge-claimed"
+                            />
+                        ))}
                     {/* <div
                         className="add-address-request-modal"
                         onClick={addAddress}
@@ -341,96 +392,11 @@ export default function BadgeRequestModal({ type, badgeSchema, isEditing }) {
                     ))}
                     <div className="btn-wrapper-submit">
                         <button
-                            onClick={async () => {
-                                const uploadMetadata = []
-                                schemaTemplate.forEach((x) => {
-                                    if (x.value) {
-                                        uploadMetadata.push({
-                                            trait_type: x.fieldName,
-                                            value: x.value,
-                                        })
-                                    }
-                                })
-
-                                try {
-                                    setLoading(true)
-                                    const res =
-                                        await createContributionMetadataUri(
-                                            currentDao?.logo_url,
-                                            currentDao?.name,
-                                            schemaTemplate.find(
-                                                (x) =>
-                                                    x.fieldName ===
-                                                    "Contribution Title"
-                                            )?.value,
-                                            schemaTemplate.find(
-                                                (x) =>
-                                                    x.fieldName ===
-                                                    "Time Spent in Hours"
-                                            )?.value,
-                                            dayjs().format("D MMM YYYY"),
-                                            schemaTemplate.find(
-                                                (x) =>
-                                                    x.fieldName ===
-                                                    "Contribution Category"
-                                            )?.value,
-                                            "",
-                                            uploadMetadata
-                                        )
-
-                                    if (res.metadata) {
-                                        const memberTokenId =
-                                            await getAllMembershipBadges(
-                                                address[0],
-                                                proxyContract,
-                                                false
-                                            )
-                                        const arrayOfNounce =
-                                            await getArrayOfNounce(
-                                                [
-                                                    memberTokenId.data
-                                                        .membershipNFTs[0]
-                                                        .tokenID,
-                                                ],
-                                                currentDao?.uuid,
-                                                jwt
-                                            )
-                                        const msg =
-                                            await createContributionVoucher(
-                                                proxyContract,
-                                                [
-                                                    memberTokenId.data
-                                                        .membershipNFTs[0]
-                                                        .tokenID,
-                                                ],
-                                                [1],
-                                                [res.metadata],
-                                                arrayOfNounce,
-                                                [0]
-                                            )
-                                        if (msg) {
-                                            await dispatch(
-                                                createContributionVouchers(
-                                                    address[0],
-                                                    msg,
-                                                    schemaTemplate,
-                                                    res.metadata
-                                                )
-                                            )
-
-                                            setLoading(false)
-                                            dispatch(
-                                                actionOnContributionRequestModal(
-                                                    false
-                                                )
-                                            )
-                                        }
-                                    }
-                                } catch (error) {
-                                    console.error("error", error.toString())
-                                    setLoading(false)
-                                }
-                            }}
+                            onClick={
+                                isContributor
+                                    ? async () => await onContributorSubmit()
+                                    : async () => await onAdminSubmit()
+                            }
                             className="badge-request-btn"
                         >
                             <div>Approve Badges • {address.length}</div>
