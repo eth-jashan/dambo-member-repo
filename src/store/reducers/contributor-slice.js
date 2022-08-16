@@ -32,6 +32,7 @@ const contributorSlice = createSlice({
         pastContributionsSyncing: false,
         badgeSelectionMember: null,
         contributionForAdminPast: [],
+        approvedRequest: [],
     },
     reducers: {
         set_invite_code(state, action) {
@@ -80,6 +81,7 @@ const contributorSlice = createSlice({
         set_admin_contribution(state, action) {
             state.contributionForAdmin = action.payload.contribution
             state.contributionAllCount = action.payload.count
+            state.approvedRequest = action.payload.approved_request
             state.contributionForAdminPast =
                 action.payload.contributionForAdminPast || []
         },

@@ -354,3 +354,39 @@ query($metadatUri: String ) {
         return customResult
     } catch (error) {}
 }
+
+export const getBadgeOnContractAddress = async (contractAddress, uuid) => {
+    try {
+        const associationBadgeQuery = `
+query($contractAddress: String ) {
+  associationBadges(where:{contractAddress:$contractAddress}){
+    id
+    metadatUri
+    claimer
+    type
+    txHash
+    membershipId
+    contractAddress{
+      id
+    }
+    tokenID
+  }
+}
+`
+
+        const associationBadgeVariable = { contractAddress }
+        const pocpGetter = new PocpGetters(
+            currentNetwork?.chainId === 4
+                ? "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-mumbai"
+                : uuid === "981349a995c140d8b7fb5c110b0d133b"
+                ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
+                : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
+        )
+        const customResult = await pocpGetter.getForCustomQuery(
+            associationBadgeQuery,
+            associationBadgeVariable
+        )
+        console.log("association badges", customResult)
+        return customResult
+    } catch (error) {}
+}

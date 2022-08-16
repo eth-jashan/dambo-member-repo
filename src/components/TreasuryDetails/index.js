@@ -86,7 +86,7 @@ export default function TreasuryDetails() {
     const gnosisSignerLink = `https://gnosis-safe.io/app/${
         chain?.id === 4 ? "rin:" : ""
     }${currentDao?.safe_public_address}/settings/owners`
-
+    console.log(currentDao)
     return (
         <div className="treasury-details-container">
             {isModalVisible && (
@@ -142,20 +142,19 @@ export default function TreasuryDetails() {
                         <div className="safe-owner-heading">
                             Multisig Signers
                         </div>
-                        {currentDao?.signers?.slice(0, 3).map((signer) => (
+                        {currentDao?.approvers?.slice(0, 3).map((signer) => (
                             <div
                                 className="owner-row"
                                 key={signer.public_address}
                             >
                                 <div className="owner-name">
-                                    {currentUserAddress ===
-                                    signer.public_address
+                                    {currentUserAddress === signer.addr
                                         ? "You"
-                                        : signer?.metadata?.name?.slice(0, 8)}
+                                        : signer?.name?.slice(0, 8)}
                                 </div>
                                 <div className="owner-address">
-                                    {signer.public_address?.slice(0, 5)}...
-                                    {signer.public_address?.slice(-4)}
+                                    {signer.addr?.slice(0, 5)}...
+                                    {signer.addr?.slice(-4)}
                                 </div>
                             </div>
                         ))}

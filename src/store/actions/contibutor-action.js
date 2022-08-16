@@ -110,11 +110,16 @@ export const getContributionAsAdmin = () => {
                         }
                     }
                 })
+                const approvedRequest = res.data.data.contributions.filter(
+                    (x) => x.status === "APPROVED"
+                )
+                console.log(approvedRequest)
                 dispatch(
                     contributorAction.set_admin_contribution({
                         contribution: pendingContribution,
                         contributionForAdminPast: pastContribution,
                         count: res.data.data.contributions.length,
+                        approved_request: approvedRequest,
                     })
                 )
             } else {
@@ -126,6 +131,7 @@ export const getContributionAsAdmin = () => {
                     contribution: [],
                     contributionForAdminPast: [],
                     count: 0,
+                    approved_request: [],
                 })
             )
         }

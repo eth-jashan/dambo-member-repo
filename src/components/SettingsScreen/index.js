@@ -98,7 +98,7 @@ export default function SettingsScreen() {
             description: "Verify your discord ID and map it to DAO",
         },
     ]
-
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
     const updateDaoName = async () => {
         setUpdatingDaoName(true)
         await dispatch(
@@ -206,14 +206,18 @@ export default function SettingsScreen() {
                                     </div>
                                     <div className="safe-address">
                                         eth:
-                                        {currentDao?.safe_public_address?.slice(
-                                            0,
-                                            5
-                                        )}
+                                        {currentDao?.safe_public_address
+                                            ? currentDao?.safe_public_address?.slice(
+                                                  0,
+                                                  5
+                                              )
+                                            : proxyContract?.slice(0, 5)}
                                         ...
-                                        {currentDao?.safe_public_address?.slice(
-                                            -4
-                                        )}
+                                        {currentDao?.safe_public_address
+                                            ? currentDao?.safe_public_address?.slice(
+                                                  -4
+                                              )
+                                            : proxyContract?.slice(-4)}
                                     </div>
                                     <div className="safe-links">
                                         <div

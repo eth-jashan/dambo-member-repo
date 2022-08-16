@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import "./style.scss"
 import membershipIconWhite from "../../../../assets/Icons/membershipIconWhite.svg"
 import contributionIconWhite from "../../../../assets/Icons/contributionIconWhite.svg"
@@ -18,16 +18,20 @@ import {
 } from "../../../../store/actions/contibutor-action"
 
 import pluralize from "pluralize"
+import { getBadgeOnContractAddress } from "../../../../utils/POCPServiceSdk"
 
 export default function HomeScreen({
     membershipBadges,
     setShowMembershipOverviewModal,
 }) {
+    const [claimedBadges, setClaimedBadges] = useState([])
     const currentDao = useSelector((x) => x.dao.currentDao)
     const dispatch = useDispatch()
     const showModal = () => {
         dispatch(setShowMembershipCreateModal(true))
     }
+    const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
+
     const showMintingModal = async () => {
         await dispatch(setContractAddress(currentDao?.proxy_txn_hash))
         dispatch(setShowMembershipMintingModal(true))
@@ -36,8 +40,17 @@ export default function HomeScreen({
         (x) => x.contributor.contributorSchema
     )
     const allContributionCount = useSelector(
-        (x) => x.contributor.contributionAllCount
+        (x) => x.contributor.approvedRequest
     )
+
+    useEffect(async () => {
+        const badges = await getBadgeOnContractAddress(
+            proxyContract,
+            currentDao?.uuid
+        )
+        console.log("Badges", badges.data.associationBadges)
+        setClaimedBadges(badges.data.associationBadges)
+    }, [currentDao?.uuid])
 
     const displaySchemas = (schema) => {
         const contribFeild = []
@@ -149,8 +162,8 @@ export default function HomeScreen({
                                 <span>Contribution Badge </span>
                                 {contributionSchema?.length > 0 && (
                                     <div className="contribution-badge-stats">
-                                        {allContributionCount} Approved | 00
-                                        Claimed
+                                        {allContributionCount.length} Approved |{" "}
+                                        {claimedBadges.length} Claimed
                                     </div>
                                 )}
                             </div>
