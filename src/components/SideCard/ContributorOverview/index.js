@@ -16,9 +16,12 @@ import { assets } from "../../../constant/assets"
 import { chainType } from "../../../utils/chainType"
 import { useNetwork } from "wagmi"
 import { setContributionSelection } from "../../../store/actions/contibutor-action"
+import relativeTime from "dayjs/plugin/relativeTime"
+import dayjs from "dayjs"
 
 // import { getSelectedChainId } from "../../../utils/POCPutils"
 const ContributionOverview = () => {
+    dayjs.extend(relativeTime)
     const [isToggleOpen, setIsToggleOpen] = useState(false)
     const currentDao = useSelector((x) => x.dao.currentDao)
     const proxyContract = useSelector((x) => x.dao.daoProxyAddress)
@@ -42,31 +45,48 @@ const ContributionOverview = () => {
 
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
+        let highestDifference =
+            dayjs().unix() - parseInt(membershipBadgesForAddress[0].time)
+        let index = 0
         membershipBadgesForAddress.forEach((item, i) => {
-            // contributorClaimedDataBackend?.membership.forEach((x) => {
+            if (highestDifference > dayjs().unix() - parseInt(item.time)) {
+                highestDifference = dayjs().unix() - parseInt(item.time)
+                index = i
+            }
+            console.log(
+                "unix",
+                highestDifference,
+                index,
+                membershipBadgesForAddress[index],
+                parseInt(item.time)
+            )
+        })
+        membershipBadges.forEach((x) => {
             if (
-                item.level ===
+                membershipBadgesForAddress[index].level ===
                 contributorClaimedDataBackend?.membership.level.toString()
             ) {
                 membershipInfo.push(contributorClaimedDataBackend?.membership)
             }
-            // })
         })
         setCurrentMembershipBadge({
-            ...membershipBadgesForAddress[0],
+            ...membershipBadgesForAddress[index],
             ...membershipInfo[0],
         })
     }
+    const [levels, setLevels] = useState(null)
     const dataSource = useSelector((x) => x.dao.all_claimed_badge)
-    const levels = membershipBadgesForAddress?.map((x, i) => {
-        if (i > 0) {
-            return {
-                name: x.level,
-                time: "2 months ago",
+    useEffect(() => {
+        const levels = membershipBadgesForAddress?.map((x, i) => {
+            if (currentMembershipBadge?.level !== x.level.toString()) {
+                return {
+                    name: x.level,
+                    time: x.time,
+                }
             }
-        }
-    })
-
+        })
+        setLevels(levels)
+    }, [currentMembershipBadge])
     useEffect(() => {
         if (
             currentDao &&
@@ -112,7 +132,7 @@ const ContributionOverview = () => {
     const closeSideCard = () => {
         dispatch(setContributionSelection(false))
     }
-
+    console.log("current badges", currentMembershipBadge)
     return (
         <div
             style={{ paddingTop: contributorSelectionContribution && 0 }}
@@ -202,7 +222,23 @@ const ContributionOverview = () => {
                                                         {level?.name}
                                                     </div>
                                                     <div className="level-time">
-                                                        {level.time}
+                                                        {/* {dayjs()
+                                                            .format(
+                                                                "DD-MM-YYYY"
+                                                            )
+                                                            .diff(
+                                                                dayjs(
+                                                                    parseInt(
+                                                                        level.time
+                                                                    )
+                                                                ).format(
+                                                                    "DD-MM-YYYY"
+                                                                ),
+                                                                "month"
+                                                            )} */}
+                                                        {dayjs(
+                                                            level.time
+                                                        ).format("DD/MM/YYYY")}
                                                     </div>
                                                 </div>
                                             )

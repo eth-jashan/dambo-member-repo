@@ -5,6 +5,7 @@ import { getSelectedChainId } from "./wagmiHelpers"
 import { web3 } from "../constant/web3"
 import Web3 from "web3"
 import axios from "axios"
+import dayjs from "dayjs"
 const currentNetwork = getSelectedChainId()
 
 let pocpInstance = null
@@ -116,11 +117,29 @@ export const deployDaoContract = async (
     )
 }
 
+// change it to custom query
+
 export const getAllMembershipBadges = async (
-    accountAddress,
+    claimer,
     contractAddress,
     uuid
 ) => {
+    const membershipNftQuery = `
+query($contractAddress: String ,$claimer: String ) {
+    membershipNFTs(where:{contractAddress:$contractAddress,claimer:$claimer}){
+    id
+    time
+    claimer
+    level
+    category
+    tokenID
+    contractAddress{
+      id
+    }
+    metadataUri
+  }
+}
+`
     const pocpGetter = new PocpGetters(
         currentNetwork?.chainId === 4
             ? "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-mumbai"
@@ -128,9 +147,10 @@ export const getAllMembershipBadges = async (
             ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
             : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
     )
-    return await pocpGetter.membershipNftWithClaimerOfDao(
-        accountAddress,
-        contractAddress
+    const membershipNftVariable = { contractAddress, claimer }
+    return await pocpGetter.getForCustomQuery(
+        membershipNftQuery,
+        membershipNftVariable
     )
 }
 
