@@ -53,13 +53,6 @@ const ContributionOverview = () => {
                 highestDifference = dayjs().unix() - parseInt(item.time)
                 index = i
             }
-            console.log(
-                "unix",
-                highestDifference,
-                index,
-                membershipBadgesForAddress[index],
-                parseInt(item.time)
-            )
         })
         membershipBadges.forEach((x) => {
             if (
@@ -222,23 +215,9 @@ const ContributionOverview = () => {
                                                         {level?.name}
                                                     </div>
                                                     <div className="level-time">
-                                                        {/* {dayjs()
-                                                            .format(
-                                                                "DD-MM-YYYY"
-                                                            )
-                                                            .diff(
-                                                                dayjs(
-                                                                    parseInt(
-                                                                        level.time
-                                                                    )
-                                                                ).format(
-                                                                    "DD-MM-YYYY"
-                                                                ),
-                                                                "month"
-                                                            )} */}
                                                         {dayjs(
-                                                            level.time
-                                                        ).format("DD/MM/YYYY")}
+                                                            level.time * 1000
+                                                        ).fromNow()}{" "}
                                                     </div>
                                                 </div>
                                             )
