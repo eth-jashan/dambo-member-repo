@@ -85,23 +85,22 @@ export default function DashboardLayout({
                                 </span>
                             }
                             overlayClassName="dao-add-btn-tooltip-card"
-                            trigger="click"
                         >
                             <div
                                 className="dashboard-layout-left-add-button"
-                                // onClick={() =>
-                                //     unclaimedMembershipVouchersForAddress.length
-                                //         ? navigate(
-                                //               `/onboard/contributor/null`,
-                                //               {
-                                //                   state: {
-                                //                       discordUserId: "userId",
-                                //                       onboardingStep: 0,
-                                //                   },
-                                //               }
-                                //           )
-                                //         : navigate("/onboard/dao")
-                                // }
+                                onClick={() =>
+                                    unclaimedMembershipVouchersForAddress.length
+                                        ? navigate(
+                                              `/onboard/contributor/null`,
+                                              {
+                                                  state: {
+                                                      discordUserId: "userId",
+                                                      onboardingStep: 0,
+                                                  },
+                                              }
+                                          )
+                                        : navigate("/onboard/dao")
+                                }
                             >
                                 <img
                                     alt="add"
