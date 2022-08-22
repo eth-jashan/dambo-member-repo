@@ -422,11 +422,14 @@ export default function RequestScreen({
                 {role === "ADMIN" ? (
                     adminScreen()
                 ) : tab === "contributions" ? (
-                    <ContributorContributionScreen />
+                    <>
+                        <ContributorBadgeScreen />
+                        <ContributorContributionScreen />
+                    </>
                 ) : dataSource?.length > 0 ? (
                     renderBadges()
                 ) : (
-                    <ContributorBadgeScreen />
+                    <></>
                 )}
                 {rejectModal && (
                     <RejectPayment

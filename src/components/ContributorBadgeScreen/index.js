@@ -92,7 +92,7 @@ export default function ContributorBadgeScreen() {
     }
 
     return (
-        <div className="contributor-contribution-screen-container">
+        <div className="contributor-badge-upgrade-screen-container">
             {upgradedMembership && (
                 <div className="newMembershipBadge">
                     <img src={upgradedMembership?.image_url} />

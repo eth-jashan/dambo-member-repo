@@ -115,9 +115,31 @@
     .mobileLayout {
         display: none;
     }
+}
+.dao-add-btn-tooltip-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 0;
+    .ant-tooltip-arrow {
+        display: none;
+    }
+    .ant-tooltip-inner {
+        background-color: #fff;
+        border-radius: 18px;
+    }
+    .dao-add-btn-tooltip {
+        font-family: "TelegrafBolder";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 20px;
+        color: #000000;
+    }
+}
 
-    @media only screen and (max-width: 1050px) {
-        .layout {
+@media only screen and (max-width: 1050px) {
+    .dashboard-layout-container {
+        .dashboard-layout {
             display: none;
         }
         .mobileLayout {
@@ -148,25 +170,5 @@
         .mobileContentHeading {
             color: #ecffb8;
         }
-    }
-}
-.dao-add-btn-tooltip-card {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 0;
-    .ant-tooltip-arrow {
-        display: none;
-    }
-    .ant-tooltip-inner {
-        background-color: #fff;
-        border-radius: 18px;
-    }
-    .dao-add-btn-tooltip {
-        font-family: "TelegrafBolder";
-        font-style: normal;
-        font-weight: 800;
-        font-size: 14px;
-        line-height: 20px;
-        color: #000000;
     }
 }
