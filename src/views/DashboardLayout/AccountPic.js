@@ -1,6 +1,6 @@
 import { Tooltip } from "antd"
 import React, { useEffect, useState } from "react"
-import styles from "./style.module.css"
+import "./style.scss"
 import defaultPic from "../../assets/defaultPic.png"
 
 export default function AccountPic({ item, changeAccount, currentDao, index }) {
@@ -27,7 +27,7 @@ export default function AccountPic({ item, changeAccount, currentDao, index }) {
         checkImage(item?.dao_details?.logo_url)
     }, [currentDao?.uuid])
     return (
-        <div className={styles.accountContainer} key={item.dao_details?.uuid}>
+        <div className="accountContainer" key={item.dao_details?.uuid}>
             <Tooltip
                 placement="right"
                 title={() => text(item?.dao_details?.name)}
@@ -46,7 +46,7 @@ export default function AccountPic({ item, changeAccount, currentDao, index }) {
                     }}
                 >
                     {currentDao?.uuid === item.dao_details?.uuid && (
-                        <div className={styles.selectedDao}></div>
+                        <div className="selectedDao"></div>
                     )}
 
                     {item?.dao_details?.logo_url ? (

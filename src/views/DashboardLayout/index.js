@@ -1,6 +1,6 @@
 import React from "react"
 import "antd/dist/antd.css"
-import styles from "./style.module.css"
+import "./style.scss"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -52,11 +52,11 @@ export default function DashboardLayout({
     // console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
 
     return (
-        <>
+        <div className="dashboard-layout-container">
             <AntdToast />
-            <div className={styles.layout}>
-                <div className={styles.accountsLayout}>
-                    <div className={styles.logoContainer}>
+            <div className="dashboard-layout">
+                <div className="dashboard-accounts-layout">
+                    <div className="logoContainer">
                         <img
                             src={logo}
                             alt="logo"
@@ -73,7 +73,7 @@ export default function DashboardLayout({
                             item={item}
                         />
                     ))}
-                    <div className={styles.addContainer}>
+                    <div className="addContainer">
                         <Tooltip
                             placement="right"
                             title={
@@ -85,34 +85,44 @@ export default function DashboardLayout({
                                 </span>
                             }
                             overlayClassName="dao-add-btn-tooltip-card"
+                            trigger="click"
                         >
                             <div
-                                className={styles.addButton}
-                                onClick={() =>
-                                    unclaimedMembershipVouchersForAddress.length
-                                        ? navigate(
-                                              `/onboard/contributor/null`,
-                                              {
-                                                  state: {
-                                                      discordUserId: "userId",
-                                                      onboardingStep: 0,
-                                                  },
-                                              }
-                                          )
-                                        : navigate("/onboard/dao")
-                                }
+                                className="dashboard-layout-left-add-button"
+                                // onClick={() =>
+                                //     unclaimedMembershipVouchersForAddress.length
+                                //         ? navigate(
+                                //               `/onboard/contributor/null`,
+                                //               {
+                                //                   state: {
+                                //                       discordUserId: "userId",
+                                //                       onboardingStep: 0,
+                                //                   },
+                                //               }
+                                //           )
+                                //         : navigate("/onboard/dao")
+                                // }
                             >
                                 <img
                                     alt="add"
-                                    className={styles.addIcon}
+                                    className="addIcon"
                                     src={add_white}
                                 />
+                                {unclaimedMembershipVouchersForAddress.length ? (
+                                    <div className="unclaimed-vouchers-count">
+                                        {
+                                            unclaimedMembershipVouchersForAddress.length
+                                        }
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                             </div>
                         </Tooltip>
                     </div>
                 </div>
 
-                <div className={styles.childrenLayout}>
+                <div className="childrenLayout">
                     <DashboardHeader
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
@@ -123,22 +133,20 @@ export default function DashboardLayout({
                     {children}
                 </div>
             </div>
-            <div className={styles.mobileLayout}>
+            <div className="mobileLayout">
                 <OnboardingHeader
                     signer={signer}
                     onWalletCenterOpen={() => {}}
                     showWalletPicker={false}
                 />
-                <div className={styles.mobileContent}>
-                    <div className={styles.mobileContentHeading}>
-                        You’re early
-                    </div>
+                <div className="mobileContent">
+                    <div className="mobileContentHeading">You’re early</div>
                     <div>
                         We're yet to support mobile, please try again on
                         desktop.
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
