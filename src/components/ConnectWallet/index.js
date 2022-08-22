@@ -339,6 +339,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                             <button
                                                 onClick={openChainModal}
                                                 type="button"
+                                                className="wrong-network-btn"
                                             >
                                                 Wrong network
                                             </button>
@@ -380,7 +381,7 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     }}
                 </ConnectButton.Custom>
 
-                {address && (
+                {address && !chain.unsupported && (
                     <div
                         onClick={
                             auth

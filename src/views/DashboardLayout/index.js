@@ -88,7 +88,19 @@ export default function DashboardLayout({
                         >
                             <div
                                 className={styles.addButton}
-                                onClick={() => navigate("/onboard/dao")}
+                                onClick={() =>
+                                    unclaimedMembershipVouchersForAddress.length
+                                        ? navigate(
+                                              `/onboard/contributor/null`,
+                                              {
+                                                  state: {
+                                                      discordUserId: "userId",
+                                                      onboardingStep: 0,
+                                                  },
+                                              }
+                                          )
+                                        : navigate("/onboard/dao")
+                                }
                             >
                                 <img
                                     alt="add"

@@ -19,8 +19,8 @@ import { infuraProvider } from "wagmi/providers/infura"
 
 const { chains, provider, webSocketProvider } = configureChains(
     process.env.NODE_ENV === "production"
-        ? [chain.mainnet, chain.polygon, chain.rinkeby, chain.polygon]
-        : [chain.rinkeby, chain.polygon, chain.mainnet, chain.polygon],
+        ? [chain.mainnet, chain.polygon, chain.rinkeby, chain.polygonMumbai]
+        : [chain.rinkeby, chain.polygon, chain.mainnet, chain.polygonMumbai],
     [infuraProvider({ infuraId: "25f28dcc7e6b4c85b74ddfb3eeda03e5" })]
 )
 
