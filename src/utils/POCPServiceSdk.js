@@ -14,7 +14,6 @@ let pocpInstance = null
 export const initPOCP = async (dao_uuid, provider, signer, chainId) => {
     const walletWeb3 = new Web3(provider)
     const walletProvider = walletWeb3.givenProvider
-    console.log(Biconomy)
 
     pocpInstance = new Pocp(
         signer,
@@ -52,11 +51,6 @@ export const claimVoucher = async (
     hashCallbackFn,
     callbackFn
 ) => {
-    console.log(
-        dao_uuid === "981349a995c140d8b7fb5c110b0d133b"
-            ? "signTypedDatav1.0"
-            : "signTypedDatav2.0"
-    )
     await pocpInstance.claimMembershipNft(
         contractAddress,
         voucher,
@@ -65,7 +59,6 @@ export const claimVoucher = async (
             ? "signTypedDatav1.0"
             : "signTypedDatav2.0",
         async (x) => {
-            console.log("Tranaction hash callback", x)
             await hashCallbackFn(x)
         },
         callbackFn
@@ -88,7 +81,6 @@ export const upgradeMembershipNft = async (
         category,
         metaDataHash,
         async (x) => {
-            console.log("Tranaction hash callback", x)
             await transactionHashCallback(x)
         },
         callbackFunction
@@ -187,7 +179,6 @@ export const createMembershipVoucher = async (
     metadataHash,
     dao_uuid
 ) => {
-    console.log(contractAddress)
     try {
         return await pocpInstance.createMembershipVoucher(
             contractAddress,
@@ -201,7 +192,7 @@ export const createMembershipVoucher = async (
                 : "signTypedDatav2.0"
         )
     } catch (error) {
-        console.log("error", error)
+        console.error("error", error)
     }
 }
 
@@ -216,10 +207,6 @@ export const getArrayOfMemberToken = async (
                 x,
                 contractAddress,
                 false
-            )
-            console.log(
-                "memberships",
-                memberships.data.membershipNFTs[0].tokenID
             )
             return parseInt(memberships.data.membershipNFTs[0].tokenID)
         })
@@ -266,7 +253,7 @@ export const createContributionVoucher = async (
             arrayOfData
         )
     } catch (error) {
-        console.log("error", error)
+        console.error("error", error)
     }
 }
 
@@ -305,18 +292,6 @@ export const createContributionMetadataUri = async (
     contri_attribute
 ) => {
     try {
-        console.log(
-            JSON.stringify({
-                dao_logo_url,
-                dao_name,
-                contri_title,
-                contri_time_spent,
-                contri_date,
-                contri_type,
-                feedback,
-                contri_attribute,
-            })
-        )
         const res = await axios.post(
             `https://test-staging.api.drepute.xyz/arweave_server/contribution-badge`,
             {
@@ -334,7 +309,7 @@ export const createContributionMetadataUri = async (
             return res.data.data
         }
     } catch (error) {
-        console.log("error ", error)
+        console.error("error ", error)
     }
 }
 
@@ -365,12 +340,10 @@ query($metadatUri: String ) {
                 ? "https://api.thegraph.com/subgraphs/name/eth-jashan/pocpv15-matic"
                 : "https://api.thegraph.com/subgraphs/name/eth-jashan/rep3-matic"
         )
-        console.log("association badges")
         const customResult = await pocpGetter.getForCustomQuery(
             associationBadgeQuery,
             associationBadgeVariable
         )
-        console.log("association badges", customResult)
         return customResult
     } catch (error) {}
 }
@@ -406,7 +379,8 @@ query($contractAddress: String ) {
             associationBadgeQuery,
             associationBadgeVariable
         )
-        console.log("association badges", customResult)
         return customResult
-    } catch (error) {}
+    } catch (error) {
+        console.error("err", error)
+    }
 }

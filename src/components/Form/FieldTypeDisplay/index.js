@@ -1,10 +1,8 @@
-import { Menu, Dropdown } from "antd"
-import React, { useState } from "react"
+import React from "react"
 import { assets } from "../../../constant/assets"
 import "./style.scss"
 
 export default function FormElementSelection({ item }) {
-    // console.log("item", item)
     const renderFieldType = () => (
         <div
             className={

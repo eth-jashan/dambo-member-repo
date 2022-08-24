@@ -8,15 +8,12 @@ export default function AccountPic({ item, changeAccount, currentDao, index }) {
     const [image, setImage] = useState(false)
     function checkImage(url) {
         const image = new Image()
-        let status
         image.onload = function () {
             if (this.width > 0) {
-                console.log("image exists")
                 setImage(url)
             }
         }
         image.onerror = function () {
-            console.log("image doesn't exist")
             // status = false
             setImage(false)
         }

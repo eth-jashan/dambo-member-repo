@@ -11,7 +11,6 @@ const ContributorSignupFallback = () => {
     const { id, name } = useParams()
 
     const linkCheck = useCallback(() => {
-        // console.log("here")
         dispatch(set_invite_id(id))
         dispatch(signout())
         dispatch(setAdminStatus(false))

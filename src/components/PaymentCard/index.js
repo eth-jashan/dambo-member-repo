@@ -445,8 +445,6 @@ export default function PaymentCard({ item, signer }) {
             dispatch(setLoading(true, item?.metaInfo?.id))
             if (delegates?.length === item?.gnosis?.confirmations?.length) {
                 await executeFunction()
-            } else if (checkApproval()) {
-                // console.log('Already Signed !!!')
             } else if (!checkApproval() && (onHover || activeSelection)) {
                 await confirmTransaction(tranx)
             }

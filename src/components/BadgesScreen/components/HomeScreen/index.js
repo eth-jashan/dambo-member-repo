@@ -48,7 +48,6 @@ export default function HomeScreen({
             proxyContract,
             currentDao?.uuid
         )
-        console.log("Badges", badges.data.associationBadges)
         setClaimedBadges(badges.data.associationBadges)
     }, [currentDao?.uuid])
 

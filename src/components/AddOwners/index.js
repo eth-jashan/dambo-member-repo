@@ -130,8 +130,8 @@ export default function AddOwners({
                     Register people
                 </div>
                 <div className={`${textStyles.m_36} ${styles.helperHeading}`}>
-                    need to have some copy to talk about the protocol, bla bla
-                    bla bla
+                    Approvers are essentially admins on rep3, think gnosis
+                    signers
                 </div>
             </div>
         ) : (

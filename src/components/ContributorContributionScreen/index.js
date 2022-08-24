@@ -171,6 +171,14 @@ export default function ContributorContributionScreen() {
         />
     )
 
+    const openseaLink = `https://${
+        chainType(chain?.id) === "Testnet" ? "testnets." : ""
+    }opensea.io/assets/${
+        chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
+    }/${membershipBadgeClaimed?.contractAddress?.id}/${
+        membershipBadgeClaimed?.tokenID
+    }`
+
     const openEtherscan = () => {
         window.open(
             `https://${
@@ -183,16 +191,7 @@ export default function ContributorContributionScreen() {
     }
 
     const openOpensea = () => {
-        window.open(
-            `https://${
-                chainType(chain?.id) === "Testnet" ? "testnets." : ""
-            }opensea.io/assets/${
-                chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
-            }/${membershipBadgeClaimed?.contractAddress?.id}/${
-                membershipBadgeClaimed?.tokenID
-            }`,
-            "_blank"
-        )
+        window.open(openseaLink, "_blank")
     }
 
     const [currentMembershipBadge, setCurrentMembershipBadge] = useState(false)
@@ -455,18 +454,12 @@ export default function ContributorContributionScreen() {
                             <div className="successfullyClaimedModalFooterBtn">
                                 <button>
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0Ahttps://${
-                                            chainType(chain?.id) === "Testnet"
-                                                ? "testnets."
-                                                : ""
-                                        } opensea.io/assets/${
-                                            chainType(chain?.id) === "Testnet"
-                                                ? "mumbai"
-                                                : "matic"
-                                        }/${
-                                            membershipBadgeClaimed
-                                                ?.contractAddress?.id
-                                        }/${membershipBadgeClaimed?.tokenID}`}
+                                        href={`https://twitter.com/intent/tweet?text=${
+                                            currentDao?.uuid ===
+                                            "93ba937e02ea4fdb9633c2cb27345200"
+                                                ? `I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0A ${openseaLink}`
+                                                : `Hi all,%0A%0AI am now a member of ${currentDao?.name}, check out my membership badge. %0A%0Ah/t @rep3gg %0A%0A${openseaLink}`
+                                        }`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >

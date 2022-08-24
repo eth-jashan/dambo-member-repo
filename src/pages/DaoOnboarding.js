@@ -168,9 +168,6 @@ export default function Onboarding() {
         } catch (error) {
             console.error("error.... on deploying", error)
         }
-        // } catch (error) {
-        //     console.log("error.......", error)
-        // }
     }
 
     const fetchAllSafe = useCallback(async () => {
@@ -178,7 +175,6 @@ export default function Onboarding() {
             dispatch(getAllSafeFromAddress())
             return 1
         } catch (error) {
-            // //console.log('error on safe fetch.......', error)
             return 0
         }
     }, [address, dispatch])

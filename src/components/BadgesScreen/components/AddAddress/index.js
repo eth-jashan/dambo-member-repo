@@ -109,8 +109,6 @@ export default function AddAddress({ selectedMembershipBadge, closeModal }) {
         return isDisabled
     }
 
-    console.log("Yo", selectedMembershipBadge?.image_url)
-
     return (
         <div className="add-address-screen-container">
             <div className="close-minting-modal" onClick={closeModal}>

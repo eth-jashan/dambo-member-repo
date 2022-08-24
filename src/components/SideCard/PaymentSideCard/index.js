@@ -523,12 +523,6 @@ const PaymentSlideCard = ({ signer }) => {
             dispatch(setLoading(true, currentPayment?.metaInfo?.id))
             if (checkApproval()) {
                 await executeTransaction(hash)
-            } else if (
-                checkApproval() &&
-                delegates?.length !==
-                    currentPayment?.gnosis?.confirmations?.length
-            ) {
-                // console.log("Payment Already Signed")
             } else if (!checkApproval()) {
                 await confirmTransaction(hash)
                 dispatch(setLoading(false))

@@ -52,7 +52,7 @@ const savedChainId = JSON.parse(window.localStorage.getItem("chainId"))
 
 if (process.env.NODE_ENV === "production") {
     console.log = () => {}
-    console.error = () => {}
+    // console.error = () => {}
     console.debug = () => {}
 }
 

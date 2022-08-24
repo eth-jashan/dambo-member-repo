@@ -86,7 +86,6 @@ export default function TreasuryDetails() {
     const gnosisSignerLink = `https://gnosis-safe.io/app/${
         chain?.id === 4 ? "rin:" : ""
     }${currentDao?.safe_public_address}/settings/owners`
-    console.log(currentDao)
     return (
         <div className="treasury-details-container">
             {isModalVisible && (

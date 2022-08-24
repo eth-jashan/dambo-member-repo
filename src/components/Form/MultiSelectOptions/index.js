@@ -10,7 +10,6 @@ export default function MultiSelectOptions({
     removeOptions,
     item,
 }) {
-    console.log(item.options.length > 1, isEdit)
     return (
         <div className="multi-select-option-container">
             <div className="edit-wrapper">

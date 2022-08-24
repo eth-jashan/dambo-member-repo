@@ -87,7 +87,6 @@ export default function ContributionContributorSideCard({
         return details?.[0]?.name
     }
     const contractAddress = useSelector((x) => x.dao.daoProxyAddress)
-    console.log("contract address", contractAddress)
 
     const openEtherscan = () => {
         window.open(
