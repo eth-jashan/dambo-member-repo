@@ -30,10 +30,6 @@ const toastSlice = createSlice({
             state.pocp_action = action.payload.status
         },
         setShowToast(state, action) {
-            console.log(
-                "setting show toast in toast reducer",
-                action.payload.status
-            )
             state.showToast = action.payload.status
         },
         setToastInfo(state, action) {

@@ -48,8 +48,6 @@ export default function DashboardLayout({
             dispatch(set_active_nonce(nonce))
         }
     }
-    console.log("Here", unclaimedMembershipVouchersForAddress)
-    // console.log("image check", checkImage(accounts[0]?.dao_details?.logo_url))
 
     return (
         <div className="dashboard-layout-container">

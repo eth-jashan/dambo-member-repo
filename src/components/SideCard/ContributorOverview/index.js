@@ -43,6 +43,10 @@ const ContributionOverview = () => {
     const { chain } = useNetwork()
     const dispatch = useDispatch()
 
+    const membershipBadgeClaimed = useSelector(
+        (x) => x.membership.membershipBadgeClaimed
+    )
+
     const getCurrentBadgeUpdated = () => {
         const membershipInfo = []
         let highestDifference =
@@ -54,14 +58,19 @@ const ContributionOverview = () => {
                 index = i
             }
         })
-        membershipBadges.forEach((x) => {
-            if (
-                membershipBadgesForAddress[index].level ===
-                contributorClaimedDataBackend?.membership.level.toString()
-            ) {
-                membershipInfo.push(contributorClaimedDataBackend?.membership)
-            }
-        })
+        // membershipBadges.forEach((x) => {
+        if (
+            membershipBadgesForAddress[index].level ===
+            contributorClaimedDataBackend?.membership?.level.toString()
+        ) {
+            membershipInfo.push(contributorClaimedDataBackend?.membership)
+        } else if (
+            membershipBadgesForAddress[index].level ===
+            membershipBadgeClaimed?.level.toString()
+        ) {
+            membershipInfo.push(membershipBadgeClaimed)
+        }
+        // })
         setCurrentMembershipBadge({
             ...membershipBadgesForAddress[index],
             ...membershipInfo[0],
@@ -82,10 +91,11 @@ const ContributionOverview = () => {
     }, [currentMembershipBadge])
     useEffect(() => {
         if (
-            currentDao &&
-            proxyContract &&
-            contributorClaimedDataBackend?.membership &&
-            membershipBadgesForAddress?.length > 0
+            membershipBadgeClaimed ||
+            (currentDao &&
+                proxyContract &&
+                contributorClaimedDataBackend?.membership &&
+                membershipBadgesForAddress?.length > 0)
         ) {
             getCurrentBadgeUpdated()
         } else {
@@ -97,6 +107,14 @@ const ContributionOverview = () => {
     const toggle = () => {
         setIsToggleOpen((isToggleOpen) => !isToggleOpen)
     }
+
+    const openseaLink = `https://${
+        chainType(chain?.id) === "Testnet" ? "testnets." : ""
+    }opensea.io/assets/${
+        chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
+    }/${currentMembershipBadge?.contractAddress?.id}/${
+        currentMembershipBadge?.tokenID
+    }`
 
     const openEtherscan = () => {
         window.open(
@@ -110,22 +128,13 @@ const ContributionOverview = () => {
     }
 
     const openOpensea = () => {
-        window.open(
-            `https://${
-                chainType(chain?.id) === "Testnet" ? "testnets." : ""
-            }opensea.io/assets/${
-                chainType(chain?.id) === "Testnet" ? "mumbai" : "matic"
-            }/${currentMembershipBadge?.contractAddress?.id}/${
-                currentMembershipBadge?.tokenID
-            }`,
-            "_blank"
-        )
+        window.open(openseaLink, "_blank")
     }
 
     const closeSideCard = () => {
         dispatch(setContributionSelection(false))
     }
-    console.log("current badges", currentMembershipBadge)
+
     return (
         <div
             style={{ paddingTop: contributorSelectionContribution && 0 }}
@@ -242,8 +251,20 @@ const ContributionOverview = () => {
                                     </div>
                                     <div>
                                         <button>
-                                            Share{" "}
-                                            <img src={twitterIcon} alt="" />
+                                            <a
+                                                href={`https://twitter.com/intent/tweet?text=${
+                                                    currentDao?.uuid ===
+                                                    "93ba937e02ea4fdb9633c2cb27345200"
+                                                        ? `I'm a Pioneer Member of @PonyFinance! %0A%0ACongrats to the team and partners @beefyfinance, @defipulse and @scalara_xyz on the launch. Now lets round up some omni-chain stablecoin yields!🐴🤠 %0A%0Ah/t @rep3gg %0A%0A ${openseaLink}`
+                                                        : `Hi all,%0A%0AI am now a member of ${currentDao?.name}, check out my membership badge. %0A%0Ah/t @rep3gg %0A%0A${openseaLink}`
+                                                }`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="badge-footer-share"
+                                            >
+                                                Share{" "}
+                                                <img src={twitterIcon} alt="" />
+                                            </a>
                                         </button>
                                     </div>
                                 </div>

@@ -8,6 +8,7 @@ import {
 } from "../../utils/POCPServiceSdk"
 import { membershipAction } from "../reducers/membership-slice"
 import { toastAction } from "../reducers/toast-slice"
+import { getAllDaowithAddress } from "./dao-action"
 
 export const getAllMembershipBadgesList = () => {
     return async (dispatch, getState) => {
@@ -139,11 +140,9 @@ export const getMembershipVoucher = () => {
 
 const poll = async function (fn, fnCondition, ms) {
     let result = await fn()
-    console.log("result of polling fn", result)
     while (fnCondition(result)) {
         await wait(ms)
         result = await fn()
-        console.log("result in while loop", result)
     }
     return result
 }
@@ -171,11 +170,9 @@ export const claimMembershipVoucher = (membershipVoucherInfo, chainId) => {
                 membershipVoucherInfo?.voucher_address_index,
                 currentDao?.uuid,
                 async (x) => {
-                    console.log("Tx emitted is", x)
                     dispatch(updateTxHash(x, "claim", null, chainId))
                 },
                 async (x) => {
-                    console.log("event emitted is", x)
                     const fetchNFT = () =>
                         getMembershipBadgeFromTxHash(
                             x.transactionHash,
@@ -224,7 +221,6 @@ export const claimMembershipVoucher = (membershipVoucherInfo, chainId) => {
                     }, 90000)
 
                     const response = await poll(fetchNFT, validate, 3000)
-                    console.log("fetched the badge", response)
                     const membershipNFT = response?.data?.membershipNFTs?.[0]
                     dispatch(
                         setMembershipBadgeClaimed({
@@ -246,11 +242,12 @@ export const claimMembershipVoucher = (membershipVoucherInfo, chainId) => {
                         })
                     )
                     dispatch(setDisableClaimBtn(false))
+                    // dispatch(getAllDaowithAddress(chainId))
                 }
             )
             return 1
         } catch (err) {
-            console.log("claiming signing error", err)
+            console.error("claiming signing error", err)
             dispatch(
                 setClaimMembershipLoading({
                     status: false,
@@ -404,7 +401,6 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
         const uuid = getState().dao.currentDao?.uuid
 
         try {
-            console.log("formdata", [...formData])
             const response = await apiClient.post(
                 // `${process.env.REACT_APP_ARWEAVE_SERVER}${routes.arweave.membership}`,
                 `https://test-staging.api.drepute.xyz/arweave_server/membership`,
@@ -446,7 +442,6 @@ export const createMembershipBadges = (formData, memberships, isEditing) => {
                     }
                 )
 
-                console.log("updated memberships", membershipsUpdated)
                 let res
                 if (isEditing) {
                     const oldMemberships = membershipsUpdated.filter(
@@ -560,7 +555,6 @@ export const getSelectedMemberContributions = (memberAddress) => {
             )
             if (res?.data?.success) {
                 const contributions = res.data.data.contributions
-                console.log("contributions", contributions)
                 const approvedContributions = contributions?.filter(
                     (ele) => ele.status === "APPROVED"
                 )
@@ -666,7 +660,6 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
         try {
             const mapArrWithSignedVoucher = await Promise.all(
                 mapArr.map(async (ele) => {
-                    console.log(ele, selectedMembershipBadge?.metadata_hash)
                     // eslint-disable-next-line no-useless-catch
                     try {
                         const signedObject = await createMembershipVoucher(
@@ -677,10 +670,6 @@ export const mintBadges = (selectedMembershipBadge, addresses) => {
                             ele,
                             `${selectedMembershipBadge?.metadata_hash},`,
                             uuid
-                        )
-                        console.log(
-                            "membership voucher",
-                            JSON.stringify(signedObject)
                         )
                         return {
                             addresses: [...ele],
@@ -750,9 +739,9 @@ export const updateTxHash = (txnHash, type, prevHash, chainId) => {
                     },
                 }
             )
-            console.log("res", res)
             return 1
         } catch (error) {
+            console.error("err", error)
             return 0
         }
     }
@@ -770,7 +759,6 @@ export const getAddressVouchers = (address) => {
                     },
                 }
             )
-            console.log("res", res.data)
             if (res.data?.success) {
                 if (res.data?.data?.length) {
                     dispatch(
@@ -786,6 +774,7 @@ export const getAddressVouchers = (address) => {
             }
             return 0
         } catch (error) {
+            console.error("err", error)
             return 0
         }
     }

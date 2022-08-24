@@ -55,8 +55,6 @@ const ContributionRequestModal = ({ setVisibility }) => {
                 false
             )
 
-            console.log("membership token Id", memberTokenId)
-
             try {
                 await dispatch(
                     raiseContributionRequest(
@@ -125,8 +123,6 @@ const ContributionRequestModal = ({ setVisibility }) => {
             })
             setSchemaTemplate(newCopy)
         }
-
-        // console.log(newValue, newCopy)
     }
 
     const textInput = (placeholder, index) => (

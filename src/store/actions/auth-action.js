@@ -121,7 +121,6 @@ export const setAddress = (address) => {
 
 export const setLoggedIn = (status) => {
     return (dispatch) => {
-        // //console.log('changing status.....')
         dispatch(authActions.set_loggedIn({ status }))
     }
 }
@@ -134,7 +133,6 @@ export const setContriInfo = (name, role) => {
 
 export const setAdminStatus = (status) => {
     return (dispatch) => {
-        // //console.log("changing status.....", status)
         dispatch(authActions.set_admin({ status }))
     }
 }
@@ -182,7 +180,6 @@ export const joinContributor = (id) => {
             // community_role: "CONTRIBUTOR",
             // discord_user_id: "discordUserId",
         }
-        // console.log("JOINER", data)
 
         try {
             const res = await apiClient.post(

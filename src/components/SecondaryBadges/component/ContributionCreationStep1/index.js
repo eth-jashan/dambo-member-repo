@@ -38,16 +38,13 @@ export default function ContributionCreationStep1({
             const copyOfBadges = [...schemaTemplate]
             copyOfBadges[badgeIndex].options = [""]
             setSchemaTemplate(copyOfBadges)
-            console.log("input", badgeIndex, newValue, copyOfBadges, newValue)
         } else {
             const copyOfBadges = [...schemaTemplate]
             copyOfBadges[badgeIndex].options[optionIndex] = newValue
             setSchemaTemplate(copyOfBadges)
-            console.log("input", badgeIndex, newValue, copyOfBadges, newValue)
         }
     }
     const onRemoveOptions = (badgeIndex, optionIndex) => {
-        console.log("fired remove option", badgeIndex, optionIndex)
         const copyOfBadges = [...schemaTemplate]
         let copyOfOption = copyOfBadges[badgeIndex].options
         copyOfOption = copyOfOption.filter(
@@ -55,7 +52,6 @@ export default function ContributionCreationStep1({
         )
         copyOfBadges[badgeIndex].options = copyOfOption
         setSchemaTemplate(copyOfBadges)
-        console.log("input", badgeIndex, copyOfBadges)
     }
 
     const deleteFeild = (index) => {
@@ -86,7 +82,6 @@ export default function ContributionCreationStep1({
                 maxSelection: 1,
             }
         }
-        console.log("added element", element)
         setSchemaTemplate((membershipBadges) => [...membershipBadges, element])
     }
 

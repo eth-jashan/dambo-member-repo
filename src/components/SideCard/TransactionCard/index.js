@@ -40,7 +40,6 @@ const TransactionCard = () => {
     const ETHprice = useSelector((x) => x.transaction.initialETHPrice)
 
     useEffect(() => {
-        console.log("transaction changed")
         setFeedBackSow(false)
         setFeedback("")
         setMint(false)

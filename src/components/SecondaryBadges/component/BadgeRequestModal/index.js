@@ -43,7 +43,6 @@ export default function BadgeRequestModal({
                 const memberTokenId = await dispatch(
                     getAllMembershipBadges(address)
                 )
-                console.log(memberTokenId)
                 setLoading(false)
                 if (memberTokenId.data.membershipNFTs.length > 0) {
                     setAddressStatus(true)
@@ -61,7 +60,6 @@ export default function BadgeRequestModal({
     }
     useEffect(async () => {
         if (badgeSelectionMember) {
-            console.log("fireeddd")
             await getClaimedMembershipNft(badgeSelectionMember)
             setAddress([badgeSelectionMember])
         }
@@ -173,7 +171,6 @@ export default function BadgeRequestModal({
         } else {
             newValue = value.value
         }
-        console.log(value)
         const newCopy = schemaTemplate?.map((item, i) => {
             if (i === index) {
                 return { ...item, value: newValue }
@@ -181,7 +178,6 @@ export default function BadgeRequestModal({
                 return item
             }
         })
-        console.log(newValue, newCopy)
         setSchemaTemplate(newCopy)
     }
     const [focusOnSelect, setFocusOnSelect] = useState(false)
@@ -247,8 +243,6 @@ export default function BadgeRequestModal({
                 proxyContract,
                 false
             )
-
-            console.log("membership token Id", memberTokenId)
 
             try {
                 await dispatch(

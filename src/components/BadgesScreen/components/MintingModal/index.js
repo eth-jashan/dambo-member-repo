@@ -8,7 +8,6 @@ import { useSelector } from "react-redux"
 export default function MintingModal({ closeMintingModal, membershipBadges }) {
     const [selectedMembershipBadge, setSelectedMembershipBadge] = useState(null)
     const currentDao = useSelector((x) => x.dao.currentDao)
-    console.log("Yo", membershipBadges)
     const selectMembershipBadge = () => {
         return (
             <div className="select-membership-badge-container">

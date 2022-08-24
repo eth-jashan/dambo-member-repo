@@ -275,7 +275,6 @@ const ContributionSideCard = ({ isAdmin = true, route, onRouteChange }) => {
     }
 
     const getSignerName = (address) => {
-        // //console.log(currentDao?.signers[0].public_address, address.toString())
         return currentDao?.signers?.filter(
             (x) => x.public_address === address
         )[0]?.metadata?.name

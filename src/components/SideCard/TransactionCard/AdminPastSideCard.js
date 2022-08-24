@@ -99,8 +99,6 @@ const AdminPastSideCard = ({ onCrossPress }) => {
         }
     }
 
-    console.log("signer", signersInfo)
-
     useEffect(() => {
         if (currentTransaction?.gnosis_reference_id) {
             getPayoutInfo()

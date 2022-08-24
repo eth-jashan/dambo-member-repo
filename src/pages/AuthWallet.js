@@ -22,7 +22,6 @@ const AuthWallet = () => {
         dispatch(setLoggedIn(true))
         if (isAdmin) {
             const res = await dispatch(getAddressMembership(chain?.id))
-            console.log("res of getAddressMembership", res)
             if (res) {
                 setAuth(false)
                 navigate(`/dashboard`)
@@ -35,7 +34,6 @@ const AuthWallet = () => {
             if (!isAdmin) {
                 try {
                     const res = await dispatch(getRole(uuid))
-                    console.log("res of getRole", res)
                     if (res) {
                         message.success("Already a member")
                         dispatch(setAdminStatus(true))

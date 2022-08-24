@@ -113,7 +113,6 @@ export const getContributionAsAdmin = () => {
                 const approvedRequest = res.data.data.contributions.filter(
                     (x) => x.status === "APPROVED"
                 )
-                console.log(approvedRequest)
                 dispatch(
                     contributorAction.set_admin_contribution({
                         contribution: pendingContribution,
@@ -567,8 +566,6 @@ export const contributionBadgeClaim = (
                         )
                     }
                 })
-                console.log("approve indexes", approveIndexes)
-                console.log("member token Id", memberTokenId)
 
                 const hashCallbackFn = (x) => {
                     dispatch(
@@ -772,15 +769,9 @@ export const getPastContributionsPolled = () => {
             getState().contributor.contributionForContributorPast.length
 
         let pastContributions = await dispatch(getPastContributions())
-        console.log(
-            "result befoire while",
-            pastContributions.length,
-            pastContributionsCount
-        )
         while (pastContributions.length <= pastContributionsCount) {
             await wait(2000)
             pastContributions = await dispatch(getPastContributions())
-            console.log("result in while", pastContributions)
         }
         dispatch(setPastContributionsSyncing(false))
     }

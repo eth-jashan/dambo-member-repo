@@ -84,7 +84,6 @@ export default function FormElementSelection({
             ]}
         />
     )
-    console.log("dsd", item)
     const renderSelectionCount = () => (
         <div className="selection-counter-div">
             <div

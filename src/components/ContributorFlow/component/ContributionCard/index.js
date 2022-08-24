@@ -39,7 +39,6 @@ export default function ContributionCardV2({
     const onContributionSelection = async () => {
         if (role === "ADMIN") {
             const ethPrice = await convertTokentoUsd("ETH")
-            console.log("here fetch badge", item)
             // await getBadgeOnMetadata(
             //     `http://arweave.net/${`nzHA7WHTsYQIBkAtyg3gHnVR3jQYRlWyO6y40Bf5fZs`}`,
             //     currentDao?.uuid

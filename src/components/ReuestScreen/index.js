@@ -37,10 +37,8 @@ export default function RequestScreen({
     const currentDao = useSelector((x) => x.dao.currentDao)
 
     // const contribution_request = useSelector((x) => x.dao.contribution_request)
-    const loadingState = useSelector((x) => x.toast.loading_state)
+    // const loadingState = useSelector((x) => x.toast.loading_state)
     const approvedBadges = useSelector((x) => x.dao.approvedBadges)
-
-    console.log("loading state is ", loadingState)
 
     const { data: signer } = useSigner()
 

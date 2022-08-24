@@ -51,18 +51,15 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                     const res = await dispatch(
                         authWithSign(address, signer, chainId)
                     )
-                    console.log("res of authWithSign", res, isAdmin, uuid)
                     if (res) {
                         if (uuid) {
                             const res = await dispatch(getRole(uuid))
-                            console.log("res of getRole", res)
                             if (res) {
                                 message.success("Already a member")
                                 dispatch(setAdminStatus(true))
                                 const isMember = await dispatch(
                                     getAddressMembership(chainId)
                                 )
-                                console.log("res of isMember", isMember)
 
                                 if (isMember) {
                                     setAuth(false)
@@ -82,7 +79,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                             const isMember = await dispatch(
                                 getAddressMembership(chainId)
                             )
-                            console.log("is member", isMember)
                             if (isMember) {
                                 setAuth(false)
                                 navigate(`/dashboard`)
@@ -104,14 +100,12 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                         }
                         // if (!isAdmin) {
                         //     const res = await dispatch(getRole(uuid))
-                        //     console.log("res of getRole", res)
                         //     if (res) {
                         //         message.success("Already a member")
                         //         dispatch(setAdminStatus(true))
                         //         const isMember = await dispatch(
                         //             getAddressMembership(chainId)
                         //         )
-                        //         console.log("res of isMember", isMember)
 
                         //         if (isMember) {
                         //             setAuth(false)
@@ -175,7 +169,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
 
             // check jwt validity
             const res = await dispatch(getJwt(newAddress, jwt))
-            console.log("response of getJwt ", res, chainId)
             if (
                 res &&
                 (chainId === 4 ||
@@ -217,7 +210,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                                 }
                                 // navigate(`/dashboard`)
                             } else {
-                                // console.log("hereeee", uuid)
                                 navigate(`/onboard/contributor/${uuid}`, {
                                     state: {
                                         discordUserId: "userId",
@@ -241,7 +233,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
                 //     await authWithWallet(newAddress, chainId, signer)
                 // } else {
                 // doesn't have valid token and chain is selected one
-                console.log("in else if")
                 setAuth(false)
                 dispatch(setLoggedIn(false))
                 await authWithWallet(newAddress, chainId, signer)
@@ -419,7 +410,6 @@ const ConnectWallet = ({ isAdmin, afterConnectWalletCallback }) => {
     }, [signer])
 
     useEffect(() => {
-        console.log("chain is", chain)
         if (chain) {
             window.localStorage.setItem(
                 "chainId",
