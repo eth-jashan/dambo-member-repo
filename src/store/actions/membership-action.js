@@ -760,7 +760,7 @@ export const getAddressVouchers = (address) => {
                 }
             )
             if (res.data?.success) {
-                if (res.data?.data?.length) {
+                if (res.data?.data) {
                     dispatch(
                         membershipAction.setUnclaimedMembershipVouchersForAddress(
                             {
